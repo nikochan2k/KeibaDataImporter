@@ -238,7 +238,6 @@ export class RaceRecord {
 
   @Column("smallint", { nullable: true })
   public Basho?: number;
-
 }
 
 @Entity("RaceLapTime")

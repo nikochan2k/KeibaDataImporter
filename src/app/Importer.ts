@@ -21,6 +21,7 @@ export class Importer {
   }
 
   protected constructConection() {
+    /*
     createConnection({
       driver: {
         type: "sqlite",
@@ -38,9 +39,24 @@ export class Importer {
     }).catch(error => {
       throw error;
     });
+    */
+    createConnection({
+      driver: {
+        type: "sqlite",
+        storage: "test.sqlite"
+      },
+      entities: [
+        __dirname + "/entities/*.js"
+      ],
+      autoSchemaSync: true
+    }).then(con => {
+      this.con = con;
+    }).catch(error => {
+      throw error;
+    });
   }
 
-  public importDataFile(dataFile: string){
+  public importDataFile(dataFile: string) {
     const basename = path.basename(dataFile);
     console.log(basename);
   }
