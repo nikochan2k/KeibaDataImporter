@@ -48,22 +48,39 @@ export class Codes {
   }
 
   public toNaiyou(code: number) {
-    for (let i = 0; i < this.codes.length; i++) {
-      const c = this.codes[i];
-      if (c.code === code) {
-        return c.naiyou;
-      }
+    return this.toStr(code, this.toNaiyouStr);
+  }
+
+  protected toNaiyouStr(c: Code) {
+    if (typeof c.naiyou === "function") {
+      return c.naiyou(c.code);
+    } else {
+      return c.naiyou;
     }
-    return null;
   }
 
   public toTanshuku(code: number) {
+    return this.toStr(code, this.toTanshukuStr);
+  }
+
+  protected toTanshukuStr(c: Code) {
+    if (!c.tanshuku) {
+      return this.toNaiyouStr(c);
+    }
+    if (typeof c.tanshuku === "function") {
+      return c.tanshuku(c.code);
+    } else {
+      return c.tanshuku;
+    }
+  }
+
+  protected toStr(code: number, convert: (c: Code) => string) {
     for (let i = 0; i < this.codes.length; i++) {
       const c = this.codes[i];
       if (c.code === code) {
-        return c.tanshuku || c.naiyou;
+        return convert(c);
       }
     }
-    return null;
+    return "";
   }
 }

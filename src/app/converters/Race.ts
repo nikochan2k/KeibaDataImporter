@@ -230,7 +230,11 @@ export const joukenFuka2 = new Codes(
 
 export const JoukenKei = new Codes(
   [
-    { code: 0, kol: ["0", "1", "2", "3", "4", "8", "9", "B", "K"], naiyou: "サラ系" },
+    {
+      code: 0,
+      kol: ["0", "1", "2", "3", "4", "8", "9", "B", "K"],
+      naiyou: "サラ系"
+    },
     { code: 0, kol: ["5", "6", "7", "A", "C"], naiyou: "アラブ系" }
   ]
 );
@@ -308,7 +312,6 @@ export const jouken = new Codes(
     { code: -64, kol: "-0064", naiyou: "E" },
     { code: -65, kol: "-0065", naiyou: "F" },
     {
-      code: null,
       kol: (str: string) => {
         const num = parseInt(str);
         if (100 <= num) return num;
