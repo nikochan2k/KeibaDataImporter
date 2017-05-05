@@ -1,6 +1,6 @@
 import {
   Entity, Index, Column, PrimaryColumn, ManyToOne, JoinColumn
-} from 'typeorm';
+} from "typeorm";
 import { Shussouba } from "./Shussouba";
 
 @Entity("ShussoubaBagu")

@@ -6,8 +6,8 @@ import * as tmp from "tmp";
 import * as rimraf from "rimraf";
 import * as log4js from "log4js";
 import { exec } from "child_process";
-import {Constant} from "./Constant";
-import {Importer} from "./Importer"
+import { Constant } from "./Constant";
+import { Importer } from "./Importer";
 
 const log = log4js.getLogger("app");
 log.setLevel(Constant.LOG_LEVEL);
@@ -21,7 +21,7 @@ const importer = new Importer();
 
 const lzhDir = checkDir(path.join(process.cwd(), arg)) || checkDir(arg);
 if (lzhDir) {
-  traverseLzhDir(lzhDir)
+  traverseLzhDir(lzhDir);
 } else {
   log.error('"' + lzhDir + '" is not a directory.');
 }
@@ -31,10 +31,10 @@ function checkDir(lzhDir: string): string {
     if (fs.statSync(lzhDir).isDirectory()) {
       return lzhDir;
     } else {
-      log.debug(lzhDir + " is not a directory.")
+      log.debug(lzhDir + " is not a directory.");
     }
   } catch (e) {
-    log.debug(e)
+    log.debug(e);
   }
   return null;
 }
@@ -63,11 +63,11 @@ function uncompressLzhFile(lzhFile: string) {
     exec(cmd, (error, stdout, stderr) => {
       if (error || stderr) {
         if (error) log.warn(error.message);
-        if (stderr) log.warn(stderr)
+        if (stderr) log.warn(stderr);
         else if (stdout) log.warn(stdout);
         rmdir(dataDir);
       } else {
-        traverseDataDir(dataDir)
+        traverseDataDir(dataDir);
       }
     });
   });
@@ -98,5 +98,5 @@ function rmdir(dir: string) {
     } else {
       log.debug('"' + dir + '" was deleted');
     }
-  })
+  });
 }

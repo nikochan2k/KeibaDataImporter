@@ -1,6 +1,6 @@
 import {
   Entity, Index, Column, PrimaryColumn, OneToMany, ManyToOne, JoinColumn
-} from 'typeorm';
+} from "typeorm";
 import { Shussouba } from "./Shussouba";
 import { Kishu } from "./Kishu";
 import { Uma } from "./Uma";
@@ -62,7 +62,7 @@ export class Choukyou {
   public Awase?: string;
 
   @Column("smallint", { nullable: true })
-  public AwaseKekka?: number; //1:先着 2:同入 3:遅れ
+  public AwaseKekka?: number;
 
   @Column("int", { name: "AwaseUmaId" })
   @ManyToOne(() => Uma)

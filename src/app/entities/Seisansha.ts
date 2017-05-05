@@ -1,4 +1,4 @@
-import { Entity, Index, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
+import { Entity, Index, Column, PrimaryGeneratedColumn, OneToMany } from "typeorm";
 import { Uma } from "./Uma";
 
 @Entity("Seisansha")

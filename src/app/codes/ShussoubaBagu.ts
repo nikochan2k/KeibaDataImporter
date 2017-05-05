@@ -45,7 +45,7 @@ export const baguShubetsu = new Codes(
     },
     { code: 8, jrdb: "007", naiyou: "バンテージ" }
   ]
-)
+);
 
 export const bagu = new Codes(
   [

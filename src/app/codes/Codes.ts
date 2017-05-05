@@ -1,9 +1,9 @@
 interface Code {
-  code: number;
+  code?: number;
   kol?: string | string[] | ((str: string) => number);
   jrdb?: string | string[] | ((str: string) => number);
   jravan?: string | string[] | ((str: string) => number);
-  naiyou: string | ((code: number) => string);
+  naiyou?: string | ((code: number) => string);
   tanshuku?: string | ((code: number) => string);
 }
 
@@ -52,6 +52,16 @@ export class Codes {
       const c = this.codes[i];
       if (c.code === code) {
         return c.naiyou;
+      }
+    }
+    return null;
+  }
+
+  public toTanshuku(code: number) {
+    for (let i = 0; i < this.codes.length; i++) {
+      const c = this.codes[i];
+      if (c.code === code) {
+        return c.tanshuku || c.naiyou;
       }
     }
     return null;

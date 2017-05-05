@@ -1,4 +1,4 @@
-import { Entity, Index, Column, PrimaryColumn, ManyToOne, JoinColumn } from 'typeorm';
+import { Entity, Index, Column, PrimaryColumn, ManyToOne, JoinColumn } from "typeorm";
 import { Shussouba } from "./Shussouba";
 
 @Entity("ShussoubaTsuukaJuni")

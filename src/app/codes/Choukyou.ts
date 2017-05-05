@@ -17,6 +17,14 @@ export const yajirushi = new Codes(
   ]
 );
 
+export const awaseKekka = new Codes(
+  [
+    { code: 1, kol: "1", naiyou: "先着" },
+    { code: 2, kol: "2", naiyou: "同入" },
+    { code: 3, kol: "3", naiyou: "遅れ" }
+  ]
+);
+
 export const bashoCourse = new Codes(
   [
     { code: 1, jrdb: "01", naiyou: "美浦坂路", tanshuku: "美坂" },
@@ -79,4 +87,4 @@ export const bashoCourse = new Codes(
     { code: 101, jrdb: "A1", naiyou: "連闘", tanshuku: "連闘" },
     { code: 111, jrdb: "B1", naiyou: "その他", tanshuku: "他" }
   ]
-)
+);

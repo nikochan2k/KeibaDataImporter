@@ -1,6 +1,6 @@
 import {
   Entity, Index, Column, PrimaryGeneratedColumn, OneToMany, ManyToOne, JoinColumn
-} from 'typeorm';
+} from "typeorm";
 import { Shussouba } from "./Shussouba";
 import { Kyuusha } from "./Kyuusha";
 

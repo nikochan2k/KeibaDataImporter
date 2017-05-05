@@ -1,4 +1,7 @@
-import { Entity, Index, Column, PrimaryGeneratedColumn, ManyToOne, JoinColumn, OneToMany } from 'typeorm';
+import {
+  Entity, Index, Column, PrimaryGeneratedColumn, ManyToOne, JoinColumn,
+  OneToMany
+} from "typeorm";
 import { Kyuusha } from "./Kyuusha";
 import { Banushi } from "./Banushi";
 import { Seisansha } from "./Seisansha";
@@ -79,6 +82,12 @@ export class Uma {
 
   @Column("string", { length: 15, nullable: true })
   public Ikisaki?: string;
+
+  @Column("smallint", { nullable: true })
+  public YunyuubaFlag?: number;
+
+  @Column("smallint", { nullable: true })
+  public SibouNen?: number;
 
   @Column("date")
   public DataSakuseiNengappi: number;

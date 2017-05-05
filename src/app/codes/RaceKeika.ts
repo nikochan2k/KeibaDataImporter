@@ -27,4 +27,4 @@ export const midashi2 = new Codes(
     { code: 13, kol: "13", naiyou: "大いけ垣" },
     { code: 14, kol: "14", naiyou: "3F" }
   ]
-)
+);

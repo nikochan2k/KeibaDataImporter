@@ -1,4 +1,6 @@
-import { Entity, Index, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
+import {
+  Entity, Index, Column, PrimaryGeneratedColumn, OneToMany
+} from "typeorm";
 import { Kishu } from "./Kishu";
 import { Uma } from "./Uma";
 

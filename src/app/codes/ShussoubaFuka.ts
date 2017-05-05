@@ -14,7 +14,6 @@ export const yosou = new Codes(
     { code: 13, jrdb: "13", naiyou: "調整(不安、ソエ等)" },
     { code: 14, jrdb: "14", naiyou: "調整(病気)" },
     {
-      code: null,
       kol: (str) => {
         if (/放牧/.test(str)) {
           if (/故障|骨折/.test(str)) return 2;
@@ -30,8 +29,7 @@ export const yosou = new Codes(
           if (/病気/.test(str)) return 14;
           return 11;
         }
-      },
-      naiyou: null
+      }
     }
   ]
 );

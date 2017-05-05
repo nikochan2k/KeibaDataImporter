@@ -1,6 +1,6 @@
 import {
   Entity, Index, Column, PrimaryColumn, OneToOne, OneToMany
-} from 'typeorm';
+} from "typeorm";
 import { RaceFuka } from "./RaceFuka";
 import { RaceYosouTenkai } from "./RaceYosouTenkai";
 import { RaceShoukin } from "./RaceShoukin";
