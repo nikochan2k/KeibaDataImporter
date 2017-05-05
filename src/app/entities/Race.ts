@@ -12,7 +12,7 @@ import { OddsKubun } from "./OddsKubun";
 import { Shussouba } from "./Shussouba";
 
 @Entity("Race")
-@Index("IxRace1", (r: Race) => [r.Nengappi, r.KaisaiBasho, r.RaceBangou])
+@Index("IxRace", (r: Race) => [r.Nengappi, r.KaisaiBasho, r.RaceBangou])
 export class Race {
   @PrimaryColumn("bigint")
   public Id: number;
@@ -35,8 +35,8 @@ export class Race {
   @Column("date")
   public Nengappi: Date;
 
-  @Column("smallint")
-  public Kyuujitsu: number;
+  @Column("smallint", { nullable: true })
+  public Kyuujitsu?: number;
 
   @Column("smallint")
   public Youbi: number;
@@ -136,6 +136,9 @@ export class Race {
 
   @Column("smallint", { nullable: true })
   public Baba?: number;
+
+  @Column("smallint", { nullable: true })
+  public BabaShousai?: number; // 0:普通 1:速い 2:遅い
 
   @Column("smallint", { nullable: true })
   public Seed?: number;

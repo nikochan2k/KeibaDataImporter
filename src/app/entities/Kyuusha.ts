@@ -28,13 +28,13 @@ export class Kyuusha {
   public HatsuMenkyoNen?: number;
 
   @Column("smallint", { nullable: true })
-  public KyuushaTouzaiBetsu?: number;
+  public TouzaiBetsu?: number;
 
   @Column("smallint", { nullable: true })
-  public KyuushaShozokuBasho?: number;
+  public ShozokuBasho?: number;
 
   @Column("smallint", { nullable: true })
-  public KyuushaRitsuHokuNanBetsu?: number;
+  public RitsuHokuNanBetsu?: number;
 
   @Column("smallint", { nullable: true })
   public TourokuMasshouFlag?: number;

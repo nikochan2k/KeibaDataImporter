@@ -48,7 +48,7 @@ export class Kishu {
   public Kyuusha?: Kyuusha;
 
   @Column("smallint", { nullable: true })
-  public TourokuMasshouFlag?: number;
+  public MasshouFlag?: number;
 
   @Column("date", { nullable: true })
   public DataSakuseiNengappi?: Date;

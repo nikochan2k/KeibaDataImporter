@@ -9,12 +9,13 @@ import { ShussoubaFuka } from "./ShussoubaFuka";
 import { ShussoubaTsuukaJuni } from "./ShussoubaTsuukaJuni";
 import { ShussoubaHassouJoukyou } from "./ShussoubaHassouJoukyou";
 import { ShussoubaKeika } from "./ShussoubaKeika";
+import { ShussoubaBagu } from "./ShussoubaBagu";
 
 @Entity("Shussouba")
 @Index("IxShussouba1", (s: Shussouba) => [s.Race, s.Umaban])
 @Index("IxShussouba2", (s: Shussouba) => [s.Time])
-@Index("IxShussouba3", (s: Shussouba) => [s.Zenhan3F])
-@Index("IxShussouba4", (s: Shussouba) => [s.Kouhan3F])
+@Index("IxShussouba3", (s: Shussouba) => [s.Ten3F])
+@Index("IxShussouba4", (s: Shussouba) => [s.Agari3F])
 @Index("IxShussouba5", (s: Shussouba) => [s.Kyousouba])
 @Index("IxShussouba6", (s: Shussouba) => [s.Kishu])
 export class Shussouba {
@@ -44,19 +45,16 @@ export class Shussouba {
   public Nenrei: number;
 
   @Column("smallint", { nullable: true })
-  public Blinker: number;
+  public Blinker?: number;
 
   @Column("float", { nullable: true })
-  public Kinryou: number;
+  public Kinryou?: number;
 
   @Column("smallint", { nullable: true })
-  public Bataijuu: number;
+  public Bataijuu?: number;
 
   @Column("smallint", { nullable: true })
-  public Zougen: number;
-
-  @Column("smallint", { nullable: true })
-  public RecordShisuu: number;
+  public Zougen?: number;
 
   @Column("int", { name: "KishuId" })
   @ManyToOne(() => Kishu, k => k.ShussoubaList)
@@ -106,10 +104,10 @@ export class Shussouba {
   public TimeSa?: number;
 
   @Column("float", { nullable: true })
-  public Zenhan3F?: number;
+  public Ten3F?: number;
 
   @Column("float", { nullable: true })
-  public Kouhan3F?: number;
+  public Agari3F?: number;
 
   @Column("smallint", { nullable: true })
   public YonCornerIchiDori?: number;
@@ -134,4 +132,7 @@ export class Shussouba {
 
   @OneToMany(() => ShussoubaKeika, sk => sk.Shussouba)
   public ShussoubaKeikaList: ShussoubaKeika[];
+
+  @OneToMany(() => ShussoubaBagu, sb => sb.Shussouba)
+  public ShussoubaBaguList: ShussoubaBagu[];
 }

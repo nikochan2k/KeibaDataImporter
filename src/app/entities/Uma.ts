@@ -38,18 +38,15 @@ export class Uma {
   public Seibetsu?: number;
 
   @OneToMany(() => Uma, Uma => Uma.ChichiUma)
-  public ChichiChildren: Uma[];
-
-  @OneToMany(() => Uma, Uma => Uma.HahaUma)
-  public HahaChildren: Uma[];
+  public Children: Uma[];
 
   @Column("int", { name: "ChichiUmaId", nullable: true })
-  @ManyToOne(() => Uma, Uma => Uma.ChichiChildren)
+  @ManyToOne(() => Uma, Uma => Uma.Children)
   @JoinColumn({ name: "ChichiUmaId" })
   public ChichiUma?: Uma;
 
   @Column("int", { name: "HahaUmaId", nullable: true })
-  @ManyToOne(() => Uma, Uma => Uma.HahaChildren)
+  @ManyToOne(() => Uma, Uma => Uma.Children)
   @JoinColumn({ name: "HahaUmaId" })
   public HahaUma?: Uma;
 

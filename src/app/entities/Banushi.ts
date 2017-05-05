@@ -13,6 +13,9 @@ export class Banushi {
   @Column("string", { length: 30 })
   public TanshukuBanushiMei: string;
 
+  @Column("smallint", { nullable: true })
+  public BanushiKaiCode: number;
+
   @OneToMany(() => Uma, u => u.Banushi)
   public UmaList: Uma[];
 }
