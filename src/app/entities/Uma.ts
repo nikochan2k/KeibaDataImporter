@@ -90,7 +90,7 @@ export class Uma {
   public SibouNen?: number;
 
   @Column("date")
-  public DataSakuseiNengappi: number;
+  public DataSakuseiNengappi: Date;
 
   @OneToMany(() => Shussouba, Shussouba => Shussouba.Kyousouba)
   public ShussoubaList: Shussouba[];

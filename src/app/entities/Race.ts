@@ -1,13 +1,15 @@
 import {
-  Entity, Index, Column, PrimaryColumn, OneToOne, OneToMany
+  Entity, Index, Column, PrimaryColumn, OneToMany, ManyToOne, JoinColumn,
+  Embedded
 } from "typeorm";
-import { RaceFuka } from "./RaceFuka";
+import { RaceYosou } from "./RaceYosou";
 import { RaceYosouTenkai } from "./RaceYosouTenkai";
+import { RaceJoukenFuka } from "./RaceJoukenFuka";
 import { RaceShoukin } from "./RaceShoukin";
 import { RaceLapTime } from "./RaceLapTime";
 import { RaceHaitou } from "./RaceHaitou";
-import { RaceHassouJoukyou } from "./RaceHassouJoukyou";
 import { RaceKeika } from "./RaceKeika";
+import { Record } from "./Record";
 import { OddsKubun } from "./OddsKubun";
 import { Shussouba } from "./Shussouba";
 
@@ -41,9 +43,6 @@ export class Race {
   @Column("smallint")
   public Youbi: number;
 
-  @Column("smallint", { nullable: true })
-  public KouryuuFlag?: number;
-
   @Column("smallint")
   public ChuuouChihouGaikoku: number;
 
@@ -66,25 +65,16 @@ export class Race {
   public Grade?: number;
 
   @Column("smallint", { nullable: true })
-  public JpnFlag?: number;
-
-  @Column("smallint", { nullable: true })
   public BetteiBareiHandi?: number;
 
   @Column("string", { nullable: true, length: 27 })
   public BetteiBareiHandiShousai: string;
 
-  @Column("smallint", { nullable: true })
-  public JoukenFuka1?: number;
-
-  @Column("smallint", { nullable: true })
-  public JoukenFuka2?: number;
-
   @Column("smallint")
   public JoukenKei: number;
 
-  @Column("smallint")
-  public JoukenNenreiSeigen: number;
+  @Column("smallint", { nullable: true })
+  public JoukenNenreiSeigen?: number;
 
   @Column("smallint", { nullable: true })
   public Jouken1?: number;
@@ -146,29 +136,56 @@ export class Race {
   @Column("float", { nullable: true })
   public ShougaiHeikin1F?: number;
 
-  @Column("date", { nullable: true })
-  public ShutsubahyouSakuseiNengappi?: Date;
+  @Column("int", { name: "CourseRecordId", nullable: true })
+  @ManyToOne(() => Record, r => r.CourseRecordList)
+  @JoinColumn({ name: "CourseRecordId" })
+  public CourseRecord?: Record;
+
+  @Column("int", { name: "KyoriRecordId", nullable: true })
+  @ManyToOne(() => Record, r => r.KyoriRecordList)
+  @JoinColumn({ name: "KyoriRecordId" })
+  public KyoriRecord?: Record;
+
+  @Column("int", { name: "RaceRecordId", nullable: true })
+  @ManyToOne(() => Record, r => r.RaceRecordList)
+  @JoinColumn({ name: "RaceRecordId" })
+  public RaceRecord?: Record;
+
+  @Column("text", { nullable: true })
+  public HassouJoukyou?: string;
+
+  @Column("text", { nullable: true })
+  public SeisaiNaiyou?: string;
+
+  @Embedded(() => RaceYosou)
+  public RaceYosou: RaceYosou;
 
   @Column("date", { nullable: true })
-  public SeisekiSakuseiNengappi?: Date;
+  public KolShutsubahyouSakuseiNengappi?: Date;
 
-  @OneToOne(() => RaceFuka, rf => rf.Race)
-  public RaceFuka: RaceFuka;
+  @Column("date", { nullable: true })
+  public KolSeisekiSakuseiNengappi?: Date;
 
-  @OneToMany(() => RaceYosouTenkai, ryt => ryt.Race)
-  public RaceYosouTenkaiList: RaceYosouTenkai[];
+  @Column("date", { nullable: true })
+  public JrdbShutsubahyouSakuseiNengappi?: Date;
+
+  @Column("date", { nullable: true })
+  public JrdbSeisekiSakuseiNengappi?: Date;
+
+  @OneToMany(() => RaceJoukenFuka, rjf => rjf.Race)
+  public RaceJoukenFukaList: RaceJoukenFuka[];
 
   @OneToMany(() => RaceShoukin, rs => rs.Race)
   public RaceShoukinList: RaceShoukin[];
+
+  @OneToMany(() => RaceYosouTenkai, ryt => ryt.Race)
+  public RaceYosouTenkaiList: RaceYosouTenkai[];
 
   @OneToMany(() => RaceLapTime, rlt => rlt.Race)
   public RaceLapTimeList: RaceLapTime[];
 
   @OneToMany(() => RaceHaitou, rh => rh.Race)
   public RaceHaitouList: RaceHaitou[];
-
-  @OneToMany(() => RaceHassouJoukyou, rhj => rhj.Race)
-  public RaceHassouJoukyouList: RaceHassouJoukyou[];
 
   @OneToMany(() => RaceKeika, rk => rk.Race)
   public RaceKeikaList: RaceKeika[];

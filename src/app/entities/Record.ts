@@ -1,7 +1,7 @@
 import {
   Entity, Index, Column, PrimaryGeneratedColumn, OneToMany
 } from "typeorm";
-import { RaceFuka } from "./RaceFuka";
+import { Race } from "./Race";
 
 @Entity("Record")
 @Index("IxRecord", (r: Record) => [r.Nengappi, r.Bamei])
@@ -27,12 +27,12 @@ export class Record {
   @Column("smallint")
   public Basho: number;
 
-  @OneToMany(() => RaceFuka, rf => rf.CourseRecord)
-  public CourseRecordList: RaceFuka[];
+  @OneToMany(() => Race, r => r.CourseRecord)
+  public CourseRecordList: Race[];
 
-  @OneToMany(() => RaceFuka, rf => rf.KyoriRecord)
-  public KyoriRecordList: RaceFuka[];
+  @OneToMany(() => Race, r => r.KyoriRecord)
+  public KyoriRecordList: Race[];
 
-  @OneToMany(() => RaceFuka, rf => rf.RaceRecord)
-  public RaceRecordList: RaceFuka[];
+  @OneToMany(() => Race, r => r.RaceRecord)
+  public RaceRecordList: Race[];
 }

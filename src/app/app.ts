@@ -6,11 +6,11 @@ import * as tmp from "tmp";
 import * as rimraf from "rimraf";
 import * as log4js from "log4js";
 import { exec } from "child_process";
-import { Constant } from "./Constant";
-import { Importer } from "./Importer";
+import { LOG_LEVEL } from "./Constant";
+import { Entries, Importer } from "./Importer";
 
-const log = log4js.getLogger("app");
-log.setLevel(Constant.LOG_LEVEL);
+const logger = log4js.getLogger("app");
+logger.setLevel(LOG_LEVEL);
 
 let arg = "";
 if (3 <= process.argv.length) {
@@ -23,7 +23,7 @@ const lzhDir = checkDir(path.join(process.cwd(), arg)) || checkDir(arg);
 if (lzhDir) {
   traverseLzhDir(lzhDir);
 } else {
-  log.error('"' + lzhDir + '" is not a directory.');
+  logger.error('"' + lzhDir + '" is not a directory.');
 }
 
 function checkDir(lzhDir: string): string {
@@ -31,10 +31,10 @@ function checkDir(lzhDir: string): string {
     if (fs.statSync(lzhDir).isDirectory()) {
       return lzhDir;
     } else {
-      log.debug(lzhDir + " is not a directory.");
+      logger.debug(lzhDir + " is not a directory.");
     }
   } catch (e) {
-    log.debug(e);
+    logger.debug(e.stack || e);
   }
   return null;
 }
@@ -43,7 +43,7 @@ function traverseLzhDir(lzhDir: string) {
   const pattern = path.join(lzhDir, "**/*.lzh");
   glob(pattern, (err, matches) => {
     if (err) {
-      log.warn(err.message);
+      logger.warn(err.message, err);
       return;
     }
 
@@ -56,15 +56,15 @@ function traverseLzhDir(lzhDir: string) {
 function uncompressLzhFile(lzhFile: string) {
   tmp.dir((err, dataDir) => {
     if (err) {
-      log.warn(err);
+      logger.warn(err.stack || err);
       return;
     }
     const cmd = 'lha xw="' + dataDir + '" "' + lzhFile + '"';
-    exec(cmd, (error, stdout, stderr) => {
+    exec(cmd, async (error, stdout, stderr) => {
       if (error || stderr) {
-        if (error) log.warn(error.message);
-        if (stderr) log.warn(stderr);
-        else if (stdout) log.warn(stdout);
+        if (error) logger.warn(error.stack);
+        if (stderr) logger.warn(stderr);
+        else if (stdout) logger.warn(stdout);
         rmdir(dataDir);
       } else {
         traverseDataDir(dataDir);
@@ -74,17 +74,22 @@ function uncompressLzhFile(lzhFile: string) {
 }
 
 function traverseDataDir(dataDir: string) {
-  const pattern = path.join(dataDir, "*");
-  glob(pattern, (err, matches) => {
-    try {
-      if (err) {
-        log.warn(err.message);
-        return;
-      }
+  const entries: Entries = {};
 
-      matches.sort().forEach((dataFile) => {
-        importer.importDataFile(dataFile);
-      });
+  const pattern = path.join(dataDir, "*");
+  glob(pattern, async (err, matches) => {
+    if (err) {
+      logger.warn(err.stack);
+      return;
+    }
+
+    matches.forEach((dataFile) => {
+      const basename = path.basename(dataFile);
+      entries[basename] = dataFile;
+    });
+
+    try {
+      await importer.import(entries);
     } finally {
       rmdir(dataDir);
     }
@@ -94,9 +99,9 @@ function traverseDataDir(dataDir: string) {
 function rmdir(dir: string) {
   rimraf(dir, (error) => {
     if (error) {
-      log.warn(error.message);
+      logger.warn(error.stack);
     } else {
-      log.debug('"' + dir + '" was deleted');
+      logger.debug('"' + dir + '" was deleted');
     }
   });
 }

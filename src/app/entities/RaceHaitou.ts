@@ -4,7 +4,7 @@ import {
 import { Race } from "./Race";
 
 @Entity("RaceHaitou")
-@Index("IxRaceHaitou", (rh: RaceHaitou) => [rh.Race, rh.BakenShubetsu])
+@Index("IxRaceHaitou", (rh: RaceHaitou) => [rh.Race, rh.Baken])
 export class RaceHaitou {
   @PrimaryColumn("bigint")
   public Id: number;
@@ -15,7 +15,7 @@ export class RaceHaitou {
   public Race: Race;
 
   @Column("smallint")
-  public BakenShubetsu: number; // 1:単勝 2:複勝 3:枠連 4:馬連 5:ワイド 6:馬単 7:三連複 8:三連単
+  public Baken: number;
 
   @Column("smallint")
   public Bangou1: number;
@@ -28,4 +28,7 @@ export class RaceHaitou {
 
   @Column("int")
   public Haitoukin: number;
+
+  @Column("smallint", { nullable: true })
+  public Ninki?: number;
 }

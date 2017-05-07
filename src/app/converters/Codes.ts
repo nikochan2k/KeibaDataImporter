@@ -1,8 +1,8 @@
 interface Code {
   code?: number;
-  kol?: string | string[] | ((str: string) => number);
-  jrdb?: string | string[] | ((str: string) => number);
-  jravan?: string | string[] | ((str: string) => number);
+  kol?: string | RegExp | ((str: string) => number);
+  jrdb?: string | RegExp | ((str: string) => number);
+  jravan?: string | RegExp | ((str: string) => number);
   naiyou?: string | ((code: number) => string);
   tanshuku?: string | ((code: number) => string);
 }
@@ -30,21 +30,49 @@ export class Codes {
     for (let i = 0; i < this.codes.length; i++) {
       const c = this.codes[i];
       const member = c[key];
-      if (typeof member === "function") {
+      const type = typeof member;
+      if (type === "function") {
         return member(str);
-      } else if (Array.isArray(member)) {
-        const vals = <String[]>member;
-        for (let j = 0; j < vals.length; j++) {
-          const val = vals[j];
-          if (val === str) {
-            return c.code;
-          }
-        }
+      } else if (type === "object" && member.test(str)) {
+        return c.code;
       } else if (member === str) {
         return c.code;
       }
     }
     return null;
+  }
+
+  public toCodesFromKol(str: string) {
+    return this.toCodesFrom("kol", str);
+  }
+
+  public toCodesFromJrdb(str: string) {
+    return this.toCodesFrom("jrdb", str);
+  }
+
+  public toCodesFromJravan(str: string) {
+    return this.toCodesFrom("jravan", str);
+  }
+
+  protected toCodesFrom(key: string, str: string) {
+    const codes: number[] = [];
+    for (let i = 0; i < this.codes.length; i++) {
+      const c = this.codes[i];
+      const member = c[key];
+      const type = typeof member;
+      let code: number = null;
+      if (type === "function") {
+        code = member(str);
+      } else if (type === "object" && member.test(str)) { // RegExp
+        code = c.code;
+      } else if (member === str) {
+        code = c.code;
+      }
+      if (code !== null) {
+        codes.push(code);
+      }
+    }
+    return codes;
   }
 
   public toNaiyou(code: number) {

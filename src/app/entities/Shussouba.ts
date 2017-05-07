@@ -8,7 +8,6 @@ import { Uma } from "./Uma";
 import { Choukyou } from "./Choukyou";
 import { ShussoubaFuka } from "./ShussoubaFuka";
 import { ShussoubaTsuukaJuni } from "./ShussoubaTsuukaJuni";
-import { ShussoubaHassouJoukyou } from "./ShussoubaHassouJoukyou";
 import { ShussoubaKeika } from "./ShussoubaKeika";
 import { ShussoubaBagu } from "./ShussoubaBagu";
 
@@ -114,10 +113,16 @@ export class Shussouba {
   public YonCornerIchiDori?: number;
 
   @Column("date", { nullable: true })
-  public ShutsubahyouSakuseiNengappi?: Date;
+  public KolShutsubahyouSakuseiNengappi?: Date;
 
   @Column("date", { nullable: true })
-  public SeisekiSakuseiNengappi?: Date;
+  public KolSeisekiSakuseiNengappi?: Date;
+
+  @Column("date", { nullable: true })
+  public JrdbShutsubahyouSakuseiNengappi?: Date;
+
+  @Column("date", { nullable: true })
+  public JrdbSeisekiSakuseiNengappi?: Date;
 
   @OneToOne(() => ShussoubaFuka, sf => sf.Shussouba)
   public ShussoubaFuka: ShussoubaFuka;
@@ -127,9 +132,6 @@ export class Shussouba {
 
   @OneToMany(() => ShussoubaTsuukaJuni, stj => stj.Shussouba)
   public ShussoubaTsuukaJuniList: ShussoubaTsuukaJuni[];
-
-  @OneToMany(() => ShussoubaHassouJoukyou, shj => shj.Shussouba)
-  public ShussoubaHassouJoukyouList: ShussoubaHassouJoukyou[];
 
   @OneToMany(() => ShussoubaKeika, sk => sk.Shussouba)
   public ShussoubaKeikaList: ShussoubaKeika[];

@@ -15,8 +15,14 @@ export class RaceShoukin {
   public Race: Race;
 
   @Column("smallint")
-  public Chakujun: number; // 0:附加賞
+  public Kakutei: number;
+
+  @Column("smallint")
+  public Chakujun: number;
 
   @Column("int")
   public Shoukin: number;
+
+  @Column("smallint")
+  public Fukashou: number;
 }
