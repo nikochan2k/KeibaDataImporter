@@ -47,6 +47,12 @@ export const torikeshiShubetsu = new Codes(
   ]
 );
 
+export const recordNinshiki = new Codes(
+  [
+    { code: 1, kol: "1", naiyou: "レコードÏ" }
+  ]
+);
+
 export const chakura2 = new Codes(
   [
     { code: 0, kol: "0", naiyou: "ハナ" },

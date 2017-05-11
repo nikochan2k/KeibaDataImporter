@@ -13,9 +13,6 @@ export class Uma {
   @PrimaryGeneratedColumn("int")
   public Id: number;
 
-  @Column("string", { length: 7 })
-  public UmaCode: string;
-
   @Column("string", { length: 45 })
   public KanaBamei: string;
 

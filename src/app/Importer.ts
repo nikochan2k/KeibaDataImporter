@@ -1,10 +1,10 @@
 import "reflect-metadata";
 import { createConnection, Connection, EntityManager } from "typeorm";
-import * as log4js from "log4js";
+import { Logger, getLogger } from "log4js";
 import * as fs from "fs";
 import { LOG_LEVEL, logging } from "./Constant";
 import { DataReader } from "./reader/DataReader";
-import { KolSei1Kd3 } from "./reader/KolSei1Kd3";
+import { KolSei1Kd3 } from "./reader/KOL/KD3/KolSei1Kd3";
 
 export interface Entries {
   [basename: string]: string;
@@ -25,7 +25,7 @@ const readers: Readers = {
 
 export class Importer {
 
-  private logger: log4js.Logger;
+  private logger: Logger;
   private con: Connection;
 
   constructor() {
@@ -34,7 +34,7 @@ export class Importer {
   }
 
   protected constructLogger() {
-    this.logger = log4js.getLogger("import");
+    this.logger = getLogger("import");
     this.logger.setLevel(LOG_LEVEL);
   }
 

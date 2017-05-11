@@ -15,7 +15,7 @@ export class ShussoubaFuka {
   public KolYosou2?: number;
 
   @Column("smallint", { nullable: true })
-  public RecordShisuu?: number;
+  public KolRecordShisuu?: number;
 
   @Column("string", { length: 7, nullable: true })
   public ChoukyouTanpyou?: string;

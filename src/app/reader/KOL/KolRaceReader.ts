@@ -1,10 +1,16 @@
 import { EntityManager } from "typeorm";
-import { RaceReader, HaitouInfo, ShoukinInfo } from "./RaceReader";
-import { Race } from "../entities/Race";
-import { Record } from "../entities/Record";
-import { RaceShoukin } from "../entities/RaceShoukin";
-import { RaceHaitou } from "../entities/RaceHaitou";
-import * as $C from "../converters/Race";
+import {
+  readRaw, readDate, readStr, readPositiveInt, readTime, readDouble,
+  toDateString
+} from "../ReadTool";
+import { RaceReader } from "../RaceReader";
+import { Race } from "../../entities/Race";
+import { Record } from "../../entities/Record";
+import { RaceShoukin } from "../../entities/RaceShoukin";
+import { RaceHaitou } from "../../entities/RaceHaitou";
+import * as $C from "../../converters/Race";
+import { ShoukinInfo } from "../../converters/RaceShoukin";
+import { HaitouInfo } from "../../converters/RaceHaitou";
 
 export abstract class KolRaceReader extends RaceReader {
 
@@ -12,11 +18,10 @@ export abstract class KolRaceReader extends RaceReader {
     super(entityManager, fd);
   }
 
-  protected async getRecord(buffer: Buffer, offset: number,
-    bashoOffset: number) {
-    const nengappi = super.readDate(buffer, offset, 8);
-    const bamei = super.readStr(buffer, offset + 12, 30);
-    const time = super.readTime(buffer, offset + 8, 4);
+  protected async getRecord(buffer: Buffer, offset: number, bashoOffset: number) {
+    const nengappi = readDate(buffer, offset, 8);
+    const bamei = readStr(buffer, offset + 12, 30);
+    const time = readTime(buffer, offset + 8, 4);
     if (!nengappi || !bamei || !time) {
       return null;
     }
@@ -26,7 +31,7 @@ export abstract class KolRaceReader extends RaceReader {
       .createQueryBuilder("r")
       .where("r.Nengappi = :nengappi")
       .andWhere("r.Bamei = :bamei")
-      .setParameter("nengappi", super.toDateString(nengappi))
+      .setParameter("nengappi", toDateString(nengappi))
       .setParameter("bamei", bamei)
       .getOne();
     if (record) {
@@ -37,10 +42,9 @@ export abstract class KolRaceReader extends RaceReader {
     record.Nengappi = nengappi;
     record.Time = time;
     record.Bamei = bamei;
-    record.Kinryou = super.readDouble(buffer, offset + 42, 3, 0.1);
-    record.TanshukuKishuMei = super.readStr(buffer, offset + 45, 8);
-    record.Basho = $C.basho.toCodeFromKol(
-      super.readRaw(buffer, bashoOffset, 2));
+    record.Kinryou = readDouble(buffer, offset + 42, 3, 0.1);
+    record.TanshukuKishuMei = readStr(buffer, offset + 45, 8);
+    record.Basho = $C.basho.toCodeFromKol(readRaw(buffer, bashoOffset, 2));
     record = await this.persist(record);
 
     return record;
@@ -50,8 +54,7 @@ export abstract class KolRaceReader extends RaceReader {
     kakutei: number, mul?: number) {
     for (let i = 0; i < infos.length; i++) {
       const info = infos[i];
-      const shoukin = super.readPositiveInt(buffer, info.offset,
-        info.length, mul);
+      const shoukin = readPositiveInt(buffer, info.offset, info.length, mul);
       if (!shoukin) {
         continue;
       }
@@ -69,7 +72,7 @@ export abstract class KolRaceReader extends RaceReader {
   public async saveRaceHaitou(buffer: Buffer, race: Race, infos: HaitouInfo[]) {
     for (let i = 0; i < infos.length; i++) {
       const info = infos[i];
-      const bangou1 = super.readPositiveInt(buffer, info.bangou1, info.bangou1Len);
+      const bangou1 = readPositiveInt(buffer, info.bangou1, info.bangou1Len);
       if (!bangou1) {
         continue;
       }
@@ -79,16 +82,14 @@ export abstract class KolRaceReader extends RaceReader {
       raceHaitou.Baken = info.baken;
       raceHaitou.Bangou1 = bangou1;
       if (info.bangou2) {
-        raceHaitou.Bangou2 = super.readPositiveInt(buffer, info.bangou2, info.bangou2Len);
+        raceHaitou.Bangou2 = readPositiveInt(buffer, info.bangou2, info.bangou2Len);
       }
       if (info.bangou3) {
-        raceHaitou.Bangou3 = super.readPositiveInt(buffer, info.bangou3, info.bangou3Len);
+        raceHaitou.Bangou3 = readPositiveInt(buffer, info.bangou3, info.bangou3Len);
       }
-      raceHaitou.Haitoukin = super.readPositiveInt(buffer, info.haitou,
-        info.haitouLen);
+      raceHaitou.Haitoukin = readPositiveInt(buffer, info.haitou, info.haitouLen);
       if (info.ninki) {
-        raceHaitou.Ninki = super.readPositiveInt(buffer, info.ninki,
-          info.ninkiLen);
+        raceHaitou.Ninki = readPositiveInt(buffer, info.ninki, info.ninkiLen);
       }
       this.persist(raceHaitou);
     }

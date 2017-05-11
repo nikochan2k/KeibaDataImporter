@@ -23,3 +23,17 @@ export enum Baken {
   Sanrenpuku,
   Sanrentan
 }
+
+export interface HaitouInfo {
+  baken: Baken;
+  bangou1: number;
+  bangou1Len: number;
+  bangou2?: number;
+  bangou2Len?: number;
+  bangou3?: number;
+  bangou3Len?: number;
+  haitou: number;
+  haitouLen: number;
+  ninki?: number;
+  ninkiLen?: number;
+}
