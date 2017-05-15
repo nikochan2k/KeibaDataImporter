@@ -1,6 +1,6 @@
 import { EntityManager } from "typeorm";
 import {
-  readRaw, readDate, readStr, readPositiveInt, readTime, readDouble,
+  readRaw, readDate, readStrWithNoSpace, readPositiveInt, readTime, readDouble,
   toDateString
 } from "../ReadTool";
 import { RaceReader } from "../RaceReader";
@@ -8,7 +8,7 @@ import { Race } from "../../entities/Race";
 import { Record } from "../../entities/Record";
 import { RaceShoukin } from "../../entities/RaceShoukin";
 import { RaceHaitou } from "../../entities/RaceHaitou";
-import * as $C from "../../converters/Race";
+import * as $C from "../../converters/Common";
 import { ShoukinInfo } from "../../converters/RaceShoukin";
 import { HaitouInfo } from "../../converters/RaceHaitou";
 
@@ -20,7 +20,7 @@ export abstract class KolRaceReader extends RaceReader {
 
   protected async getRecord(buffer: Buffer, offset: number, bashoOffset: number) {
     const nengappi = readDate(buffer, offset, 8);
-    const bamei = readStr(buffer, offset + 12, 30);
+    const bamei = readStrWithNoSpace(buffer, offset + 12, 30);
     const time = readTime(buffer, offset + 8, 4);
     if (!nengappi || !bamei || !time) {
       return null;
@@ -43,7 +43,7 @@ export abstract class KolRaceReader extends RaceReader {
     record.Time = time;
     record.Bamei = bamei;
     record.Kinryou = readDouble(buffer, offset + 42, 3, 0.1);
-    record.TanshukuKishuMei = readStr(buffer, offset + 45, 8);
+    record.TanshukuKishuMei = readStrWithNoSpace(buffer, offset + 45, 8);
     record.Basho = $C.basho.toCodeFromKol(readRaw(buffer, bashoOffset, 2));
     record = await this.persist(record);
 

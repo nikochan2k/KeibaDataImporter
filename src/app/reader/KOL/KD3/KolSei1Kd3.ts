@@ -1,5 +1,5 @@
 import { EntityManager } from "typeorm";
-import { readRaw, readDate, readStr, readInt, readPositiveInt, readTime, readDouble } from "../../ReadTool";
+import { readRaw, readDate, readStr, readStrWithNoSpace, readInt, readPositiveInt, readTime, readDouble } from "../../ReadTool";
 import { KolRaceReader } from "../KolRaceReader";
 import { Race } from "../../../entities/Race";
 import { RaceYosou } from "../../../entities/RaceYosou";
@@ -8,6 +8,7 @@ import { RaceLapTime } from "../../../entities/RaceLapTime";
 import { RaceJoukenFuka } from "../../../entities/RaceJoukenFuka";
 import { Baken } from "../../../converters/RaceHaitou";
 import * as $R from "../../../converters/Race";
+import * as $C from "../../../converters/Common";
 import * as $RK from "../../../converters/RaceKeika";
 
 export class KolSei1Kd3 extends KolRaceReader {
@@ -29,6 +30,7 @@ export class KolSei1Kd3 extends KolRaceReader {
     const dataSakuseiNengappi = readDate(buffer, 2910, 8);
     if (race) {
       if (dataSakuseiNengappi <= race.KolSeisekiSakuseiNengappi) {
+        this.logger.debug("既に最新のレース成績データが格納されています: " + id);
         return;
       }
     } else {
@@ -47,7 +49,7 @@ export class KolSei1Kd3 extends KolRaceReader {
   }
 
   public async saveRace(buffer: Buffer, race: Race) {
-    race.KaisaiBasho = $R.basho.toCodeFromKol(readRaw(buffer, 0, 2));
+    race.KaisaiBasho = $C.basho.toCodeFromKol(readRaw(buffer, 0, 2));
     race.KaisaiNen = readPositiveInt(buffer, 2, 4);
     race.KaisaiKaiji = readPositiveInt(buffer, 6, 2);
     race.KaisaiNichiji = readPositiveInt(buffer, 8, 2);
@@ -59,8 +61,8 @@ export class KolSei1Kd3 extends KolRaceReader {
     race.IppanTokubetsu = $R.ippanTokubetsu.toCodeFromKol(readRaw(buffer, 24, 1));
     race.HeichiShougai = $R.heichiShougai.toCodeFromKol(readRaw(buffer, 25, 1));
     race.JuushouKaisuu = readPositiveInt(buffer, 26, 3);
-    race.TokubetsuMei = readStr(buffer, 29, 30);
-    race.TanshukuTokubetsuMei = readStr(buffer, 59, 14);
+    race.TokubetsuMei = readStrWithNoSpace(buffer, 29, 30);
+    race.TanshukuTokubetsuMei = readStrWithNoSpace(buffer, 59, 14);
     race.Grade = $R.grade.toCodeFromKol(readRaw(buffer, 73, 1));
     race.BetteiBareiHandi = $R.betteiBareiHandi.toCodeFromKol(readRaw(buffer, 75, 2));
     race.BetteiBareiHandiShousai = readStr(buffer, 77, 18);
@@ -97,10 +99,14 @@ export class KolSei1Kd3 extends KolRaceReader {
     let hassouJoukyou: string;
     for (let i = 0, offset = 1473; i < 6; i++ , offset += 80) {
       hassouJoukyou = readStr(buffer, offset, 80);
-      if (hassouJoukyou) hassouJoukyouArray.push(hassouJoukyou);
+      if (hassouJoukyou) {
+        hassouJoukyouArray.push(hassouJoukyou);
+      }
     }
     hassouJoukyou = hassouJoukyouArray.join("\n");
-    if (hassouJoukyou) race.HassouJoukyou = hassouJoukyou;
+    if (hassouJoukyou) {
+      race.HassouJoukyou = hassouJoukyou;
+    }
 
     await this.persist(race);
   }

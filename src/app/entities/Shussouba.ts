@@ -4,9 +4,10 @@ import {
 } from "typeorm";
 import { Race } from "./Race";
 import { Kishu } from "./Kishu";
+import { Kyuusha } from "./Kyuusha";
 import { Uma } from "./Uma";
 import { Choukyou } from "./Choukyou";
-import { ShussoubaFuka } from "./ShussoubaFuka";
+import { ShussoubaYosou } from "./ShussoubaYosou";
 import { ShussoubaTsuukaJuni } from "./ShussoubaTsuukaJuni";
 import { ShussoubaKeika } from "./ShussoubaKeika";
 import { ShussoubaBagu } from "./ShussoubaBagu";
@@ -64,11 +65,10 @@ export class Shussouba {
   @Column("smallint", { nullable: true })
   public Norikawari?: number;
 
-  @Column("smallint", { nullable: true })
-  public YosouShirushi?: number;
-
-  @Column("smallint", { nullable: true })
-  public YosouShirushiHonshi?: number;
+  @Column("int", { name: "KyuushaId" })
+  @ManyToOne(() => Kyuusha, k => k.ShussoubaList)
+  @JoinColumn({ name: "KyuushaId" })
+  public Kyuusha: Kyuusha;
 
   @Column("smallint", { nullable: true })
   public Ninki?: number;
@@ -107,10 +107,25 @@ export class Shussouba {
   public Ten3F?: number;
 
   @Column("float", { nullable: true })
+  public Ten3FIkou?: number;
+
+  @Column("float", { nullable: true })
+  public Chuukan?: number;
+
+  @Column("float", { nullable: true })
+  public Agari3FIzen?: number;
+
+  @Column("float", { nullable: true })
   public Agari3F?: number;
 
   @Column("smallint", { nullable: true })
   public YonCornerIchiDori?: number;
+
+  @Column("smallint", { nullable: true })
+  public KyuuyouRiyuuCode?: number;
+
+  @Column("string", { length: 90, nullable: true })
+  public KyuuyouRiyuu?: string;
 
   @Column("date", { nullable: true })
   public KolShutsubahyouSakuseiNengappi?: Date;
@@ -124,8 +139,8 @@ export class Shussouba {
   @Column("date", { nullable: true })
   public JrdbSeisekiSakuseiNengappi?: Date;
 
-  @OneToOne(() => ShussoubaFuka, sf => sf.Shussouba)
-  public ShussoubaFuka: ShussoubaFuka;
+  @OneToOne(() => ShussoubaYosou, sf => sf.Shussouba)
+  public ShussoubaYosou: ShussoubaYosou;
 
   @OneToMany(() => Choukyou, c => c.Shussouba)
   public ChoukyouList: Choukyou[];

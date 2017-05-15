@@ -20,12 +20,16 @@ export abstract class DataReader {
 
   protected abstract save(buffer: Buffer);
 
+  protected finishUp() {
+  }
+
   public async readAll() {
     let buffer: Buffer;
     const length = this.getBufferLength();
     while ((buffer = this.readLine(length)) !== null) {
-      this.save(buffer);
+      await this.save(buffer);
     }
+    await this.finishUp();
   }
 
   protected readLine(length: number): Buffer {

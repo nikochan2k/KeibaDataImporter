@@ -5,15 +5,16 @@ import { Shussouba } from "./Shussouba";
 import { Kyuusha } from "./Kyuusha";
 
 @Entity("Kishu")
-@Index("IxKishu1", (k: Kishu) => [k.KishuCode])
-@Index("IxKishu2", (k: Kishu) => [k.KishuMei])
-@Index("IxKishu3", (k: Kishu) => [k.TanshukuKishuMei])
+@Index("IxKishu", (k: Kishu) => [k.KishuMei])
 export class Kishu {
   @PrimaryGeneratedColumn("int")
   public Id: number;
 
   @Column("int", { nullable: true })
-  public KishuCode: number;
+  public KolKishuCode: number;
+
+  @Column("int", { nullable: true })
+  public JrdbKishuCode: number;
 
   @Column("string", { length: 48, nullable: true })
   public KishuMei: string;
@@ -42,9 +43,9 @@ export class Kishu {
   @Column("smallint", { nullable: true })
   public MinaraiKubun?: number;
 
-  @Column("int", { name: "KyuushaId" })
+  @Column("int", { name: "KyuushaId", nullable: true })
   @ManyToOne(() => Kyuusha, Kyuusha => Kyuusha.KishuList)
-  @JoinColumn({ name: "KishuId" })
+  @JoinColumn({ name: "KyuushaId" })
   public Kyuusha?: Kyuusha;
 
   @Column("smallint", { nullable: true })

@@ -1,10 +1,10 @@
 import { Entity, Column, PrimaryColumn, OneToOne, JoinColumn } from "typeorm";
 import { Shussouba } from "./Shussouba";
 
-@Entity("ShussoubaFuka")
-export class ShussoubaFuka {
+@Entity("ShussoubaYosou")
+export class ShussoubaYosou {
   @PrimaryColumn("bigint", { name: "Id" })
-  @OneToOne(() => Shussouba, s => s.ShussoubaFuka)
+  @OneToOne(() => Shussouba, s => s.ShussoubaYosou)
   @JoinColumn({ name: "Id" })
   public Shussouba: Shussouba;
 
@@ -31,10 +31,4 @@ export class ShussoubaFuka {
 
   @Column("float", { nullable: true })
   public Rating?: number;
-
-  @Column("smallint", { nullable: true })
-  public KyuuyouRiyuuCode?: number;
-
-  @Column("string", { length: 90, nullable: true })
-  public KyuuyouRiyuu?: string;
 }

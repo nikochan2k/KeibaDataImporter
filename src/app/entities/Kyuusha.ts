@@ -3,16 +3,19 @@ import {
 } from "typeorm";
 import { Kishu } from "./Kishu";
 import { Uma } from "./Uma";
+import { Shussouba } from "./Shussouba";
 
 @Entity("Kyuusha")
-@Index("IxKyuusha1", (k: Kyuusha) => [k.KyuushaCode])
-@Index("IxKyuusha2", (k: Kyuusha) => [k.KyuushaMei])
+@Index("IxKyuusha", (k: Kyuusha) => [k.KyuushaMei])
 export class Kyuusha {
   @PrimaryGeneratedColumn("int")
   public Id: number;
 
-  @Column("int")
-  public KyuushaCode: number;
+  @Column("int", { nullable: true })
+  public KolKyuushaCode: number;
+
+  @Column("int", { nullable: true })
+  public JrdbKyuushaCode: number;
 
   @Column("string", { length: 48 })
   public KyuushaMei: string;
@@ -49,4 +52,7 @@ export class Kyuusha {
 
   @OneToMany(() => Uma, u => u.Kyuusha)
   public KyousoubaList: Uma[];
+
+  @OneToMany(() => Shussouba, s => s.Kyuusha)
+  public ShussoubaList: Shussouba[];
 }

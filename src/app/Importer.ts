@@ -5,6 +5,7 @@ import * as fs from "fs";
 import { LOG_LEVEL, logging } from "./Constant";
 import { DataReader } from "./reader/DataReader";
 import { KolSei1Kd3 } from "./reader/KOL/KD3/KolSei1Kd3";
+import { KolSei2Kd3 } from "./reader/KOL/KD3/KolSei2Kd3";
 
 export interface Entries {
   [basename: string]: string;
@@ -19,7 +20,7 @@ const readers: Readers = {
   "kol_den1.kd3": null,
   "kol_den2.kd3": null,
   "kol_sei1.kd3": (entityManager: EntityManager, fd: number) => new KolSei1Kd3(entityManager, fd),
-  "kol_sei2.kd3": null,
+  "kol_sei2.kd3": (entityManager: EntityManager, fd: number) => new KolSei2Kd3(entityManager, fd),
   "kol_sei3.kd3": null,
 };
 
@@ -29,7 +30,6 @@ export class Importer {
   private con: Connection;
 
   constructor() {
-    console.log("new importer");
     this.constructLogger();
   }
 

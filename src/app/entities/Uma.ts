@@ -7,8 +7,8 @@ import { Banushi } from "./Banushi";
 import { Seisansha } from "./Seisansha";
 import { Shussouba } from "./Shussouba";
 
-@Entity("Kyousouba")
-@Index("IxKyousouba", (u: Uma) => [u.KanaBamei])
+@Entity("Uma")
+@Index("IxUma", (u: Uma) => [u.KanaBamei])
 export class Uma {
   @PrimaryGeneratedColumn("int")
   public Id: number;
@@ -16,7 +16,7 @@ export class Uma {
   @Column("string", { length: 45 })
   public KanaBamei: string;
 
-  @Column("string", { length: 60 })
+  @Column("string", { length: 60, nullable: true })
   public KyuuBamei?: string;
 
   @Column("date", { nullable: true })
@@ -86,7 +86,7 @@ export class Uma {
   @Column("smallint", { nullable: true })
   public SibouNen?: number;
 
-  @Column("date")
+  @Column("date", { nullable: true })
   public DataSakuseiNengappi: Date;
 
   @OneToMany(() => Shussouba, Shussouba => Shussouba.Kyousouba)

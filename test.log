@@ -1,6 +1,5 @@
-new importer
-[36m[2017-05-09 21:27:10.741] [DEBUG] import - [39m"kol_uma.kd3" is not suppoted.
-[36m[2017-05-09 21:27:10.743] [DEBUG] import - [39mReading "/var/folders/jx/ppgkhgkd56x_wfcdz1jj5ccw0000gp/T/tmp-66508ZW43rZF9of9i/kol_sei1.kd3'
-[36m[2017-05-09 21:27:10.799] [DEBUG] import - [39m"kol_sei2.kd3" is not suppoted.
-[36m[2017-05-09 21:27:10.799] [DEBUG] import - [39m"kol_sei3.kd3" is not suppoted.
-[36m[2017-05-09 21:27:10.943] [DEBUG] app - [39m"/var/folders/jx/ppgkhgkd56x_wfcdz1jj5ccw0000gp/T/tmp-66508ZW43rZF9of9i" was deleted
+[36m[2017-05-15 20:19:04.430] [DEBUG] import - [39m"kol_uma.kd3" is not suppoted.
+[36m[2017-05-15 20:19:04.434] [DEBUG] import - [39mReading "/var/folders/jx/ppgkhgkd56x_wfcdz1jj5ccw0000gp/T/tmp-86757mbgOpDijAjE5/kol_sei1.kd3'
+[36m[2017-05-15 20:19:06.411] [DEBUG] import - [39mReading "/var/folders/jx/ppgkhgkd56x_wfcdz1jj5ccw0000gp/T/tmp-86757mbgOpDijAjE5/kol_sei2.kd3'
+[36m[2017-05-15 20:19:14.589] [DEBUG] import - [39m"kol_sei3.kd3" is not suppoted.
+[36m[2017-05-15 20:19:14.707] [DEBUG] app - [39m"/var/folders/jx/ppgkhgkd56x_wfcdz1jj5ccw0000gp/T/tmp-86757mbgOpDijAjE5" was deleted

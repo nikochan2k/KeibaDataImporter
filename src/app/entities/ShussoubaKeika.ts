@@ -31,7 +31,4 @@ export class ShussoubaKeika {
 
   @Column("smallint")
   public YokoCount: number;
-
-  @Column("smallint")
-  public Sentou: number;
 }

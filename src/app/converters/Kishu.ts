@@ -8,7 +8,7 @@ export const minaraiKubun = new Codes(
   ]
 );
 
-export const kishuShikakuKubun = new Codes(
+export const shikakuKubun = new Codes(
   [
     { code: 0, kol: "0", naiyou: "資格なし" },
     { code: 1, kol: "1", naiyou: "平地・障害" },

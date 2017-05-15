@@ -63,6 +63,9 @@ export function readStr(buffer: Buffer, offset: number, length: number) {
 
 export function readStrWithNoSpace(buf: Buffer, offset: number, length: number) {
   const str = readStr(buf, offset, length);
+  if (!str) {
+    return null;
+  }
   const converted = str.replace(/[\s]+/g, "");
   return converted;
 }
@@ -82,12 +85,12 @@ export function readInt(buf: Buffer, offset: number, length: number, mul?: numbe
 }
 
 export function readTime(buf: Buffer, offset: number, length: number) {
-  const i = readInt(buf, offset, length);
-  if (i === null) {
+  const i = readPositiveInt(buf, offset, length);
+  if (!i) {
     return i;
   }
   const m = (i / 1000) | 0;
-  const ssf = (i % 1000) / 100;
+  const ssf = (i % 1000) / 10;
   const time = m * 60 + ssf;
   return time;
 }
