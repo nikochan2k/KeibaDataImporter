@@ -8,13 +8,25 @@ export abstract class KolShussoubaReader extends ShussoubaReader {
     super(entityManager, fd);
   }
 
-  protected async getKyuushaByCode(kolKyuushaCode: number) {
-    const kyuusha = await this.entityManager
-      .getRepository(Kyuusha)
-      .createQueryBuilder("k")
-      .where("k.KolKyuushaCode = :kolKyuushaCode")
-      .setParameter("kolKyuushaCode", kolKyuushaCode)
-      .getOne();
+  protected async getKyuushaWith(kolKyuushaCode?: number, kyuushaMei?: string) {
+    let kyuusha: Kyuusha;
+    if (kolKyuushaCode) {
+      kyuusha = await this.entityManager
+        .getRepository(Kyuusha)
+        .createQueryBuilder("k")
+        .where("k.KolKyuushaCode = :kolKyuushaCode")
+        .setParameter("kolKyuushaCode", kolKyuushaCode)
+        .getOne();
+    }
+    if (!kyuusha && kyuushaMei) {
+      kyuusha = await this.getKyuusha(kyuushaMei);
+    }
+    if (!kyuusha) {
+      kyuusha = new Kyuusha();
+      kyuusha.KolKyuushaCode = kolKyuushaCode;
+      kyuusha.KyuushaMei = kyuushaMei;
+    }
     return kyuusha;
   }
+
 }

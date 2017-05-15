@@ -6,22 +6,24 @@ import { Uma } from "./Uma";
 import { Shussouba } from "./Shussouba";
 
 @Entity("Kyuusha")
-@Index("IxKyuusha", (k: Kyuusha) => [k.KyuushaMei])
+@Index("IxKyuusha1", (k: Kyuusha) => [k.KyuushaMei])
+@Index("IxKyuusha2", (k: Kyuusha) => [k.KolKyuushaCode])
+@Index("IxKyuusha3", (k: Kyuusha) => [k.JrdbKyuushaCode])
 export class Kyuusha {
   @PrimaryGeneratedColumn("int")
   public Id: number;
 
   @Column("int", { nullable: true })
-  public KolKyuushaCode: number;
+  public KolKyuushaCode?: number;
 
   @Column("int", { nullable: true })
-  public JrdbKyuushaCode: number;
+  public JrdbKyuushaCode?: number;
 
-  @Column("string", { length: 48 })
-  public KyuushaMei: string;
+  @Column("string", { length: 48, nullable: true })
+  public KyuushaMei?: string;
 
-  @Column("string", { length: 12 })
-  public TanshukuKyuushaMei: string;
+  @Column("string", { length: 12, nullable: true })
+  public TanshukuKyuushaMei?: string;
 
   @Column("string", { length: 72, nullable: true })
   public Furigana?: string;
