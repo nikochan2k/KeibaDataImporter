@@ -2,7 +2,7 @@ import { EntityManager } from "typeorm";
 import {
   readInt, readPositiveInt, readDate, readRaw, readStrWithNoSpace, readDouble, readTime
 } from "../../ReadTool";
-import { KolShussoubaReader } from "../KolShussoubaReader";
+import { KolShussoubaReader, FurlongOffset } from "../KolShussoubaReader";
 import { Shussouba } from "../../../entities/Shussouba";
 import { ShussoubaYosou } from "../../../entities/ShussoubaYosou";
 import { ShussoubaTsuukaJuni } from "../../../entities/ShussoubaTsuukaJuni";
@@ -12,6 +12,24 @@ import * as $SF from "../../../converters/ShussoubaYosou";
 import * as $KI from "../../../converters/Kishu";
 import * as $KY from "../../../converters/Kyuusha";
 import * as $U from "../../../converters/Uma";
+
+const normalFurlongOffsets: FurlongOffset[] = [
+  { f: 8, offset: 27 },
+  { f: 7, offset: 33 },
+  { f: 6, offset: 39 },
+  { f: 5, offset: 45 },
+  { f: 4, offset: 51 },
+  { f: 3, offset: 57 },
+  { f: 1, offset: 63 }
+];
+
+const hanroFurlongOffsets: FurlongOffset[] = [
+  { f: 4, offset: 45 },
+  { f: 3, offset: 51 },
+  { f: 2, offset: 57 },
+  { f: 1, offset: 63 }
+];
+
 
 export class KolSei2Kd3 extends KolShussoubaReader {
 
@@ -54,6 +72,7 @@ export class KolSei2Kd3 extends KolShussoubaReader {
     race.ShussoubaList.push(shussouba);
     await this.saveShussoubaYosou(buffer, shussouba);
     await this.saveShussoubaTsuukaJuni(buffer, shussouba);
+    await this.saveChoukyou(buffer, shussouba, 307);
   }
 
   protected getBanushiMei(buffer, offset, length) {
@@ -107,10 +126,12 @@ export class KolSei2Kd3 extends KolShussoubaReader {
 
   protected async saveKishu(buffer: Buffer) {
     const kishuMei = readStrWithNoSpace(buffer, 167, 32);
-    const kishu = await this.getKishu(kishuMei);
-    if (!kishu.Id) {
+    const tanshukuKishuMei = readStrWithNoSpace(buffer, 199, 8);
+    const kishu = await this.getKishu(kishuMei, tanshukuKishuMei);
+    if (!kishu.Id || !kishu.KishuMei) {
       kishu.KolKishuCode = readInt(buffer, 162, 5);
-      kishu.TanshukuKishuMei = readStrWithNoSpace(buffer, 199, 8);
+      kishu.KishuMei = kishuMei;
+      kishu.TanshukuKishuMei = tanshukuKishuMei;
       kishu.TouzaiBetsu = $C.touzaiBetsu.toCodeFromKol(readRaw(buffer, 207, 1));
       kishu.ShozokuBasho = $C.basho.toCodeFromKol(readRaw(buffer, 208, 2));
       const kyuushaCode = readPositiveInt(buffer, 210, 5);
@@ -209,6 +230,14 @@ export class KolSei2Kd3 extends KolShussoubaReader {
       shussoubaTsuukaJuni.Bangou = bangou;
       await this.entityManager.persist(shussoubaTsuukaJuni);
     }
+  }
+
+  protected getHanroFurlongOffsets(): FurlongOffset[] {
+    return hanroFurlongOffsets;
+  }
+
+  protected getNormalFurlongOffsets(): FurlongOffset[] {
+    return normalFurlongOffsets;
   }
 
 }

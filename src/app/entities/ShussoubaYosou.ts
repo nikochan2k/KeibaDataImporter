@@ -20,15 +20,6 @@ export class ShussoubaYosou {
   @Column("string", { length: 7, nullable: true })
   public ChoukyouTanpyou?: string;
 
-  @Column("smallint", { nullable: true })
-  public ChoukyouHonsuuCourse?: number;
-
-  @Column("smallint", { nullable: true })
-  public ChoukyouHonsuuHanro?: number;
-
-  @Column("smallint", { nullable: true })
-  public ChoukyouHonsuuPool?: number;
-
   @Column("float", { nullable: true })
   public Rating?: number;
 }

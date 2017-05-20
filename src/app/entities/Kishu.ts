@@ -11,13 +11,13 @@ export class Kishu {
   public Id: number;
 
   @Column("int", { nullable: true })
-  public KolKishuCode: number;
+  public KolKishuCode?: number;
 
   @Column("int", { nullable: true })
-  public JrdbKishuCode: number;
+  public JrdbKishuCode?: number;
 
   @Column("string", { length: 48, nullable: true })
-  public KishuMei: string;
+  public KishuMei?: string;
 
   @Column("string", { length: 12 })
   public TanshukuKishuMei: string;
@@ -52,7 +52,10 @@ export class Kishu {
   public MasshouFlag?: number;
 
   @Column("date", { nullable: true })
-  public DataSakuseiNengappi?: Date;
+  public KolDataSakuseiNengappi?: Date;
+
+  @Column("date", { nullable: true })
+  public JrdbDataSakuseiNengappi?: Date;
 
   @OneToMany(() => Shussouba, s => s.Kishu)
   public ShussoubaList: Shussouba[];

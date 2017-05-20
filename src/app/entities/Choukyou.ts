@@ -21,10 +21,10 @@ export class Choukyou {
   public Bangou: number;
 
   @Column("smallint")
-  public Oikiri: number;
+  public ChoukyouFlag: number;
 
   @Column("smallint", { nullable: true })
-  public Noriyaku?: number; // 1:助手 2:調教師 3:本番騎手 4:調教騎手 5:見習
+  public Noriyaku?: number;
 
   @Column("int", { name: "KishuId", nullable: true })
   @ManyToOne(() => Kishu, k => k.ShussoubaList)
@@ -34,14 +34,20 @@ export class Choukyou {
   @Column("date", { nullable: true })
   public Nengappi?: Date;
 
-  @Column("string", { length: 9, nullable: true })
-  public Basho?: string;
+  @Column("smallint", { nullable: true })
+  public Basho?: number;
 
-  @Column("string", { length: 3, nullable: true })
-  public Course?: string;
+  @Column("smallint", { nullable: true })
+  public Type?: number;
 
-  @Column("string", { length: 3, nullable: true })
-  public Baba?: string;
+  @Column("smallint", { nullable: true })
+  public Course?: number;
+
+  @Column("string", { length: 12, nullable: true })
+  public BashoCourse?: string;
+
+  @Column("smallint", { nullable: true })
+  public Baba?: number;
 
   @Column("smallint", { nullable: true })
   public Kaisuu?: number;
@@ -50,7 +56,13 @@ export class Choukyou {
   public IchiDori?: number;
 
   @Column("smallint", { nullable: true })
-  public Ashiiro?: number; // 0:その他 1:一杯 2:強め 3:馬なり
+  public Oikiri?: number;
+
+  @Column("smallint", { nullable: true })
+  public Ashiiro?: number;
+
+  @Column("string", { length: 9, nullable: true })
+  public OikiriSonota?: string;
 
   @Column("smallint", { nullable: true })
   public Yajirushi?: number; // 1:一変　2:平行 3:下降　4:良化　5:下降気味
@@ -64,7 +76,7 @@ export class Choukyou {
   @Column("smallint", { nullable: true })
   public AwaseKekka?: number;
 
-  @Column("int", { name: "AwaseUmaId" })
+  @Column("int", { name: "AwaseUmaId", nullable: true })
   @ManyToOne(() => Uma)
   @JoinColumn({ name: "AwaseUmaId" })
   public AwaseUma?: Uma;

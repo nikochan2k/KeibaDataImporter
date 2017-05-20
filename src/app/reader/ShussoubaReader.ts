@@ -50,16 +50,51 @@ export abstract class ShussoubaReader extends DataReader {
     return kyuusha;
   }
 
-  protected async getKishu(kishuMei: string) {
-    let kishu = await this.entityManager
-      .getRepository(Kishu)
-      .createQueryBuilder("k")
-      .where("k.KishuMei = :kishuMei")
-      .setParameter("kishuMei", kishuMei)
-      .getOne();
+  protected async getKishu(kishuMei?: string, tanshukuKishuMei?: string) {
+    let kishu: Kishu;
+    if (kishuMei) {
+      const qb = this.entityManager
+        .getRepository(Kishu)
+        .createQueryBuilder("k")
+        .where("k.KishuMei = :kishuMei")
+        .setParameter("kishuMei", kishuMei);
+      if (tanshukuKishuMei) {
+        qb.orWhere("k.TanshukuKishuMei = :tanshukuKishuMei")
+          .setParameter("tanshukuKishuMei", tanshukuKishuMei);
+      }
+      kishu = await qb.getOne();
+    } else if (tanshukuKishuMei) {
+      kishu = await this.entityManager
+        .getRepository(Kishu)
+        .createQueryBuilder("k")
+        .where("k.TanshukuKishuMei = :tanshukuKishuMei")
+        .setParameter("tanshukuKishuMei", tanshukuKishuMei)
+        .getOne();
+    }
     if (!kishu) {
       kishu = new Kishu();
-      kishu.KishuMei = kishuMei;
+    }
+    return kishu;
+  }
+
+  protected async getKishuWith(tanshukuKishuMei: string) {
+    const kishuList = await this.entityManager
+      .getRepository(Kishu)
+      .createQueryBuilder("k")
+      .where("k.TanshukuKishuMei = :tanshukuKishuMei")
+      .setParameter("tanshukuKishuMei", tanshukuKishuMei)
+      .orderBy("Id", "DESC")
+      .getMany();
+    let kishu: Kishu;
+    if (kishuList.length === 0) {
+      kishu = new Kishu();
+      kishu.TanshukuKishuMei = tanshukuKishuMei;
+      await this.entityManager.persist(kishu);
+    } else {
+      if (1 < kishuList.length) {
+        this.logger.info('短縮騎手名"' + tanshukuKishuMei + '"が複数存在します');
+      }
+      kishu = kishuList[0];
     }
     return kishu;
   }
