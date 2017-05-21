@@ -38,19 +38,4 @@ export abstract class DataReader {
     return size === 0 ? null : buf;
   }
 
-  protected async persist<Entity>(entity: Entity) {
-    let error: Error;
-    if (this.logger.isDebugEnabled) {
-      error = new Error();
-    }
-    try {
-      return await this.entityManager.persist(entity);
-    } catch (e) {
-      if (error) {
-        error.message = e;
-        throw error;
-      }
-      throw e;
-    }
-  }
 }

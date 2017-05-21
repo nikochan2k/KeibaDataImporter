@@ -1,28 +1,25 @@
 import { EntityManager } from "typeorm";
-import { DataReader } from "./DataReader";
+import { Logger } from "log4js";
+import { DataSupport } from "./DataSupport";
 import { readInt } from "./ReadTool";
 import { Race } from "../entities/Race";
 import { RaceKeika } from "../entities/RaceKeika";
 import { Shussouba } from "../entities/Shussouba";
 import { ShussoubaKeika } from "../entities/ShussoubaKeika";
-import { Kishu } from "../entities/Kishu";
-import { Kyuusha } from "../entities/Kyuusha";
-import { Uma } from "../entities/Uma";
-import { Banushi } from "../entities/Banushi";
 
 interface RaceMap {
   [raceId: number]: Race;
 }
 
-export abstract class ShussoubaReader extends DataReader {
+export class ShussoubaSupport extends DataSupport {
 
-  constructor(entityManager: EntityManager, fd: number) {
-    super(entityManager, fd);
+  constructor(logger: Logger, entityManager: EntityManager) {
+    super(logger, entityManager);
   }
 
   protected raceMap: RaceMap = {};
 
-  protected async getRace(raceId: number) {
+  public async getRace(raceId: number) {
     let race = this.raceMap[raceId];
     if (!race) {
       race = await this.entityManager.findOneById(Race, raceId);
@@ -36,105 +33,13 @@ export abstract class ShussoubaReader extends DataReader {
     return race;
   }
 
-  protected async getKyuusha(kyuushaMei: string) {
-    let kyuusha = await this.entityManager
-      .getRepository(Kyuusha)
-      .createQueryBuilder("k")
-      .where("k.KyuushaMei = :kyuushaMei")
-      .setParameter("kyuushaMei", kyuushaMei)
-      .getOne();
-    if (!kyuusha) {
-      kyuusha = new Kyuusha();
-      kyuusha.KyuushaMei = kyuushaMei;
-    }
-    return kyuusha;
-  }
-
-  protected async getKishu(kishuMei?: string, tanshukuKishuMei?: string) {
-    let kishu: Kishu;
-    if (kishuMei) {
-      const qb = this.entityManager
-        .getRepository(Kishu)
-        .createQueryBuilder("k")
-        .where("k.KishuMei = :kishuMei")
-        .setParameter("kishuMei", kishuMei);
-      if (tanshukuKishuMei) {
-        qb.orWhere("k.TanshukuKishuMei = :tanshukuKishuMei")
-          .setParameter("tanshukuKishuMei", tanshukuKishuMei);
-      }
-      kishu = await qb.getOne();
-    } else if (tanshukuKishuMei) {
-      kishu = await this.entityManager
-        .getRepository(Kishu)
-        .createQueryBuilder("k")
-        .where("k.TanshukuKishuMei = :tanshukuKishuMei")
-        .setParameter("tanshukuKishuMei", tanshukuKishuMei)
-        .getOne();
-    }
-    if (!kishu) {
-      kishu = new Kishu();
-    }
-    return kishu;
-  }
-
-  protected async getKishuWith(tanshukuKishuMei: string) {
-    const kishuList = await this.entityManager
-      .getRepository(Kishu)
-      .createQueryBuilder("k")
-      .where("k.TanshukuKishuMei = :tanshukuKishuMei")
-      .setParameter("tanshukuKishuMei", tanshukuKishuMei)
-      .orderBy("Id", "DESC")
-      .getMany();
-    let kishu: Kishu;
-    if (kishuList.length === 0) {
-      kishu = new Kishu();
-      kishu.TanshukuKishuMei = tanshukuKishuMei;
-      await this.entityManager.persist(kishu);
-    } else {
-      if (1 < kishuList.length) {
-        this.logger.info('短縮騎手名"' + tanshukuKishuMei + '"が複数存在します');
-      }
-      kishu = kishuList[0];
-    }
-    return kishu;
-  }
-
-  protected async getBanushi(banushiMei: string) {
-    let banushi = await this.entityManager
-      .getRepository(Banushi)
-      .createQueryBuilder("b")
-      .where("b.BanushiMei = :banushiMei")
-      .setParameter("banushiMei", banushiMei)
-      .getOne();
-    if (!banushi) {
-      banushi = new Banushi();
-      banushi.BanushiMei = banushiMei;
-    }
-    return banushi;
-  }
-
-  protected async getUma(bamei: string) {
-    let uma = await this.entityManager
-      .getRepository(Uma)
-      .createQueryBuilder("u")
-      .where("u.KanaBamei = :bamei")
-      .orWhere("u.KyuuBamei = :bamei")
-      .setParameter("bamei", bamei)
-      .getOne();
-    if (!uma) {
-      uma = new Uma();
-      uma.KanaBamei = bamei;
-    }
-    return uma;
-  }
-
-  protected async normalizeNenrei(shussouba: Shussouba) {
+  public async normalizeNenrei(shussouba: Shussouba) {
     if (shussouba.Race.KaisaiNen <= 2000) {
       shussouba.Nenrei--;
     }
   }
 
-  protected getChakujun(buffer, offset, length) {
+  public getChakujun(buffer, offset, length) {
     const chakujun = readInt(buffer, offset, length);
     if (1 <= chakujun && chakujun <= 28) {
       return chakujun;
@@ -142,7 +47,7 @@ export abstract class ShussoubaReader extends DataReader {
     return null;
   }
 
-  protected async finishUp() {
+  public async finishUp() {
     for (const raceId in this.raceMap) {
       const race = this.raceMap[raceId];
       const raceKeikaList = await this.getRaceKeika(race.Id);

@@ -2,7 +2,9 @@ import { EntityManager } from "typeorm";
 import {
   readInt, readPositiveInt, readDate, readRaw, readStrWithNoSpace, readDouble, readTime
 } from "../../ReadTool";
-import { KolShussoubaReader, FurlongOffset } from "../KolShussoubaReader";
+import { ShussoubaSupport } from "../../ShussoubaSupport";
+import { KolReader } from "../KolReader";
+import { KolChoukyouSupport, FurlongOffset } from "../KolChoukyouSupport";
 import { Shussouba } from "../../../entities/Shussouba";
 import { ShussoubaYosou } from "../../../entities/ShussoubaYosou";
 import { ShussoubaTsuukaJuni } from "../../../entities/ShussoubaTsuukaJuni";
@@ -10,10 +12,8 @@ import * as $C from "../../../converters/Common";
 import * as $S from "../../../converters/Shussouba";
 import * as $SF from "../../../converters/ShussoubaYosou";
 import * as $KI from "../../../converters/Kishu";
-import * as $KY from "../../../converters/Kyuusha";
-import * as $U from "../../../converters/Uma";
 
-const normalFurlongOffsets: FurlongOffset[] = [
+const courseFurlongOffsets: FurlongOffset[] = [
   { f: 8, offset: 27 },
   { f: 7, offset: 33 },
   { f: 6, offset: 39 },
@@ -30,11 +30,16 @@ const hanroFurlongOffsets: FurlongOffset[] = [
   { f: 1, offset: 63 }
 ];
 
+export class KolSei2Kd3 extends KolReader {
 
-export class KolSei2Kd3 extends KolShussoubaReader {
+  private shussoubaSupport: ShussoubaSupport;
+
+  private choukyouSupport: KolChoukyouSupport;
 
   constructor(entityManager: EntityManager, fd: number) {
     super(entityManager, fd);
+    this.shussoubaSupport = new ShussoubaSupport(this.logger, entityManager);
+    this.choukyouSupport = new KolChoukyouSupport(this.logger, entityManager, hanroFurlongOffsets, courseFurlongOffsets);
   }
 
   protected getBufferLength() {
@@ -43,7 +48,7 @@ export class KolSei2Kd3 extends KolShussoubaReader {
 
   protected async save(buffer: Buffer) {
     const raceId = readPositiveInt(buffer, 0, 12);
-    const race = await this.getRace(raceId);
+    const race = await this.shussoubaSupport.getRace(raceId);
     if (race === null) {
       return;
     }
@@ -72,62 +77,17 @@ export class KolSei2Kd3 extends KolShussoubaReader {
     race.ShussoubaList.push(shussouba);
     await this.saveShussoubaYosou(buffer, shussouba);
     await this.saveShussoubaTsuukaJuni(buffer, shussouba);
-    await this.saveChoukyou(buffer, shussouba, 307);
+    await this.choukyouSupport.saveChoukyou(buffer, shussouba, 307);
   }
 
-  protected getBanushiMei(buffer, offset, length) {
-    let banushiMei = readStrWithNoSpace(buffer, offset, length);
-    if (!banushiMei) {
-      return banushiMei;
-    }
-    banushiMei = banushiMei.replace(/・/g, "");
-    banushiMei = banushiMei.replace(/㈱/g, "株式会社");
-    banushiMei = banushiMei.replace(/㈲/g, "有限会社");
-    banushiMei = banushiMei.replace(/氏$/, "");
-    return banushiMei;
-  }
-
-  protected async saveBanushi(buffer: Buffer) {
-    const banushiMei = this.getBanushiMei(buffer, 69, 40);
-    const banushi = await this.getBanushi(banushiMei);
-    if (!banushi.Id) {
-      banushi.TanshukuBanushiMei = readStrWithNoSpace(buffer, 109, 20);
-      await this.entityManager.persist(banushi);
-    }
-    return banushi;
-  }
-
-  protected async saveUma(buffer: Buffer) {
-    const bamei = readStrWithNoSpace(buffer, 34, 30);
-    const uma = await this.getUma(bamei);
-    if (!uma.Id) {
-      uma.UmaKigou = $U.umaKigou.toCodeFromKol(readRaw(buffer, 64, 2));
-      uma.Seibetsu = $U.seibetsu.toCodeFromKol(readRaw(buffer, 66, 1));
-      uma.Banushi = await this.saveBanushi(buffer);
-      await this.entityManager.persist(uma);
-    }
-    return uma;
-  }
-
-  protected async saveKyuusha(buffer: Buffer) {
-    const kolKyuushaCode = readPositiveInt(buffer, 217, 5);
-    const kyuushaMei = readStrWithNoSpace(buffer, 222, 32);
-    const kyuusha = await this.getKyuushaWith(kolKyuushaCode, kyuushaMei);
-    if (!kyuusha.Id || !kyuusha.KolKyuushaCode || !kyuusha.KyuushaMei) {
-      kyuusha.KolKyuushaCode = kolKyuushaCode;
-      kyuusha.KyuushaMei = kyuushaMei;
-      kyuusha.TanshukuKyuushaMei = readStrWithNoSpace(buffer, 254, 8);
-      kyuusha.ShozokuBasho = $C.basho.toCodeFromKol(readRaw(buffer, 262, 2));
-      kyuusha.RitsuHokuNanBetsu = $KY.ritsuHokuNanBetsu.toCodeFromKol(readRaw(buffer, 264, 1));
-      await this.entityManager.persist(kyuusha);
-    }
-    return kyuusha;
+  public async finishUp() {
+    this.shussoubaSupport.finishUp();
   }
 
   protected async saveKishu(buffer: Buffer) {
     const kishuMei = readStrWithNoSpace(buffer, 167, 32);
     const tanshukuKishuMei = readStrWithNoSpace(buffer, 199, 8);
-    const kishu = await this.getKishu(kishuMei, tanshukuKishuMei);
+    const kishu = await this.support.getKishu(kishuMei, tanshukuKishuMei);
     if (!kishu.Id || !kishu.KishuMei) {
       kishu.KolKishuCode = readInt(buffer, 162, 5);
       kishu.KishuMei = kishuMei;
@@ -159,20 +119,23 @@ export class KolSei2Kd3 extends KolShussoubaReader {
   protected async saveShussouba(buffer: Buffer, shussouba: Shussouba) {
     shussouba.Wakuban = readPositiveInt(buffer, 22, 1);
     shussouba.Gate = readPositiveInt(buffer, 25, 2);
-    shussouba.Kyousouba = await this.saveUma(buffer);
+    shussouba.Kyousouba = await this.saveKolUma(buffer, { meishou: 34, umaKigou: 64, seibetsu: 66, },
+      { meishou: 69, tanshuku: 109 });
     shussouba.Nenrei = readPositiveInt(buffer, 67, 2);
     shussouba.Blinker = $S.blinker.toCodeFromKol(readRaw(buffer, 149, 1));
     shussouba.Kinryou = readDouble(buffer, 150, 3, 0.1);
     shussouba.Bataijuu = readPositiveInt(buffer, 153, 3);
     shussouba.Zougen = readInt(buffer, 156, 3);
-    shussouba.Kyuusha = await this.saveKyuusha(buffer);
+    shussouba.Kyuusha = await this.saveKolKyuusha(buffer, {
+      kolKyuushaCode: 217, meishou: 222, tanshuku: 254, shozokuBasho: 262, ritsuHokuNanBetsu: 264
+    });
     shussouba.Kishu = await this.saveKishu(buffer);
     shussouba.Norikawari = $S.norikawari.toCodeFromKol(readRaw(buffer, 215, 1));
     shussouba.Ninki = readPositiveInt(buffer, 267, 2);
     shussouba.Odds = readDouble(buffer, 269, 5, 0.1);
-    shussouba.KakuteiChakujun = this.getChakujun(buffer, 274, 2);
+    shussouba.KakuteiChakujun = this.shussoubaSupport.getChakujun(buffer, 274, 2);
     shussouba.ChakujunFuka = $S.chakujunFuka.toCodeFromKol(readRaw(buffer, 276, 2));
-    shussouba.NyuusenChakujun = this.getChakujun(buffer, 278, 2);
+    shussouba.NyuusenChakujun = this.shussoubaSupport.getChakujun(buffer, 278, 2);
     shussouba.TorikeshiShubetsu = $S.torikeshiShubetsu.toCodeFromKol(readRaw(buffer, 280, 1));
     shussouba.RecordNinshiki = $S.recordNinshiki.toCodeFromKol(readRaw(buffer, 281, 1));
     shussouba.Time = readTime(buffer, 282, 4);
@@ -230,14 +193,6 @@ export class KolSei2Kd3 extends KolShussoubaReader {
       shussoubaTsuukaJuni.Bangou = bangou;
       await this.entityManager.persist(shussoubaTsuukaJuni);
     }
-  }
-
-  protected getHanroFurlongOffsets(): FurlongOffset[] {
-    return hanroFurlongOffsets;
-  }
-
-  protected getNormalFurlongOffsets(): FurlongOffset[] {
-    return normalFurlongOffsets;
   }
 
 }

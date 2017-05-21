@@ -108,7 +108,7 @@ export class KolSei1Kd3 extends KolRaceReader {
       race.HassouJoukyou = hassouJoukyou;
     }
 
-    await this.persist(race);
+    await this.entityManager.persist(race);
   }
 
   public async saveJoukenFuka(buffer: Buffer, race: Race) {
@@ -121,7 +121,7 @@ export class KolSei1Kd3 extends KolRaceReader {
       raceJoukenFuka.Race = race;
       raceJoukenFuka.Id = race.Id * 10 + i;
       raceJoukenFuka.JoukenFuka = joukenFukaList[i];
-      await this.persist(raceJoukenFuka);
+      await this.entityManager.persist(raceJoukenFuka);
     }
   }
 
@@ -175,7 +175,7 @@ export class KolSei1Kd3 extends KolRaceReader {
       shuuryouKyori = (i === 0 && odd) ? 100 : (shuuryouKyori + 200);
       raceLapTime.ShuuryouKyori = shuuryouKyori;
       raceLapTime.LapTime = lapTime;
-      await this.persist(raceLapTime);
+      await this.entityManager.persist(raceLapTime);
     }
   }
 
@@ -191,21 +191,21 @@ export class KolSei1Kd3 extends KolRaceReader {
     if (lapTime) {
       raceLapTime.Id = race.Id * 100 + 1;
       raceLapTime.KaishiKyori = race.Kyori - 1600;
-      await this.persist(raceLapTime);
+      await this.entityManager.persist(raceLapTime);
     }
 
     lapTime = readDouble(buffer, 388, 4, 0.1);
     if (lapTime) {
       raceLapTime.Id = race.Id * 100 + 2;
       raceLapTime.KaishiKyori = race.Kyori - 800;
-      await this.persist(raceLapTime);
+      await this.entityManager.persist(raceLapTime);
     }
 
     lapTime = readDouble(buffer, 393, 4, 0.1);
     if (lapTime) {
       raceLapTime.Id = race.Id * 100 + 3;
       raceLapTime.KaishiKyori = race.Kyori - 600;
-      await this.persist(raceLapTime);
+      await this.entityManager.persist(raceLapTime);
     }
   }
 
@@ -221,7 +221,7 @@ export class KolSei1Kd3 extends KolRaceReader {
       raceLapTime.Id = race.Id * 100 + 1;
       raceLapTime.KaishiKyori = 0;
       raceLapTime.ShuuryouKyori = 600;
-      await this.persist(raceLapTime);
+      await this.entityManager.persist(raceLapTime);
     }
 
     lapTime = readDouble(buffer, 444, 3, 0.1);
@@ -229,7 +229,7 @@ export class KolSei1Kd3 extends KolRaceReader {
       raceLapTime.Id = race.Id * 100 + 2;
       raceLapTime.KaishiKyori = 0;
       raceLapTime.ShuuryouKyori = 800;
-      await this.persist(raceLapTime);
+      await this.entityManager.persist(raceLapTime);
     }
 
     lapTime = readDouble(buffer, 447, 3, 0.1);
@@ -237,7 +237,7 @@ export class KolSei1Kd3 extends KolRaceReader {
       raceLapTime.Id = race.Id * 100 + 3;
       raceLapTime.KaishiKyori = 0;
       raceLapTime.ShuuryouKyori = 600;
-      await this.persist(raceLapTime);
+      await this.entityManager.persist(raceLapTime);
     }
 
     lapTime = readDouble(buffer, 450, 3, 0.1);
@@ -245,7 +245,7 @@ export class KolSei1Kd3 extends KolRaceReader {
       raceLapTime.Id = race.Id * 100 + 4;
       raceLapTime.KaishiKyori = race.Kyori - 800;
       raceLapTime.ShuuryouKyori = race.Kyori;
-      await this.persist(raceLapTime);
+      await this.entityManager.persist(raceLapTime);
     }
 
     lapTime = readDouble(buffer, 453, 3, 0.1);
@@ -253,7 +253,7 @@ export class KolSei1Kd3 extends KolRaceReader {
       raceLapTime.Id = race.Id * 100 + 5;
       raceLapTime.KaishiKyori = race.Kyori - 600;
       raceLapTime.ShuuryouKyori = race.Kyori;
-      await this.persist(raceLapTime);
+      await this.entityManager.persist(raceLapTime);
     }
   }
 
@@ -269,7 +269,7 @@ export class KolSei1Kd3 extends KolRaceReader {
       raceKeika.Midashi1 = $RK.midashi1.toCodeFromKol(readRaw(buffer, offset, 1));
       raceKeika.Midashi2 = $RK.midashi2.toCodeFromKol(readRaw(buffer, offset + 1, 2));
       raceKeika.Keika = keika;
-      await this.persist(raceKeika);
+      await this.entityManager.persist(raceKeika);
     }
   }
 

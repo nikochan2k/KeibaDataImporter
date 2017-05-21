@@ -4,6 +4,7 @@ import { Logger, getLogger } from "log4js";
 import * as fs from "fs";
 import { LOG_LEVEL, logging } from "./Constant";
 import { DataReader } from "./reader/DataReader";
+import { KolUmaKd3 } from "./reader/KOL/KD3/KolUmaKd3";
 import { KolSei1Kd3 } from "./reader/KOL/KD3/KolSei1Kd3";
 import { KolSei2Kd3 } from "./reader/KOL/KD3/KolSei2Kd3";
 
@@ -16,7 +17,7 @@ interface Readers {
 }
 
 const readers: Readers = {
-  "kol_uma.kd3": null,
+  "kol_uma.kd3": (entityManager: EntityManager, fd: number) => new KolUmaKd3(entityManager, fd),
   "kol_den1.kd3": null,
   "kol_den2.kd3": null,
   "kol_sei1.kd3": (entityManager: EntityManager, fd: number) => new KolSei1Kd3(entityManager, fd),

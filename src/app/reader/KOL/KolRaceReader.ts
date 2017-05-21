@@ -3,7 +3,7 @@ import {
   readRaw, readDate, readStrWithNoSpace, readPositiveInt, readTime, readDouble,
   toDateString
 } from "../ReadTool";
-import { RaceReader } from "../RaceReader";
+import { KolReader } from "./KolReader";
 import { Race } from "../../entities/Race";
 import { Record } from "../../entities/Record";
 import { RaceShoukin } from "../../entities/RaceShoukin";
@@ -12,7 +12,7 @@ import * as $C from "../../converters/Common";
 import { ShoukinInfo } from "../../converters/RaceShoukin";
 import { HaitouInfo } from "../../converters/RaceHaitou";
 
-export abstract class KolRaceReader extends RaceReader {
+export abstract class KolRaceReader extends KolReader {
 
   constructor(entityManager: EntityManager, fd: number) {
     super(entityManager, fd);
@@ -45,7 +45,7 @@ export abstract class KolRaceReader extends RaceReader {
     record.Kinryou = readDouble(buffer, offset + 42, 3, 0.1);
     record.TanshukuKishuMei = readStrWithNoSpace(buffer, offset + 45, 8);
     record.Basho = $C.basho.toCodeFromKol(readRaw(buffer, bashoOffset, 2));
-    record = await this.persist(record);
+    record = await this.entityManager.persist(record);
 
     return record;
   }
@@ -65,7 +65,7 @@ export abstract class KolRaceReader extends RaceReader {
       raceShoukin.Chakujun = info.chakujun;
       raceShoukin.Shoukin = shoukin;
       raceShoukin.Fukashou = info.fukashou;
-      this.persist(raceShoukin);
+      this.entityManager.persist(raceShoukin);
     }
   }
 
@@ -91,7 +91,7 @@ export abstract class KolRaceReader extends RaceReader {
       if (info.ninki) {
         raceHaitou.Ninki = readPositiveInt(buffer, info.ninki, info.ninkiLen);
       }
-      this.persist(raceHaitou);
+      this.entityManager.persist(raceHaitou);
     }
   }
 }

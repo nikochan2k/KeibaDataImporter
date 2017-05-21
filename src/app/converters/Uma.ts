@@ -32,11 +32,17 @@ export const umaKigou = new Codes(
   ]
 );
 
+export enum Seibetsu {
+  Boba = 0,
+  Hinba = 1,
+  Senba = 2
+}
+
 export const seibetsu = new Codes(
   [
-    { code: 0, kol: "0", jrdb: "1", naiyou: "牡" },
-    { code: 1, kol: "1", jrdb: "2", naiyou: "牝" },
-    { code: 2, kol: "2", jrdb: "3", naiyou: "せん" }
+    { code: Seibetsu.Boba, kol: "0", jrdb: "1", naiyou: "牡" },
+    { code: Seibetsu.Hinba, kol: "1", jrdb: "2", naiyou: "牝" },
+    { code: Seibetsu.Senba, kol: "2", jrdb: "3", naiyou: "せん" }
   ]
 );
 

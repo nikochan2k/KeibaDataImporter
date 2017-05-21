@@ -1,8 +1,10 @@
 import { EntityManager } from "typeorm";
-import { readPositiveInt, readDate, readRaw, readStr, readStrWithNoSpace } from "../ReadTool";
-import { ShussoubaReader } from "../ShussoubaReader";
+import { Logger } from "log4js";
+import {
+  readStr, readRaw, readDate, readStrWithNoSpace, readPositiveInt
+} from "../ReadTool";
+import { DataSupport } from "../DataSupport";
 import { Shussouba } from "../../entities/Shussouba";
-import { Kyuusha } from "../../entities/Kyuusha";
 import { Choukyou } from "../../entities/Choukyou";
 import { ChoukyouTime } from "../../entities/ChoukyouTime";
 import * as $CH from "../../converters/Choukyou";
@@ -12,38 +14,19 @@ export interface FurlongOffset {
   offset: number;
 }
 
-export abstract class KolShussoubaReader extends ShussoubaReader {
+export class KolChoukyouSupport extends DataSupport {
 
-  constructor(entityManager: EntityManager, fd: number) {
-    super(entityManager, fd);
+  private hanroFurlongOffsets: FurlongOffset[];
+
+  private courseFurlongOffsets: FurlongOffset[];
+
+  constructor(logger: Logger, entityManager: EntityManager, hanroFurlongOffsets: FurlongOffset[], courseFurlongOffsets: FurlongOffset[]) {
+    super(logger, entityManager);
+    this.hanroFurlongOffsets = hanroFurlongOffsets;
+    this.courseFurlongOffsets = courseFurlongOffsets;
   }
 
-  protected async getKyuushaWith(kolKyuushaCode?: number, kyuushaMei?: string) {
-    let kyuusha: Kyuusha;
-    if (kolKyuushaCode) {
-      kyuusha = await this.entityManager
-        .getRepository(Kyuusha)
-        .createQueryBuilder("k")
-        .where("k.KolKyuushaCode = :kolKyuushaCode")
-        .setParameter("kolKyuushaCode", kolKyuushaCode)
-        .getOne();
-    }
-    if (!kyuusha && kyuushaMei) {
-      kyuusha = await this.getKyuusha(kyuushaMei);
-    }
-    if (!kyuusha) {
-      kyuusha = new Kyuusha();
-      kyuusha.KolKyuushaCode = kolKyuushaCode;
-      kyuusha.KyuushaMei = kyuushaMei;
-    }
-    return kyuusha;
-  }
-
-  protected abstract getHanroFurlongOffsets(): FurlongOffset[];
-
-  protected abstract getNormalFurlongOffsets(): FurlongOffset[];
-
-  protected async saveChoukyou(buffer: Buffer, shussouba: Shussouba, offset: number, awase?: string) {
+  public async saveChoukyou(buffer: Buffer, shussouba: Shussouba, offset: number, awase?: string) {
     const kijousha = readStrWithNoSpace(buffer, offset + 1, 8);
     if (!kijousha) {
       return;
@@ -97,9 +80,9 @@ export abstract class KolShussoubaReader extends ShussoubaReader {
     await this.entityManager.persist(choukyou);
 
     if (choukyou.Type === $CH.ChoukyouType.Hanro) {
-      await this.saveChoukyouTime(buffer, choukyou, offset, this.getHanroFurlongOffsets());
+      await this.saveChoukyouTime(buffer, choukyou, offset, this.hanroFurlongOffsets);
     } else if ($CH.ChoukyouType.Shiba <= choukyou.Type || choukyou.Type <= $CH.ChoukyouType.Shougai) {
-      await this.saveChoukyouTime(buffer, choukyou, offset, this.getNormalFurlongOffsets());
+      await this.saveChoukyouTime(buffer, choukyou, offset, this.courseFurlongOffsets);
     }
   }
 
