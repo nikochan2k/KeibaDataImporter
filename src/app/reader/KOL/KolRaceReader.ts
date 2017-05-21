@@ -1,8 +1,5 @@
 import { EntityManager } from "typeorm";
-import {
-  readRaw, readDate, readStrWithNoSpace, readPositiveInt, readTime, readDouble,
-  toDateString
-} from "../ReadTool";
+import { readDate, readStrWithNoSpace, readPositiveInt, readTime, readDouble, toDateString } from "../ReadTool";
 import { KolReader } from "./KolReader";
 import { Race } from "../../entities/Race";
 import { Record } from "../../entities/Record";
@@ -44,7 +41,7 @@ export abstract class KolRaceReader extends KolReader {
     record.Bamei = bamei;
     record.Kinryou = readDouble(buffer, offset + 42, 3, 0.1);
     record.TanshukuKishuMei = readStrWithNoSpace(buffer, offset + 45, 8);
-    record.Basho = $C.basho.toCodeFromKol(readRaw(buffer, bashoOffset, 2));
+    record.Basho = $C.basho.toCodeFromKol(buffer, bashoOffset, 2);
     record = await this.entityManager.persist(record);
 
     return record;

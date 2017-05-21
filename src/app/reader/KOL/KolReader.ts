@@ -1,5 +1,5 @@
 import { EntityManager } from "typeorm";
-import { readPositiveInt, readRaw, readStr, readStrWithNoSpace } from "../ReadTool";
+import { readPositiveInt, readStr, readStrWithNoSpace } from "../ReadTool";
 import { DataSupport } from "../DataSupport";
 import { DataReader } from "../DataReader";
 import { Kyuusha } from "../../entities/Kyuusha";
@@ -48,8 +48,8 @@ export abstract class KolReader extends DataReader {
     const bamei = readStr(buffer, umaOffset.meishou, 30);
     const uma = await this.support.getUma(bamei);
     if (!uma.Id) {
-      uma.UmaKigou = $U.umaKigou.toCodeFromKol(readRaw(buffer, umaOffset.umaKigou, 2));
-      uma.Seibetsu = $U.seibetsu.toCodeFromKol(readRaw(buffer, umaOffset.seibetsu, 1));
+      uma.UmaKigou = $U.umaKigou.toCodeFromKol(buffer, umaOffset.umaKigou, 2);
+      uma.Seibetsu = $U.seibetsu.toCodeFromKol(buffer, umaOffset.seibetsu, 1);
       uma.Banushi = await this.saveKolBanushi(buffer, banushiOffset);
       await this.entityManager.persist(uma);
     }
@@ -70,8 +70,8 @@ export abstract class KolReader extends DataReader {
       kyuusha.KolKyuushaCode = kolKyuushaCode;
       kyuusha.KyuushaMei = kyuushaMei;
       kyuusha.TanshukuKyuushaMei = readStrWithNoSpace(buffer, kyuushaOffset.tanshuku, 8);
-      kyuusha.ShozokuBasho = $C.basho.toCodeFromKol(readRaw(buffer, kyuushaOffset.shozokuBasho, 2));
-      kyuusha.RitsuHokuNanBetsu = $KY.ritsuHokuNanBetsu.toCodeFromKol(readRaw(buffer, kyuushaOffset.ritsuHokuNanBetsu, 1));
+      kyuusha.ShozokuBasho = $C.basho.toCodeFromKol(buffer, kyuushaOffset.shozokuBasho, 2);
+      kyuusha.RitsuHokuNanBetsu = $KY.ritsuHokuNanBetsu.toCodeFromKol(buffer, kyuushaOffset.ritsuHokuNanBetsu, 1);
       await this.entityManager.persist(kyuusha);
     }
     return kyuusha;

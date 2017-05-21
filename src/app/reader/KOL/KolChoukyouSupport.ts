@@ -1,8 +1,6 @@
 import { EntityManager } from "typeorm";
 import { Logger } from "log4js";
-import {
-  readStr, readRaw, readDate, readStrWithNoSpace, readPositiveInt
-} from "../ReadTool";
+import { readStr, readDate, readStrWithNoSpace, readPositiveInt } from "../ReadTool";
 import { DataSupport } from "../DataSupport";
 import { Shussouba } from "../../entities/Shussouba";
 import { Choukyou } from "../../entities/Choukyou";
@@ -35,7 +33,7 @@ export class KolChoukyouSupport extends DataSupport {
     choukyou.Id = shussouba.Id * 10 + 1;
     choukyou.Shussouba = shussouba;
     choukyou.Bangou = 1;
-    choukyou.ChoukyouFlag = $CH.choukyouFlag.toCodeFromKol(readRaw(buffer, offset, 1));
+    choukyou.ChoukyouFlag = $CH.choukyouFlag.toCodeFromKol(buffer, offset, 1);
     choukyou.Noriyaku = $CH.noriyaku.toCodeFromKol(kijousha);
     if (!choukyou.Noriyaku) {
       const kishu = await this.getKishu(null, kijousha);
@@ -64,7 +62,7 @@ export class KolChoukyouSupport extends DataSupport {
         choukyou.Kaisuu = parseInt(array[0]);
       }
     }
-    choukyou.Baba = $CH.baba.toCodeFromKol(readRaw(buffer, offset + 25, 2)); // 307
+    choukyou.Baba = $CH.baba.toCodeFromKol(buffer, offset + 25, 2); // 307
     choukyou.IchiDori = readPositiveInt(buffer, offset + 69, 1);
     const oikiri = readStrWithNoSpace(buffer, offset + 70, 6);
     choukyou.Oikiri = $CH.oikiri.toCodeFromKol(oikiri);
@@ -72,7 +70,7 @@ export class KolChoukyouSupport extends DataSupport {
     if (!choukyou.Oikiri && !choukyou.Ashiiro) {
       choukyou.OikiriSonota = oikiri;
     }
-    choukyou.Yajirushi = $CH.yajirushi.toCodeFromKol(readRaw(buffer, offset + 76, 1));
+    choukyou.Yajirushi = $CH.yajirushi.toCodeFromKol(buffer, offset + 76, 1);
     choukyou.Reigai = readStr(buffer, offset + 77, 40);
     if (awase) {
       choukyou.Awase = awase;

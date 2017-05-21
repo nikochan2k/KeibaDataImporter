@@ -1,5 +1,5 @@
 import { EntityManager } from "typeorm";
-import { readDate, readRaw, readStr } from "../../ReadTool";
+import { readDate, readStr } from "../../ReadTool";
 import { KolReader } from "../KolReader";
 import * as $U from "../../../converters/Uma";
 
@@ -46,11 +46,11 @@ export class KolUmaKd3 extends KolReader {
     uma.KanaBamei = kanaBamei;
     uma.KyuuBamei = readStr(buffer, 37, 40);
     uma.Seinengappi = readDate(buffer, 77, 8);
-    uma.Keiro = $U.keiro.toCodeFromKol(readRaw(buffer, 85, 2));
-    uma.Kesshu = $U.kesshu.toCodeFromKol(readRaw(buffer, 87, 2));
-    uma.Sanchi = $U.sanch.toCodeFromKol(readRaw(buffer, 89, 3));
-    uma.UmaKigou = $U.umaKigou.toCodeFromKol(readRaw(buffer, 92, 2));
-    uma.Seibetsu = $U.seibetsu.toCodeFromKol(readRaw(buffer, 94, 1));
+    uma.Keiro = $U.keiro.toCodeFromKol(buffer, 85, 2);
+    uma.Kesshu = $U.kesshu.toCodeFromKol(buffer, 87, 2);
+    uma.Sanchi = $U.sanch.toCodeFromKol(buffer, 89, 3);
+    uma.UmaKigou = $U.umaKigou.toCodeFromKol(buffer, 92, 2);
+    uma.Seibetsu = $U.seibetsu.toCodeFromKol(buffer, 94, 1);
     uma.ChichiUma = await this.saveOyaUma(buffer, 104, $U.Seibetsu.Boba);
     uma.HahaUma = await this.saveOyaUma(buffer, 145, $U.Seibetsu.Hinba, 186, 227);
     uma.Banushi = await this.saveKolBanushi(buffer, { meishou: 343, tanshuku: 383 });
@@ -59,7 +59,7 @@ export class KolUmaKd3 extends KolReader {
       kolKyuushaCode: 488, meishou: 493, tanshuku: 525, shozokuBasho: 533, ritsuHokuNanBetsu: 535
     });
     uma.KoueiGaikokuKyuushaMei = readStr(buffer, 536, 8);
-    uma.MasshouFlag = $U.masshouFlag.toCodeFromKol(readRaw(buffer, 544, 1));
+    uma.MasshouFlag = $U.masshouFlag.toCodeFromKol(buffer, 544, 1);
     uma.MasshouNengappi = readDate(buffer, 545, 8);
     uma.Jiyuu = readStr(buffer, 553, 6);
     uma.Ikisaki = readStr(buffer, 559, 10);

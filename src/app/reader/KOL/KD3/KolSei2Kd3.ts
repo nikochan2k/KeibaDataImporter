@@ -1,7 +1,5 @@
 import { EntityManager } from "typeorm";
-import {
-  readInt, readPositiveInt, readDate, readRaw, readStrWithNoSpace, readDouble, readTime
-} from "../../ReadTool";
+import { readInt, readPositiveInt, readDate, readStrWithNoSpace, readDouble, readTime } from "../../ReadTool";
 import { ShussoubaSupport } from "../../ShussoubaSupport";
 import { KolReader } from "../KolReader";
 import { KolChoukyouSupport, FurlongOffset } from "../KolChoukyouSupport";
@@ -92,8 +90,8 @@ export class KolSei2Kd3 extends KolReader {
       kishu.KolKishuCode = readInt(buffer, 162, 5);
       kishu.KishuMei = kishuMei;
       kishu.TanshukuKishuMei = tanshukuKishuMei;
-      kishu.TouzaiBetsu = $C.touzaiBetsu.toCodeFromKol(readRaw(buffer, 207, 1));
-      kishu.ShozokuBasho = $C.basho.toCodeFromKol(readRaw(buffer, 208, 2));
+      kishu.TouzaiBetsu = $C.touzaiBetsu.toCodeFromKol(buffer, 207, 1);
+      kishu.ShozokuBasho = $C.basho.toCodeFromKol(buffer, 208, 2);
       const kyuushaCode = readPositiveInt(buffer, 210, 5);
       if (kyuushaCode) {
         const kyuusha = await this.getKyuushaWith(kyuushaCode);
@@ -102,7 +100,7 @@ export class KolSei2Kd3 extends KolReader {
         }
         kishu.Kyuusha = kyuusha;
       }
-      kishu.MinaraiKubun = $KI.minaraiKubun.toCodeFromKol(readRaw(buffer, 215, 1));
+      kishu.MinaraiKubun = $KI.minaraiKubun.toCodeFromKol(buffer, 215, 1);
       await this.entityManager.persist(kishu);
     }
     return kishu;
@@ -122,7 +120,7 @@ export class KolSei2Kd3 extends KolReader {
     shussouba.Kyousouba = await this.saveKolUma(buffer, { meishou: 34, umaKigou: 64, seibetsu: 66, },
       { meishou: 69, tanshuku: 109 });
     shussouba.Nenrei = readPositiveInt(buffer, 67, 2);
-    shussouba.Blinker = $S.blinker.toCodeFromKol(readRaw(buffer, 149, 1));
+    shussouba.Blinker = $S.blinker.toCodeFromKol(buffer, 149, 1);
     shussouba.Kinryou = readDouble(buffer, 150, 3, 0.1);
     shussouba.Bataijuu = readPositiveInt(buffer, 153, 3);
     shussouba.Zougen = readInt(buffer, 156, 3);
@@ -130,17 +128,17 @@ export class KolSei2Kd3 extends KolReader {
       kolKyuushaCode: 217, meishou: 222, tanshuku: 254, shozokuBasho: 262, ritsuHokuNanBetsu: 264
     });
     shussouba.Kishu = await this.saveKishu(buffer);
-    shussouba.Norikawari = $S.norikawari.toCodeFromKol(readRaw(buffer, 215, 1));
+    shussouba.Norikawari = $S.norikawari.toCodeFromKol(buffer, 215, 1);
     shussouba.Ninki = readPositiveInt(buffer, 267, 2);
     shussouba.Odds = readDouble(buffer, 269, 5, 0.1);
     shussouba.KakuteiChakujun = this.shussoubaSupport.getChakujun(buffer, 274, 2);
-    shussouba.ChakujunFuka = $S.chakujunFuka.toCodeFromKol(readRaw(buffer, 276, 2));
+    shussouba.ChakujunFuka = $S.chakujunFuka.toCodeFromKol(buffer, 276, 2);
     shussouba.NyuusenChakujun = this.shussoubaSupport.getChakujun(buffer, 278, 2);
-    shussouba.TorikeshiShubetsu = $S.torikeshiShubetsu.toCodeFromKol(readRaw(buffer, 280, 1));
-    shussouba.RecordNinshiki = $S.recordNinshiki.toCodeFromKol(readRaw(buffer, 281, 1));
+    shussouba.TorikeshiShubetsu = $S.torikeshiShubetsu.toCodeFromKol(buffer, 280, 1);
+    shussouba.RecordNinshiki = $S.recordNinshiki.toCodeFromKol(buffer, 281, 1);
     shussouba.Time = readTime(buffer, 282, 4);
     shussouba.Chakusa1 = readInt(buffer, 286, 2);
-    shussouba.Chakusa2 = $S.chakura2.toCodeFromKol(readRaw(buffer, 288, 1));
+    shussouba.Chakusa2 = $S.chakura2.toCodeFromKol(buffer, 288, 1);
     shussouba.TimeSa = this.getTimeSa(buffer, 289);
     if (1200 <= shussouba.Race.Kyori) {
       shussouba.Ten3F = readDouble(buffer, 292, 3, 0.1);
@@ -155,7 +153,7 @@ export class KolSei2Kd3 extends KolReader {
     if (1200 < shussouba.Race.Kyori && shussouba.Ten3F && shussouba.Agari3F) {
       shussouba.Chuukan = shussouba.Time - shussouba.Ten3F - shussouba.Agari3F;
     }
-    shussouba.YonCornerIchiDori = $S.yonCornerIchiDori.toCodeFromKol(readRaw(buffer, 306, 1));
+    shussouba.YonCornerIchiDori = $S.yonCornerIchiDori.toCodeFromKol(buffer, 306, 1);
     await this.entityManager.persist(shussouba);
   }
 
@@ -163,8 +161,8 @@ export class KolSei2Kd3 extends KolReader {
     const shussoubaYosou = new ShussoubaYosou();
     shussoubaYosou.Shussouba = shussouba;
     shussoubaYosou.KolRecordShisuu = readInt(buffer, 159, 3);
-    shussoubaYosou.KolYosou1 = $SF.yosou.toCodeFromKol(readRaw(buffer, 265, 1));
-    shussoubaYosou.KolYosou2 = $SF.yosou.toCodeFromKol(readRaw(buffer, 266, 1));
+    shussoubaYosou.KolYosou1 = $SF.yosou.toCodeFromKol(buffer, 265, 1);
+    shussoubaYosou.KolYosou2 = $SF.yosou.toCodeFromKol(buffer, 266, 1);
     await this.entityManager.persist(shussoubaYosou);
   }
 

@@ -1,3 +1,5 @@
+import { readRaw } from "../reader/ReadTool";
+
 interface Code {
   code?: number;
   kol?: string | RegExp | ((str: string) => number);
@@ -14,15 +16,28 @@ export class Codes {
     this.codes = codes;
   }
 
-  public toCodeFromKol(str: string) {
+  protected getStr(buffer: Buffer | string, offset?: number, length?: number) {
+    let str: string;
+    if (buffer instanceof Buffer) {
+      str = readRaw(buffer, offset, length);
+    } else {
+      str = buffer;
+    }
+    return str;
+  }
+
+  public toCodeFromKol(buffer: Buffer | string, offset?: number, length?: number) {
+    const str = this.getStr(buffer, offset, length);
     return this.toCodeFrom("kol", str);
   }
 
-  public toCodeFromJrdb(str: string) {
+  public toCodeFromJrdb(buffer: Buffer | string, offset?: number, length?: number) {
+    const str = this.getStr(buffer, offset, length);
     return this.toCodeFrom("jrdb", str);
   }
 
-  public toCodeFromJravan(str: string) {
+  public toCodeFromJravan(buffer: Buffer | string, offset?: number, length?: number) {
+    const str = this.getStr(buffer, offset, length);
     return this.toCodeFrom("jravan", str);
   }
 
@@ -42,15 +57,18 @@ export class Codes {
     return null;
   }
 
-  public toCodesFromKol(str: string) {
+  public toCodesFromKol(buffer: Buffer | string, offset?: number, length?: number) {
+    const str = this.getStr(buffer, offset, length);
     return this.toCodesFrom("kol", str);
   }
 
-  public toCodesFromJrdb(str: string) {
+  public toCodesFromJrdb(buffer: Buffer | string, offset?: number, length?: number) {
+    const str = this.getStr(buffer, offset, length);
     return this.toCodesFrom("jrdb", str);
   }
 
-  public toCodesFromJravan(str: string) {
+  public toCodesFromJravan(buffer: Buffer | string, offset?: number, length?: number) {
+    const str = this.getStr(buffer, offset, length);
     return this.toCodesFrom("jravan", str);
   }
 

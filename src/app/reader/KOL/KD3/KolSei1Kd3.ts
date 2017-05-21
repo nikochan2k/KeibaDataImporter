@@ -1,5 +1,5 @@
 import { EntityManager } from "typeorm";
-import { readRaw, readDate, readStr, readStrWithNoSpace, readInt, readPositiveInt, readTime, readDouble } from "../../ReadTool";
+import { readDate, readStr, readStrWithNoSpace, readInt, readPositiveInt, readTime, readDouble } from "../../ReadTool";
 import { KolRaceReader } from "../KolRaceReader";
 import { Race } from "../../../entities/Race";
 import { RaceYosou } from "../../../entities/RaceYosou";
@@ -49,48 +49,48 @@ export class KolSei1Kd3 extends KolRaceReader {
   }
 
   public async saveRace(buffer: Buffer, race: Race) {
-    race.KaisaiBasho = $C.basho.toCodeFromKol(readRaw(buffer, 0, 2));
+    race.KaisaiBasho = $C.basho.toCodeFromKol(buffer, 0, 2);
     race.KaisaiNen = readPositiveInt(buffer, 2, 4);
     race.KaisaiKaiji = readPositiveInt(buffer, 6, 2);
     race.KaisaiNichiji = readPositiveInt(buffer, 8, 2);
     race.RaceBangou = readPositiveInt(buffer, 10, 2);
     race.Nengappi = readDate(buffer, 12, 8);
-    race.Kyuujitsu = $R.kyuujitsu.toCodeFromKol(readRaw(buffer, 20, 1));
-    race.Youbi = $R.youbi.toCodeFromKol(readRaw(buffer, 21, 1));
-    race.ChuuouChihouGaikoku = $R.chuuouChihouGaikoku.toCodeFromKol(readRaw(buffer, 23, 1));
-    race.IppanTokubetsu = $R.ippanTokubetsu.toCodeFromKol(readRaw(buffer, 24, 1));
-    race.HeichiShougai = $R.heichiShougai.toCodeFromKol(readRaw(buffer, 25, 1));
+    race.Kyuujitsu = $R.kyuujitsu.toCodeFromKol(buffer, 20, 1);
+    race.Youbi = $R.youbi.toCodeFromKol(buffer, 21, 1);
+    race.ChuuouChihouGaikoku = $R.chuuouChihouGaikoku.toCodeFromKol(buffer, 23, 1);
+    race.IppanTokubetsu = $R.ippanTokubetsu.toCodeFromKol(buffer, 24, 1);
+    race.HeichiShougai = $R.heichiShougai.toCodeFromKol(buffer, 25, 1);
     race.JuushouKaisuu = readPositiveInt(buffer, 26, 3);
     race.TokubetsuMei = readStrWithNoSpace(buffer, 29, 30);
     race.TanshukuTokubetsuMei = readStrWithNoSpace(buffer, 59, 14);
-    race.Grade = $R.grade.toCodeFromKol(readRaw(buffer, 73, 1));
-    race.BetteiBareiHandi = $R.betteiBareiHandi.toCodeFromKol(readRaw(buffer, 75, 2));
+    race.Grade = $R.grade.toCodeFromKol(buffer, 73, 1);
+    race.BetteiBareiHandi = $R.betteiBareiHandi.toCodeFromKol(buffer, 75, 2);
     race.BetteiBareiHandiShousai = readStr(buffer, 77, 18);
-    race.JoukenKei = $R.JoukenKei.toCodeFromKol(readRaw(buffer, 99, 1));
-    race.JoukenNenreiSeigen = $R.joukenNenreiSeigen.toCodeFromKol(readRaw(buffer, 100, 1));
-    race.Jouken1 = $R.jouken.toCodeFromKol(readRaw(buffer, 101, 5));
+    race.JoukenKei = $R.JoukenKei.toCodeFromKol(buffer, 99, 1);
+    race.JoukenNenreiSeigen = $R.joukenNenreiSeigen.toCodeFromKol(buffer, 100, 1);
+    race.Jouken1 = $R.jouken.toCodeFromKol(buffer, 101, 5);
     if (race.ChuuouChihouGaikoku !== 0) {
       race.Kumi1 = readPositiveInt(buffer, 106, 2);
-      race.IjouIkaMiman = $R.ijouIkaMiman.toCodeFromKol(readRaw(buffer, 108, 1));
-      race.Jouken2 = $R.jouken.toCodeFromKol(readRaw(buffer, 109, 5));
+      race.IjouIkaMiman = $R.ijouIkaMiman.toCodeFromKol(buffer, 108, 1);
+      race.Jouken2 = $R.jouken.toCodeFromKol(buffer, 109, 5);
       race.Kumi2 = readPositiveInt(buffer, 114, 2);
     }
-    race.DirtShiba = $R.dirtShiba.toCodeFromKol(readRaw(buffer, 116, 1));
-    race.MigiHidari = $R.migiHidari.toCodeFromKol(readRaw(buffer, 117, 1));
-    race.UchiSoto = $R.uchiSoto.toCodeFromKol(readRaw(buffer, 118, 1));
-    race.Course = $R.course.toCodeFromKol(readRaw(buffer, 119, 1));
+    race.DirtShiba = $R.dirtShiba.toCodeFromKol(buffer, 116, 1);
+    race.MigiHidari = $R.migiHidari.toCodeFromKol(buffer, 117, 1);
+    race.UchiSoto = $R.uchiSoto.toCodeFromKol(buffer, 118, 1);
+    race.Course = $R.course.toCodeFromKol(buffer, 119, 1);
     race.Kyori = readPositiveInt(buffer, 120, 4);
     race.CourseRecord = await this.getRecord(buffer, 125, 0);
     race.KyoriRecord = await this.getRecord(buffer, 178, 231);
     race.RaceRecord = await this.getRecord(buffer, 233, 286);
-    race.MaeuriFlag = $R.maeuriFlag.toCodeFromKol(readRaw(buffer, 360, 1));
+    race.MaeuriFlag = $R.maeuriFlag.toCodeFromKol(buffer, 360, 1);
     race.YoteiHassouJikan = readStr(buffer, 361, 5);
     race.Tousuu = readPositiveInt(buffer, 366, 2);
     race.TorikeshiTousuu = readInt(buffer, 368, 2);
-    race.Pace = $R.pace.toCodeFromKol(readRaw(buffer, 378, 1));
-    race.Tenki = $R.tenki.toCodeFromKol(readRaw(buffer, 379, 1));
-    race.Baba = $R.baba.toCodeFromKol(readRaw(buffer, 380, 1));
-    race.Seed = $R.seed.toCodeFromKol(readRaw(buffer, 381, 1));
+    race.Pace = $R.pace.toCodeFromKol(buffer, 378, 1);
+    race.Tenki = $R.tenki.toCodeFromKol(buffer, 379, 1);
+    race.Baba = $R.baba.toCodeFromKol(buffer, 380, 1);
+    race.Seed = $R.seed.toCodeFromKol(buffer, 381, 1);
     if (race.HeichiShougai === 1) { // 障害
       race.ShougaiHeikin1F = readDouble(buffer, 398, 4, 0.1);
     }
@@ -112,8 +112,8 @@ export class KolSei1Kd3 extends KolRaceReader {
   }
 
   public async saveJoukenFuka(buffer: Buffer, race: Race) {
-    const joukenFuka1 = $R.joukenFuka1.toCodesFromKol(readRaw(buffer, 95, 2));
-    const joukenFuka2 = $R.joukenFuka2.toCodesFromKol(readRaw(buffer, 97, 2));
+    const joukenFuka1 = $R.joukenFuka1.toCodesFromKol(buffer, 95, 2);
+    const joukenFuka2 = $R.joukenFuka2.toCodesFromKol(buffer, 97, 2);
     let joukenFukaList = joukenFuka1.concat(joukenFuka2);
     joukenFukaList = joukenFukaList.filter((x, i, self) => self.indexOf(x) === i);
     for (let i = 0; i < joukenFukaList.length; i++) {
@@ -266,8 +266,8 @@ export class KolSei1Kd3 extends KolRaceReader {
       const raceKeika = new RaceKeika();
       raceKeika.Id = race.Id * 10 + bangou;
       raceKeika.Race = race;
-      raceKeika.Midashi1 = $RK.midashi1.toCodeFromKol(readRaw(buffer, offset, 1));
-      raceKeika.Midashi2 = $RK.midashi2.toCodeFromKol(readRaw(buffer, offset + 1, 2));
+      raceKeika.Midashi1 = $RK.midashi1.toCodeFromKol(buffer, offset, 1);
+      raceKeika.Midashi2 = $RK.midashi2.toCodeFromKol(buffer, offset + 1, 2);
       raceKeika.Keika = keika;
       await this.entityManager.persist(raceKeika);
     }
