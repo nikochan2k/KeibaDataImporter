@@ -6,6 +6,7 @@ import { Uma } from "../entities/Uma";
 import { Banushi } from "../entities/Banushi";
 import { Kishu } from "../entities/Kishu";
 import { Seisansha } from "../entities/Seisansha";
+import { RaceClass } from "../entities/RaceClass";
 
 export class DataSupport {
 
@@ -42,6 +43,11 @@ export class DataSupport {
     return tanshukuMei;
   }
 
+  public getRaceId(yyyymmdd: number, basho: number, raceBangou: number) {
+    const id = yyyymmdd * 10000 + basho * 100 + raceBangou;
+    return id;
+  }
+
   public async getBanushi(banushiMei: string) {
     let banushi = await this.entityManager
       .getRepository(Banushi)
@@ -57,10 +63,10 @@ export class DataSupport {
   }
 
   public async saveBanushi(banushiMei: string, tanshukuBanushiMei: string) {
-    const banushi = await this.getBanushi(banushiMei);
+    let banushi = await this.getBanushi(banushiMei);
     if (!banushi.Id) {
       banushi.TanshukuBanushiMei = tanshukuBanushiMei;
-      await this.entityManager.persist(banushi);
+      banushi = await this.entityManager.persist(banushi);
     }
     return banushi;
   }
@@ -94,10 +100,10 @@ export class DataSupport {
   }
 
   public async saveSeisansha(seisanshaMei: string, tanshukuSeisanshaMei: string) {
-    const seisansha = await this.getSeisansha(seisanshaMei);
+    let seisansha = await this.getSeisansha(seisanshaMei);
     if (!seisansha.Id) {
       seisansha.TanshukuSeisanshaMei = tanshukuSeisanshaMei;
-      await this.entityManager.persist(seisansha);
+      seisansha = await this.entityManager.persist(seisansha);
     }
     return seisansha;
   }
@@ -129,6 +135,15 @@ export class DataSupport {
     return kishu;
   }
 
+  public async saveKishu(tanshukuKishuMei: string) {
+    let kishu = await this.getKishu(null, tanshukuKishuMei);
+    if (!kishu.Id) {
+      kishu.TanshukuKishuMei = tanshukuKishuMei;
+      kishu = await this.entityManager.persist(kishu);
+    }
+    return kishu;
+  }
+
   public async getUma(bamei: string) {
     let uma = await this.entityManager
       .getRepository(Uma)
@@ -142,6 +157,87 @@ export class DataSupport {
       uma.KanaBamei = bamei;
     }
     return uma;
+  }
+
+  public async saveUma(bamei: string) {
+    let uma = await this.getUma(bamei);
+    if (!uma.Id) {
+      uma = await this.entityManager.persist(uma);
+    }
+    return uma;
+  }
+
+  public async saveRaceClass(rc: RaceClass) {
+    const qb = await this.entityManager
+      .getRepository(RaceClass)
+      .createQueryBuilder("rc")
+      .where("rc.ChuuouChihouGaikoku = :chuuouChihouGaikoku")
+      .setParameter("chuuouChihouGaikoku", rc.ChuuouChihouGaikoku)
+      .andWhere("rc.IppanTokubetsu = :ippanTokubetsu")
+      .setParameter("ippanTokubetsu", rc.IppanTokubetsu)
+      .andWhere("rc.HeichiShougai = :heichiShougai")
+      .setParameter("heichiShougai", rc.HeichiShougai)
+      .andWhere("rc.JoukenKei = :joukenKei")
+      .setParameter("joukenKei", rc.JoukenKei);
+    if (rc.TokubetsuMei) {
+      qb.andWhere("rc.TokubetsuMei = :tokubetsuMei")
+        .setParameter("tokubetsuMei", rc.TokubetsuMei);
+    } else {
+      qb.andWhere("rc.TokubetsuMei IS NULL");
+    }
+    if (rc.Grade) {
+      qb.andWhere("rc.Grade = :grade")
+        .setParameter("grade", rc.Grade);
+    } else {
+      qb.andWhere("rc.Grade IS NULL");
+    }
+    if (rc.BetteiBareiHandi) {
+      qb.andWhere("rc.BetteiBareiHandi = :betteiBareiHandi")
+        .setParameter("betteiBareiHandi", rc.BetteiBareiHandi);
+    } else {
+      qb.andWhere("rc.BetteiBareiHandi IS NULL");
+    }
+    if (rc.JoukenNenreiSeigen) {
+      qb.andWhere("rc.JoukenNenreiSeigen = :joukenNenreiSeigen")
+        .setParameter("joukenNenreiSeigen", rc.JoukenNenreiSeigen);
+    } else {
+      qb.andWhere("rc.JoukenNenreiSeigen IS NULL");
+    }
+    if (rc.Jouken1) {
+      qb.andWhere("rc.Jouken1 = :jouken1")
+        .setParameter("jouken1", rc.Jouken1);
+    } else {
+      qb.andWhere("rc.Jouken1 IS NULL");
+    }
+    if (rc.Kumi1) {
+      qb.andWhere("rc.Kumi1 = :kumi1")
+        .setParameter("kumi1", rc.Kumi1);
+    } else {
+      qb.andWhere("rc.Kumi1 IS NULL");
+    }
+    if (rc.IjouIkaMiman) {
+      qb.andWhere("rc.IjouIkaMiman = :ijouIkaMiman")
+        .setParameter("ijouIkaMiman", rc.IjouIkaMiman);
+    } else {
+      qb.andWhere("rc.IjouIkaMiman IS NULL");
+    }
+    if (rc.Jouken2) {
+      qb.andWhere("rc.Jouken2 = :jouken2")
+        .setParameter("jouken2", rc.Jouken2);
+    } else {
+      qb.andWhere("rc.Jouken2 IS NULL");
+    }
+    if (rc.Kumi2) {
+      qb.andWhere("rc.Kumi2 = :kumi2")
+        .setParameter("kumi2", rc.Kumi2);
+    } else {
+      qb.andWhere("rc.Kumi2 IS NULL");
+    }
+    let raceClass = await qb.getOne();
+    if (!raceClass) {
+      raceClass = await this.entityManager.persist(rc);
+    }
+    return raceClass;
   }
 
 }

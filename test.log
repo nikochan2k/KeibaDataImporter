@@ -1,5 +1,5 @@
-[36m[2017-05-21 21:49:15.165] [DEBUG] import - [39mReading "/var/folders/jx/ppgkhgkd56x_wfcdz1jj5ccw0000gp/T/tmp-7693nnqAsscPq0GW/kol_uma.kd3'
-[36m[2017-05-21 21:49:21.356] [DEBUG] import - [39mReading "/var/folders/jx/ppgkhgkd56x_wfcdz1jj5ccw0000gp/T/tmp-7693nnqAsscPq0GW/kol_sei1.kd3'
-[36m[2017-05-21 21:49:22.849] [DEBUG] import - [39mReading "/var/folders/jx/ppgkhgkd56x_wfcdz1jj5ccw0000gp/T/tmp-7693nnqAsscPq0GW/kol_sei2.kd3'
-[36m[2017-05-21 21:49:32.010] [DEBUG] import - [39m"kol_sei3.kd3" is not suppoted.
-[36m[2017-05-21 21:49:32.040] [DEBUG] app - [39m"/var/folders/jx/ppgkhgkd56x_wfcdz1jj5ccw0000gp/T/tmp-7693nnqAsscPq0GW" was deleted
+[36m[2017-05-28 21:03:37.551] [DEBUG] import - [39mReading "/var/folders/jx/ppgkhgkd56x_wfcdz1jj5ccw0000gp/T/tmp-23760s2p3txao50iG/kol_uma.kd3'
+[36m[2017-05-28 21:03:43.287] [DEBUG] import - [39mReading "/var/folders/jx/ppgkhgkd56x_wfcdz1jj5ccw0000gp/T/tmp-23760s2p3txao50iG/kol_sei1.kd3'
+[36m[2017-05-28 21:03:44.698] [DEBUG] import - [39mReading "/var/folders/jx/ppgkhgkd56x_wfcdz1jj5ccw0000gp/T/tmp-23760s2p3txao50iG/kol_sei2.kd3'
+[36m[2017-05-28 21:03:53.710] [DEBUG] import - [39m"kol_sei3.kd3" is not suppoted.
+[36m[2017-05-28 21:03:53.763] [DEBUG] app - [39m"/var/folders/jx/ppgkhgkd56x_wfcdz1jj5ccw0000gp/T/tmp-23760s2p3txao50iG" was deleted

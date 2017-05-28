@@ -45,7 +45,7 @@ export class KolSei2Kd3 extends KolReader {
   }
 
   protected async save(buffer: Buffer) {
-    const raceId = readPositiveInt(buffer, 0, 12);
+    const raceId = this.getRaceId(buffer);
     const race = await this.shussoubaSupport.getRace(raceId);
     if (race === null) {
       return;
@@ -85,7 +85,7 @@ export class KolSei2Kd3 extends KolReader {
   protected async saveKishu(buffer: Buffer) {
     const kishuMei = readStrWithNoSpace(buffer, 167, 32);
     const tanshukuKishuMei = readStrWithNoSpace(buffer, 199, 8);
-    const kishu = await this.support.getKishu(kishuMei, tanshukuKishuMei);
+    let kishu = await this.support.getKishu(kishuMei, tanshukuKishuMei);
     if (!kishu.Id || !kishu.KishuMei) {
       kishu.KolKishuCode = readInt(buffer, 162, 5);
       kishu.KishuMei = kishuMei;
@@ -101,7 +101,7 @@ export class KolSei2Kd3 extends KolReader {
         kishu.Kyuusha = kyuusha;
       }
       kishu.MinaraiKubun = $KI.minaraiKubun.toCodeFromKol(buffer, 215, 1);
-      await this.entityManager.persist(kishu);
+      kishu = await this.entityManager.persist(kishu);
     }
     return kishu;
   }

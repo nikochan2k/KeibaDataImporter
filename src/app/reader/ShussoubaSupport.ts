@@ -34,7 +34,7 @@ export class ShussoubaSupport extends DataSupport {
   }
 
   public async normalizeNenrei(shussouba: Shussouba) {
-    if (shussouba.Race.KaisaiNen <= 2000) {
+    if (shussouba.Race.Nen <= 2000) {
       shussouba.Nenrei--;
     }
   }

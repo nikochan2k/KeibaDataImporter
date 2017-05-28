@@ -39,25 +39,25 @@
     "@types/iconv-lite": "0.0.1",
     "@types/log4js": "0.0.32",
     "@types/mocha": "^2.2.41",
-    "@types/node": "^7.0.14",
+    "@types/node": "^7.0.22",
     "@types/rimraf": "0.0.28",
-    "@types/sinon": "^2.1.3",
-    "@types/tmp": "0.0.32",
-    "mocha": "^3.3.0",
+    "@types/sinon": "^2.2.2",
+    "@types/tmp": "0.0.33",
+    "mocha": "^3.4.2",
     "rimraf": "^2.6.1",
-    "sinon": "^2.1.0",
+    "sinon": "^2.3.2",
     "source-map-support": "^0.4.15",
-    "typescript": "^2.3.2"
+    "typescript": "^2.3.3"
   },
   "dependencies": {
-    "glob": "^7.1.1",
+    "glob": "^7.1.2",
     "iconv-lite": "^0.4.17",
     "log4js": "^1.1.1",
     "reflect-metadata": "^0.1.10",
     "rimraf": "^2.6.1",
-    "sqlite": "^2.7.0",
+    "sqlite": "^2.8.0",
     "tmp": "0.0.31",
-    "tslib": "^1.6.1",
-    "typeorm": "0.0.11"
+    "tslib": "^1.7.1",
+    "typeorm": "0.1.0-alpha.3"
   }
 }

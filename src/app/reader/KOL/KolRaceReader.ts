@@ -18,18 +18,19 @@ export abstract class KolRaceReader extends KolReader {
   protected async getRecord(buffer: Buffer, offset: number, bashoOffset: number) {
     const nengappi = readDate(buffer, offset, 8);
     const bamei = readStrWithNoSpace(buffer, offset + 12, 30);
-    const time = readTime(buffer, offset + 8, 4);
-    if (!nengappi || !bamei || !time) {
+    if (!nengappi || !bamei) {
       return null;
     }
+
+    const kyousouba = await this.support.saveUma(bamei);
 
     let record = await this.entityManager
       .getRepository(Record)
       .createQueryBuilder("r")
       .where("r.Nengappi = :nengappi")
-      .andWhere("r.Bamei = :bamei")
+      .andWhere("r.KyousoubaId = :kyousoubaId")
       .setParameter("nengappi", toDateString(nengappi))
-      .setParameter("bamei", bamei)
+      .setParameter("kyousoubaId", kyousouba.Id)
       .getOne();
     if (record) {
       return record;
@@ -37,10 +38,11 @@ export abstract class KolRaceReader extends KolReader {
 
     record = new Record();
     record.Nengappi = nengappi;
-    record.Time = time;
-    record.Bamei = bamei;
+    record.Time = readTime(buffer, offset + 8, 4);
+    record.Kyousouba = kyousouba;
     record.Kinryou = readDouble(buffer, offset + 42, 3, 0.1);
-    record.TanshukuKishuMei = readStrWithNoSpace(buffer, offset + 45, 8);
+    const tanshukuKishuMei = readStrWithNoSpace(buffer, offset + 45, 8);
+    record.Kishu = await this.support.saveKishu(tanshukuKishuMei);
     record.Basho = $C.basho.toCodeFromKol(buffer, bashoOffset, 2);
     record = await this.entityManager.persist(record);
 

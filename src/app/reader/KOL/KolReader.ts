@@ -1,5 +1,5 @@
 import { EntityManager } from "typeorm";
-import { readPositiveInt, readStr, readStrWithNoSpace } from "../ReadTool";
+import { readInt, readPositiveInt, readStr, readStrWithNoSpace } from "../ReadTool";
 import { DataSupport } from "../DataSupport";
 import { DataReader } from "../DataReader";
 import { Kyuusha } from "../../entities/Kyuusha";
@@ -38,6 +38,17 @@ export abstract class KolReader extends DataReader {
     this.support = new DataSupport(this.logger, entityManager);
   }
 
+  protected getRaceId(buffer: Buffer) {
+    const yyyymmdd = readPositiveInt(buffer, 12, 8);
+    const basho = $C.basho.toCodeFromKol(buffer, 0, 2);
+    const raceBangou = readInt(buffer, 10, 2);
+    if (yyyymmdd === null || basho === null || raceBangou === null) {
+      return null;
+    }
+    const id = this.support.getRaceId(yyyymmdd, basho, raceBangou);
+    return id;
+  }
+
   protected async saveKolBanushi(buffer: Buffer, banushiOffset: BanushiOffset) {
     const banushiMei = this.support.normalizeMeishou(buffer, banushiOffset.meishou, 40);
     const tanshukuBanushiMei = this.support.normalizeTanshukuMei(buffer, banushiOffset.tanshuku, 20);
@@ -46,12 +57,12 @@ export abstract class KolReader extends DataReader {
 
   protected async saveKolUma(buffer: Buffer, umaOffset: UmaOffset, banushiOffset: BanushiOffset) {
     const bamei = readStr(buffer, umaOffset.meishou, 30);
-    const uma = await this.support.getUma(bamei);
+    let uma = await this.support.getUma(bamei);
     if (!uma.Id) {
       uma.UmaKigou = $U.umaKigou.toCodeFromKol(buffer, umaOffset.umaKigou, 2);
       uma.Seibetsu = $U.seibetsu.toCodeFromKol(buffer, umaOffset.seibetsu, 1);
       uma.Banushi = await this.saveKolBanushi(buffer, banushiOffset);
-      await this.entityManager.persist(uma);
+      uma = await this.entityManager.persist(uma);
     }
     return uma;
   }
@@ -65,14 +76,14 @@ export abstract class KolReader extends DataReader {
   protected async saveKolKyuusha(buffer: Buffer, kyuushaOffset: KyuushaOffset) {
     const kolKyuushaCode = readPositiveInt(buffer, kyuushaOffset.kolKyuushaCode, 5);
     const kyuushaMei = readStrWithNoSpace(buffer, kyuushaOffset.meishou, 32);
-    const kyuusha = await this.getKyuushaWith(kolKyuushaCode, kyuushaMei);
+    let kyuusha = await this.getKyuushaWith(kolKyuushaCode, kyuushaMei);
     if (!kyuusha.Id || !kyuusha.KolKyuushaCode || !kyuusha.KyuushaMei) {
       kyuusha.KolKyuushaCode = kolKyuushaCode;
       kyuusha.KyuushaMei = kyuushaMei;
       kyuusha.TanshukuKyuushaMei = readStrWithNoSpace(buffer, kyuushaOffset.tanshuku, 8);
       kyuusha.ShozokuBasho = $C.basho.toCodeFromKol(buffer, kyuushaOffset.shozokuBasho, 2);
       kyuusha.RitsuHokuNanBetsu = $KY.ritsuHokuNanBetsu.toCodeFromKol(buffer, kyuushaOffset.ritsuHokuNanBetsu, 1);
-      await this.entityManager.persist(kyuusha);
+      kyuusha = await this.entityManager.persist(kyuusha);
     }
     return kyuusha;
   }

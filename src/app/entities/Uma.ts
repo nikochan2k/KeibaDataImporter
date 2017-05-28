@@ -6,6 +6,7 @@ import { Kyuusha } from "./Kyuusha";
 import { Banushi } from "./Banushi";
 import { Seisansha } from "./Seisansha";
 import { Shussouba } from "./Shussouba";
+import { Record } from "./Record";
 
 @Entity("Uma")
 @Index("IxUma", (u: Uma) => [u.KanaBamei])
@@ -89,6 +90,9 @@ export class Uma {
   @Column("date", { nullable: true })
   public DataSakuseiNengappi: Date;
 
-  @OneToMany(() => Shussouba, Shussouba => Shussouba.Kyousouba)
+  @OneToMany(() => Shussouba, s => s.Kyousouba)
   public ShussoubaList: Shussouba[];
+
+  @OneToMany(() => Record, r => r.Kyousouba)
+  public RecordList: Record[];
 }

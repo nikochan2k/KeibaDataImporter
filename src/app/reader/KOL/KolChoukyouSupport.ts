@@ -36,12 +36,7 @@ export class KolChoukyouSupport extends DataSupport {
     choukyou.ChoukyouFlag = $CH.choukyouFlag.toCodeFromKol(buffer, offset, 1);
     choukyou.Noriyaku = $CH.noriyaku.toCodeFromKol(kijousha);
     if (!choukyou.Noriyaku) {
-      const kishu = await this.getKishu(null, kijousha);
-      if (!kishu.Id) {
-        kishu.TanshukuKishuMei = kijousha;
-        await this.entityManager.persist(kishu);
-      }
-      choukyou.Kishu = kishu;
+      choukyou.Kishu = await this.saveKishu(kijousha);
       if (shussouba.Kishu.Id === choukyou.Kishu.Id) {
         choukyou.Noriyaku = 3; // 本番騎手
       } else {

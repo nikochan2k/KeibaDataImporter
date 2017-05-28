@@ -2,6 +2,7 @@ import {
   Entity, Index, Column, PrimaryColumn, OneToMany, ManyToOne, JoinColumn,
   Embedded
 } from "typeorm";
+import { RaceClass } from "./RaceClass";
 import { RaceYosou } from "./RaceYosou";
 import { RaceYosouTenkai } from "./RaceYosouTenkai";
 import { RaceJoukenFuka } from "./RaceJoukenFuka";
@@ -14,22 +15,22 @@ import { OddsKubun } from "./OddsKubun";
 import { Shussouba } from "./Shussouba";
 
 @Entity("Race")
-@Index("IxRace", (r: Race) => [r.Nengappi, r.KaisaiBasho, r.RaceBangou])
+@Index("IxRace", (r: Race) => [r.Nengappi, r.Basho, r.RaceBangou])
 export class Race {
   @PrimaryColumn("bigint")
   public Id: number;
 
   @Column("smallint")
-  public KaisaiBasho: number;
+  public Basho: number;
 
   @Column("smallint")
-  public KaisaiNen: number;
+  public Nen: number;
 
   @Column("smallint")
-  public KaisaiKaiji: number;
+  public Kaiji: number;
 
   @Column("smallint")
-  public KaisaiNichiji: number;
+  public Nichiji: number;
 
   @Column("smallint")
   public RaceBangou: number;
@@ -43,53 +44,13 @@ export class Race {
   @Column("smallint")
   public Youbi: number;
 
-  @Column("smallint")
-  public ChuuouChihouGaikoku: number;
-
-  @Column("smallint")
-  public IppanTokubetsu: number;
-
-  @Column("smallint")
-  public HeichiShougai: number;
-
   @Column("smallint", { nullable: true })
   public JuushouKaisuu?: number;
 
-  @Column("string", { nullable: true, length: 45 })
-  public TokubetsuMei: string;
-
-  @Column("string", { nullable: true, length: 21 })
-  public TanshukuTokubetsuMei: string;
-
-  @Column("smallint", { nullable: true })
-  public Grade?: number;
-
-  @Column("smallint", { nullable: true })
-  public BetteiBareiHandi?: number;
-
-  @Column("string", { nullable: true, length: 27 })
-  public BetteiBareiHandiShousai: string;
-
-  @Column("smallint")
-  public JoukenKei: number;
-
-  @Column("smallint", { nullable: true })
-  public JoukenNenreiSeigen?: number;
-
-  @Column("smallint", { nullable: true })
-  public Jouken1?: number;
-
-  @Column("smallint", { nullable: true })
-  public Kumi1?: number;
-
-  @Column("smallint", { nullable: true })
-  public IjouIkaMiman?: number;
-
-  @Column("smallint", { nullable: true })
-  public Jouken2?: number;
-
-  @Column("smallint", { nullable: true })
-  public Kumi2?: number;
+  @Column("int", { name: "RaceClassId" })
+  @ManyToOne(() => RaceClass, rc => rc.Id)
+  @JoinColumn({ name: "RaceClassId" })
+  public RaceClass: RaceClass;
 
   @Column("smallint")
   public DirtShiba: number;

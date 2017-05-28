@@ -3,6 +3,7 @@ import {
 } from "typeorm";
 import { Shussouba } from "./Shussouba";
 import { Kyuusha } from "./Kyuusha";
+import { Record } from "./Record";
 
 @Entity("Kishu")
 @Index("IxKishu", (k: Kishu) => [k.KishuMei])
@@ -59,4 +60,7 @@ export class Kishu {
 
   @OneToMany(() => Shussouba, s => s.Kishu)
   public ShussoubaList: Shussouba[];
+
+  @OneToMany(() => Record, r => r.Kishu)
+  public RecordList: Record[];
 }

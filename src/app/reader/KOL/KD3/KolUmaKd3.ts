@@ -15,7 +15,7 @@ export class KolUmaKd3 extends KolReader {
 
   protected async saveOyaUma(buffer: Buffer, offset: number, seibetsu: $U.Seibetsu, chichiOffset?: number, hahaOffset?: number) {
     const bamei = readStr(buffer, offset, 34);
-    const uma = await this.support.getUma(bamei);
+    let uma = await this.support.getUma(bamei);
 
     let needPersist = !uma.Id;
     if (chichiOffset && !uma.ChichiUma) {
@@ -29,7 +29,7 @@ export class KolUmaKd3 extends KolReader {
 
     if (needPersist) {
       uma.Seibetsu = seibetsu;
-      await this.entityManager.persist(uma);
+      uma = await this.entityManager.persist(uma);
     }
 
     return uma;
