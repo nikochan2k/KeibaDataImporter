@@ -103,7 +103,7 @@ export class KolSei1Kd3 extends KolRaceReader {
     rc.ChuuouChihouGaikoku = $R.chuuouChihouGaikoku.toCodeFromKol(buffer, 23, 1);
     rc.IppanTokubetsu = $R.ippanTokubetsu.toCodeFromKol(buffer, 24, 1);
     rc.HeichiShougai = $R.heichiShougai.toCodeFromKol(buffer, 25, 1);
-    rc.TokubetsuMei = readStrWithNoSpace(buffer, 29, 30);
+    rc.TokubetsuMei = this.support.normalizeTokubetsuMei(buffer, 29, 30);
     rc.TanshukuTokubetsuMei = readStrWithNoSpace(buffer, 59, 14);
     rc.Grade = $R.grade.toCodeFromKol(buffer, 73, 1);
     rc.BetteiBareiHandi = $R.betteiBareiHandi.toCodeFromKol(buffer, 75, 2);

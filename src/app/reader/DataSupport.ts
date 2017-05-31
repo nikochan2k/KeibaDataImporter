@@ -19,28 +19,39 @@ export class DataSupport {
     this.entityManager = entityManager;
   }
 
-  public normalizeMeishou(buffer, offset, length) {
+  public normalizeHoujinMei(buffer, offset, length) {
     let meishou = readStrWithNoSpace(buffer, offset, length);
     if (!meishou) {
       return meishou;
     }
-    meishou = meishou.replace(/株式会社|㈱/g, "(株)");
-    meishou = meishou.replace(/有限会社|㈲/g, "(有)");
+    meishou = meishou.replace(/(株)|㈱/g, "株式会社");
+    meishou = meishou.replace(/(有)|㈲/g, "有限会社");
     meishou = meishou.replace(/・/g, "");
     meishou = meishou.replace(/氏$/, "");
     return meishou;
   }
 
-  public normalizeTanshukuMei(buffer, offset, length) {
+  public normalizeTanshukuHoujinMei(buffer, offset, length) {
     let tanshukuMei = readStrWithNoSpace(buffer, offset, length);
     if (!tanshukuMei) {
       return tanshukuMei;
     }
-    tanshukuMei = tanshukuMei.replace(/¥(株¥)|㈱/g, "");
-    tanshukuMei = tanshukuMei.replace(/¥(有¥)|㈲/g, "");
+    tanshukuMei = tanshukuMei.replace(/¥(株¥)|㈱/, "");
+    tanshukuMei = tanshukuMei.replace(/¥(有¥)|㈲/, "");
     tanshukuMei = tanshukuMei.replace(/・/g, "");
     tanshukuMei = tanshukuMei.replace(/氏$/, "");
     return tanshukuMei;
+  }
+
+  public normalizeTokubetsuMei(buffer, offset, length) {
+    let meishou = readStrWithNoSpace(buffer, offset, length);
+    if (!meishou) {
+      return meishou;
+    }
+    meishou = meishou.replace(/S$/, "ステークス");
+    meishou = meishou.replace(/T$/, "トロフィー");
+    meishou = meishou.replace(/H$|ハンデ$/, "ハンデキャップ");
+    return meishou;
   }
 
   public getRaceId(yyyymmdd: number, basho: number, raceBangou: number) {

@@ -50,8 +50,8 @@ export abstract class KolReader extends DataReader {
   }
 
   protected async saveKolBanushi(buffer: Buffer, banushiOffset: BanushiOffset) {
-    const banushiMei = this.support.normalizeMeishou(buffer, banushiOffset.meishou, 40);
-    const tanshukuBanushiMei = this.support.normalizeTanshukuMei(buffer, banushiOffset.tanshuku, 20);
+    const banushiMei = this.support.normalizeHoujinMei(buffer, banushiOffset.meishou, 40);
+    const tanshukuBanushiMei = this.support.normalizeTanshukuHoujinMei(buffer, banushiOffset.tanshuku, 20);
     return await this.support.saveBanushi(banushiMei, tanshukuBanushiMei);
   }
 
@@ -68,8 +68,8 @@ export abstract class KolReader extends DataReader {
   }
 
   protected async saveKolSeisansha(buffer: Buffer, seisanshaOffset: SeisanshaOffset) {
-    const seisanshaMei = this.support.normalizeMeishou(buffer, seisanshaOffset.meishou, 40);
-    const tanshukuSeisanshaMei = this.support.normalizeTanshukuMei(buffer, seisanshaOffset.tanshuku, 20);
+    const seisanshaMei = this.support.normalizeHoujinMei(buffer, seisanshaOffset.meishou, 40);
+    const tanshukuSeisanshaMei = this.support.normalizeTanshukuHoujinMei(buffer, seisanshaOffset.tanshuku, 20);
     return await this.support.saveSeisansha(seisanshaMei, tanshukuSeisanshaMei);
   }
 
