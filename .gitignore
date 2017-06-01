@@ -4,3 +4,4 @@
 /src/typings/
 *.sqlite
 npm-debug.log
+*.log
