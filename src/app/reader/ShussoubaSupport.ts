@@ -1,6 +1,6 @@
 import { EntityManager } from "typeorm";
 import { Logger } from "log4js";
-import { DataSupport } from "./DataSupport";
+import { getLogger } from "../Constant";
 import { readInt } from "./ReadTool";
 import { Race } from "../entities/Race";
 import { RaceKeika } from "../entities/RaceKeika";
@@ -11,10 +11,12 @@ interface RaceMap {
   [raceId: number]: Race;
 }
 
-export class ShussoubaSupport extends DataSupport {
+export class ShussoubaSupport {
 
-  constructor(logger: Logger, entityManager: EntityManager) {
-    super(logger, entityManager);
+  private logger: Logger;
+
+  constructor(protected entityManager: EntityManager) {
+    this.logger = getLogger(this);
   }
 
   protected raceMap: RaceMap = {};

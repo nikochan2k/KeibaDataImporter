@@ -4,13 +4,11 @@ import * as fs from "fs";
 import * as glob from "glob";
 import * as tmp from "tmp";
 import * as rimraf from "rimraf";
-import * as log4js from "log4js";
 import { exec } from "child_process";
-import { LOG_LEVEL } from "./Constant";
+import { getLogger } from "./Constant";
 import { Entries, Importer } from "./Importer";
 
-const logger = log4js.getLogger("app");
-logger.setLevel(LOG_LEVEL);
+const logger = getLogger("app");
 
 let arg = "";
 if (3 <= process.argv.length) {

@@ -1,6 +1,6 @@
 import { EntityManager } from "typeorm";
 import { readDate, readStrWithNoSpace, readPositiveInt, readTime, readDouble, toDateString } from "../ReadTool";
-import { KolReader } from "./KolReader";
+import { DataSupport } from "../DataSupport";
 import { Race } from "../../entities/Race";
 import { Record } from "../../entities/Record";
 import { RaceShoukin } from "../../entities/RaceShoukin";
@@ -11,20 +11,22 @@ import { ShoukinInfo } from "../../converters/RaceShoukin";
 import { HaitouInfo } from "../../converters/RaceHaitou";
 import { MasshouFlag } from "../../converters/Kishu";
 
-export abstract class KolRaceReader extends KolReader {
+export class KolRaceTool {
 
-  constructor(entityManager: EntityManager, fd: number) {
-    super(entityManager, fd);
+  private tool: DataSupport;
+
+  constructor(protected entityManager: EntityManager) {
+    this.tool = new DataSupport(entityManager);
   }
 
-  protected async getRecord(buffer: Buffer, offset: number, bashoOffset: number) {
+  public async getRecord(buffer: Buffer, offset: number, bashoOffset: number) {
     const nengappi = readDate(buffer, offset, 8);
     const bamei = readStrWithNoSpace(buffer, offset + 12, 30);
     if (!nengappi || !bamei) {
       return null;
     }
 
-    const kyousouba = await this.support.saveUma(bamei);
+    const kyousouba = await this.tool.saveUma(bamei);
 
     let record = await this.entityManager
       .getRepository(Record)
@@ -48,7 +50,7 @@ export abstract class KolRaceReader extends KolReader {
     kishu.MasshouFlag = MasshouFlag.Geneki;
     kishu.FromNengappi = record.Nengappi;
     kishu.ToNengappi = record.Nengappi;
-    record.Kishu = await this.support.saveKishu(kishu);
+    record.Kishu = await this.tool.saveKishu(kishu);
     record.Basho = $C.basho.toCodeFromKol(buffer, bashoOffset, 2);
     record = await this.entityManager.persist(record);
 

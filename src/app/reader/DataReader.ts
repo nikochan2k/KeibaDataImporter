@@ -1,19 +1,18 @@
 import * as fs from "fs";
 import * as log4js from "log4js";
-import { LOG_LEVEL } from "../Constant";
+import { getLogger } from "../Constant";
 import { EntityManager } from "typeorm";
+import { DataSupport } from "./DataSupport";
 
 export abstract class DataReader {
 
   protected logger: log4js.Logger;
-  protected entityManager: EntityManager;
-  private fd: number;
 
-  constructor(entityManager: EntityManager, fd: number) {
-    this.logger = log4js.getLogger("reader");
-    this.logger.setLevel(LOG_LEVEL);
-    this.entityManager = entityManager;
-    this.fd = fd;
+  protected tool: DataSupport;
+
+  constructor(protected entityManager: EntityManager, protected fd: number) {
+    this.logger = getLogger(this);
+    this.tool = new DataSupport(entityManager);
   }
 
   protected abstract getBufferLength();

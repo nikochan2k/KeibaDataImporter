@@ -1,8 +1,8 @@
 import "reflect-metadata";
-import { createConnection, Connection, EntityManager } from "typeorm";
-import { Logger, getLogger } from "log4js";
 import * as fs from "fs";
-import { LOG_LEVEL, logging } from "./Constant";
+import { createConnection, Connection, EntityManager } from "typeorm";
+import { Logger } from "log4js";
+import { getLogger, logging } from "./Constant";
 import { DataReader } from "./reader/DataReader";
 import { KolUmaKd3 } from "./reader/KOL/KD3/KolUmaKd3";
 import { KolSei1Kd3 } from "./reader/KOL/KD3/KolSei1Kd3";
@@ -35,8 +35,7 @@ export class Importer {
   }
 
   protected constructLogger() {
-    this.logger = getLogger("import");
-    this.logger.setLevel(LOG_LEVEL);
+    this.logger = getLogger(this);
   }
 
   protected async constructConection() {

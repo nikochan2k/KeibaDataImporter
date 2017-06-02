@@ -1,6 +1,8 @@
 import { EntityManager } from "typeorm";
 import { readDate, readStr, readStrWithNoSpace, readInt, readPositiveInt, readTime, readDouble } from "../../ReadTool";
-import { KolRaceReader } from "../KolRaceReader";
+import { DataReader } from "../../DataReader";
+import { KolTool } from "../KolTool";
+import { KolRaceTool } from "../KolRaceTool";
 import { Race } from "../../../entities/Race";
 import { RaceClass } from "../../../entities/RaceClass";
 import { RaceYosou } from "../../../entities/RaceYosou";
@@ -12,10 +14,16 @@ import * as $R from "../../../converters/Race";
 import * as $C from "../../../converters/Common";
 import * as $RK from "../../../converters/RaceKeika";
 
-export class KolSei1Kd3 extends KolRaceReader {
+export class KolSei1Kd3 extends DataReader {
+
+  protected kolTool: KolTool;
+
+  protected kolRaceTool: KolRaceTool;
 
   constructor(entityManager: EntityManager, fd: number) {
     super(entityManager, fd);
+    this.kolTool = new KolTool(entityManager);
+    this.kolRaceTool = new KolRaceTool(entityManager);
   }
 
   protected getBufferLength() {
@@ -23,7 +31,7 @@ export class KolSei1Kd3 extends KolRaceReader {
   }
 
   protected async save(buffer: Buffer) {
-    const id = this.getRaceId(buffer);
+    const id = this.kolTool.getRaceId(buffer);
     if (!id) {
       return;
     }
@@ -66,9 +74,9 @@ export class KolSei1Kd3 extends KolRaceReader {
     race.UchiSoto = $R.uchiSoto.toCodeFromKol(buffer, 118, 1);
     race.Course = $R.course.toCodeFromKol(buffer, 119, 1);
     race.Kyori = readPositiveInt(buffer, 120, 4);
-    race.CourseRecord = await this.getRecord(buffer, 125, 0);
-    race.KyoriRecord = await this.getRecord(buffer, 178, 231);
-    race.RaceRecord = await this.getRecord(buffer, 233, 286);
+    race.CourseRecord = await this.kolRaceTool.getRecord(buffer, 125, 0);
+    race.KyoriRecord = await this.kolRaceTool.getRecord(buffer, 178, 231);
+    race.RaceRecord = await this.kolRaceTool.getRecord(buffer, 233, 286);
     race.MaeuriFlag = $R.maeuriFlag.toCodeFromKol(buffer, 360, 1);
     race.YoteiHassouJikan = readStr(buffer, 361, 5);
     race.Tousuu = readPositiveInt(buffer, 366, 2);
@@ -103,7 +111,7 @@ export class KolSei1Kd3 extends KolRaceReader {
     rc.ChuuouChihouGaikoku = $R.chuuouChihouGaikoku.toCodeFromKol(buffer, 23, 1);
     rc.IppanTokubetsu = $R.ippanTokubetsu.toCodeFromKol(buffer, 24, 1);
     rc.HeichiShougai = $R.heichiShougai.toCodeFromKol(buffer, 25, 1);
-    rc.TokubetsuMei = this.support.normalizeTokubetsuMei(buffer, 29, 30);
+    rc.TokubetsuMei = this.tool.normalizeTokubetsuMei(buffer, 29, 30);
     rc.TanshukuTokubetsuMei = readStrWithNoSpace(buffer, 59, 14);
     rc.Grade = $R.grade.toCodeFromKol(buffer, 73, 1);
     rc.BetteiBareiHandi = $R.betteiBareiHandi.toCodeFromKol(buffer, 75, 2);
@@ -117,7 +125,7 @@ export class KolSei1Kd3 extends KolRaceReader {
       rc.Jouken2 = $R.jouken.toCodeFromKol(buffer, 109, 5);
       rc.Kumi2 = readPositiveInt(buffer, 114, 2);
     }
-    const raceClass = await this.support.saveRaceClass(rc);
+    const raceClass = await this.tool.saveRaceClass(rc);
     return raceClass;
   }
 
@@ -136,7 +144,7 @@ export class KolSei1Kd3 extends KolRaceReader {
   }
 
   public async saveRaceShoukin(buffer: Buffer, race: Race) {
-    super.saveRaceShoukin(buffer, race, [
+    this.kolRaceTool.saveRaceShoukin(buffer, race, [
       { chakujun: 1, offset: 288, length: 9, fukashou: 0 },
       { chakujun: 2, offset: 297, length: 9, fukashou: 0 },
       { chakujun: 3, offset: 306, length: 9, fukashou: 0 },
@@ -288,7 +296,7 @@ export class KolSei1Kd3 extends KolRaceReader {
   }
 
   public async saveRaceHaitou(buffer: Buffer, race: Race) {
-    super.saveRaceHaitou(
+    this.kolRaceTool.saveRaceHaitou(
       buffer, race,
       [
         { baken: Baken.Tanshou, bangou1: 2100, bangou1Len: 2, haitou: 2102, haitouLen: 6 },

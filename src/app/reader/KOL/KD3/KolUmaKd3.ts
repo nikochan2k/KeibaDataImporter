@@ -1,12 +1,16 @@
 import { EntityManager } from "typeorm";
 import { readDate, readStr } from "../../ReadTool";
-import { KolReader } from "../KolReader";
+import { DataReader } from "../../DataReader";
+import { KolTool } from "../KolTool";
 import * as $U from "../../../converters/Uma";
 
-export class KolUmaKd3 extends KolReader {
+export class KolUmaKd3 extends DataReader {
+
+  private kolTool: KolTool;
 
   constructor(entityManager: EntityManager, fd: number) {
     super(entityManager, fd);
+    this.kolTool = new KolTool(entityManager);
   }
 
   protected getBufferLength() {
@@ -15,7 +19,7 @@ export class KolUmaKd3 extends KolReader {
 
   protected async saveOyaUma(buffer: Buffer, offset: number, seibetsu: $U.Seibetsu, chichiOffset?: number, hahaOffset?: number) {
     const bamei = readStr(buffer, offset, 34);
-    let uma = await this.support.getUma(bamei);
+    let uma = await this.tool.getUma(bamei);
 
     let needPersist = !uma.Id;
     if (chichiOffset && !uma.ChichiUma) {
@@ -38,7 +42,7 @@ export class KolUmaKd3 extends KolReader {
   protected async save(buffer: Buffer) {
     const dataSakuseiNengappi = readDate(buffer, 624, 8);
     const kanaBamei = readStr(buffer, 7, 30);
-    const uma = await this.support.getUma(kanaBamei);
+    const uma = await this.tool.getUma(kanaBamei);
     if (dataSakuseiNengappi <= uma.DataSakuseiNengappi) {
       this.logger.debug("既に最新の競走馬データが格納されています: " + kanaBamei);
       return;
@@ -53,9 +57,9 @@ export class KolUmaKd3 extends KolReader {
     uma.Seibetsu = $U.seibetsu.toCodeFromKol(buffer, 94, 1);
     uma.ChichiUma = await this.saveOyaUma(buffer, 104, $U.Seibetsu.Boba);
     uma.HahaUma = await this.saveOyaUma(buffer, 145, $U.Seibetsu.Hinba, 186, 227);
-    uma.Banushi = await this.saveKolBanushi(buffer, { meishou: 343, tanshuku: 383 });
-    uma.Seisansha = await this.saveKolSeisansha(buffer, { meishou: 423, tanshuku: 463 });
-    uma.Kyuusha = await this.saveKolKyuusha(buffer, {
+    uma.Banushi = await this.kolTool.saveBanushi(buffer, { meishou: 343, tanshuku: 383 });
+    uma.Seisansha = await this.kolTool.saveSeisansha(buffer, { meishou: 423, tanshuku: 463 });
+    uma.Kyuusha = await this.kolTool.saveKyuusha(buffer, {
       kolKyuushaCode: 488, meishou: 493, tanshuku: 525, shozokuBasho: 533, ritsuHokuNanBetsu: 535
     });
     uma.KoueiGaikokuKyuushaMei = readStr(buffer, 536, 8);

@@ -1,5 +1,6 @@
 import { EntityManager } from "typeorm";
 import { Logger } from "log4js";
+import { getLogger } from "../../Constant";
 import { readStr, readDate, readStrWithNoSpace, readPositiveInt } from "../ReadTool";
 import { DataSupport } from "../DataSupport";
 import { Shussouba } from "../../entities/Shussouba";
@@ -14,14 +15,16 @@ export interface FurlongOffset {
   offset: number;
 }
 
-export class KolChoukyouSupport extends DataSupport {
+export class KolChoukyouSupport {
 
-  private hanroFurlongOffsets: FurlongOffset[];
+  private logger: Logger;
 
-  private courseFurlongOffsets: FurlongOffset[];
+  private tool: DataSupport;
 
-  constructor(logger: Logger, entityManager: EntityManager, hanroFurlongOffsets: FurlongOffset[], courseFurlongOffsets: FurlongOffset[]) {
-    super(logger, entityManager);
+  constructor(protected entityManager: EntityManager, protected hanroFurlongOffsets: FurlongOffset[],
+    protected courseFurlongOffsets: FurlongOffset[]) {
+    this.logger = getLogger(this);
+    this.tool = new DataSupport(entityManager);
     this.hanroFurlongOffsets = hanroFurlongOffsets;
     this.courseFurlongOffsets = courseFurlongOffsets;
   }
@@ -44,7 +47,7 @@ export class KolChoukyouSupport extends DataSupport {
       kishu.MasshouFlag = MasshouFlag.Geneki;
       kishu.FromNengappi = choukyou.Nengappi;
       kishu.ToNengappi = choukyou.Nengappi;
-      choukyou.Kishu = await this.saveKishu(kishu);
+      choukyou.Kishu = await this.tool.saveKishu(kishu);
       if (shussouba.Kishu.Id === choukyou.Kishu.Id) {
         choukyou.Noriyaku = 3; // 本番騎手
       } else {

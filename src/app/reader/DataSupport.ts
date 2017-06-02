@@ -1,4 +1,5 @@
 import { EntityManager } from "typeorm";
+import { getLogger } from "../Constant";
 import { Logger } from "log4js";
 import { readStrWithNoSpace } from "./ReadTool";
 import { Kyuusha } from "../entities/Kyuusha";
@@ -10,13 +11,10 @@ import { RaceClass } from "../entities/RaceClass";
 
 export class DataSupport {
 
-  protected logger: Logger;
+  private logger: Logger;
 
-  protected entityManager: EntityManager;
-
-  constructor(logger: Logger, entityManager: EntityManager) {
-    this.logger = logger;
-    this.entityManager = entityManager;
+  constructor(protected entityManager: EntityManager) {
+    this.logger = getLogger(this);
   }
 
   public normalizeHoujinMei(buffer, offset, length) {
