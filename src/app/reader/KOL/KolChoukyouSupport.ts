@@ -3,8 +3,10 @@ import { Logger } from "log4js";
 import { readStr, readDate, readStrWithNoSpace, readPositiveInt } from "../ReadTool";
 import { DataSupport } from "../DataSupport";
 import { Shussouba } from "../../entities/Shussouba";
+import { Kishu } from "../../entities/Kishu";
 import { Choukyou } from "../../entities/Choukyou";
 import { ChoukyouTime } from "../../entities/ChoukyouTime";
+import { MasshouFlag } from "../../converters/Kishu";
 import * as $CH from "../../converters/Choukyou";
 
 export interface FurlongOffset {
@@ -35,15 +37,20 @@ export class KolChoukyouSupport extends DataSupport {
     choukyou.Bangou = 1;
     choukyou.ChoukyouFlag = $CH.choukyouFlag.toCodeFromKol(buffer, offset, 1);
     choukyou.Noriyaku = $CH.noriyaku.toCodeFromKol(kijousha);
+    choukyou.Nengappi = readDate(buffer, offset + 9, 8);
     if (!choukyou.Noriyaku) {
-      choukyou.Kishu = await this.saveKishu(kijousha);
+      const kishu = new Kishu();
+      kishu.TanshukuKishuMei = kijousha;
+      kishu.MasshouFlag = MasshouFlag.Geneki;
+      kishu.FromNengappi = choukyou.Nengappi;
+      kishu.ToNengappi = choukyou.Nengappi;
+      choukyou.Kishu = await this.saveKishu(kishu);
       if (shussouba.Kishu.Id === choukyou.Kishu.Id) {
         choukyou.Noriyaku = 3; // 本番騎手
       } else {
         choukyou.Noriyaku = 4; // 調教騎手
       }
     }
-    choukyou.Nengappi = readDate(buffer, offset + 9, 8);
     const bashoCourse = readStrWithNoSpace(buffer, offset + 17, 8);
     choukyou.Basho = $CH.basho.toCodeFromKol(bashoCourse);
     choukyou.Type = $CH.type.toCodeFromKol(bashoCourse);

@@ -3,6 +3,7 @@ import { readInt, readPositiveInt, readDate, readStrWithNoSpace, readDouble, rea
 import { ShussoubaSupport } from "../../ShussoubaSupport";
 import { KolReader } from "../KolReader";
 import { KolChoukyouSupport, FurlongOffset } from "../KolChoukyouSupport";
+import { Kishu } from "../../../entities/Kishu";
 import { Shussouba } from "../../../entities/Shussouba";
 import { ShussoubaYosou } from "../../../entities/ShussoubaYosou";
 import { ShussoubaTsuukaJuni } from "../../../entities/ShussoubaTsuukaJuni";
@@ -82,27 +83,26 @@ export class KolSei2Kd3 extends KolReader {
     this.shussoubaSupport.finishUp();
   }
 
-  protected async saveKishu(buffer: Buffer) {
-    const kishuMei = readStrWithNoSpace(buffer, 167, 32);
-    const tanshukuKishuMei = readStrWithNoSpace(buffer, 199, 8);
-    let kishu = await this.support.getKishu(kishuMei, tanshukuKishuMei);
-    if (!kishu.Id || !kishu.KishuMei) {
-      kishu.KolKishuCode = readInt(buffer, 162, 5);
-      kishu.KishuMei = kishuMei;
-      kishu.TanshukuKishuMei = tanshukuKishuMei;
-      kishu.TouzaiBetsu = $C.touzaiBetsu.toCodeFromKol(buffer, 207, 1);
-      kishu.ShozokuBasho = $C.basho.toCodeFromKol(buffer, 208, 2);
-      const kyuushaCode = readPositiveInt(buffer, 210, 5);
-      if (kyuushaCode) {
-        const kyuusha = await this.getKyuushaWith(kyuushaCode);
-        if (!kyuusha.Id) {
-          this.entityManager.persist(kyuusha);
-        }
-        kishu.Kyuusha = kyuusha;
+  protected async saveKishu(buffer: Buffer, shussouba: Shussouba) {
+    let kishu = new Kishu();
+    kishu.KolKishuCode = readInt(buffer, 162, 5);
+    kishu.KishuMei = readStrWithNoSpace(buffer, 167, 32);
+    kishu.TanshukuKishuMei = readStrWithNoSpace(buffer, 199, 8);
+    kishu.MasshouFlag = $KI.MasshouFlag.Geneki;
+    kishu.TouzaiBetsu = $C.touzaiBetsu.toCodeFromKol(buffer, 207, 1);
+    kishu.ShozokuBasho = $C.basho.toCodeFromKol(buffer, 208, 2);
+    const kyuushaCode = readPositiveInt(buffer, 210, 5);
+    if (kyuushaCode) {
+      const kyuusha = await this.getKyuushaWith(kyuushaCode);
+      if (!kyuusha.Id) {
+        this.entityManager.persist(kyuusha);
       }
-      kishu.MinaraiKubun = $KI.minaraiKubun.toCodeFromKol(buffer, 215, 1);
-      kishu = await this.entityManager.persist(kishu);
+      kishu.Kyuusha = kyuusha;
     }
+    kishu.MinaraiKubun = $KI.minaraiKubun.toCodeFromKol(buffer, 215, 1);
+    kishu.FromNengappi = shussouba.Race.Nengappi;
+    kishu.ToNengappi = shussouba.Race.Nengappi;
+    kishu = await this.support.saveKishu(kishu);
     return kishu;
   }
 
@@ -127,7 +127,7 @@ export class KolSei2Kd3 extends KolReader {
     shussouba.Kyuusha = await this.saveKolKyuusha(buffer, {
       kolKyuushaCode: 217, meishou: 222, tanshuku: 254, shozokuBasho: 262, ritsuHokuNanBetsu: 264
     });
-    shussouba.Kishu = await this.saveKishu(buffer);
+    shussouba.Kishu = await this.saveKishu(buffer, shussouba);
     shussouba.Norikawari = $S.norikawari.toCodeFromKol(buffer, 215, 1);
     shussouba.Ninki = readPositiveInt(buffer, 267, 2);
     shussouba.Odds = readDouble(buffer, 269, 5, 0.1);

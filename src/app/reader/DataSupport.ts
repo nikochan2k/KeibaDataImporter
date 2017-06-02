@@ -119,37 +119,93 @@ export class DataSupport {
     return seisansha;
   }
 
-  public async getKishu(kishuMei?: string, tanshukuKishuMei?: string) {
-    let kishu: Kishu;
-    if (kishuMei) {
+  protected async getKishu(kishu: Kishu) {
+    let k: Kishu;
+    if (kishu.KishuMei) {
       const qb = this.entityManager
         .getRepository(Kishu)
         .createQueryBuilder("k")
-        .where("k.KishuMei = :kishuMei")
-        .setParameter("kishuMei", kishuMei);
-      if (tanshukuKishuMei) {
-        qb.orWhere("k.TanshukuKishuMei = :tanshukuKishuMei")
-          .setParameter("tanshukuKishuMei", tanshukuKishuMei);
+        .where("k.TanshukuKishuMei = :tanshukuKishuMei")
+        .setParameter("tanshukuKishuMei", kishu.TanshukuKishuMei)
+        .andWhere("k.MasshouFlag = :masshouFlag")
+        .setParameter("masshouFlag", kishu.MasshouFlag)
+        .andWhere("k.KishuMei = :kishuMei")
+        .setParameter("kishuMei", kishu.KishuMei);
+      if (0 <= kishu.TouzaiBetsu) {
+        qb.andWhere("k.TouzaiBetsu = :touzaiBetsu")
+          .setParameter("touzaiBetsu", kishu.TouzaiBetsu);
+      } else {
+        qb.andWhere("k.TouzaiBetsu IS NULL");
       }
-      kishu = await qb.getOne();
-    } else if (tanshukuKishuMei) {
-      kishu = await this.entityManager
+      if (0 <= kishu.ShozokuBasho) {
+        qb.andWhere("k.ShozokuBasho = :shozokuBasho")
+          .setParameter("shozokuBasho", kishu.ShozokuBasho);
+      } else {
+        qb.andWhere("k.ShozokuBasho IS NULL");
+      }
+      if (0 <= kishu.MinaraiKubun) {
+        qb.andWhere("k.MinaraiKubun = :minaraiKubun")
+          .setParameter("minaraiKubun", kishu.MinaraiKubun);
+      } else {
+        qb.andWhere("k.MinaraiKubun IS NULL");
+      }
+      if (kishu.Kyuusha) {
+        qb.andWhere("k.KyuushaId = :kyuushaId")
+          .setParameter("kyuushaId", kishu.Kyuusha.Id);
+      } else {
+        qb.andWhere("k.KyuushaId IS NULL");
+      }
+      k = await qb.getOne();
+    }
+    if (!k) {
+      k = await this.entityManager
         .getRepository(Kishu)
         .createQueryBuilder("k")
         .where("k.TanshukuKishuMei = :tanshukuKishuMei")
-        .setParameter("tanshukuKishuMei", tanshukuKishuMei)
+        .setParameter("tanshukuKishuMei", kishu.TanshukuKishuMei)
         .getOne();
     }
-    if (!kishu) {
-      kishu = new Kishu();
-    }
-    return kishu;
+    return k;
   }
 
-  public async saveKishu(tanshukuKishuMei: string) {
-    let kishu = await this.getKishu(null, tanshukuKishuMei);
-    if (!kishu.Id) {
-      kishu.TanshukuKishuMei = tanshukuKishuMei;
+  public async saveKishu(kishu: Kishu) {
+    const k = await this.getKishu(kishu);
+    if (k) {
+      let needUpdate = false;
+      if (!k.KolKishuCode && kishu.KolKishuCode) {
+        k.KolKishuCode = kishu.KolKishuCode;
+        needUpdate = true;
+      }
+      if (!k.JrdbKishuCode && kishu.JrdbKishuCode) {
+        k.JrdbKishuCode = kishu.JrdbKishuCode;
+        needUpdate = true;
+      }
+      if (!k.Furigana && kishu.Furigana) {
+        k.Furigana = kishu.Furigana;
+        needUpdate = true;
+      }
+      if (!k.Seinengappi && kishu.Seinengappi) {
+        k.Seinengappi = kishu.Seinengappi;
+        needUpdate = true;
+      }
+      if (!k.HatsuMenkyoNen && kishu.HatsuMenkyoNen) {
+        k.HatsuMenkyoNen = kishu.HatsuMenkyoNen;
+        needUpdate = true;
+      }
+      if (kishu.FromNengappi < k.FromNengappi) {
+        k.FromNengappi = kishu.FromNengappi;
+        needUpdate = true;
+      }
+      if (k.ToNengappi < kishu.ToNengappi) {
+        k.ToNengappi = kishu.ToNengappi;
+        needUpdate = true;
+      }
+      if (needUpdate) {
+        kishu = await this.entityManager.persist(k);
+      } else {
+        kishu = k;
+      }
+    } else {
       kishu = await this.entityManager.persist(kishu);
     }
     return kishu;

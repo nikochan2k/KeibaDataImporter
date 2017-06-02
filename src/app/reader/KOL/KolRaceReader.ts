@@ -5,9 +5,11 @@ import { Race } from "../../entities/Race";
 import { Record } from "../../entities/Record";
 import { RaceShoukin } from "../../entities/RaceShoukin";
 import { RaceHaitou } from "../../entities/RaceHaitou";
+import { Kishu } from "../../entities/Kishu";
 import * as $C from "../../converters/Common";
 import { ShoukinInfo } from "../../converters/RaceShoukin";
 import { HaitouInfo } from "../../converters/RaceHaitou";
+import { MasshouFlag } from "../../converters/Kishu";
 
 export abstract class KolRaceReader extends KolReader {
 
@@ -41,8 +43,12 @@ export abstract class KolRaceReader extends KolReader {
     record.Time = readTime(buffer, offset + 8, 4);
     record.Kyousouba = kyousouba;
     record.Kinryou = readDouble(buffer, offset + 42, 3, 0.1);
-    const tanshukuKishuMei = readStrWithNoSpace(buffer, offset + 45, 8);
-    record.Kishu = await this.support.saveKishu(tanshukuKishuMei);
+    const kishu = new Kishu();
+    kishu.TanshukuKishuMei = readStrWithNoSpace(buffer, offset + 45, 8);
+    kishu.MasshouFlag = MasshouFlag.Geneki;
+    kishu.FromNengappi = record.Nengappi;
+    kishu.ToNengappi = record.Nengappi;
+    record.Kishu = await this.support.saveKishu(kishu);
     record.Basho = $C.basho.toCodeFromKol(buffer, bashoOffset, 2);
     record = await this.entityManager.persist(record);
 

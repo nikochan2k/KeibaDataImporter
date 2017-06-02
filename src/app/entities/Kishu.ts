@@ -6,22 +6,31 @@ import { Kyuusha } from "./Kyuusha";
 import { Record } from "./Record";
 
 @Entity("Kishu")
-@Index("IxKishu", (k: Kishu) => [k.KishuMei])
+@Index("IxKishu", (k: Kishu) => [k.TanshukuKishuMei])
 export class Kishu {
   @PrimaryGeneratedColumn("int")
   public Id: number;
+
+  @Column("smallint")
+  public MasshouFlag: number;
+
+  @Column("string", { length: 12 })
+  public TanshukuKishuMei: string;
+
+  @Column("date")
+  public FromNengappi: Date;
+
+  @Column("date")
+  public ToNengappi: Date;
+
+  @Column("string", { length: 48, nullable: true })
+  public KishuMei?: string;
 
   @Column("int", { nullable: true })
   public KolKishuCode?: number;
 
   @Column("int", { nullable: true })
   public JrdbKishuCode?: number;
-
-  @Column("string", { length: 48, nullable: true })
-  public KishuMei?: string;
-
-  @Column("string", { length: 12 })
-  public TanshukuKishuMei: string;
 
   @Column("string", { length: 72, nullable: true })
   public Furigana?: string;
@@ -48,15 +57,6 @@ export class Kishu {
   @ManyToOne(() => Kyuusha, Kyuusha => Kyuusha.KishuList)
   @JoinColumn({ name: "KyuushaId" })
   public Kyuusha?: Kyuusha;
-
-  @Column("smallint", { nullable: true })
-  public MasshouFlag?: number;
-
-  @Column("date", { nullable: true })
-  public KolDataSakuseiNengappi?: Date;
-
-  @Column("date", { nullable: true })
-  public JrdbDataSakuseiNengappi?: Date;
 
   @OneToMany(() => Shussouba, s => s.Kishu)
   public ShussoubaList: Shussouba[];
