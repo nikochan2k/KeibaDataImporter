@@ -1,4 +1,4 @@
-import { EntityManager } from "typeorm";
+import { Service, Inject } from "typedi";
 import { readDate, readStr, readStrWithNoSpace, readInt, readPositiveInt, readTime, readDouble } from "../../Reader";
 import { DataToImport } from "../../DataToImport";
 import { KolTool } from "../KolTool";
@@ -14,17 +14,14 @@ import * as $R from "../../../converters/Race";
 import * as $C from "../../../converters/Common";
 import * as $RK from "../../../converters/RaceKeika";
 
+@Service()
 export class KolSei1Kd3 extends DataToImport {
 
+  @Inject()
   protected kolTool: KolTool;
 
+  @Inject()
   protected kolRaceTool: KolRaceTool;
-
-  constructor(entityManager: EntityManager, fd: number) {
-    super(entityManager, fd);
-    this.kolTool = new KolTool(entityManager);
-    this.kolRaceTool = new KolRaceTool(entityManager);
-  }
 
   protected getBufferLength() {
     return 3200;

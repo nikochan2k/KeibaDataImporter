@@ -1,18 +1,23 @@
 import * as fs from "fs";
 import * as log4js from "log4js";
-import { getLogger } from "../LogUtil";
+import { Inject } from "typedi";
 import { EntityManager } from "typeorm";
+import { OrmEntityManager } from "typeorm-typedi-extensions";
+import { getLogger } from "../LogUtil";
 import { DataTool } from "./DataTool";
 
 export abstract class DataToImport {
 
   protected logger: log4js.Logger;
 
+  @OrmEntityManager()
+  protected entityManager: EntityManager;
+
+  @Inject()
   protected tool: DataTool;
 
-  constructor(protected entityManager: EntityManager, protected fd: number) {
+  constructor() {
     this.logger = getLogger(this);
-    this.tool = new DataTool(entityManager);
   }
 
   protected abstract getBufferLength();
@@ -22,18 +27,18 @@ export abstract class DataToImport {
   protected finishUp() {
   }
 
-  public async readAll() {
+  public async readAll(fd: number) {
     let buffer: Buffer;
     const length = this.getBufferLength();
-    while ((buffer = this.readLine(length)) !== null) {
+    while ((buffer = this.readLine(fd, length)) !== null) {
       await this.save(buffer);
     }
     await this.finishUp();
   }
 
-  protected readLine(length: number): Buffer {
+  protected readLine(fd: number, length: number): Buffer {
     const buf = new Buffer(length);
-    const size = fs.readSync(this.fd, buf, 0, length, null);
+    const size = fs.readSync(fd, buf, 0, length, null);
     return size === 0 ? null : buf;
   }
 

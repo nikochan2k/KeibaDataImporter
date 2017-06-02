@@ -1,4 +1,6 @@
+import { Service, Inject } from "typedi";
 import { EntityManager } from "typeorm";
+import { OrmEntityManager} from "typeorm-typedi-extensions";
 import { readInt, readPositiveInt, readStr, readStrWithNoSpace } from "../Reader";
 import { DataTool } from "../DataTool";
 import { Kyuusha } from "../../entities/Kyuusha";
@@ -28,13 +30,14 @@ interface KyuushaOffset extends MeishouOffset {
   ritsuHokuNanBetsu: number;
 }
 
+@Service()
 export class KolTool {
 
-  protected tool: DataTool;
+  @OrmEntityManager()
+  private entityManager: EntityManager;
 
-  constructor(protected entityManager: EntityManager) {
-    this.tool = new DataTool(this.entityManager);
-  }
+  @Inject()
+  private tool: DataTool;
 
   public getRaceId(buffer: Buffer) {
     const yyyymmdd = readPositiveInt(buffer, 12, 8);

@@ -1,4 +1,4 @@
-import { EntityManager } from "typeorm";
+import { Service, Inject } from "typedi";
 import { readInt, readPositiveInt, readDate, readStrWithNoSpace, readDouble, readTime } from "../../Reader";
 import { ShussoubaTool } from "../../ShussoubaTool";
 import { DataToImport } from "../../DataToImport";
@@ -30,20 +30,17 @@ const hanroFurlongOffsets: FurlongOffset[] = [
   { f: 1, offset: 63 }
 ];
 
+@Service()
 export class KolSei2Kd3 extends DataToImport {
 
-  private shussoubaSupport: ShussoubaTool;
+  @Inject()
+  private shussoubaTool: ShussoubaTool;
 
-  private choukyouSupport: KolChoukyouTool;
+  @Inject()
+  private choukyouTool: KolChoukyouTool;
 
+  @Inject()
   private kolTool: KolTool;
-
-  constructor(entityManager: EntityManager, fd: number) {
-    super(entityManager, fd);
-    this.shussoubaSupport = new ShussoubaTool(entityManager);
-    this.choukyouSupport = new KolChoukyouTool(entityManager, hanroFurlongOffsets, courseFurlongOffsets);
-    this.kolTool = new KolTool(entityManager);
-  }
 
   protected getBufferLength() {
     return 600;
@@ -51,7 +48,7 @@ export class KolSei2Kd3 extends DataToImport {
 
   protected async save(buffer: Buffer) {
     const raceId = this.kolTool.getRaceId(buffer);
-    const race = await this.shussoubaSupport.getRace(raceId);
+    const race = await this.shussoubaTool.getRace(raceId);
     if (race === null) {
       return;
     }
@@ -80,11 +77,11 @@ export class KolSei2Kd3 extends DataToImport {
     race.ShussoubaList.push(shussouba);
     await this.saveShussoubaYosou(buffer, shussouba);
     await this.saveShussoubaTsuukaJuni(buffer, shussouba);
-    await this.choukyouSupport.saveChoukyou(buffer, shussouba, 307);
+    await this.choukyouTool.saveChoukyou(buffer, shussouba, 307, hanroFurlongOffsets, courseFurlongOffsets);
   }
 
   public async finishUp() {
-    this.shussoubaSupport.finishUp();
+    this.shussoubaTool.finishUp();
   }
 
   protected async saveKishu(buffer: Buffer, shussouba: Shussouba) {
@@ -135,9 +132,9 @@ export class KolSei2Kd3 extends DataToImport {
     shussouba.Norikawari = $S.norikawari.toCodeFromKol(buffer, 215, 1);
     shussouba.Ninki = readPositiveInt(buffer, 267, 2);
     shussouba.Odds = readDouble(buffer, 269, 5, 0.1);
-    shussouba.KakuteiChakujun = this.shussoubaSupport.getChakujun(buffer, 274, 2);
+    shussouba.KakuteiChakujun = this.shussoubaTool.getChakujun(buffer, 274, 2);
     shussouba.ChakujunFuka = $S.chakujunFuka.toCodeFromKol(buffer, 276, 2);
-    shussouba.NyuusenChakujun = this.shussoubaSupport.getChakujun(buffer, 278, 2);
+    shussouba.NyuusenChakujun = this.shussoubaTool.getChakujun(buffer, 278, 2);
     shussouba.TorikeshiShubetsu = $S.torikeshiShubetsu.toCodeFromKol(buffer, 280, 1);
     shussouba.RecordNinshiki = $S.recordNinshiki.toCodeFromKol(buffer, 281, 1);
     shussouba.Time = readTime(buffer, 282, 4);

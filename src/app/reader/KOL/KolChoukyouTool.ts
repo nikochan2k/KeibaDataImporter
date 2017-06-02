@@ -1,4 +1,6 @@
+import { Service, Inject } from "typedi";
 import { EntityManager } from "typeorm";
+import { OrmEntityManager } from "typeorm-typedi-extensions";
 import { Logger } from "log4js";
 import { getLogger } from "../../LogUtil";
 import { readStr, readDate, readStrWithNoSpace, readPositiveInt } from "../Reader";
@@ -15,21 +17,24 @@ export interface FurlongOffset {
   offset: number;
 }
 
+@Service()
 export class KolChoukyouTool {
 
   private logger: Logger;
 
+  @OrmEntityManager()
+  private entityManager: EntityManager;
+
+  @Inject()
   private tool: DataTool;
 
-  constructor(protected entityManager: EntityManager, protected hanroFurlongOffsets: FurlongOffset[],
-    protected courseFurlongOffsets: FurlongOffset[]) {
+  constructor() {
     this.logger = getLogger(this);
-    this.tool = new DataTool(entityManager);
-    this.hanroFurlongOffsets = hanroFurlongOffsets;
-    this.courseFurlongOffsets = courseFurlongOffsets;
   }
 
-  public async saveChoukyou(buffer: Buffer, shussouba: Shussouba, offset: number, awase?: string) {
+  public async saveChoukyou(buffer: Buffer, shussouba: Shussouba, offset: number,
+    hanroFurlongOffsets: FurlongOffset[], courseFurlongOffsets: FurlongOffset[], awase?: string
+  ) {
     const kijousha = readStrWithNoSpace(buffer, offset + 1, 8);
     if (!kijousha) {
       return;
@@ -83,9 +88,9 @@ export class KolChoukyouTool {
     await this.entityManager.persist(choukyou);
 
     if (choukyou.Type === $CH.ChoukyouType.Hanro) {
-      await this.saveChoukyouTime(buffer, choukyou, offset, this.hanroFurlongOffsets);
+      await this.saveChoukyouTime(buffer, choukyou, offset, hanroFurlongOffsets);
     } else if ($CH.ChoukyouType.Shiba <= choukyou.Type || choukyou.Type <= $CH.ChoukyouType.Shougai) {
-      await this.saveChoukyouTime(buffer, choukyou, offset, this.courseFurlongOffsets);
+      await this.saveChoukyouTime(buffer, choukyou, offset, courseFurlongOffsets);
     }
   }
 

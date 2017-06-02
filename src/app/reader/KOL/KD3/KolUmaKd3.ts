@@ -1,17 +1,14 @@
-import { EntityManager } from "typeorm";
+import { Service, Inject } from "typedi";
 import { readDate, readStr } from "../../Reader";
 import { DataToImport } from "../../DataToImport";
 import { KolTool } from "../KolTool";
 import * as $U from "../../../converters/Uma";
 
+@Service()
 export class KolUmaKd3 extends DataToImport {
 
+  @Inject()
   private kolTool: KolTool;
-
-  constructor(entityManager: EntityManager, fd: number) {
-    super(entityManager, fd);
-    this.kolTool = new KolTool(entityManager);
-  }
 
   protected getBufferLength() {
     return 5166;

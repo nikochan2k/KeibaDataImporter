@@ -1,8 +1,10 @@
 import "reflect-metadata";
 import * as fs from "fs";
-import { createConnection, Connection, EntityManager } from "typeorm";
+import { Service, Container } from "typedi";
+import { EntityManager } from "typeorm";
+import { OrmEntityManager} from "typeorm-typedi-extensions";
 import { Logger } from "log4js";
-import { getLogger, logging } from "./LogUtil";
+import { getLogger } from "./LogUtil";
 import { DataToImport } from "./reader/DataToImport";
 import { KolUmaKd3 } from "./reader/KOL/KD3/KolUmaKd3";
 import { KolSei1Kd3 } from "./reader/KOL/KD3/KolSei1Kd3";
@@ -13,58 +15,32 @@ export interface Entries {
 }
 
 interface Readers {
-  [basename: string]: (entityManager: EntityManager, fd: number) => DataToImport;
+  [basename: string]: () => DataToImport;
 }
 
 const readers: Readers = {
-  "kol_uma.kd3": (entityManager: EntityManager, fd: number) => new KolUmaKd3(entityManager, fd),
+  "kol_uma.kd3": () => Container.get(KolUmaKd3),
   "kol_den1.kd3": null,
   "kol_den2.kd3": null,
-  "kol_sei1.kd3": (entityManager: EntityManager, fd: number) => new KolSei1Kd3(entityManager, fd),
-  "kol_sei2.kd3": (entityManager: EntityManager, fd: number) => new KolSei2Kd3(entityManager, fd),
+  "kol_sei1.kd3": () => Container.get(KolSei1Kd3),
+  "kol_sei2.kd3": () => Container.get(KolSei2Kd3),
   "kol_sei3.kd3": null,
 };
 
+@Service()
 export class Importer {
 
-  private logger: Logger;
-  private con: Connection;
+  logger: Logger;
+
+  @OrmEntityManager()
+  entityManager: EntityManager;
 
   constructor() {
-    this.constructLogger();
-  }
-
-  protected constructLogger() {
     this.logger = getLogger(this);
   }
 
-  protected async constructConection() {
-    if (!this.con) {
-      this.con = await createConnection({
-        driver: {
-          type: "sqlite",
-          storage: "test.sqlite"
-        },
-        entities: [
-          __dirname + "/entities/*.js"
-        ],
-        logging: logging,
-        autoSchemaSync: false
-      });
-      try {
-        await this.con.syncSchema(false);
-      } catch (e) {
-        this.logger.warn(e.stack || e);
-      }
-    }
-
-    return this.con.createEntityManagerWithSingleDatabaseConnection();
-  }
-
   public async import(entries: Entries) {
-    const em = await this.constructConection();
-
-    await em.transaction(async (entityManager) => {
+    await this.entityManager.transaction(async () => {
       for (const basename in readers) {
         const dataFile = entries[basename];
         if (!dataFile) {
@@ -79,8 +55,8 @@ export class Importer {
         let fd: number;
         try {
           fd = fs.openSync(dataFile, "r");
-          const reader = createReader(entityManager, fd);
-          await reader.readAll();
+          const reader = createReader();
+          await reader.readAll(fd);
         } catch (e) {
           this.logger.error(e.stack || e);
         }

@@ -1,4 +1,6 @@
+import { Service } from "typedi";
 import { EntityManager } from "typeorm";
+import { OrmEntityManager} from "typeorm-typedi-extensions";
 import { getLogger } from "../LogUtil";
 import { Logger } from "log4js";
 import { readStrWithNoSpace } from "./Reader";
@@ -9,11 +11,15 @@ import { Kishu } from "../entities/Kishu";
 import { Seisansha } from "../entities/Seisansha";
 import { RaceClass } from "../entities/RaceClass";
 
+@Service()
 export class DataTool {
 
   private logger: Logger;
 
-  constructor(protected entityManager: EntityManager) {
+  @OrmEntityManager()
+  private entityManager: EntityManager;
+
+  constructor() {
     this.logger = getLogger(this);
   }
 

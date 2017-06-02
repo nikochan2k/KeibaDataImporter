@@ -1,4 +1,6 @@
+import { Service, Inject } from "typedi";
 import { EntityManager } from "typeorm";
+import { OrmEntityManager} from "typeorm-typedi-extensions";
 import { readDate, readStrWithNoSpace, readPositiveInt, readTime, readDouble } from "../Reader";
 import { DataTool } from "../DataTool";
 import { Race } from "../../entities/Race";
@@ -11,13 +13,14 @@ import { ShoukinInfo } from "../../converters/RaceShoukin";
 import { HaitouInfo } from "../../converters/RaceHaitou";
 import { MasshouFlag } from "../../converters/Kishu";
 
+@Service()
 export class KolRaceTool {
 
-  private tool: DataTool;
+  @OrmEntityManager()
+  private entityManager: EntityManager;
 
-  constructor(protected entityManager: EntityManager) {
-    this.tool = new DataTool(entityManager);
-  }
+  @Inject()
+  private tool: DataTool;
 
   public async getRecord(buffer: Buffer, offset: number, bashoOffset: number) {
     const nengappi = readDate(buffer, offset, 8);

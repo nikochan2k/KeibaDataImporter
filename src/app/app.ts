@@ -5,7 +5,9 @@ import * as glob from "glob";
 import * as tmp from "tmp";
 import * as rimraf from "rimraf";
 import { exec } from "child_process";
-import { getLogger } from "./LogUtil";
+import { Container } from "typedi";
+import { createConnection, useContainer } from "typeorm";
+import { getLogger, logging } from "./LogUtil";
 import { Entries, Importer } from "./Importer";
 
 const logger = getLogger("app");
@@ -15,13 +17,37 @@ if (3 <= process.argv.length) {
   arg = process.argv[2];
 }
 
-const importer = new Importer();
+let importer: Importer;
+buildConnection().then(() => {
+  importer = Container.get(Importer);
 
-const lzhDir = checkDir(path.join(process.cwd(), arg)) || checkDir(arg);
-if (lzhDir) {
-  traverseLzhDir(lzhDir);
-} else {
-  logger.error('"' + lzhDir + '" is not a directory.');
+  const lzhDir = checkDir(path.join(process.cwd(), arg)) || checkDir(arg);
+  if (lzhDir) {
+    traverseLzhDir(lzhDir);
+  } else {
+    logger.error('"' + lzhDir + '" is not a directory.');
+  }
+});
+
+async function buildConnection() {
+  useContainer(Container);
+  const con = await createConnection({
+    driver: {
+      type: "sqlite",
+      storage: "test.sqlite"
+    },
+    entities: [
+      __dirname + "/entities/*.js"
+    ],
+    logging: logging,
+    autoSchemaSync: false
+  });
+
+  try {
+    await con.syncSchema(false);
+  } catch (e) {
+    logger.warn(e.stack || e);
+  }
 }
 
 function checkDir(lzhDir: string): string {

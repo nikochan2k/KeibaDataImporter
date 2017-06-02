@@ -1,4 +1,6 @@
+import { Service } from "typedi";
 import { EntityManager } from "typeorm";
+import { OrmEntityManager} from "typeorm-typedi-extensions";
 import { Logger } from "log4js";
 import { getLogger } from "../LogUtil";
 import { readInt } from "./Reader";
@@ -11,11 +13,15 @@ interface RaceMap {
   [raceId: number]: Race;
 }
 
+@Service()
 export class ShussoubaTool {
 
   private logger: Logger;
 
-  constructor(protected entityManager: EntityManager) {
+  @OrmEntityManager()
+  private entityManager: EntityManager;
+
+  constructor() {
     this.logger = getLogger(this);
   }
 
