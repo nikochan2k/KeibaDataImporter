@@ -1,9 +1,9 @@
 import { EntityManager } from "typeorm";
-import { readInt, readPositiveInt, readDate, readStrWithNoSpace, readDouble, readTime } from "../../ReadTool";
-import { ShussoubaSupport } from "../../ShussoubaSupport";
-import { DataReader } from "../../DataReader";
+import { readInt, readPositiveInt, readDate, readStrWithNoSpace, readDouble, readTime } from "../../Reader";
+import { ShussoubaTool } from "../../ShussoubaTool";
+import { DataToImport } from "../../DataToImport";
 import { KolTool } from "../KolTool";
-import { KolChoukyouSupport, FurlongOffset } from "../KolChoukyouSupport";
+import { KolChoukyouTool, FurlongOffset } from "../KolChoukyouTool";
 import { Kishu } from "../../../entities/Kishu";
 import { Shussouba } from "../../../entities/Shussouba";
 import { ShussoubaYosou } from "../../../entities/ShussoubaYosou";
@@ -30,18 +30,18 @@ const hanroFurlongOffsets: FurlongOffset[] = [
   { f: 1, offset: 63 }
 ];
 
-export class KolSei2Kd3 extends DataReader {
+export class KolSei2Kd3 extends DataToImport {
 
-  private shussoubaSupport: ShussoubaSupport;
+  private shussoubaSupport: ShussoubaTool;
 
-  private choukyouSupport: KolChoukyouSupport;
+  private choukyouSupport: KolChoukyouTool;
 
   private kolTool: KolTool;
 
   constructor(entityManager: EntityManager, fd: number) {
     super(entityManager, fd);
-    this.shussoubaSupport = new ShussoubaSupport(entityManager);
-    this.choukyouSupport = new KolChoukyouSupport(entityManager, hanroFurlongOffsets, courseFurlongOffsets);
+    this.shussoubaSupport = new ShussoubaTool(entityManager);
+    this.choukyouSupport = new KolChoukyouTool(entityManager, hanroFurlongOffsets, courseFurlongOffsets);
     this.kolTool = new KolTool(entityManager);
   }
 

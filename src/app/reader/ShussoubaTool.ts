@@ -1,7 +1,7 @@
 import { EntityManager } from "typeorm";
 import { Logger } from "log4js";
-import { getLogger } from "../Constant";
-import { readInt } from "./ReadTool";
+import { getLogger } from "../LogUtil";
+import { readInt } from "./Reader";
 import { Race } from "../entities/Race";
 import { RaceKeika } from "../entities/RaceKeika";
 import { Shussouba } from "../entities/Shussouba";
@@ -11,7 +11,7 @@ interface RaceMap {
   [raceId: number]: Race;
 }
 
-export class ShussoubaSupport {
+export class ShussoubaTool {
 
   private logger: Logger;
 

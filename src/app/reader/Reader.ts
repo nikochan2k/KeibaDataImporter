@@ -39,15 +39,6 @@ function normalize(str: string) {
   return normalized.trim();
 }
 
-function format00(value: number): string {
-  if (value < 10) return "0" + value;
-  return "" + value;
-}
-
-export function toDateString(value: Date): string {
-  return value.getFullYear() + "-" + format00(value.getMonth() + 1) + "-" + format00(value.getDate());
-}
-
 export function readRaw(buffer: Buffer, offset: number, length: number) {
   const chunk = new Buffer(length);
   buffer.copy(chunk, 0, offset, offset + length);

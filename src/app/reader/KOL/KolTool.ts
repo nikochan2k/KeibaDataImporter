@@ -1,6 +1,6 @@
 import { EntityManager } from "typeorm";
-import { readInt, readPositiveInt, readStr, readStrWithNoSpace } from "../ReadTool";
-import { DataSupport } from "../DataSupport";
+import { readInt, readPositiveInt, readStr, readStrWithNoSpace } from "../Reader";
+import { DataTool } from "../DataTool";
 import { Kyuusha } from "../../entities/Kyuusha";
 import * as $C from "../../converters/Common";
 import * as $U from "../../converters/Uma";
@@ -30,10 +30,10 @@ interface KyuushaOffset extends MeishouOffset {
 
 export class KolTool {
 
-  protected tool: DataSupport;
+  protected tool: DataTool;
 
   constructor(protected entityManager: EntityManager) {
-    this.tool = new DataSupport(this.entityManager);
+    this.tool = new DataTool(this.entityManager);
   }
 
   public getRaceId(buffer: Buffer) {

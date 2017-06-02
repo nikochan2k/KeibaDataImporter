@@ -5,7 +5,7 @@ import * as glob from "glob";
 import * as tmp from "tmp";
 import * as rimraf from "rimraf";
 import { exec } from "child_process";
-import { getLogger } from "./Constant";
+import { getLogger } from "./LogUtil";
 import { Entries, Importer } from "./Importer";
 
 const logger = getLogger("app");

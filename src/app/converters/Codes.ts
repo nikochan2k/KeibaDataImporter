@@ -1,4 +1,4 @@
-import { readRaw } from "../reader/ReadTool";
+import { readRaw } from "../reader/Reader";
 
 interface Code {
   code?: number;

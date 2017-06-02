@@ -1,6 +1,6 @@
 import { EntityManager } from "typeorm";
-import { readDate, readStr, readStrWithNoSpace, readInt, readPositiveInt, readTime, readDouble } from "../../ReadTool";
-import { DataReader } from "../../DataReader";
+import { readDate, readStr, readStrWithNoSpace, readInt, readPositiveInt, readTime, readDouble } from "../../Reader";
+import { DataToImport } from "../../DataToImport";
 import { KolTool } from "../KolTool";
 import { KolRaceTool } from "../KolRaceTool";
 import { Race } from "../../../entities/Race";
@@ -14,7 +14,7 @@ import * as $R from "../../../converters/Race";
 import * as $C from "../../../converters/Common";
 import * as $RK from "../../../converters/RaceKeika";
 
-export class KolSei1Kd3 extends DataReader {
+export class KolSei1Kd3 extends DataToImport {
 
   protected kolTool: KolTool;
 

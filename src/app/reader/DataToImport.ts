@@ -1,18 +1,18 @@
 import * as fs from "fs";
 import * as log4js from "log4js";
-import { getLogger } from "../Constant";
+import { getLogger } from "../LogUtil";
 import { EntityManager } from "typeorm";
-import { DataSupport } from "./DataSupport";
+import { DataTool } from "./DataTool";
 
-export abstract class DataReader {
+export abstract class DataToImport {
 
   protected logger: log4js.Logger;
 
-  protected tool: DataSupport;
+  protected tool: DataTool;
 
   constructor(protected entityManager: EntityManager, protected fd: number) {
     this.logger = getLogger(this);
-    this.tool = new DataSupport(entityManager);
+    this.tool = new DataTool(entityManager);
   }
 
   protected abstract getBufferLength();

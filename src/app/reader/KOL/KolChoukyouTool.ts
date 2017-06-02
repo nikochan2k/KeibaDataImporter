@@ -1,8 +1,8 @@
 import { EntityManager } from "typeorm";
 import { Logger } from "log4js";
-import { getLogger } from "../../Constant";
-import { readStr, readDate, readStrWithNoSpace, readPositiveInt } from "../ReadTool";
-import { DataSupport } from "../DataSupport";
+import { getLogger } from "../../LogUtil";
+import { readStr, readDate, readStrWithNoSpace, readPositiveInt } from "../Reader";
+import { DataTool } from "../DataTool";
 import { Shussouba } from "../../entities/Shussouba";
 import { Kishu } from "../../entities/Kishu";
 import { Choukyou } from "../../entities/Choukyou";
@@ -15,16 +15,16 @@ export interface FurlongOffset {
   offset: number;
 }
 
-export class KolChoukyouSupport {
+export class KolChoukyouTool {
 
   private logger: Logger;
 
-  private tool: DataSupport;
+  private tool: DataTool;
 
   constructor(protected entityManager: EntityManager, protected hanroFurlongOffsets: FurlongOffset[],
     protected courseFurlongOffsets: FurlongOffset[]) {
     this.logger = getLogger(this);
-    this.tool = new DataSupport(entityManager);
+    this.tool = new DataTool(entityManager);
     this.hanroFurlongOffsets = hanroFurlongOffsets;
     this.courseFurlongOffsets = courseFurlongOffsets;
   }

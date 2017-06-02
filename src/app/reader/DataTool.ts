@@ -1,7 +1,7 @@
 import { EntityManager } from "typeorm";
-import { getLogger } from "../Constant";
+import { getLogger } from "../LogUtil";
 import { Logger } from "log4js";
-import { readStrWithNoSpace } from "./ReadTool";
+import { readStrWithNoSpace } from "./Reader";
 import { Kyuusha } from "../entities/Kyuusha";
 import { Uma } from "../entities/Uma";
 import { Banushi } from "../entities/Banushi";
@@ -9,12 +9,21 @@ import { Kishu } from "../entities/Kishu";
 import { Seisansha } from "../entities/Seisansha";
 import { RaceClass } from "../entities/RaceClass";
 
-export class DataSupport {
+export class DataTool {
 
   private logger: Logger;
 
   constructor(protected entityManager: EntityManager) {
     this.logger = getLogger(this);
+  }
+
+  protected format00(value: number): string {
+    if (value < 10) return "0" + value;
+    return "" + value;
+  }
+
+  public toDateString(value: Date): string {
+    return value.getFullYear() + "-" + this.format00(value.getMonth() + 1) + "-" + this.format00(value.getDate());
   }
 
   public normalizeHoujinMei(buffer, offset, length) {

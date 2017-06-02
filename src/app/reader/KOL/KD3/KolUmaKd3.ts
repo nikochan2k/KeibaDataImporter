@@ -1,10 +1,10 @@
 import { EntityManager } from "typeorm";
-import { readDate, readStr } from "../../ReadTool";
-import { DataReader } from "../../DataReader";
+import { readDate, readStr } from "../../Reader";
+import { DataToImport } from "../../DataToImport";
 import { KolTool } from "../KolTool";
 import * as $U from "../../../converters/Uma";
 
-export class KolUmaKd3 extends DataReader {
+export class KolUmaKd3 extends DataToImport {
 
   private kolTool: KolTool;
 

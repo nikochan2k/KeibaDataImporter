@@ -1,6 +1,6 @@
 import { EntityManager } from "typeorm";
-import { readDate, readStrWithNoSpace, readPositiveInt, readTime, readDouble, toDateString } from "../ReadTool";
-import { DataSupport } from "../DataSupport";
+import { readDate, readStrWithNoSpace, readPositiveInt, readTime, readDouble } from "../Reader";
+import { DataTool } from "../DataTool";
 import { Race } from "../../entities/Race";
 import { Record } from "../../entities/Record";
 import { RaceShoukin } from "../../entities/RaceShoukin";
@@ -13,10 +13,10 @@ import { MasshouFlag } from "../../converters/Kishu";
 
 export class KolRaceTool {
 
-  private tool: DataSupport;
+  private tool: DataTool;
 
   constructor(protected entityManager: EntityManager) {
-    this.tool = new DataSupport(entityManager);
+    this.tool = new DataTool(entityManager);
   }
 
   public async getRecord(buffer: Buffer, offset: number, bashoOffset: number) {
@@ -33,7 +33,7 @@ export class KolRaceTool {
       .createQueryBuilder("r")
       .where("r.Nengappi = :nengappi")
       .andWhere("r.KyousoubaId = :kyousoubaId")
-      .setParameter("nengappi", toDateString(nengappi))
+      .setParameter("nengappi", this.tool.toDateString(nengappi))
       .setParameter("kyousoubaId", kyousouba.Id)
       .getOne();
     if (record) {

@@ -2,8 +2,8 @@ import "reflect-metadata";
 import * as fs from "fs";
 import { createConnection, Connection, EntityManager } from "typeorm";
 import { Logger } from "log4js";
-import { getLogger, logging } from "./Constant";
-import { DataReader } from "./reader/DataReader";
+import { getLogger, logging } from "./LogUtil";
+import { DataToImport } from "./reader/DataToImport";
 import { KolUmaKd3 } from "./reader/KOL/KD3/KolUmaKd3";
 import { KolSei1Kd3 } from "./reader/KOL/KD3/KolSei1Kd3";
 import { KolSei2Kd3 } from "./reader/KOL/KD3/KolSei2Kd3";
@@ -13,7 +13,7 @@ export interface Entries {
 }
 
 interface Readers {
-  [basename: string]: (entityManager: EntityManager, fd: number) => DataReader;
+  [basename: string]: (entityManager: EntityManager, fd: number) => DataToImport;
 }
 
 const readers: Readers = {
