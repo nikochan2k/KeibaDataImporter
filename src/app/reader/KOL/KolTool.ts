@@ -1,12 +1,17 @@
-import { Service, Inject } from "typedi";
+import { Inject, Service } from "typedi";
 import { EntityManager } from "typeorm";
-import { OrmEntityManager} from "typeorm-typedi-extensions";
-import { readInt, readPositiveInt, readStr, readStrWithNoSpace } from "../Reader";
-import { DataTool } from "../DataTool";
-import { Kyuusha } from "../../entities/Kyuusha";
+import { OrmEntityManager } from "typeorm-typedi-extensions";
 import * as $C from "../../converters/Common";
-import * as $U from "../../converters/Uma";
 import * as $KY from "../../converters/Kyuusha";
+import * as $U from "../../converters/Uma";
+import { Kyuusha } from "../../entities/Kyuusha";
+import { DataTool } from "../DataTool";
+import {
+  readInt,
+  readPositiveInt,
+  readStr,
+  readStrWithNoSpace
+  } from "../Reader";
 
 interface MeishouOffset {
   meishou: number;

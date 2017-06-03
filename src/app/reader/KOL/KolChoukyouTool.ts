@@ -1,16 +1,21 @@
-import { Service, Inject } from "typedi";
+import { Logger } from "log4js";
+import { Inject, Service } from "typedi";
 import { EntityManager } from "typeorm";
 import { OrmEntityManager } from "typeorm-typedi-extensions";
-import { Logger } from "log4js";
-import { getLogger } from "../../LogUtil";
-import { readStr, readDate, readStrWithNoSpace, readPositiveInt } from "../Reader";
-import { DataTool } from "../DataTool";
-import { Shussouba } from "../../entities/Shussouba";
-import { Kishu } from "../../entities/Kishu";
+import * as $CH from "../../converters/Choukyou";
+import { MasshouFlag } from "../../converters/Kishu";
 import { Choukyou } from "../../entities/Choukyou";
 import { ChoukyouTime } from "../../entities/ChoukyouTime";
-import { MasshouFlag } from "../../converters/Kishu";
-import * as $CH from "../../converters/Choukyou";
+import { Kishu } from "../../entities/Kishu";
+import { Shussouba } from "../../entities/Shussouba";
+import { getLogger } from "../../LogUtil";
+import { DataTool } from "../DataTool";
+import {
+  readDate,
+  readPositiveInt,
+  readStr,
+  readStrWithNoSpace
+  } from "../Reader";
 
 export interface FurlongOffset {
   f: number;

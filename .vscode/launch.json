@@ -5,7 +5,7 @@
       "name": "Launch",
       "type": "node",
       "request": "launch",
-      "program": "${workspaceRoot}/build/app/app.js",
+      "program": "${workspaceRoot}/build/app/main.js",
       "stopOnEntry": false,
       "cwd": "${workspaceRoot}",
       "env": {

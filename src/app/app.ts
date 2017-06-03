@@ -1,131 +1,117 @@
-import * as path from "path";
-import * as process from "process";
+import { exec } from "child_process";
 import * as fs from "fs";
 import * as glob from "glob";
-import * as tmp from "tmp";
+import { Logger } from "log4js";
+import * as path from "path";
+import * as process from "process";
+import "reflect-metadata";
 import * as rimraf from "rimraf";
-import { exec } from "child_process";
+import * as tmp from "tmp";
 import { Container } from "typedi";
-import { createConnection, useContainer } from "typeorm";
-import { getLogger, logging } from "./LogUtil";
 import { Entries, Importer } from "./Importer";
+import { getLogger } from "./LogUtil";
 
-const logger = getLogger("app");
+export class App {
 
-let arg = "";
-if (3 <= process.argv.length) {
-  arg = process.argv[2];
-}
+  private logger: Logger;
 
-let importer: Importer;
-buildConnection().then(() => {
-  importer = Container.get(Importer);
+  private importer: Importer;
 
-  const lzhDir = checkDir(path.join(process.cwd(), arg)) || checkDir(arg);
-  if (lzhDir) {
-    traverseLzhDir(lzhDir);
-  } else {
-    logger.error('"' + lzhDir + '" is not a directory.');
+  private arg: string;
+
+  constructor(arg: string) {
+    this.logger = getLogger(this);
+    this.arg = arg;
   }
-});
 
-async function buildConnection() {
-  useContainer(Container);
-  const con = await createConnection({
-    driver: {
-      type: "sqlite",
-      storage: "test.sqlite"
-    },
-    entities: [
-      __dirname + "/entities/*.js"
-    ],
-    logging: logging,
-    autoSchemaSync: false
-  });
+  public import() {
+    this.importer = Container.get(Importer);
 
-  try {
-    await con.syncSchema(false);
-  } catch (e) {
-    logger.warn(e.stack || e);
-  }
-}
-
-function checkDir(lzhDir: string): string {
-  try {
-    if (fs.statSync(lzhDir).isDirectory()) {
-      return lzhDir;
+    const lzhDir = this.checkDir(path.join(process.cwd(), this.arg)) || this.checkDir(this.arg);
+    if (lzhDir) {
+      this.traverseLzhDir(lzhDir);
     } else {
-      logger.debug(lzhDir + " is not a directory.");
+      this.logger.error('"' + lzhDir + '" is not a directory.');
     }
-  } catch (e) {
-    logger.debug(e.stack || e);
   }
-  return null;
-}
 
-function traverseLzhDir(lzhDir: string) {
-  const pattern = path.join(lzhDir, "**/*.lzh");
-  glob(pattern, (err, matches) => {
-    if (err) {
-      logger.warn(err.message, err);
-      return;
-    }
-
-    matches.forEach((lzhFile) => {
-      uncompressLzhFile(lzhFile);
-    });
-  });
-}
-
-function uncompressLzhFile(lzhFile: string) {
-  tmp.dir((err, dataDir) => {
-    if (err) {
-      logger.warn(err.stack || err);
-      return;
-    }
-    const cmd = 'lha xw="' + dataDir + '" "' + lzhFile + '"';
-    exec(cmd, async (error, stdout, stderr) => {
-      if (error || stderr) {
-        if (error) logger.warn(error.stack);
-        if (stderr) logger.warn(stderr);
-        else if (stdout) logger.warn(stdout);
-        rmdir(dataDir);
+  protected checkDir(lzhDir: string): string {
+    try {
+      if (fs.statSync(lzhDir).isDirectory()) {
+        return lzhDir;
       } else {
-        traverseDataDir(dataDir);
+        this.logger.debug(lzhDir + " is not a directory.");
+      }
+    } catch (e) {
+      this.logger.debug(e.stack || e);
+    }
+    return null;
+  }
+
+  protected traverseLzhDir(lzhDir: string) {
+    const pattern = path.join(lzhDir, "**/*.lzh");
+    glob(pattern, (err, matches) => {
+      if (err) {
+        this.logger.warn(err.message, err);
+        return;
+      }
+
+      matches.forEach((lzhFile) => {
+        this.uncompressLzhFile(lzhFile);
+      });
+    });
+  }
+
+  protected uncompressLzhFile(lzhFile: string) {
+    tmp.dir((err, dataDir) => {
+      if (err) {
+        this.logger.warn(err.stack || err);
+        return;
+      }
+      const cmd = 'lha xw="' + dataDir + '" "' + lzhFile + '"';
+      exec(cmd, async (error, stdout, stderr) => {
+        if (error || stderr) {
+          if (error) this.logger.warn(error.stack);
+          if (stderr) this.logger.warn(stderr);
+          else if (stdout) this.logger.warn(stdout);
+          this.rmdir(dataDir);
+        } else {
+          this.traverseDataDir(dataDir);
+        }
+      });
+    });
+  }
+
+  protected traverseDataDir(dataDir: string) {
+    const entries: Entries = {};
+
+    const pattern = path.join(dataDir, "*");
+    glob(pattern, async (err, matches) => {
+      if (err) {
+        this.logger.warn(err.stack);
+        return;
+      }
+
+      matches.forEach((dataFile) => {
+        const basename = path.basename(dataFile);
+        entries[basename] = dataFile;
+      });
+
+      try {
+        await this.importer.import(entries);
+      } finally {
+        this.rmdir(dataDir);
       }
     });
-  });
-}
+  }
 
-function traverseDataDir(dataDir: string) {
-  const entries: Entries = {};
-
-  const pattern = path.join(dataDir, "*");
-  glob(pattern, async (err, matches) => {
-    if (err) {
-      logger.warn(err.stack);
-      return;
-    }
-
-    matches.forEach((dataFile) => {
-      const basename = path.basename(dataFile);
-      entries[basename] = dataFile;
+  protected rmdir(dir: string) {
+    rimraf(dir, (error) => {
+      if (error) {
+        this.logger.warn(error.stack);
+      } else {
+        this.logger.debug('"' + dir + '" was deleted');
+      }
     });
-
-    try {
-      await importer.import(entries);
-    } finally {
-      rmdir(dataDir);
-    }
-  });
-}
-
-function rmdir(dir: string) {
-  rimraf(dir, (error) => {
-    if (error) {
-      logger.warn(error.stack);
-    } else {
-      logger.debug('"' + dir + '" was deleted');
-    }
-  });
+  }
 }

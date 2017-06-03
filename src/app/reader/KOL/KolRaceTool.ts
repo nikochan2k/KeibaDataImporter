@@ -1,17 +1,23 @@
-import { Service, Inject } from "typedi";
+import { Inject, Service } from "typedi";
 import { EntityManager } from "typeorm";
-import { OrmEntityManager} from "typeorm-typedi-extensions";
-import { readDate, readStrWithNoSpace, readPositiveInt, readTime, readDouble } from "../Reader";
-import { DataTool } from "../DataTool";
-import { Race } from "../../entities/Race";
-import { Record } from "../../entities/Record";
-import { RaceShoukin } from "../../entities/RaceShoukin";
-import { RaceHaitou } from "../../entities/RaceHaitou";
-import { Kishu } from "../../entities/Kishu";
+import { OrmEntityManager } from "typeorm-typedi-extensions";
 import * as $C from "../../converters/Common";
-import { ShoukinInfo } from "../../converters/RaceShoukin";
-import { HaitouInfo } from "../../converters/RaceHaitou";
 import { MasshouFlag } from "../../converters/Kishu";
+import { HaitouInfo } from "../../converters/RaceHaitou";
+import { ShoukinInfo } from "../../converters/RaceShoukin";
+import { Kishu } from "../../entities/Kishu";
+import { Race } from "../../entities/Race";
+import { RaceHaitou } from "../../entities/RaceHaitou";
+import { RaceShoukin } from "../../entities/RaceShoukin";
+import { Record } from "../../entities/Record";
+import { DataTool } from "../DataTool";
+import {
+  readDate,
+  readDouble,
+  readPositiveInt,
+  readStrWithNoSpace,
+  readTime
+  } from "../Reader";
 
 @Service()
 export class KolRaceTool {

@@ -1,0 +1,9 @@
+{
+  "typescript.extension.sortImports.quoteStyle": "double",
+  "typescript.extension.sortImports.sortMethod":"path",
+  "typescript.extension.sortImports.pathSortOrder": [
+    "package",
+    "relativeDownLevel",
+    "relativeUpLevel"
+  ]
+}

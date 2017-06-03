@@ -1,15 +1,15 @@
+import { Logger } from "log4js";
 import { Service } from "typedi";
 import { EntityManager } from "typeorm";
-import { OrmEntityManager} from "typeorm-typedi-extensions";
-import { getLogger } from "../LogUtil";
-import { Logger } from "log4js";
+import { OrmEntityManager } from "typeorm-typedi-extensions";
 import { readStrWithNoSpace } from "./Reader";
-import { Kyuusha } from "../entities/Kyuusha";
-import { Uma } from "../entities/Uma";
 import { Banushi } from "../entities/Banushi";
 import { Kishu } from "../entities/Kishu";
-import { Seisansha } from "../entities/Seisansha";
+import { Kyuusha } from "../entities/Kyuusha";
 import { RaceClass } from "../entities/RaceClass";
+import { Seisansha } from "../entities/Seisansha";
+import { Uma } from "../entities/Uma";
+import { getLogger } from "../LogUtil";
 
 @Service()
 export class DataTool {

@@ -1,37 +1,53 @@
-import { Service, Inject } from "typedi";
-import { readInt, readPositiveInt, readDate, readStrWithNoSpace, readDouble, readTime } from "../../Reader";
-import { ShussoubaTool } from "../../ShussoubaTool";
-import { DataToImport } from "../../DataToImport";
-import { KolTool } from "../KolTool";
-import { KolChoukyouTool, FurlongOffset } from "../KolChoukyouTool";
-import { Kishu } from "../../../entities/Kishu";
-import { Shussouba } from "../../../entities/Shussouba";
-import { ShussoubaYosou } from "../../../entities/ShussoubaYosou";
-import { ShussoubaTsuukaJuni } from "../../../entities/ShussoubaTsuukaJuni";
+import { Inject, Service } from "typedi";
+import { EntityManager } from "typeorm";
+import { OrmEntityManager } from "typeorm-typedi-extensions";
 import * as $C from "../../../converters/Common";
+import * as $KI from "../../../converters/Kishu";
 import * as $S from "../../../converters/Shussouba";
 import * as $SF from "../../../converters/ShussoubaYosou";
-import * as $KI from "../../../converters/Kishu";
-
-const courseFurlongOffsets: FurlongOffset[] = [
-  { f: 8, offset: 27 },
-  { f: 7, offset: 33 },
-  { f: 6, offset: 39 },
-  { f: 5, offset: 45 },
-  { f: 4, offset: 51 },
-  { f: 3, offset: 57 },
-  { f: 1, offset: 63 }
-];
-
-const hanroFurlongOffsets: FurlongOffset[] = [
-  { f: 4, offset: 45 },
-  { f: 3, offset: 51 },
-  { f: 2, offset: 57 },
-  { f: 1, offset: 63 }
-];
+import { Kishu } from "../../../entities/Kishu";
+import { Shussouba } from "../../../entities/Shussouba";
+import { ShussoubaTsuukaJuni } from "../../../entities/ShussoubaTsuukaJuni";
+import { ShussoubaYosou } from "../../../entities/ShussoubaYosou";
+import { DataToImport } from "../../DataToImport";
+import { DataTool } from "../../DataTool";
+import {
+  readDate,
+  readDouble,
+  readInt,
+  readPositiveInt,
+  readStrWithNoSpace,
+  readTime
+} from "../../Reader";
+import { ShussoubaTool } from "../../ShussoubaTool";
+import { FurlongOffset, KolChoukyouTool } from "../KolChoukyouTool";
+import { KolTool } from "../KolTool";
 
 @Service()
 export class KolSei2Kd3 extends DataToImport {
+
+  private static readonly courseFurlongOffsets: FurlongOffset[] = [
+    { f: 8, offset: 27 },
+    { f: 7, offset: 33 },
+    { f: 6, offset: 39 },
+    { f: 5, offset: 45 },
+    { f: 4, offset: 51 },
+    { f: 3, offset: 57 },
+    { f: 1, offset: 63 }
+  ];
+
+  private static readonly hanroFurlongOffsets: FurlongOffset[] = [
+    { f: 4, offset: 45 },
+    { f: 3, offset: 51 },
+    { f: 2, offset: 57 },
+    { f: 1, offset: 63 }
+  ];
+
+  @OrmEntityManager()
+  private entityManager: EntityManager;
+
+  @Inject()
+  private tool: DataTool;
 
   @Inject()
   private shussoubaTool: ShussoubaTool;
@@ -77,7 +93,8 @@ export class KolSei2Kd3 extends DataToImport {
     race.ShussoubaList.push(shussouba);
     await this.saveShussoubaYosou(buffer, shussouba);
     await this.saveShussoubaTsuukaJuni(buffer, shussouba);
-    await this.choukyouTool.saveChoukyou(buffer, shussouba, 307, hanroFurlongOffsets, courseFurlongOffsets);
+    await this.choukyouTool.saveChoukyou(buffer, shussouba, 307,
+      KolSei2Kd3.hanroFurlongOffsets, KolSei2Kd3.courseFurlongOffsets);
   }
 
   public async finishUp() {

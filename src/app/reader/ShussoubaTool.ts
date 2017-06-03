@@ -1,13 +1,13 @@
+import { Logger } from "log4js";
 import { Service } from "typedi";
 import { EntityManager } from "typeorm";
-import { OrmEntityManager} from "typeorm-typedi-extensions";
-import { Logger } from "log4js";
-import { getLogger } from "../LogUtil";
+import { OrmEntityManager } from "typeorm-typedi-extensions";
 import { readInt } from "./Reader";
 import { Race } from "../entities/Race";
 import { RaceKeika } from "../entities/RaceKeika";
 import { Shussouba } from "../entities/Shussouba";
 import { ShussoubaKeika } from "../entities/ShussoubaKeika";
+import { getLogger } from "../LogUtil";
 
 interface RaceMap {
   [raceId: number]: Race;

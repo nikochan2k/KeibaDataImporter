@@ -1,11 +1,21 @@
-import { Service, Inject } from "typedi";
-import { readDate, readStr } from "../../Reader";
-import { DataToImport } from "../../DataToImport";
-import { KolTool } from "../KolTool";
+import "reflect-metadata";
+import { Inject, Service } from "typedi";
+import { EntityManager } from "typeorm";
+import { OrmEntityManager } from "typeorm-typedi-extensions";
 import * as $U from "../../../converters/Uma";
+import { DataToImport } from "../../DataToImport";
+import { DataTool } from "../../DataTool";
+import { readDate, readStr } from "../../Reader";
+import { KolTool } from "../KolTool";
 
 @Service()
 export class KolUmaKd3 extends DataToImport {
+
+  @OrmEntityManager()
+  private entityManager: EntityManager;
+
+  @Inject()
+  private tool: DataTool;
 
   @Inject()
   private kolTool: KolTool;

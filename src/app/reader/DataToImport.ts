@@ -1,20 +1,10 @@
 import * as fs from "fs";
 import * as log4js from "log4js";
-import { Inject } from "typedi";
-import { EntityManager } from "typeorm";
-import { OrmEntityManager } from "typeorm-typedi-extensions";
 import { getLogger } from "../LogUtil";
-import { DataTool } from "./DataTool";
 
 export abstract class DataToImport {
 
   protected logger: log4js.Logger;
-
-  @OrmEntityManager()
-  protected entityManager: EntityManager;
-
-  @Inject()
-  protected tool: DataTool;
 
   constructor() {
     this.logger = getLogger(this);

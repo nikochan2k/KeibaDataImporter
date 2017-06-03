@@ -1,27 +1,44 @@
-import { Service, Inject } from "typedi";
-import { readDate, readStr, readStrWithNoSpace, readInt, readPositiveInt, readTime, readDouble } from "../../Reader";
-import { DataToImport } from "../../DataToImport";
-import { KolTool } from "../KolTool";
-import { KolRaceTool } from "../KolRaceTool";
+import { Inject, Service } from "typedi";
+import { EntityManager } from "typeorm";
+import { OrmEntityManager } from "typeorm-typedi-extensions";
+import * as $C from "../../../converters/Common";
+import * as $R from "../../../converters/Race";
+import { Baken } from "../../../converters/RaceHaitou";
+import * as $RK from "../../../converters/RaceKeika";
 import { Race } from "../../../entities/Race";
 import { RaceClass } from "../../../entities/RaceClass";
-import { RaceYosou } from "../../../entities/RaceYosou";
+import { RaceJoukenFuka } from "../../../entities/RaceJoukenFuka";
 import { RaceKeika } from "../../../entities/RaceKeika";
 import { RaceLapTime } from "../../../entities/RaceLapTime";
-import { RaceJoukenFuka } from "../../../entities/RaceJoukenFuka";
-import { Baken } from "../../../converters/RaceHaitou";
-import * as $R from "../../../converters/Race";
-import * as $C from "../../../converters/Common";
-import * as $RK from "../../../converters/RaceKeika";
+import { RaceYosou } from "../../../entities/RaceYosou";
+import { DataToImport } from "../../DataToImport";
+import { DataTool } from "../../DataTool";
+import {
+  readDate,
+  readDouble,
+  readInt,
+  readPositiveInt,
+  readStr,
+  readStrWithNoSpace,
+  readTime
+  } from "../../Reader";
+import { KolRaceTool } from "../KolRaceTool";
+import { KolTool } from "../KolTool";
 
 @Service()
 export class KolSei1Kd3 extends DataToImport {
 
-  @Inject()
-  protected kolTool: KolTool;
+  @OrmEntityManager()
+  private entityManager: EntityManager;
 
   @Inject()
-  protected kolRaceTool: KolRaceTool;
+  private tool: DataTool;
+
+  @Inject()
+  private kolTool: KolTool;
+
+  @Inject()
+  private kolRaceTool: KolRaceTool;
 
   protected getBufferLength() {
     return 3200;
