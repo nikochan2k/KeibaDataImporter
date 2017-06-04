@@ -5,7 +5,7 @@ const LOG_LEVEL = log4js.levels.DEBUG;
 export const logging = {
   logFailedQueryError: true,
   logOnlyFailedQueries: false,
-  logQueries: false,
+  logQueries: true,
   logSchemaCreation: false
 };
 

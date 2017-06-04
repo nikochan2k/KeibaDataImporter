@@ -1,12 +1,12 @@
 import "reflect-metadata";
 import { createConnection, useContainer } from "typeorm";
 import { Container } from "typedi";
-import { App } from "./App";
+import { Traversal } from "./Traversal";
 import { logging } from "./LogUtil";
 
-let arg = "";
+let dirName = "";
 if (3 <= process.argv.length) {
-  arg = process.argv[2];
+  dirName = process.argv[2];
 }
 
 useContainer(Container);
@@ -19,9 +19,9 @@ createConnection({
   entities: [
     __dirname + "/entities/*.js"
   ],
-  logging: logging,
-  autoSchemaSync: true
-}).then(async () => {
-  const app = new App(arg);
-  await app.import();
+  logging: logging
+}).then(async (con) => {
+  await con.syncSchema(false);
+  const traversal = Container.get(Traversal);
+  await traversal.traverse(dirName);
 });

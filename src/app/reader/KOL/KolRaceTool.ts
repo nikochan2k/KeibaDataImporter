@@ -2,7 +2,6 @@ import { Inject, Service } from "typedi";
 import { EntityManager } from "typeorm";
 import { OrmEntityManager } from "typeorm-typedi-extensions";
 import * as $C from "../../converters/Common";
-import { MasshouFlag } from "../../converters/Kishu";
 import { HaitouInfo } from "../../converters/RaceHaitou";
 import { ShoukinInfo } from "../../converters/RaceShoukin";
 import { Kishu } from "../../entities/Kishu";
@@ -10,6 +9,9 @@ import { Race } from "../../entities/Race";
 import { RaceHaitou } from "../../entities/RaceHaitou";
 import { RaceShoukin } from "../../entities/RaceShoukin";
 import { Record } from "../../entities/Record";
+import { Uma } from "../../entities/Uma";
+import { KishuDao } from "../../daos/KishuDao";
+import { UmaDao } from "../../daos/UmaDao";
 import { DataTool } from "../DataTool";
 import {
   readDate,
@@ -17,7 +19,7 @@ import {
   readPositiveInt,
   readStrWithNoSpace,
   readTime
-  } from "../Reader";
+} from "../Reader";
 
 @Service()
 export class KolRaceTool {
@@ -28,6 +30,12 @@ export class KolRaceTool {
   @Inject()
   private tool: DataTool;
 
+  @Inject()
+  private umaDao: UmaDao;
+
+  @Inject()
+  private kishuDao: KishuDao;
+
   public async getRecord(buffer: Buffer, offset: number, bashoOffset: number) {
     const nengappi = readDate(buffer, offset, 8);
     const bamei = readStrWithNoSpace(buffer, offset + 12, 30);
@@ -35,7 +43,9 @@ export class KolRaceTool {
       return null;
     }
 
-    const kyousouba = await this.tool.saveUma(bamei);
+    let kyousouba = new Uma();
+    kyousouba.Bamei = readStrWithNoSpace(buffer, offset + 12, 30);
+    kyousouba = await this.umaDao.saveUma(kyousouba);
 
     let record = await this.entityManager
       .getRepository(Record)
@@ -56,17 +66,14 @@ export class KolRaceTool {
     record.Kinryou = readDouble(buffer, offset + 42, 3, 0.1);
     const kishu = new Kishu();
     kishu.TanshukuKishuMei = readStrWithNoSpace(buffer, offset + 45, 8);
-    kishu.MasshouFlag = MasshouFlag.Geneki;
-    kishu.FromNengappi = record.Nengappi;
-    kishu.ToNengappi = record.Nengappi;
-    record.Kishu = await this.tool.saveKishu(kishu);
+    record.Kishu = await this.kishuDao.saveKishu(kishu);
     record.Basho = $C.basho.toCodeFromKol(buffer, bashoOffset, 2);
     record = await this.entityManager.persist(record);
 
     return record;
   }
 
-  public saveRaceShoukin(buffer: Buffer, race: Race, infos: ShoukinInfo[],
+  public async saveRaceShoukin(buffer: Buffer, race: Race, infos: ShoukinInfo[],
     kakutei: number, mul?: number) {
     for (let i = 0; i < infos.length; i++) {
       const info = infos[i];
@@ -81,7 +88,7 @@ export class KolRaceTool {
       raceShoukin.Chakujun = info.chakujun;
       raceShoukin.Shoukin = shoukin;
       raceShoukin.Fukashou = info.fukashou;
-      this.entityManager.persist(raceShoukin);
+      await this.entityManager.persist(raceShoukin);
     }
   }
 
@@ -107,7 +114,7 @@ export class KolRaceTool {
       if (info.ninki) {
         raceHaitou.Ninki = readPositiveInt(buffer, info.ninki, info.ninkiLen);
       }
-      this.entityManager.persist(raceHaitou);
+      await this.entityManager.persist(raceHaitou);
     }
   }
 }

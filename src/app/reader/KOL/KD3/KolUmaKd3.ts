@@ -3,8 +3,9 @@ import { Inject, Service } from "typedi";
 import { EntityManager } from "typeorm";
 import { OrmEntityManager } from "typeorm-typedi-extensions";
 import * as $U from "../../../converters/Uma";
+import { Uma } from "../../../entities/Uma";
+import { UmaDao } from "../../../daos/UmaDao";
 import { DataToImport } from "../../DataToImport";
-import { DataTool } from "../../DataTool";
 import { readDate, readStr } from "../../Reader";
 import { KolTool } from "../KolTool";
 
@@ -15,18 +16,19 @@ export class KolUmaKd3 extends DataToImport {
   private entityManager: EntityManager;
 
   @Inject()
-  private tool: DataTool;
+  private kolTool: KolTool;
 
   @Inject()
-  private kolTool: KolTool;
+  private umaDao: UmaDao;
 
   protected getBufferLength() {
     return 5166;
   }
 
   protected async saveOyaUma(buffer: Buffer, offset: number, seibetsu: $U.Seibetsu, chichiOffset?: number, hahaOffset?: number) {
-    const bamei = readStr(buffer, offset, 34);
-    let uma = await this.tool.getUma(bamei);
+    let uma = new Uma();
+    uma.Bamei = readStr(buffer, offset, 34);
+    uma = await this.umaDao.saveUma(uma);
 
     let needPersist = !uma.Id;
     if (chichiOffset && !uma.ChichiUma) {
@@ -47,14 +49,8 @@ export class KolUmaKd3 extends DataToImport {
   }
 
   protected async save(buffer: Buffer) {
-    const dataSakuseiNengappi = readDate(buffer, 624, 8);
-    const kanaBamei = readStr(buffer, 7, 30);
-    const uma = await this.tool.getUma(kanaBamei);
-    if (dataSakuseiNengappi <= uma.DataSakuseiNengappi) {
-      this.logger.debug("既に最新の競走馬データが格納されています: " + kanaBamei);
-      return;
-    }
-    uma.KanaBamei = kanaBamei;
+    const uma = new Uma();
+    uma.Bamei = readStr(buffer, 7, 30);
     uma.KyuuBamei = readStr(buffer, 37, 40);
     uma.Seinengappi = readDate(buffer, 77, 8);
     uma.Keiro = $U.keiro.toCodeFromKol(buffer, 85, 2);
@@ -74,7 +70,6 @@ export class KolUmaKd3 extends DataToImport {
     uma.MasshouNengappi = readDate(buffer, 545, 8);
     uma.Jiyuu = readStr(buffer, 553, 6);
     uma.Ikisaki = readStr(buffer, 559, 10);
-    uma.DataSakuseiNengappi = dataSakuseiNengappi;
-    this.entityManager.persist(uma);
+    await this.umaDao.saveUma(uma);
   }
 }

@@ -1,77 +1,17 @@
 import { Logger } from "log4js";
 import { Service } from "typedi";
-import { EntityManager } from "typeorm";
-import { OrmEntityManager } from "typeorm-typedi-extensions";
-import { readInt } from "./Reader";
-import { Race } from "../entities/Race";
 import { RaceKeika } from "../entities/RaceKeika";
 import { Shussouba } from "../entities/Shussouba";
 import { ShussoubaKeika } from "../entities/ShussoubaKeika";
 import { getLogger } from "../LogUtil";
 
-interface RaceMap {
-  [raceId: number]: Race;
-}
-
 @Service()
-export class ShussoubaTool {
+export class KeikaTool {
 
   private logger: Logger;
 
-  @OrmEntityManager()
-  private entityManager: EntityManager;
-
   constructor() {
     this.logger = getLogger(this);
-  }
-
-  protected raceMap: RaceMap = {};
-
-  public async getRace(raceId: number) {
-    let race = this.raceMap[raceId];
-    if (!race) {
-      race = await this.entityManager.findOneById(Race, raceId);
-      if (!race) {
-        this.logger.warn("レースがありません: " + raceId);
-        return null;
-      }
-      race.ShussoubaList = [];
-      this.raceMap[raceId] = race;
-    }
-    return race;
-  }
-
-  public async normalizeNenrei(shussouba: Shussouba) {
-    if (shussouba.Race.Nen <= 2000) {
-      shussouba.Nenrei--;
-    }
-  }
-
-  public getChakujun(buffer, offset, length) {
-    const chakujun = readInt(buffer, offset, length);
-    if (1 <= chakujun && chakujun <= 28) {
-      return chakujun;
-    }
-    return null;
-  }
-
-  public async finishUp() {
-    for (const raceId in this.raceMap) {
-      const race = this.raceMap[raceId];
-      const raceKeikaList = await this.getRaceKeika(race.Id);
-      raceKeikaList.forEach(async (raceKeika) => {
-        await this.parseRaceKeika(race, raceKeika);
-      });
-    }
-  }
-
-  protected async getRaceKeika(raceId: number) {
-    return await this.entityManager
-      .getRepository(RaceKeika)
-      .createQueryBuilder("rk")
-      .where("rk.RaceId = :raceId")
-      .setParameter("raceId", raceId)
-      .getMany();
   }
 
   protected createShussoubaKeika(old?: ShussoubaKeika) {
@@ -90,29 +30,18 @@ export class ShussoubaTool {
     return shussoubaKeika;
   }
 
-  protected findShussouba(race: Race, umaban: number) {
-    for (let i = 0; i < race.ShussoubaList.length; i++) {
-      const shussouba = race.ShussoubaList[i];
-      if (shussouba.Umaban === umaban) {
-        return shussouba;
-      }
-    }
-    return null;
-  }
-
-  protected async saveShussoubaKeika(race: Race, raceKeika: RaceKeika, shussoubaKeika: ShussoubaKeika, umabanStr: string) {
+  protected buildShussoubaKeika(raceKeika: RaceKeika, shussoubaKeika: ShussoubaKeika, umabanStr: string) {
     const umaban = parseInt(umabanStr);
-    const shussouba = await this.findShussouba(race, umaban);
-    if (!shussouba) {
-      return;
-    }
+    const shussouba = new Shussouba();
+    shussouba.Id = raceKeika.Race.Id * 100 + umaban;
     shussoubaKeika.Id = raceKeika.Id * 100 + umaban;
     shussoubaKeika.RaceKeika = raceKeika;
     shussoubaKeika.Shussouba = shussouba;
-    await this.entityManager.persist(shussoubaKeika);
+    return shussoubaKeika;
   }
 
-  protected async parseRaceKeika(race: Race, raceKeika: RaceKeika) {
+  public parseRaceKeika(raceKeika: RaceKeika) {
+    const shussoubaKeikaList: ShussoubaKeika[] = [];
     const keika = raceKeika.Keika;
     let shussoubaKeika = this.createShussoubaKeika();
     let umaban = "";
@@ -126,13 +55,13 @@ export class ShussoubaTool {
         umaban = umaban + ch; // 数字を連結
         // 最後の文字が数字の場合
         if (i === keika.length - 1) {
-          await this.saveShussoubaKeika(race, raceKeika, shussoubaKeika, umaban);
+          shussoubaKeikaList.push(this.buildShussoubaKeika(raceKeika, shussoubaKeika, umaban));
           shussoubaKeika = this.createShussoubaKeika(shussoubaKeika);
         }
         continue;
       } else { // 数字でない場合
         if (0 < umaban.length) {
-          await this.saveShussoubaKeika(race, raceKeika, shussoubaKeika, umaban);
+          shussoubaKeikaList.push(this.buildShussoubaKeika(raceKeika, shussoubaKeika, umaban));
           shussoubaKeika = this.createShussoubaKeika(shussoubaKeika);
           umaban = "";
         }
@@ -176,6 +105,7 @@ export class ShussoubaTool {
         }
       }
     }
+    return shussoubaKeikaList;
   }
 
 }

@@ -13,6 +13,7 @@ import { RaceLapTime } from "../../../entities/RaceLapTime";
 import { RaceYosou } from "../../../entities/RaceYosou";
 import { DataToImport } from "../../DataToImport";
 import { DataTool } from "../../DataTool";
+import { DataCache } from "../../DataCache";
 import {
   readDate,
   readDouble,
@@ -21,9 +22,10 @@ import {
   readStr,
   readStrWithNoSpace,
   readTime
-  } from "../../Reader";
+} from "../../Reader";
 import { KolRaceTool } from "../KolRaceTool";
 import { KolTool } from "../KolTool";
+import { KeikaTool } from "../../KeikaTool";
 
 @Service()
 export class KolSei1Kd3 extends DataToImport {
@@ -40,11 +42,14 @@ export class KolSei1Kd3 extends DataToImport {
   @Inject()
   private kolRaceTool: KolRaceTool;
 
+  @Inject()
+  private keikaTool: KeikaTool;
+
   protected getBufferLength() {
     return 3200;
   }
 
-  protected async save(buffer: Buffer) {
+  protected async save(buffer: Buffer, cache: DataCache) {
     const id = this.kolTool.getRaceId(buffer);
     if (!id) {
       return;
@@ -67,7 +72,7 @@ export class KolSei1Kd3 extends DataToImport {
     await this.saveRaceShoukin(buffer, race);
     await this.saveRaceLapTime(buffer, race);
     await this.saveRaceYosou(buffer, race);
-    await this.saveRaceKeika(buffer, race);
+    await this.saveRaceKeika(buffer, race, cache);
     await this.saveRaceHaitou(buffer, race);
   }
 
@@ -158,7 +163,7 @@ export class KolSei1Kd3 extends DataToImport {
   }
 
   public async saveRaceShoukin(buffer: Buffer, race: Race) {
-    this.kolRaceTool.saveRaceShoukin(buffer, race, [
+    await this.kolRaceTool.saveRaceShoukin(buffer, race, [
       { chakujun: 1, offset: 288, length: 9, fukashou: 0 },
       { chakujun: 2, offset: 297, length: 9, fukashou: 0 },
       { chakujun: 3, offset: 306, length: 9, fukashou: 0 },
@@ -180,15 +185,15 @@ export class KolSei1Kd3 extends DataToImport {
   public async saveRaceLapTime(buffer: Buffer, race: Race) {
     const lapTime1 = readDouble(buffer, 402, 3, 0.1);
     if (lapTime1) {
-      this.saveNormalRaceLapTime(buffer, race);
+      await this.saveNormalRaceLapTime(buffer, race);
     } else {
       const raceClass = race.RaceClass;
       if (raceClass.HeichiShougai === 1) {
-        this.saveShougaiRaceLapTime(buffer, race);
+        await this.saveShougaiRaceLapTime(buffer, race);
       } else {
         const chuuouChihouGaikoku = raceClass.ChuuouChihouGaikoku;
         if (chuuouChihouGaikoku === 2 || chuuouChihouGaikoku === 3) {
-          this.saveChihouRaceLapTime(buffer, race);
+          await this.saveChihouRaceLapTime(buffer, race);
         }
       }
     }
@@ -293,7 +298,7 @@ export class KolSei1Kd3 extends DataToImport {
     }
   }
 
-  public async saveRaceKeika(buffer: Buffer, race: Race) {
+  public async saveRaceKeika(buffer: Buffer, race: Race, cache: DataCache) {
     for (let bangou = 1, offset = 456; bangou <= 9; bangou++ , offset += 113) {
       const keika = readStr(buffer, offset + 3, 110);
       if (!keika) {
@@ -306,11 +311,16 @@ export class KolSei1Kd3 extends DataToImport {
       raceKeika.Midashi2 = $RK.midashi2.toCodeFromKol(buffer, offset + 1, 2);
       raceKeika.Keika = keika;
       await this.entityManager.persist(raceKeika);
+
+      const shussoubaKeikaList = this.keikaTool.parseRaceKeika(raceKeika);
+      shussoubaKeikaList.forEach((shussoubaKeika) => {
+        cache.addShussoubaKeika(shussoubaKeika.Shussouba.Id, shussoubaKeika);
+      });
     }
   }
 
   public async saveRaceHaitou(buffer: Buffer, race: Race) {
-    this.kolRaceTool.saveRaceHaitou(
+    await this.kolRaceTool.saveRaceHaitou(
       buffer, race,
       [
         { baken: Baken.Tanshou, bangou1: 2100, bangou1Len: 2, haitou: 2102, haitouLen: 6 },

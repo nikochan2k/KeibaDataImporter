@@ -9,13 +9,13 @@ import { Shussouba } from "./Shussouba";
 import { Record } from "./Record";
 
 @Entity("Uma")
-@Index("IxUma", (u: Uma) => [u.KanaBamei])
+@Index("IxUma", (u: Uma) => [u.Bamei])
 export class Uma {
   @PrimaryGeneratedColumn("int")
   public Id: number;
 
   @Column("string", { length: 45 })
-  public KanaBamei: string;
+  public Bamei: string;
 
   @Column("string", { length: 60, nullable: true })
   public KyuuBamei?: string;
@@ -86,9 +86,6 @@ export class Uma {
 
   @Column("smallint", { nullable: true })
   public SibouNen?: number;
-
-  @Column("date", { nullable: true })
-  public DataSakuseiNengappi: Date;
 
   @OneToMany(() => Shussouba, s => s.Kyousouba)
   public ShussoubaList: Shussouba[];

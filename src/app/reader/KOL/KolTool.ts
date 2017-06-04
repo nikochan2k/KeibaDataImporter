@@ -1,17 +1,22 @@
 import { Inject, Service } from "typedi";
-import { EntityManager } from "typeorm";
-import { OrmEntityManager } from "typeorm-typedi-extensions";
 import * as $C from "../../converters/Common";
 import * as $KY from "../../converters/Kyuusha";
 import * as $U from "../../converters/Uma";
+import { Banushi } from "../../entities/Banushi";
 import { Kyuusha } from "../../entities/Kyuusha";
+import { Seisansha } from "../../entities/Seisansha";
+import { Uma } from "../../entities/Uma";
+import { BanushiDao } from "../../daos/BanushiDao";
+import { KyuushaDao } from "../../daos/KyuushaDao";
+import { SeisanshaDao } from "../../daos/SeisanshaDao";
+import { UmaDao } from "../../daos/UmaDao";
 import { DataTool } from "../DataTool";
 import {
   readInt,
   readPositiveInt,
   readStr,
   readStrWithNoSpace
-  } from "../Reader";
+} from "../Reader";
 
 interface MeishouOffset {
   meishou: number;
@@ -38,11 +43,20 @@ interface KyuushaOffset extends MeishouOffset {
 @Service()
 export class KolTool {
 
-  @OrmEntityManager()
-  private entityManager: EntityManager;
-
   @Inject()
   private tool: DataTool;
+
+  @Inject()
+  private kyuushaDao: KyuushaDao;
+
+  @Inject()
+  private seisanshaDao: SeisanshaDao;
+
+  @Inject()
+  private umaDao: UmaDao;
+
+  @Inject()
+  private banushiDao: BanushiDao;
 
   public getRaceId(buffer: Buffer) {
     const yyyymmdd = readPositiveInt(buffer, 12, 8);
@@ -56,64 +70,36 @@ export class KolTool {
   }
 
   public async saveBanushi(buffer: Buffer, banushiOffset: BanushiOffset) {
-    const banushiMei = this.tool.normalizeHoujinMei(buffer, banushiOffset.meishou, 40);
-    const tanshukuBanushiMei = this.tool.normalizeTanshukuHoujinMei(buffer, banushiOffset.tanshuku, 20);
-    return await this.tool.saveBanushi(banushiMei, tanshukuBanushiMei);
+    const banushi = new Banushi();
+    banushi.BanushiMei = this.tool.normalizeHoujinMei(buffer, banushiOffset.meishou, 40);
+    banushi.TanshukuBanushiMei = this.tool.normalizeTanshukuHoujinMei(buffer, banushiOffset.tanshuku, 20);
+    return await this.banushiDao.saveBanushi(banushi);
   }
 
   public async saveUma(buffer: Buffer, umaOffset: UmaOffset, banushiOffset: BanushiOffset) {
-    const bamei = readStr(buffer, umaOffset.meishou, 30);
-    let uma = await this.tool.getUma(bamei);
-    if (!uma.Id) {
-      uma.UmaKigou = $U.umaKigou.toCodeFromKol(buffer, umaOffset.umaKigou, 2);
-      uma.Seibetsu = $U.seibetsu.toCodeFromKol(buffer, umaOffset.seibetsu, 1);
-      uma.Banushi = await this.saveBanushi(buffer, banushiOffset);
-      uma = await this.entityManager.persist(uma);
-    }
-    return uma;
+    const uma = new Uma();
+    uma.Bamei = readStr(buffer, umaOffset.meishou, 30);
+    uma.UmaKigou = $U.umaKigou.toCodeFromKol(buffer, umaOffset.umaKigou, 2);
+    uma.Seibetsu = $U.seibetsu.toCodeFromKol(buffer, umaOffset.seibetsu, 1);
+    uma.Banushi = await this.saveBanushi(buffer, banushiOffset);
+    return await this.umaDao.saveUma(uma);
   }
 
   public async saveSeisansha(buffer: Buffer, seisanshaOffset: SeisanshaOffset) {
-    const seisanshaMei = this.tool.normalizeHoujinMei(buffer, seisanshaOffset.meishou, 40);
-    const tanshukuSeisanshaMei = this.tool.normalizeTanshukuHoujinMei(buffer, seisanshaOffset.tanshuku, 20);
-    return await this.tool.saveSeisansha(seisanshaMei, tanshukuSeisanshaMei);
+    const seisansha = new Seisansha();
+    seisansha.SeisanshaMei = this.tool.normalizeHoujinMei(buffer, seisanshaOffset.meishou, 40);
+    seisansha.TanshukuSeisanshaMei = this.tool.normalizeTanshukuHoujinMei(buffer, seisanshaOffset.tanshuku, 20);
+    return await this.seisanshaDao.saveSeisansha(seisansha);
   }
 
   public async saveKyuusha(buffer: Buffer, kyuushaOffset: KyuushaOffset) {
-    const kolKyuushaCode = readPositiveInt(buffer, kyuushaOffset.kolKyuushaCode, 5);
-    const kyuushaMei = readStrWithNoSpace(buffer, kyuushaOffset.meishou, 32);
-    let kyuusha = await this.getKyuushaWith(kolKyuushaCode, kyuushaMei);
-    if (!kyuusha.Id || !kyuusha.KolKyuushaCode || !kyuusha.KyuushaMei) {
-      kyuusha.KolKyuushaCode = kolKyuushaCode;
-      kyuusha.KyuushaMei = kyuushaMei;
-      kyuusha.TanshukuKyuushaMei = readStrWithNoSpace(buffer, kyuushaOffset.tanshuku, 8);
-      kyuusha.ShozokuBasho = $C.basho.toCodeFromKol(buffer, kyuushaOffset.shozokuBasho, 2);
-      kyuusha.RitsuHokuNanBetsu = $KY.ritsuHokuNanBetsu.toCodeFromKol(buffer, kyuushaOffset.ritsuHokuNanBetsu, 1);
-      kyuusha = await this.entityManager.persist(kyuusha);
-    }
-    return kyuusha;
-  }
-
-
-  public async getKyuushaWith(kolKyuushaCode?: number, kyuushaMei?: string) {
-    let kyuusha: Kyuusha;
-    if (kolKyuushaCode) {
-      kyuusha = await this.entityManager
-        .getRepository(Kyuusha)
-        .createQueryBuilder("k")
-        .where("k.KolKyuushaCode = :kolKyuushaCode")
-        .setParameter("kolKyuushaCode", kolKyuushaCode)
-        .getOne();
-    }
-    if (!kyuusha && kyuushaMei) {
-      kyuusha = await this.tool.getKyuusha(kyuushaMei);
-    }
-    if (!kyuusha) {
-      kyuusha = new Kyuusha();
-      kyuusha.KolKyuushaCode = kolKyuushaCode;
-      kyuusha.KyuushaMei = kyuushaMei;
-    }
-    return kyuusha;
+    const kyuusha = new Kyuusha();
+    kyuusha.KolKyuushaCode = readPositiveInt(buffer, kyuushaOffset.kolKyuushaCode, 5);
+    kyuusha.KyuushaMei = readStrWithNoSpace(buffer, kyuushaOffset.meishou, 32);
+    kyuusha.TanshukuKyuushaMei = readStrWithNoSpace(buffer, kyuushaOffset.tanshuku, 8);
+    kyuusha.ShozokuBasho = $C.basho.toCodeFromKol(buffer, kyuushaOffset.shozokuBasho, 2);
+    kyuusha.RitsuHokuNanBetsu = $KY.ritsuHokuNanBetsu.toCodeFromKol(buffer, kyuushaOffset.ritsuHokuNanBetsu, 1);
+    return await this.kyuushaDao.saveKyuusha(kyuusha);
   }
 
 }

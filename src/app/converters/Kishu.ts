@@ -16,17 +16,3 @@ export const shikakuKubun = new Codes(
     { code: 3, kol: "3", naiyou: "障害" }
   ]
 );
-
-export enum MasshouFlag {
-  Geneki = 0,
-  Masshou = 1,
-  Intai = 2
-}
-
-export const masshouFlag = new Codes(
-  [
-    { code: MasshouFlag.Geneki, kol: "0", naiyou: "現役" },
-    { code: MasshouFlag.Masshou, kol: "1", naiyou: "抹消" },
-    { code: MasshouFlag.Intai, kol: "2", naiyou: "引退" }
-  ]
-);

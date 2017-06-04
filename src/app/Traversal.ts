@@ -7,27 +7,24 @@ import * as process from "process";
 import "reflect-metadata";
 import * as rimraf from "rimraf";
 import * as tmp from "tmp";
-import { Container } from "typedi";
+import { Service, Inject } from "typedi";
 import { Entries, Importer } from "./Importer";
 import { getLogger } from "./LogUtil";
 
-export class App {
+@Service()
+export class Traversal {
 
   private logger: Logger;
 
+  @Inject()
   private importer: Importer;
 
-  private arg: string;
-
-  constructor(arg: string) {
+  constructor() {
     this.logger = getLogger(this);
-    this.arg = arg;
   }
 
-  public import() {
-    this.importer = Container.get(Importer);
-
-    const lzhDir = this.checkDir(path.join(process.cwd(), this.arg)) || this.checkDir(this.arg);
+  public traverse(dirName: string) {
+    const lzhDir = this.checkDir(path.join(process.cwd(), dirName)) || this.checkDir(dirName);
     if (lzhDir) {
       this.traverseLzhDir(lzhDir);
     } else {

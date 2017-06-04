@@ -2,13 +2,9 @@ import { Logger } from "log4js";
 import { Service } from "typedi";
 import { EntityManager } from "typeorm";
 import { OrmEntityManager } from "typeorm-typedi-extensions";
-import { readStrWithNoSpace } from "./Reader";
-import { Banushi } from "../entities/Banushi";
-import { Kishu } from "../entities/Kishu";
-import { Kyuusha } from "../entities/Kyuusha";
+import { readInt, readStrWithNoSpace } from "./Reader";
+import { Shussouba } from "../entities/Shussouba";
 import { RaceClass } from "../entities/RaceClass";
-import { Seisansha } from "../entities/Seisansha";
-import { Uma } from "../entities/Uma";
 import { getLogger } from "../LogUtil";
 
 @Service()
@@ -72,179 +68,18 @@ export class DataTool {
     return id;
   }
 
-  public async getBanushi(banushiMei: string) {
-    let banushi = await this.entityManager
-      .getRepository(Banushi)
-      .createQueryBuilder("b")
-      .where("b.BanushiMei = :banushiMei")
-      .setParameter("banushiMei", banushiMei)
-      .getOne();
-    if (!banushi) {
-      banushi = new Banushi();
-      banushi.BanushiMei = banushiMei;
+  public async normalizeNenrei(shussouba: Shussouba) {
+    if (shussouba.Race.Nen <= 2000) {
+      shussouba.Nenrei--;
     }
-    return banushi;
   }
 
-  public async saveBanushi(banushiMei: string, tanshukuBanushiMei: string) {
-    let banushi = await this.getBanushi(banushiMei);
-    if (!banushi.Id) {
-      banushi.TanshukuBanushiMei = tanshukuBanushiMei;
-      banushi = await this.entityManager.persist(banushi);
+  public getChakujun(buffer, offset, length) {
+    const chakujun = readInt(buffer, offset, length);
+    if (1 <= chakujun && chakujun <= 28) {
+      return chakujun;
     }
-    return banushi;
-  }
-
-  public async getKyuusha(kyuushaMei: string) {
-    let kyuusha = await this.entityManager
-      .getRepository(Kyuusha)
-      .createQueryBuilder("k")
-      .where("k.KyuushaMei = :kyuushaMei")
-      .setParameter("kyuushaMei", kyuushaMei)
-      .getOne();
-    if (!kyuusha) {
-      kyuusha = new Kyuusha();
-      kyuusha.KyuushaMei = kyuushaMei;
-    }
-    return kyuusha;
-  }
-
-  public async getSeisansha(seisanshaMei: string) {
-    let seisansha = await this.entityManager
-      .getRepository(Seisansha)
-      .createQueryBuilder("s")
-      .where("s.SeisanshaMei = :seisanshaMei")
-      .setParameter("seisanshaMei", seisanshaMei)
-      .getOne();
-    if (!seisansha) {
-      seisansha = new Seisansha();
-      seisansha.SeisanshaMei = seisanshaMei;
-    }
-    return seisansha;
-  }
-
-  public async saveSeisansha(seisanshaMei: string, tanshukuSeisanshaMei: string) {
-    let seisansha = await this.getSeisansha(seisanshaMei);
-    if (!seisansha.Id) {
-      seisansha.TanshukuSeisanshaMei = tanshukuSeisanshaMei;
-      seisansha = await this.entityManager.persist(seisansha);
-    }
-    return seisansha;
-  }
-
-  protected async getKishu(kishu: Kishu) {
-    let k: Kishu;
-    if (kishu.KishuMei) {
-      const qb = this.entityManager
-        .getRepository(Kishu)
-        .createQueryBuilder("k")
-        .where("k.TanshukuKishuMei = :tanshukuKishuMei")
-        .setParameter("tanshukuKishuMei", kishu.TanshukuKishuMei)
-        .andWhere("k.MasshouFlag = :masshouFlag")
-        .setParameter("masshouFlag", kishu.MasshouFlag)
-        .andWhere("k.KishuMei = :kishuMei")
-        .setParameter("kishuMei", kishu.KishuMei);
-      if (0 <= kishu.TouzaiBetsu) {
-        qb.andWhere("k.TouzaiBetsu = :touzaiBetsu")
-          .setParameter("touzaiBetsu", kishu.TouzaiBetsu);
-      } else {
-        qb.andWhere("k.TouzaiBetsu IS NULL");
-      }
-      if (0 <= kishu.ShozokuBasho) {
-        qb.andWhere("k.ShozokuBasho = :shozokuBasho")
-          .setParameter("shozokuBasho", kishu.ShozokuBasho);
-      } else {
-        qb.andWhere("k.ShozokuBasho IS NULL");
-      }
-      if (0 <= kishu.MinaraiKubun) {
-        qb.andWhere("k.MinaraiKubun = :minaraiKubun")
-          .setParameter("minaraiKubun", kishu.MinaraiKubun);
-      } else {
-        qb.andWhere("k.MinaraiKubun IS NULL");
-      }
-      if (kishu.Kyuusha) {
-        qb.andWhere("k.KyuushaId = :kyuushaId")
-          .setParameter("kyuushaId", kishu.Kyuusha.Id);
-      } else {
-        qb.andWhere("k.KyuushaId IS NULL");
-      }
-      k = await qb.getOne();
-    }
-    if (!k) {
-      k = await this.entityManager
-        .getRepository(Kishu)
-        .createQueryBuilder("k")
-        .where("k.TanshukuKishuMei = :tanshukuKishuMei")
-        .setParameter("tanshukuKishuMei", kishu.TanshukuKishuMei)
-        .getOne();
-    }
-    return k;
-  }
-
-  public async saveKishu(kishu: Kishu) {
-    const k = await this.getKishu(kishu);
-    if (k) {
-      let needUpdate = false;
-      if (!k.KolKishuCode && kishu.KolKishuCode) {
-        k.KolKishuCode = kishu.KolKishuCode;
-        needUpdate = true;
-      }
-      if (!k.JrdbKishuCode && kishu.JrdbKishuCode) {
-        k.JrdbKishuCode = kishu.JrdbKishuCode;
-        needUpdate = true;
-      }
-      if (!k.Furigana && kishu.Furigana) {
-        k.Furigana = kishu.Furigana;
-        needUpdate = true;
-      }
-      if (!k.Seinengappi && kishu.Seinengappi) {
-        k.Seinengappi = kishu.Seinengappi;
-        needUpdate = true;
-      }
-      if (!k.HatsuMenkyoNen && kishu.HatsuMenkyoNen) {
-        k.HatsuMenkyoNen = kishu.HatsuMenkyoNen;
-        needUpdate = true;
-      }
-      if (kishu.FromNengappi < k.FromNengappi) {
-        k.FromNengappi = kishu.FromNengappi;
-        needUpdate = true;
-      }
-      if (k.ToNengappi < kishu.ToNengappi) {
-        k.ToNengappi = kishu.ToNengappi;
-        needUpdate = true;
-      }
-      if (needUpdate) {
-        kishu = await this.entityManager.persist(k);
-      } else {
-        kishu = k;
-      }
-    } else {
-      kishu = await this.entityManager.persist(kishu);
-    }
-    return kishu;
-  }
-
-  public async getUma(bamei: string) {
-    let uma = await this.entityManager
-      .getRepository(Uma)
-      .createQueryBuilder("u")
-      .where("u.KanaBamei = :bamei")
-      .orWhere("u.KyuuBamei = :bamei")
-      .setParameter("bamei", bamei)
-      .getOne();
-    if (!uma) {
-      uma = new Uma();
-      uma.KanaBamei = bamei;
-    }
-    return uma;
-  }
-
-  public async saveUma(bamei: string) {
-    let uma = await this.getUma(bamei);
-    if (!uma.Id) {
-      uma = await this.entityManager.persist(uma);
-    }
-    return uma;
+    return null;
   }
 
   public async saveRaceClass(rc: RaceClass) {

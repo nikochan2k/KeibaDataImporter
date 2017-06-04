@@ -8,6 +8,7 @@ import { DataToImport } from "./reader/DataToImport";
 import { KolSei1Kd3 } from "./reader/KOL/KD3/KolSei1Kd3";
 import { KolSei2Kd3 } from "./reader/KOL/KD3/KolSei2Kd3";
 import { KolUmaKd3 } from "./reader/KOL/KD3/KolUmaKd3";
+import { DataCache } from "./reader/DataCache";
 
 export interface Entries {
   [basename: string]: string;
@@ -41,6 +42,7 @@ export class Importer {
 
   public async import(entries: Entries) {
     await this.entityManager.transaction(async () => {
+      const cache = new DataCache();
       for (const basename in this.readers) {
         const dataFile = entries[basename];
         if (!dataFile) {
@@ -55,7 +57,7 @@ export class Importer {
         let fd: number;
         try {
           fd = fs.openSync(dataFile, "r");
-          await dataToImport.readAll(fd);
+          await dataToImport.readAll(fd, cache);
         } catch (e) {
           this.logger.error(e.stack || e);
         }

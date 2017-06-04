@@ -1,6 +1,7 @@
 import * as fs from "fs";
 import * as log4js from "log4js";
 import { getLogger } from "../LogUtil";
+import { DataCache } from "./DataCache";
 
 export abstract class DataToImport {
 
@@ -12,18 +13,14 @@ export abstract class DataToImport {
 
   protected abstract getBufferLength();
 
-  protected abstract save(buffer: Buffer);
+  protected abstract save(buffer: Buffer, cache?: DataCache);
 
-  protected finishUp() {
-  }
-
-  public async readAll(fd: number) {
+  public async readAll(fd: number, cache: DataCache) {
     let buffer: Buffer;
     const length = this.getBufferLength();
     while ((buffer = this.readLine(fd, length)) !== null) {
-      await this.save(buffer);
+      await this.save(buffer, cache);
     }
-    await this.finishUp();
   }
 
   protected readLine(fd: number, length: number): Buffer {

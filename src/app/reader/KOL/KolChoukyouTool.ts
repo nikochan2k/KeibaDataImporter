@@ -3,13 +3,12 @@ import { Inject, Service } from "typedi";
 import { EntityManager } from "typeorm";
 import { OrmEntityManager } from "typeorm-typedi-extensions";
 import * as $CH from "../../converters/Choukyou";
-import { MasshouFlag } from "../../converters/Kishu";
 import { Choukyou } from "../../entities/Choukyou";
 import { ChoukyouTime } from "../../entities/ChoukyouTime";
 import { Kishu } from "../../entities/Kishu";
 import { Shussouba } from "../../entities/Shussouba";
 import { getLogger } from "../../LogUtil";
-import { DataTool } from "../DataTool";
+import { KishuDao } from "../../daos/KishuDao";
 import {
   readDate,
   readPositiveInt,
@@ -31,7 +30,7 @@ export class KolChoukyouTool {
   private entityManager: EntityManager;
 
   @Inject()
-  private tool: DataTool;
+  private kishuDao: KishuDao;
 
   constructor() {
     this.logger = getLogger(this);
@@ -54,10 +53,7 @@ export class KolChoukyouTool {
     if (!choukyou.Noriyaku) {
       const kishu = new Kishu();
       kishu.TanshukuKishuMei = kijousha;
-      kishu.MasshouFlag = MasshouFlag.Geneki;
-      kishu.FromNengappi = choukyou.Nengappi;
-      kishu.ToNengappi = choukyou.Nengappi;
-      choukyou.Kishu = await this.tool.saveKishu(kishu);
+      choukyou.Kishu = await this.kishuDao.saveKishu(kishu);
       if (shussouba.Kishu.Id === choukyou.Kishu.Id) {
         choukyou.Noriyaku = 3; // 本番騎手
       } else {

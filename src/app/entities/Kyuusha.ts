@@ -43,12 +43,6 @@ export class Kyuusha {
   @Column("smallint", { nullable: true })
   public RitsuHokuNanBetsu?: number;
 
-  @Column("smallint", { nullable: true })
-  public TourokuMasshouFlag?: number;
-
-  @Column("date", { nullable: true })
-  public DataSakuseiNengappi?: Date;
-
   @OneToMany(() => Kishu, k => k.Kyuusha)
   public KishuList: Kishu[];
 

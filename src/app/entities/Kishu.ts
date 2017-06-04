@@ -11,17 +11,8 @@ export class Kishu {
   @PrimaryGeneratedColumn("int")
   public Id: number;
 
-  @Column("smallint")
-  public MasshouFlag: number;
-
   @Column("string", { length: 12 })
   public TanshukuKishuMei: string;
-
-  @Column("date")
-  public FromNengappi: Date;
-
-  @Column("date")
-  public ToNengappi: Date;
 
   @Column("string", { length: 48, nullable: true })
   public KishuMei?: string;
