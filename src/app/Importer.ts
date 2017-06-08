@@ -41,6 +41,7 @@ export class Importer {
   }
 
   public async import(entries: Entries) {
+    await this.entityManager.query("PRAGMA journal_mode = WAL");
     await this.entityManager.transaction(async () => {
       const cache = new DataCache();
       for (const basename in this.readers) {

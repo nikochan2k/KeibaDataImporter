@@ -2,6 +2,6 @@
 /build/
 /lzh/
 /src/typings/
-*.sqlite
+*sqlite*
 npm-debug.log
 *.log
