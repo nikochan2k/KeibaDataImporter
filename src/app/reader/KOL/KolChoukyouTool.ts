@@ -3,18 +3,20 @@ import { Inject, Service } from "typedi";
 import { EntityManager } from "typeorm";
 import { OrmEntityManager } from "typeorm-typedi-extensions";
 import * as $CH from "../../converters/Choukyou";
+import { KishuDao } from "../../daos/KishuDao";
+import { UmaDao } from "../../daos/UmaDao";
 import { Choukyou } from "../../entities/Choukyou";
 import { ChoukyouTime } from "../../entities/ChoukyouTime";
 import { Kishu } from "../../entities/Kishu";
+import { Uma } from "../../entities/Uma";
 import { Shussouba } from "../../entities/Shussouba";
 import { getLogger } from "../../LogUtil";
-import { KishuDao } from "../../daos/KishuDao";
 import {
   readDate,
   readPositiveInt,
   readStr,
   readStrWithNoSpace
-  } from "../Reader";
+} from "../Reader";
 
 export interface FurlongOffset {
   f: number;
@@ -48,6 +50,9 @@ export class KolChoukyouTool {
 
   @Inject()
   private kishuDao: KishuDao;
+
+  @Inject()
+  private umaDao: UmaDao;
 
   constructor() {
     this.logger = getLogger(this);
@@ -100,7 +105,37 @@ export class KolChoukyouTool {
     choukyou.Yajirushi = $CH.yajirushi.toCodeFromKol(buffer, offset + 76, 1);
     choukyou.Reigai = readStr(buffer, offset + 77, 40);
     if (awase) {
-      choukyou.Awase = awase;
+      let reigai = false;
+      let execed = /^[\u30A1-\u30FC]+/.exec(awase);
+      if (execed && 0 < execed.length) {
+        const uma = new Uma();
+        uma.Bamei = execed[0];
+        choukyou.AwaseUma = await this.umaDao.saveUma(uma);
+      } else {
+        reigai = true;
+      }
+      choukyou.AwaseKekka = $CH.awaseKekka.toCodeFromKol(awase);
+      if (!choukyou.AwaseKekka) {
+        reigai = true;
+      }
+      execed = /[0-9]+(\.[0-9]+)/.exec(awase);
+      let timeSa: number;
+      if (execed && 0 < execed.length) {
+        timeSa = parseFloat(execed[0]);
+        if (choukyou.AwaseKekka === $CH.AwaseKekka.Okure) {
+          timeSa *= -1;
+        }
+      } else {
+        timeSa = 0.0;
+      }
+      choukyou.TimeSa = timeSa;
+      choukyou.Chakusa = $CH.chakusa.toCodeFromKol(awase);
+      if (choukyou.AwaseKekka !== $CH.AwaseKekka.Dounyuu && timeSa === 0.0 && !choukyou.Chakusa) {
+        reigai = true;
+      }
+      if (reigai) {
+        choukyou.AwaseReigai = awase;
+      }
     }
     await this.entityManager.persist(choukyou);
 

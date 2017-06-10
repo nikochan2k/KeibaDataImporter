@@ -201,10 +201,24 @@ export const yajirushi = new Codes(
   ]
 );
 
+export enum AwaseKekka {
+  Senchaku = 1,
+  Dounyuu,
+  Okure
+}
+
 export const awaseKekka = new Codes(
   [
-    { code: 1, kol: "1", naiyou: "先着" },
-    { code: 2, kol: "2", naiyou: "同入" },
-    { code: 3, kol: "3", naiyou: "遅れ" }
+    { code: AwaseKekka.Senchaku, kol: /先着/, jrdb: "1", naiyou: "先着" },
+    { code: AwaseKekka.Dounyuu, kol: /同入/, jrdb: "2", naiyou: "同入" },
+    { code: AwaseKekka.Okure, kol: /遅れ/, jrdb: "3", naiyou: "遅れ" }
+  ]
+);
+
+export const chakusa = new Codes(
+  [
+    { code: 1, kol: /ハナ/, naiyou: "ハナ" },
+    { code: 2, kol: /アタマ/, naiyou: "アタマ" },
+    { code: 3, kol: /クビ/, naiyou: "クビ" }
   ]
 );

@@ -70,16 +70,22 @@ export class Choukyou {
   @Column("string", { length: 60, nullable: true })
   public Reigai?: string;
 
-  @Column("string", { length: 129, nullable: true })
-  public Awase?: string;
-
-  @Column("smallint", { nullable: true })
-  public AwaseKekka?: number;
-
   @Column("int", { name: "AwaseUmaId", nullable: true })
   @ManyToOne(() => Uma)
   @JoinColumn({ name: "AwaseUmaId" })
   public AwaseUma?: Uma;
+
+  @Column("smallint", { nullable: true })
+  public AwaseKekka?: number;
+
+  @Column("smallint", { nullable: true })
+  public Chakusa?: number;
+
+  @Column("float", { nullable: true })
+  public TimeSa?: number;
+
+  @Column("string", { length: 129, nullable: true })
+  public AwaseReigai?: string;
 
   @OneToMany(() => ChoukyouTime, ct => ct.Choukyou)
   public ChoukyouTimeList: ChoukyouTime[];
