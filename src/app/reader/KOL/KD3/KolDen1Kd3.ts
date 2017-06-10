@@ -7,6 +7,7 @@ import { Race } from "../../../entities/Race";
 import { RaceClass } from "../../../entities/RaceClass";
 import { DataToImport } from "../../DataToImport";
 import { DataTool } from "../../DataTool";
+import { DataCache } from "../../DataCache";
 import {
   readDate,
   readInt,
@@ -37,7 +38,7 @@ export class KolDen1Kd3 extends DataToImport {
     return 848;
   }
 
-  protected async save(buffer: Buffer) {
+  protected async save(buffer: Buffer, cache: DataCache) {
     const id = this.kolTool.getRaceId(buffer);
     if (!id) {
       return;
@@ -62,9 +63,10 @@ export class KolDen1Kd3 extends DataToImport {
 
     await this.saveRace(buffer, race);
     await this.saveRaceShoukin(buffer, race);
+    this.setYosouTenkai(buffer, race, cache);
   }
 
-  public async saveRace(buffer: Buffer, race: Race) {
+  protected async saveRace(buffer: Buffer, race: Race) {
     if (!race.KolSeisekiSakuseiNengappi) {
       race.Basho = $C.basho.toCodeFromKol(buffer, 0, 2);
       race.Nen = readPositiveInt(buffer, 2, 4);
@@ -97,7 +99,7 @@ export class KolDen1Kd3 extends DataToImport {
     await this.entityManager.persist(race);
   }
 
-  public async saveRaceClass(buffer: Buffer) {
+  protected async saveRaceClass(buffer: Buffer) {
     const rc = new RaceClass();
     rc.KouryuuFlag = $R.kouryuuFlag.toCodeFromKol(buffer, 22, 1);
     rc.ChuuouChihouGaikoku = $R.chuuouChihouGaikoku.toCodeFromKol(buffer, 23, 1);
@@ -118,7 +120,7 @@ export class KolDen1Kd3 extends DataToImport {
     return raceClass;
   }
 
-  public async saveRaceShoukin(buffer: Buffer, race: Race) {
+  protected async saveRaceShoukin(buffer: Buffer, race: Race) {
     await this.kolRaceTool.saveRaceShoukin(buffer, race, [
       { chakujun: 1, offset: 277, length: 9, fukashou: 0 },
       { chakujun: 2, offset: 286, length: 9, fukashou: 0 },
@@ -127,6 +129,18 @@ export class KolDen1Kd3 extends DataToImport {
       { chakujun: 5, offset: 313, length: 9, fukashou: 0 },
       { chakujun: 1, offset: 351, length: 9, fukashou: 1 },
     ], 0);
+  }
+
+  protected setYosouTenkai(buffer: Buffer, race: Race, cache: DataCache) {
+    [362, 374, 386, 398].forEach((offset, index) => {
+      for (let i = 0; i < 4; i++) {
+        const umaban = readInt(buffer, offset + i * 2, 2);
+        if (1 <= umaban && umaban <= 28) {
+          const shussoubaId = race.Id * 100 + umaban;
+          cache.addYosouTenkai(shussoubaId, index + 1);
+        }
+      }
+    });
   }
 
 }

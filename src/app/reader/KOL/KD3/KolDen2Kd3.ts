@@ -7,6 +7,7 @@ import { Race } from "../../../entities/Race";
 import { Shussouba } from "../../../entities/Shussouba";
 import { Choukyou } from "../../../entities/Choukyou";
 import { DataToImport } from "../../DataToImport";
+import { DataCache } from "../../DataCache";
 import {
   readStr,
   readDate,
@@ -41,7 +42,7 @@ export class KolSei2Kd3 extends DataToImport {
       .execute();
   }
 
-  protected async save(buffer: Buffer) {
+  protected async save(buffer: Buffer, cache: DataCache) {
     const race = new Race();
     race.Id = this.kolTool.getRaceId(buffer);
     const umaban = readPositiveInt(buffer, 23, 2);
@@ -69,26 +70,11 @@ export class KolSei2Kd3 extends DataToImport {
     shussouba.Umaban = umaban;
     shussouba.KolShutsubahyouSakuseiNengappi = dataSakuseiNengappi;
 
-    await this.saveShussouba(buffer, shussouba);
-    const choukyouAwaseFlag = readPositiveInt(buffer, 607, 1);
-    const choukyouAwase = readStr(buffer, 608, 86);
-    await this.choukyouTool.saveChoukyou(buffer, shussouba, 256, 1,
-      choukyouAwaseFlag === 1 ? choukyouAwase : null);
-    await this.choukyouTool.saveChoukyou(buffer, shussouba, 373, 2,
-      choukyouAwaseFlag === 2 ? choukyouAwase : null);
-    await this.choukyouTool.saveChoukyou(buffer, shussouba, 490, 3,
-      choukyouAwaseFlag === 3 ? choukyouAwase : null);
+    await this.saveShussouba(buffer, shussouba, cache);
+    await this.saveChoukyou(buffer, shussouba);
   }
 
-  protected getTimeSa(buffer: Buffer, offset: number) {
-    const timeSa = readDouble(buffer, offset, 3, 0.1);
-    if (99.8 <= timeSa) {
-      return 0.0;
-    }
-    return timeSa;
-  }
-
-  protected async saveShussouba(buffer: Buffer, shussouba: Shussouba) {
+  protected async saveShussouba(buffer: Buffer, shussouba: Shussouba, cache: DataCache) {
     if (shussouba.KolSeisekiSakuseiNengappi) {
       shussouba.Wakuban = readPositiveInt(buffer, 22, 1);
       shussouba.Kyousouba = await this.kolTool.saveUma(buffer, 32);
@@ -108,8 +94,20 @@ export class KolSei2Kd3 extends DataToImport {
     shussouba.ChoukyouHonsuuPool = readPositiveInt(buffer, 724, 3);
     shussouba.Rating = readDouble(buffer, 739, 3, 0.1);
     shussouba.KyuuyouRiyuu = readStr(buffer, 783, 60);
+    shussouba.YosouTenkai = cache.getYosouTenkai(shussouba.Id);
 
     await this.entityManager.persist(shussouba);
+  }
+
+  protected async saveChoukyou(buffer: Buffer, shussouba: Shussouba) {
+    const choukyouAwaseFlag = readPositiveInt(buffer, 607, 1);
+    const choukyouAwase = readStr(buffer, 608, 86);
+    await this.choukyouTool.saveChoukyou(buffer, shussouba, 256, 1,
+      choukyouAwaseFlag === 1 ? choukyouAwase : null);
+    await this.choukyouTool.saveChoukyou(buffer, shussouba, 373, 2,
+      choukyouAwaseFlag === 2 ? choukyouAwase : null);
+    await this.choukyouTool.saveChoukyou(buffer, shussouba, 490, 3,
+      choukyouAwaseFlag === 3 ? choukyouAwase : null);
   }
 
 }

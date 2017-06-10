@@ -1,15 +1,20 @@
 import {
-  Entity, Index, Column, PrimaryColumn, OneToMany, ManyToOne,
-  JoinColumn
-} from "typeorm";
-import { Race } from "./Race";
+  Column,
+  Entity,
+  Index,
+  JoinColumn,
+  ManyToOne,
+  OneToMany,
+  PrimaryColumn
+  } from "typeorm";
+import { Choukyou } from "./Choukyou";
 import { Kishu } from "./Kishu";
 import { Kyuusha } from "./Kyuusha";
-import { Uma } from "./Uma";
-import { Choukyou } from "./Choukyou";
-import { ShussoubaTsuukaJuni } from "./ShussoubaTsuukaJuni";
-import { ShussoubaKeika } from "./ShussoubaKeika";
+import { Race } from "./Race";
 import { ShussoubaBagu } from "./ShussoubaBagu";
+import { ShussoubaKeika } from "./ShussoubaKeika";
+import { ShussoubaTsuukaJuni } from "./ShussoubaTsuukaJuni";
+import { Uma } from "./Uma";
 
 @Entity("Shussouba")
 @Index("IxShussouba1", (s: Shussouba) => [s.Race, s.Umaban])
@@ -149,6 +154,9 @@ export class Shussouba {
 
   @Column("float", { nullable: true })
   public Rating?: number;
+
+  @Column("smallint", { nullable: true })
+  public YosouTenkai?: number;
 
   @Column("date", { nullable: true })
   public KolShutsubahyouSakuseiNengappi?: Date;

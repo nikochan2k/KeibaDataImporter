@@ -136,7 +136,7 @@ export class KolSei2Kd3 extends DataToImport {
 
     await this.entityManager.persist(shussouba);
 
-    const shussoubaKeika = cache.getShussoubaKeika(shussouba.Id);
+    const shussoubaKeika = cache.getKeika(shussouba.Id);
     if (shussoubaKeika) {
       await this.entityManager.persist(shussoubaKeika);
     }

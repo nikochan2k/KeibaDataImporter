@@ -4,7 +4,6 @@ import { RaceHaitou } from "./RaceHaitou";
 import { RaceKeika } from "./RaceKeika";
 import { RaceLapTime } from "./RaceLapTime";
 import { RaceShoukin } from "./RaceShoukin";
-import { RaceYosouTenkai } from "./RaceYosouTenkai";
 import { Record } from "./Record";
 import { Shussouba } from "./Shussouba";
 import {
@@ -141,9 +140,6 @@ export class Race {
 
   @OneToMany(() => RaceShoukin, rs => rs.Race)
   public RaceShoukinList: RaceShoukin[];
-
-  @OneToMany(() => RaceYosouTenkai, ryt => ryt.Race)
-  public RaceYosouTenkaiList: RaceYosouTenkai[];
 
   @OneToMany(() => RaceLapTime, rlt => rlt.Race)
   public RaceLapTimeList: RaceLapTime[];

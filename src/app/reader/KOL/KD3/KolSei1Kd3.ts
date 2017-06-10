@@ -301,7 +301,7 @@ export class KolSei1Kd3 extends DataToImport {
 
       const shussoubaKeikaList = this.keikaTool.parseRaceKeika(raceKeika);
       shussoubaKeikaList.forEach((shussoubaKeika) => {
-        cache.addShussoubaKeika(shussoubaKeika.Shussouba.Id, shussoubaKeika);
+        cache.addKeika(shussoubaKeika.Shussouba.Id, shussoubaKeika);
       });
     }
   }
