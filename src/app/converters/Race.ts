@@ -78,42 +78,42 @@ export const betteiBareiHandi = new Codes(
 
 export const joukenFuka1 = new Codes(
   [
-    { code: 1, kol: /04|08|10|13|27|38/, jrdb: /1../, naiyou: "○混" },
-    { code: 2, kol: "05", jrdb: /2../, naiyou: "○父" },
-    { code: 3, kol: /07|11|19|20/, jrdb: /3../, naiyou: "○市" },
-    { code: 4, kol: /09|14|15|16|19|20/, jrdb: /3../, naiyou: "○抽" },
-    { code: 5, kol: /06|07|17|18/, naiyou: "□抽" },
-    { code: 6, kol: /29|35|40/, jrdb: /5../, naiyou: "○国際" },
-    { code: 7, kol: "12", naiyou: "○招" },
-    { code: 11, kol: /13|21|30/, jrdb: /..1/, naiyou: "○指" },
-    { code: 12, kol: "31", jrdb: /..3/, naiyou: "○特指" },
-    { code: 13, kol: "32", jrdb: /..2/, naiyou: "□指" },
-    { code: 21, kol: /00|08|14/, naiyou: "勝入" },
-    { code: 22, kol: "02", naiyou: "内国" },
-    { code: 23, kol: "25", naiyou: "交流" },
-    { code: 24, jrdb: /..4/, naiyou: "若手" },
-    { code: 31, kol: "01", jrdb: /4../, naiyou: "九州産馬" },
-    { code: 32, kol: "26", naiyou: "千葉産" },
-    { code: 33, kol: /15|17|19/, naiyou: "関西配布馬" },
-    { code: 34, kol: /16|18|20/, naiyou: "関東配布馬" },
-    { code: 41, kol: "34", naiyou: "JRA認定" },
-    { code: 42, kol: "39", naiyou: "JRA指定" },
-    { code: 51, kol: "22", naiyou: "芦毛" },
-    { code: 52, kol: "23", naiyou: "栗毛" },
-    { code: 53, kol: "36", naiyou: "芦・白" },
-    { code: 54, kol: "37", naiyou: "黒鹿毛" },
-    { code: 91, kol: /24|27|28|33|38|40/, jrdb: /.[134]./, naiyou: "牡" },
-    { code: 92, kol: /03|10|33|35|38|40/, jrdb: /.[24]./, naiyou: "牝" },
-    { code: 93, kol: /24|27|28/, jrdb: /.3./, naiyou: "せん" },
+    { code: 2 ** 0, kol: /04|08|10|13|27|38/, jrdb: /1../, naiyou: "○混" },
+    { code: 2 ** 1, kol: "05", jrdb: /2../, naiyou: "○父" },
+    { code: 2 ** 2, kol: /07|11|19|20/, jrdb: /3../, naiyou: "○市" },
+    { code: 2 ** 3, kol: /09|14|15|16|19|20/, jrdb: /3../, naiyou: "○抽" },
+    { code: 2 ** 4, kol: /06|07|17|18/, naiyou: "□抽" },
+    { code: 2 ** 5, kol: /29|35|40/, jrdb: /5../, naiyou: "○国際" },
+    { code: 2 ** 6, kol: "12", naiyou: "○招" },
+    { code: 2 ** 7, kol: /13|21|30/, jrdb: /..1/, naiyou: "○指" },
+    { code: 2 ** 8, kol: "31", jrdb: /..3/, naiyou: "○特指" },
+    { code: 2 ** 9, kol: "32", jrdb: /..2/, naiyou: "□指" },
+    { code: 2 ** 10, kol: /00|08|14/, naiyou: "勝入" },
+    { code: 2 ** 11, kol: "02", naiyou: "内国" },
+    { code: 2 ** 12, kol: "25", naiyou: "交流" },
+    { code: 2 ** 13, jrdb: /..4/, naiyou: "若手" },
+    { code: 2 ** 14, kol: "01", jrdb: /4../, naiyou: "九州産馬" },
+    { code: 2 ** 15, kol: "26", naiyou: "千葉産" },
+    { code: 2 ** 16, kol: /15|17|19/, naiyou: "関西配布馬" },
+    { code: 2 ** 17, kol: /16|18|20/, naiyou: "関東配布馬" },
+    { code: 2 ** 18, kol: "34", naiyou: "JRA認定" },
+    { code: 2 ** 19, kol: "39", naiyou: "JRA指定" },
+    { code: 2 ** 20, kol: "22", naiyou: "芦毛" },
+    { code: 2 ** 21, kol: "23", naiyou: "栗毛" },
+    { code: 2 ** 22, kol: "36", naiyou: "芦・白" },
+    { code: 2 ** 23, kol: "37", naiyou: "黒鹿毛" },
+    { code: 2 ** 24, kol: /24|27|28|33|38|40/, jrdb: /.[134]./, naiyou: "牡" },
+    { code: 2 ** 25, kol: /03|10|33|35|38|40/, jrdb: /.[24]./, naiyou: "牝" },
+    { code: 2 ** 26, kol: /24|27|28/, jrdb: /.3./, naiyou: "せん" },
   ]
 );
 
 export const joukenFuka2 = new Codes(
   [
-    { code: 11, kol: "1", naiyou: "○指" },
-    { code: 12, kol: "2", naiyou: "○特指" },
-    { code: 13, kol: "3", naiyou: "□指" },
-    { code: 11, kol: "4", naiyou: "○指" }
+    { code: 2 ** 6, kol: "1", naiyou: "○指" },
+    { code: 2 ** 7, kol: "2", naiyou: "○特指" },
+    { code: 2 ** 8, kol: "3", naiyou: "□指" },
+    { code: 2 ** 6, kol: "4", naiyou: "○指" }
   ]
 );
 

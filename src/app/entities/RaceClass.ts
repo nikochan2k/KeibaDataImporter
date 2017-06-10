@@ -17,6 +17,9 @@ export class RaceClass {
   @Column("smallint")
   public HeichiShougai: number;
 
+  @Column("int")
+  public JoukenFuka: number;
+
   @Column("smallint")
   public JoukenKei: number;
 

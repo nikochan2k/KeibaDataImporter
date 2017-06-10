@@ -11,11 +11,8 @@ if (3 <= process.argv.length) {
 
 useContainer(Container);
 createConnection({
-  driver: {
-    type: "sqlite",
-    storage: "test.sqlite"
-  },
-  name: "default",
+  type: "sqlite",
+  database: "test.sqlite",
   entities: [
     __dirname + "/entities/*.js"
   ],

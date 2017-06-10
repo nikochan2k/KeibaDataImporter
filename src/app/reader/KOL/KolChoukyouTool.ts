@@ -24,6 +24,23 @@ export interface FurlongOffset {
 @Service()
 export class KolChoukyouTool {
 
+  private static readonly courseFurlongOffsets: FurlongOffset[] = [
+    { f: 8, offset: 27 },
+    { f: 7, offset: 33 },
+    { f: 6, offset: 39 },
+    { f: 5, offset: 45 },
+    { f: 4, offset: 51 },
+    { f: 3, offset: 57 },
+    { f: 1, offset: 63 }
+  ];
+
+  private static readonly hanroFurlongOffsets: FurlongOffset[] = [
+    { f: 4, offset: 45 },
+    { f: 3, offset: 51 },
+    { f: 2, offset: 57 },
+    { f: 1, offset: 63 }
+  ];
+
   private logger: Logger;
 
   @OrmEntityManager()
@@ -36,15 +53,14 @@ export class KolChoukyouTool {
     this.logger = getLogger(this);
   }
 
-  public async saveChoukyou(buffer: Buffer, shussouba: Shussouba, offset: number,
-    hanroFurlongOffsets: FurlongOffset[], courseFurlongOffsets: FurlongOffset[], awase?: string
+  public async saveChoukyou(buffer: Buffer, shussouba: Shussouba, offset: number, bangou: number, awase?: string
   ) {
     const kijousha = readStrWithNoSpace(buffer, offset + 1, 8);
     if (!kijousha) {
       return;
     }
     const choukyou = new Choukyou();
-    choukyou.Id = shussouba.Id * 10 + 1;
+    choukyou.Id = shussouba.Id * 10 + bangou;
     choukyou.Shussouba = shussouba;
     choukyou.Bangou = 1;
     choukyou.ChoukyouFlag = $CH.choukyouFlag.toCodeFromKol(buffer, offset, 1);
@@ -89,9 +105,9 @@ export class KolChoukyouTool {
     await this.entityManager.persist(choukyou);
 
     if (choukyou.Type === $CH.ChoukyouType.Hanro) {
-      await this.saveChoukyouTime(buffer, choukyou, offset, hanroFurlongOffsets);
+      await this.saveChoukyouTime(buffer, choukyou, offset, KolChoukyouTool.hanroFurlongOffsets);
     } else if ($CH.ChoukyouType.Shiba <= choukyou.Type || choukyou.Type <= $CH.ChoukyouType.Shougai) {
-      await this.saveChoukyouTime(buffer, choukyou, offset, courseFurlongOffsets);
+      await this.saveChoukyouTime(buffer, choukyou, offset, KolChoukyouTool.courseFurlongOffsets);
     }
   }
 

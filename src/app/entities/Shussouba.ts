@@ -1,5 +1,5 @@
 import {
-  Entity, Index, Column, PrimaryColumn, OneToOne, OneToMany, ManyToOne,
+  Entity, Index, Column, PrimaryColumn, OneToMany, ManyToOne,
   JoinColumn
 } from "typeorm";
 import { Race } from "./Race";
@@ -7,7 +7,6 @@ import { Kishu } from "./Kishu";
 import { Kyuusha } from "./Kyuusha";
 import { Uma } from "./Uma";
 import { Choukyou } from "./Choukyou";
-import { ShussoubaYosou } from "./ShussoubaYosou";
 import { ShussoubaTsuukaJuni } from "./ShussoubaTsuukaJuni";
 import { ShussoubaKeika } from "./ShussoubaKeika";
 import { ShussoubaBagu } from "./ShussoubaBagu";
@@ -57,6 +56,9 @@ export class Shussouba {
   @Column("smallint", { nullable: true })
   public Zougen?: number;
 
+  @Column("smallint", { nullable: true })
+  public KolRecordShisuu?: number;
+
   @Column("int", { name: "KishuId" })
   @ManyToOne(() => Kishu, k => k.ShussoubaList)
   @JoinColumn({ name: "KishuId" })
@@ -69,6 +71,12 @@ export class Shussouba {
   @ManyToOne(() => Kyuusha, k => k.ShussoubaList)
   @JoinColumn({ name: "KyuushaId" })
   public Kyuusha: Kyuusha;
+
+  @Column("smallint", { nullable: true })
+  public KolYosou1?: number;
+
+  @Column("smallint", { nullable: true })
+  public KolYosou2?: number;
 
   @Column("smallint", { nullable: true })
   public Ninki?: number;
@@ -124,6 +132,9 @@ export class Shussouba {
   @Column("smallint", { nullable: true })
   public KyuuyouRiyuuCode?: number;
 
+  @Column("string", { length: 7, nullable: true })
+  public ChoukyouTanpyou?: string;
+
   @Column("smallint", { nullable: true })
   public ChoukyouHonsuuCourse?: number;
 
@@ -136,6 +147,9 @@ export class Shussouba {
   @Column("string", { length: 90, nullable: true })
   public KyuuyouRiyuu?: string;
 
+  @Column("float", { nullable: true })
+  public Rating?: number;
+
   @Column("date", { nullable: true })
   public KolShutsubahyouSakuseiNengappi?: Date;
 
@@ -147,9 +161,6 @@ export class Shussouba {
 
   @Column("date", { nullable: true })
   public JrdbSeisekiSakuseiNengappi?: Date;
-
-  @OneToOne(() => ShussoubaYosou, sf => sf.Shussouba)
-  public ShussoubaYosou: ShussoubaYosou;
 
   @OneToMany(() => Choukyou, c => c.Shussouba)
   public ChoukyouList: Choukyou[];

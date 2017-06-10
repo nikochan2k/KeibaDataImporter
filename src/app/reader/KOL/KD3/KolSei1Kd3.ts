@@ -7,10 +7,8 @@ import { Baken } from "../../../converters/RaceHaitou";
 import * as $RK from "../../../converters/RaceKeika";
 import { Race } from "../../../entities/Race";
 import { RaceClass } from "../../../entities/RaceClass";
-import { RaceJoukenFuka } from "../../../entities/RaceJoukenFuka";
 import { RaceKeika } from "../../../entities/RaceKeika";
 import { RaceLapTime } from "../../../entities/RaceLapTime";
-import { RaceYosou } from "../../../entities/RaceYosou";
 import { DataToImport } from "../../DataToImport";
 import { DataTool } from "../../DataTool";
 import { DataCache } from "../../DataCache";
@@ -57,9 +55,13 @@ export class KolSei1Kd3 extends DataToImport {
     let race = await this.entityManager.findOneById(Race, id);
     const dataSakuseiNengappi = readDate(buffer, 2910, 8);
     if (race) {
-      if (dataSakuseiNengappi <= race.KolSeisekiSakuseiNengappi) {
-        this.logger.debug("既に最新のレース成績データが格納されています: " + id);
-        return;
+      if (race.KolSeisekiSakuseiNengappi) {
+        if (dataSakuseiNengappi <= race.KolSeisekiSakuseiNengappi) {
+          this.logger.debug("既に最新のレース成績データが格納されています: " + id);
+          return;
+        } else {
+          await this.kolRaceTool.deleteOldSeiseki(race);
+        }
       }
     } else {
       race = new Race();
@@ -68,10 +70,8 @@ export class KolSei1Kd3 extends DataToImport {
     race.KolSeisekiSakuseiNengappi = dataSakuseiNengappi;
 
     await this.saveRace(buffer, race);
-    await this.saveJoukenFuka(buffer, race);
     await this.saveRaceShoukin(buffer, race);
     await this.saveRaceLapTime(buffer, race);
-    await this.saveRaceYosou(buffer, race);
     await this.saveRaceKeika(buffer, race, cache);
     await this.saveRaceHaitou(buffer, race);
   }
@@ -121,6 +121,11 @@ export class KolSei1Kd3 extends DataToImport {
       race.HassouJoukyou = hassouJoukyou;
     }
 
+    if (!race.KolShutsubahyouSakuseiNengappi) {
+      race.SuiteiTimeRyou = readTime(buffer, 370, 4);
+      race.SuiteiTimeOmoFuryou = readTime(buffer, 374, 4);
+    }
+
     await this.entityManager.persist(race);
   }
 
@@ -135,6 +140,9 @@ export class KolSei1Kd3 extends DataToImport {
     rc.Grade = $R.grade.toCodeFromKol(buffer, 73, 1);
     rc.BetteiBareiHandi = $R.betteiBareiHandi.toCodeFromKol(buffer, 75, 2);
     rc.BetteiBareiHandiShousai = readStr(buffer, 77, 18);
+    const joukenFuka1 = $R.joukenFuka1.toCodesFromKol(buffer, 95, 2);
+    const joukenFuka2 = $R.joukenFuka2.toCodesFromKol(buffer, 97, 2);
+    rc.JoukenFuka = this.tool.getJoukenFuka(joukenFuka1, joukenFuka2);
     rc.JoukenKei = $R.JoukenKei.toCodeFromKol(buffer, 99, 1);
     rc.JoukenNenreiSeigen = $R.joukenNenreiSeigen.toCodeFromKol(buffer, 100, 1);
     rc.Jouken1 = $R.jouken.toCodeFromKol(buffer, 101, 5);
@@ -148,20 +156,6 @@ export class KolSei1Kd3 extends DataToImport {
     return raceClass;
   }
 
-  public async saveJoukenFuka(buffer: Buffer, race: Race) {
-    const joukenFuka1 = $R.joukenFuka1.toCodesFromKol(buffer, 95, 2);
-    const joukenFuka2 = $R.joukenFuka2.toCodesFromKol(buffer, 97, 2);
-    let joukenFukaList = joukenFuka1.concat(joukenFuka2);
-    joukenFukaList = joukenFukaList.filter((x, i, self) => self.indexOf(x) === i);
-    for (let i = 0; i < joukenFukaList.length; i++) {
-      const raceJoukenFuka = new RaceJoukenFuka();
-      raceJoukenFuka.Race = race;
-      raceJoukenFuka.Id = race.Id * 10 + i;
-      raceJoukenFuka.JoukenFuka = joukenFukaList[i];
-      await this.entityManager.persist(raceJoukenFuka);
-    }
-  }
-
   public async saveRaceShoukin(buffer: Buffer, race: Race) {
     await this.kolRaceTool.saveRaceShoukin(buffer, race, [
       { chakujun: 1, offset: 288, length: 9, fukashou: 0 },
@@ -173,13 +167,6 @@ export class KolSei1Kd3 extends DataToImport {
       { chakujun: 5, offset: 342, length: 9, fukashou: 0 },
       { chakujun: 1, offset: 351, length: 9, fukashou: 1 },
     ], 1);
-  }
-
-  public async saveRaceYosou(buffer: Buffer, race: Race) {
-    const raceYosou = new RaceYosou();
-    raceYosou.SuiteiTimeRyou = readTime(buffer, 370, 4);
-    raceYosou.SuiteiTimeOmoFuryou = readTime(buffer, 374, 4);
-    race.RaceYosou = raceYosou;
   }
 
   public async saveRaceLapTime(buffer: Buffer, race: Race) {

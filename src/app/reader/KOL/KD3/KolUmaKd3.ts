@@ -60,11 +60,9 @@ export class KolUmaKd3 extends DataToImport {
     uma.Seibetsu = $U.seibetsu.toCodeFromKol(buffer, 94, 1);
     uma.ChichiUma = await this.saveOyaUma(buffer, 104, $U.Seibetsu.Boba);
     uma.HahaUma = await this.saveOyaUma(buffer, 145, $U.Seibetsu.Hinba, 186, 227);
-    uma.Banushi = await this.kolTool.saveBanushi(buffer, { meishou: 343, tanshuku: 383 });
-    uma.Seisansha = await this.kolTool.saveSeisansha(buffer, { meishou: 423, tanshuku: 463 });
-    uma.Kyuusha = await this.kolTool.saveKyuusha(buffer, {
-      kolKyuushaCode: 488, meishou: 493, tanshuku: 525, shozokuBasho: 533, ritsuHokuNanBetsu: 535
-    });
+    uma.Banushi = await this.kolTool.saveBanushi(buffer, 343);
+    uma.Seisansha = await this.kolTool.saveSeisansha(buffer, 423);
+    uma.Kyuusha = await this.kolTool.saveKyuusha(buffer, 488);
     uma.KoueiGaikokuKyuushaMei = readStr(buffer, 536, 8);
     uma.MasshouFlag = $U.masshouFlag.toCodeFromKol(buffer, 544, 1);
     uma.MasshouNengappi = readDate(buffer, 545, 8);

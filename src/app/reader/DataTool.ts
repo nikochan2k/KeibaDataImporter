@@ -82,6 +82,16 @@ export class DataTool {
     return null;
   }
 
+  public getJoukenFuka(...joukenFukaLists: number[][]) {
+    let joukenFuka = 0;
+    joukenFukaLists.forEach((joukenFukaList) => {
+      joukenFukaList.forEach((item) => {
+        joukenFuka |= item;
+      });
+    });
+    return joukenFuka;
+  }
+
   public async saveRaceClass(rc: RaceClass) {
     const qb = await this.entityManager
       .getRepository(RaceClass)

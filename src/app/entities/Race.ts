@@ -1,18 +1,15 @@
-import {
-  Entity, Index, Column, PrimaryColumn, OneToMany, ManyToOne, JoinColumn,
-  Embedded
-} from "typeorm";
+import { OddsKubun } from "./OddsKubun";
 import { RaceClass } from "./RaceClass";
-import { RaceYosou } from "./RaceYosou";
-import { RaceYosouTenkai } from "./RaceYosouTenkai";
-import { RaceJoukenFuka } from "./RaceJoukenFuka";
-import { RaceShoukin } from "./RaceShoukin";
-import { RaceLapTime } from "./RaceLapTime";
 import { RaceHaitou } from "./RaceHaitou";
 import { RaceKeika } from "./RaceKeika";
+import { RaceLapTime } from "./RaceLapTime";
+import { RaceShoukin } from "./RaceShoukin";
+import { RaceYosouTenkai } from "./RaceYosouTenkai";
 import { Record } from "./Record";
-import { OddsKubun } from "./OddsKubun";
 import { Shussouba } from "./Shussouba";
+import {
+  Entity, Index, Column, PrimaryColumn, OneToMany, ManyToOne, JoinColumn,
+} from "typeorm";
 
 @Entity("Race")
 @Index("IxRace", (r: Race) => [r.Nengappi, r.Basho, r.RaceBangou])
@@ -118,9 +115,6 @@ export class Race {
   @Column("text", { nullable: true })
   public SeisaiNaiyou?: string;
 
-  @Embedded(() => RaceYosou)
-  public RaceYosou: RaceYosou;
-
   @Column("date", { nullable: true })
   public KolShutsubahyouSakuseiNengappi?: Date;
 
@@ -133,8 +127,17 @@ export class Race {
   @Column("date", { nullable: true })
   public JrdbSeisekiSakuseiNengappi?: Date;
 
-  @OneToMany(() => RaceJoukenFuka, rjf => rjf.Race)
-  public RaceJoukenFukaList: RaceJoukenFuka[];
+  @Column("float", { nullable: true })
+  public SuiteiTimeRyou?: number;
+
+  @Column("float", { nullable: true })
+  public SuiteiTimeOmoFuryou?: number;
+
+  @Column("smallint", { nullable: true })
+  public YosouPace?: number;
+
+  @Column("string", { nullable: true, length: 18 })
+  public Yosoushamei2: string;
 
   @OneToMany(() => RaceShoukin, rs => rs.Race)
   public RaceShoukinList: RaceShoukin[];

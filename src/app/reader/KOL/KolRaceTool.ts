@@ -6,6 +6,8 @@ import { HaitouInfo } from "../../converters/RaceHaitou";
 import { ShoukinInfo } from "../../converters/RaceShoukin";
 import { Kishu } from "../../entities/Kishu";
 import { Race } from "../../entities/Race";
+import { RaceKeika } from "../../entities/RaceKeika";
+import { RaceLapTime } from "../../entities/RaceLapTime";
 import { RaceHaitou } from "../../entities/RaceHaitou";
 import { RaceShoukin } from "../../entities/RaceShoukin";
 import { Record } from "../../entities/Record";
@@ -35,6 +37,47 @@ export class KolRaceTool {
 
   @Inject()
   private kishuDao: KishuDao;
+
+  public async deleteOldShutsubahyou(race: Race) {
+    await this.entityManager
+      .createQueryBuilder(RaceShoukin, "rs")
+      .delete()
+      .where("rs.RaceId = :raceId")
+      .andWhere("rs.Kakutei = 0")
+      .setParameter("raceId", race.Id)
+      .execute();
+  }
+
+  public async deleteOldSeiseki(race: Race) {
+    await this.entityManager
+      .createQueryBuilder(RaceShoukin, "rs")
+      .delete()
+      .where("rs.RaceId = :raceId")
+      .andWhere("rs.Kakutei = 1")
+      .setParameter("raceId", race.Id)
+      .execute();
+
+    await this.entityManager
+      .createQueryBuilder(RaceLapTime, "rlt")
+      .delete()
+      .where("rlt.RaceId = :raceId")
+      .setParameter("raceId", race.Id)
+      .execute();
+
+    await this.entityManager
+      .createQueryBuilder(RaceKeika, "rk")
+      .delete()
+      .where("rk.RaceId = :raceId")
+      .setParameter("raceId", race.Id)
+      .execute();
+
+    await this.entityManager
+      .createQueryBuilder(RaceHaitou, "rh")
+      .delete()
+      .where("rh.RaceId = :raceId")
+      .setParameter("raceId", race.Id)
+      .execute();
+  }
 
   public async getRecord(buffer: Buffer, offset: number, bashoOffset: number) {
     const nengappi = readDate(buffer, offset, 8);
