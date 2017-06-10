@@ -38,8 +38,8 @@ export class Shussouba {
   @Column("smallint")
   public Umaban: number;
 
-  @Column("smallint")
-  public Gate: number;
+  @Column("smallint", { nullable: true })
+  public Gate?: number;
 
   @Column("int", { name: "KyousoubaId" })
   @ManyToOne(() => Uma, u => u.ShussoubaList)

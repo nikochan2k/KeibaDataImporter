@@ -20,8 +20,8 @@ export class Choukyou {
   @Column("smallint")
   public Bangou: number;
 
-  @Column("smallint")
-  public ChoukyouFlag: number;
+  @Column("smallint", { nullable: true })
+  public ChoukyouFlag?: number;
 
   @Column("smallint", { nullable: true })
   public Noriyaku?: number;

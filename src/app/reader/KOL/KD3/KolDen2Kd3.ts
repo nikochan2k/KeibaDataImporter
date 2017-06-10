@@ -18,7 +18,7 @@ import { KolChoukyouTool } from "../KolChoukyouTool";
 import { KolTool } from "../KolTool";
 
 @Service()
-export class KolSei2Kd3 extends DataToImport {
+export class KolDen2Kd3 extends DataToImport {
 
   @OrmEntityManager()
   private entityManager: EntityManager;
@@ -75,7 +75,7 @@ export class KolSei2Kd3 extends DataToImport {
   }
 
   protected async saveShussouba(buffer: Buffer, shussouba: Shussouba, cache: DataCache) {
-    if (shussouba.KolSeisekiSakuseiNengappi) {
+    if (!shussouba.KolSeisekiSakuseiNengappi) {
       shussouba.Wakuban = readPositiveInt(buffer, 22, 1);
       shussouba.Kyousouba = await this.kolTool.saveUma(buffer, 32);
       shussouba.Nenrei = readPositiveInt(buffer, 65, 2);

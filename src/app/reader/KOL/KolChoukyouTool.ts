@@ -62,7 +62,7 @@ export class KolChoukyouTool {
     const choukyou = new Choukyou();
     choukyou.Id = shussouba.Id * 10 + bangou;
     choukyou.Shussouba = shussouba;
-    choukyou.Bangou = 1;
+    choukyou.Bangou = bangou;
     choukyou.ChoukyouFlag = $CH.choukyouFlag.toCodeFromKol(buffer, offset, 1);
     choukyou.Noriyaku = $CH.noriyaku.toCodeFromKol(kijousha);
     choukyou.Nengappi = readDate(buffer, offset + 9, 8);
