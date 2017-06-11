@@ -1,6 +1,11 @@
 import {
-  Entity, Index, Column, PrimaryGeneratedColumn, ManyToOne, JoinColumn
-} from "typeorm";
+  Column,
+  Entity,
+  Index,
+  JoinColumn,
+  ManyToOne,
+  PrimaryGeneratedColumn
+  } from "typeorm";
 import { OddsKubun } from "./OddsKubun";
 
 @Entity("Odds")

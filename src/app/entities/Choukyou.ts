@@ -1,10 +1,16 @@
 import {
-  Entity, Index, Column, PrimaryColumn, OneToMany, ManyToOne, JoinColumn
-} from "typeorm";
-import { Shussouba } from "./Shussouba";
-import { Kishu } from "./Kishu";
-import { Uma } from "./Uma";
+  Column,
+  Entity,
+  Index,
+  JoinColumn,
+  ManyToOne,
+  OneToMany,
+  PrimaryColumn
+  } from "typeorm";
 import { ChoukyouTime } from "./ChoukyouTime";
+import { Kishu } from "./Kishu";
+import { Shussouba } from "./Shussouba";
+import { Uma } from "./Uma";
 
 @Entity("Choukyou")
 @Index("IxChoukyou", (c: Choukyou) => [c.Shussouba])

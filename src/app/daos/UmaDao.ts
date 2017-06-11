@@ -24,9 +24,8 @@ export class UmaDao {
   }
 
   public async saveUma(toBe: Uma) {
-    let asIs = await this.getUma(toBe);
+    const asIs = await this.getUma(toBe);
     if (asIs) {
-      asIs = await this.entityManager.preload(Uma, asIs);
       const action = this.tool.changeAsIs(asIs, toBe, []);
       if (action === ActionForDB.None) {
         return asIs;

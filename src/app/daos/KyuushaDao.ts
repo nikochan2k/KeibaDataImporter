@@ -7,8 +7,6 @@ import { DaoTool, ActionForDB } from "./RepositoryTool";
 @Service()
 export class KyuushaDao {
 
-  private static readonly insertKeys = ["TouzaiBetsu", "ShozokuBasho", "RitsuHokuNanBetsu"];
-
   @OrmEntityManager()
   private entityManager: EntityManager;
 
@@ -16,7 +14,7 @@ export class KyuushaDao {
   private tool: DaoTool;
 
   protected async getKyuusha(kyuusha: Kyuusha) {
-    const qb = await this.entityManager
+    const qb = this.entityManager
       .getRepository(Kyuusha)
       .createQueryBuilder("k")
       .where("1 = 0");
@@ -32,32 +30,25 @@ export class KyuushaDao {
       qb.orWhere("k.JrdbKyuushaCode = :jrdbKyuushaCode")
         .setParameter("jrdbKyuushaCode", kyuusha.JrdbKyuushaCode);
     }
-    return qb.getOne();
+    return await qb.getOne();
   }
 
   public async saveKyuusha(toBe: Kyuusha) {
     const asIs = await this.getKyuusha(toBe);
     if (asIs) {
-      let action: ActionForDB;
-      if (!asIs.KyuushaMei) {
-        if (toBe.KyuushaMei) {
-          this.tool.changeAsIs(asIs, toBe, KyuushaDao.insertKeys);
-          action = ActionForDB.Update;
-        } else {
-          return asIs;
-        }
-      } else {
-        const action = this.tool.changeAsIs(asIs, toBe, KyuushaDao.insertKeys);
-        if (action === ActionForDB.None) {
-          return asIs;
-        }
-        if (action === ActionForDB.Insert) {
-          asIs.Id = null;
-        }
+      const action = this.tool.changeAsIs(asIs, toBe, []);
+      if (action === ActionForDB.None) {
+        return asIs;
       }
       toBe = await this.entityManager.persist(asIs);
     } else {
-      toBe = await this.entityManager.persist(toBe);
+      try {
+        toBe = await this.entityManager.persist(toBe);
+      } catch (e) {
+        console.log(e.stack || e);
+        console.log(toBe);
+        return null;
+      }
     }
     return toBe;
   }

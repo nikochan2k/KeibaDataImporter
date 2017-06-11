@@ -1,8 +1,14 @@
 import {
-  Entity, Index, Column, PrimaryColumn, OneToMany, ManyToOne, JoinColumn
-} from "typeorm";
-import { Race } from "./Race";
+  Column,
+  Entity,
+  Index,
+  JoinColumn,
+  ManyToOne,
+  OneToMany,
+  PrimaryColumn
+  } from "typeorm";
 import { Odds } from "./Odds";
+import { Race } from "./Race";
 
 @Entity("OddsKubun")
 @Index("IxOddsKubun",

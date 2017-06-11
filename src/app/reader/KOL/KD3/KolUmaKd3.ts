@@ -127,8 +127,22 @@ export class KolUmaKd3 extends DataToImport {
     race.Nengappi = readDate(buffer, 12, 8);
     race.Kyuujitsu = $R.kyuujitsu.toCodeFromKol(buffer, 20, 1);
     race.Youbi = $R.youbi.toCodeFromKol(buffer, 21, 1);
-    const raceClass = await this.saveRaceClass(buffer);
-    race.RaceClass = raceClass;
+    race.RaceClass = await this.saveRaceClass(buffer);
+    race.BetteiBareiHandi = $R.betteiBareiHandi.toCodeFromKol(buffer, 74, 2);
+    const betteiBareiHandiShousai = readStr(buffer, 76, 18);
+    if (race.BetteiBareiHandi === null) {
+      race.BetteiBareiHandi = $R.betteiBareiHandi2.toCodeFromKol(betteiBareiHandiShousai);
+    }
+    if (race.BetteiBareiHandi === null) {
+      race.BetteiBareiHandiReigai = betteiBareiHandiShousai;
+    }
+    const joukenFuka1 = $R.joukenFuka1.toCodesFromKol(buffer, 94, 2);
+    const joukenFuka2 = $R.joukenFuka2.toCodesFromKol(buffer, 96, 2);
+    race.JoukenFuka = this.tool.getJoukenFuka(joukenFuka1, joukenFuka2);
+    race.JoukenNenreiSeigen = $R.joukenNenreiSeigen.toCodeFromKol(buffer, 99, 1);
+    if (race.JoukenNenreiSeigen === null) {
+      race.JoukenNenreiSeigen = $R.joukenNenreiSeigen2.toCodeFromKol(buffer, 98, 1);
+    }
     race.JuushouKaisuu = readPositiveInt(buffer, 26, 3);
     race.DirtShiba = $R.dirtShiba.toCodeFromKol(buffer, 115, 1);
     race.MigiHidari = $R.migiHidari.toCodeFromKol(buffer, 116, 1);
@@ -154,13 +168,7 @@ export class KolUmaKd3 extends DataToImport {
     rc.TokubetsuMei = this.tool.normalizeTokubetsuMei(buffer, 29, 30);
     rc.TanshukuTokubetsuMei = readStrWithNoSpace(buffer, 59, 14);
     rc.Grade = $R.grade.toCodeFromKol(buffer, 73, 1);
-    rc.BetteiBareiHandi = $R.betteiBareiHandi.toCodeFromKol(buffer, 74, 2);
-    rc.BetteiBareiHandiShousai = readStr(buffer, 76, 18);
-    const joukenFuka1 = $R.joukenFuka1.toCodesFromKol(buffer, 94, 2);
-    const joukenFuka2 = $R.joukenFuka2.toCodesFromKol(buffer, 96, 2);
-    rc.JoukenFuka = this.tool.getJoukenFuka(joukenFuka1, joukenFuka2);
-    rc.JoukenKei = $R.JoukenKei.toCodeFromKol(buffer, 98, 1);
-    rc.JoukenNenreiSeigen = $R.joukenNenreiSeigen.toCodeFromKol(buffer, 99, 1);
+    rc.JoukenKei = $R.joukenKei.toCodeFromKol(buffer, 98, 1);
     rc.Jouken1 = $R.jouken.toCodeFromKol(buffer, 100, 5);
     if (rc.ChuuouChihouGaikoku !== 0) {
       rc.Kumi1 = readPositiveInt(buffer, 105, 2);

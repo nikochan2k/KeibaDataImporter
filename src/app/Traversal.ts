@@ -73,33 +73,27 @@ export class Traversal {
           else if (stdout) this.logger.warn(stdout);
           this.rmdir(dataDir);
         } else {
-          this.traverseDataDir(dataDir);
+          await this.traverseDataDir(dataDir);
         }
       });
     });
   }
 
-  protected traverseDataDir(dataDir: string) {
+  protected async traverseDataDir(dataDir: string) {
     const entries: Entries = {};
 
     const pattern = path.join(dataDir, "*");
-    glob(pattern, async (err, matches) => {
-      if (err) {
-        this.logger.warn(err.stack);
-        return;
-      }
-
-      matches.forEach((dataFile) => {
+    const pathes = glob.sync(pattern);
+    pathes.forEach((dataFile) => {
         const basename = path.basename(dataFile);
         entries[basename] = dataFile;
-      });
-
-      try {
-        await this.importer.import(entries);
-      } finally {
-        this.rmdir(dataDir);
-      }
     });
+
+    try {
+      await this.importer.import(entries);
+    } finally {
+      this.rmdir(dataDir);
+    }
   }
 
   protected rmdir(dir: string) {

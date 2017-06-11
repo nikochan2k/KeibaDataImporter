@@ -1,6 +1,11 @@
 import {
-  Entity, Index, Column, PrimaryColumn, ManyToOne, JoinColumn
-} from "typeorm";
+  Column,
+  Entity,
+  Index,
+  JoinColumn,
+  ManyToOne,
+  PrimaryColumn
+  } from "typeorm";
 import { Choukyou } from "./Choukyou";
 
 @Entity("ChoukyouTime")

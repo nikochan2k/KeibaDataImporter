@@ -1,6 +1,9 @@
 import {
-  Entity, Column, PrimaryGeneratedColumn, OneToMany
-} from "typeorm";
+  Column,
+  Entity,
+  OneToMany,
+  PrimaryGeneratedColumn
+  } from "typeorm";
 import { Race } from "./Race";
 
 @Entity("RaceClass")
@@ -17,9 +20,6 @@ export class RaceClass {
   @Column("smallint")
   public HeichiShougai: number;
 
-  @Column("int")
-  public JoukenFuka: number;
-
   @Column("smallint", { nullable: true })
   public JoukenKei: number;
 
@@ -34,15 +34,6 @@ export class RaceClass {
 
   @Column("smallint", { nullable: true })
   public Grade?: number;
-
-  @Column("smallint", { nullable: true })
-  public BetteiBareiHandi?: number;
-
-  @Column("string", { nullable: true, length: 27 })
-  public BetteiBareiHandiShousai: string;
-
-  @Column("smallint", { nullable: true })
-  public JoukenNenreiSeigen?: number;
 
   @Column("smallint", { nullable: true })
   public Jouken1?: number;

@@ -48,6 +48,18 @@ export class Race {
   @JoinColumn({ name: "RaceClassId" })
   public RaceClass: RaceClass;
 
+  @Column("int")
+  public JoukenFuka: number;
+
+  @Column("smallint", { nullable: true })
+  public BetteiBareiHandi?: number;
+
+  @Column("string", { nullable: true, length: 27 })
+  public BetteiBareiHandiReigai: string;
+
+  @Column("smallint", { nullable: true })
+  public JoukenNenreiSeigen?: number;
+
   @Column("smallint")
   public DirtShiba: number;
 

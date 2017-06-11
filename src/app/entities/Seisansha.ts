@@ -1,8 +1,14 @@
-import { Entity, Index, Column, PrimaryGeneratedColumn, OneToMany } from "typeorm";
+import {
+  Column,
+  Entity,
+  Index,
+  OneToMany,
+  PrimaryGeneratedColumn
+} from "typeorm";
 import { Uma } from "./Uma";
 
 @Entity("Seisansha")
-@Index("IxSeisansha", (s: Seisansha) => [s.SeisanshaMei])
+@Index("IxSeisansha", (s: Seisansha) => [s.SeisanshaMei], { unique: true })
 export class Seisansha {
   @PrimaryGeneratedColumn("int")
   public Id: number;

@@ -1,14 +1,18 @@
 import {
-  Entity, Index, Column, PrimaryGeneratedColumn, OneToMany
-} from "typeorm";
+  Column,
+  Entity,
+  Index,
+  OneToMany,
+  PrimaryGeneratedColumn
+  } from "typeorm";
 import { Kishu } from "./Kishu";
-import { Uma } from "./Uma";
 import { Shussouba } from "./Shussouba";
+import { Uma } from "./Uma";
 
 @Entity("Kyuusha")
-@Index("IxKyuusha1", (k: Kyuusha) => [k.KyuushaMei])
-@Index("IxKyuusha2", (k: Kyuusha) => [k.KolKyuushaCode])
-@Index("IxKyuusha3", (k: Kyuusha) => [k.JrdbKyuushaCode])
+@Index("IxKyuusha1", (k: Kyuusha) => [k.KyuushaMei], { unique: true })
+@Index("IxKyuusha2", (k: Kyuusha) => [k.KolKyuushaCode], { unique: true })
+@Index("IxKyuusha3", (k: Kyuusha) => [k.JrdbKyuushaCode], { unique: true })
 export class Kyuusha {
   @PrimaryGeneratedColumn("int")
   public Id: number;

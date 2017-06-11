@@ -1,9 +1,15 @@
 import {
-  Entity, Index, Column, PrimaryGeneratedColumn, OneToMany, ManyToOne, JoinColumn
+  Column,
+  Entity,
+  Index,
+  JoinColumn,
+  ManyToOne,
+  OneToMany,
+  PrimaryGeneratedColumn
 } from "typeorm";
-import { Shussouba } from "./Shussouba";
 import { Kyuusha } from "./Kyuusha";
 import { Record } from "./Record";
+import { Shussouba } from "./Shussouba";
 
 @Entity("Kishu")
 @Index("IxKishu", (k: Kishu) => [k.TanshukuKishuMei])

@@ -76,6 +76,16 @@ export const betteiBareiHandi = new Codes(
   ]
 );
 
+export const betteiBareiHandi2 = new Codes(
+  [
+    { code: 0, kol: /別定/,  naiyou: "別定" },
+    { code: 1, kol: /馬齢/,  naiyou: "馬齢" },
+    { code: 2, kol: /ハンデ/,  naiyou: "ハンデ" },
+    { code: 3, kol: /定量/,  naiyou: "定量" },
+    { code: 4, kol: /規定/, naiyou: "規定" }
+  ]
+);
+
 export const joukenFuka1 = new Codes(
   [
     { code: 2 ** 0, kol: /04|08|10|13|27|38/, jrdb: /1../, naiyou: "○混" },
@@ -117,7 +127,7 @@ export const joukenFuka2 = new Codes(
   ]
 );
 
-export const JoukenKei = new Codes(
+export const joukenKei = new Codes(
   [
     {
       code: 0,
@@ -139,6 +149,16 @@ export const joukenNenreiSeigen = new Codes(
     { code: 6, kol: "6", jrdb: "14", naiyou: "4歳以上" },
     { code: 7, kol: "7", naiyou: "3,4歳" },
     { code: 8, kol: "8", naiyou: "4,5歳" }
+  ]
+);
+
+export const joukenNenreiSeigen2 = new Codes(
+  [
+    { code: 0, kol: /1|5/, naiyou: "2歳" },
+    { code: 1, kol: /2|6/, naiyou: "3歳" },
+    { code: 2, kol: /B|C/, naiyou: "4歳" },
+    { code: 5, kol: /3|7|8/, naiyou: "3歳以上" },
+    { code: 6, kol: /4|9|A/, naiyou: "4歳以上" }
   ]
 );
 

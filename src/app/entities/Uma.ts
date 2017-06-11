@@ -1,15 +1,20 @@
 import {
-  Entity, Index, Column, PrimaryGeneratedColumn, ManyToOne, JoinColumn,
-  OneToMany
+  Column,
+  Entity,
+  Index,
+  JoinColumn,
+  ManyToOne,
+  OneToMany,
+  PrimaryGeneratedColumn
 } from "typeorm";
-import { Kyuusha } from "./Kyuusha";
 import { Banushi } from "./Banushi";
+import { Kyuusha } from "./Kyuusha";
+import { Record } from "./Record";
 import { Seisansha } from "./Seisansha";
 import { Shussouba } from "./Shussouba";
-import { Record } from "./Record";
 
 @Entity("Uma")
-@Index("IxUma", (u: Uma) => [u.Bamei])
+@Index("IxUma", (u: Uma) => [u.Bamei], { unique: true })
 export class Uma {
   @PrimaryGeneratedColumn("int")
   public Id: number;
