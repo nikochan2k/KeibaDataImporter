@@ -13,20 +13,7 @@ export class UmaDao {
   @Inject()
   private tool: DaoTool;
 
-  private umaMap = new Map<string, Uma>();
-
   protected async getUma(uma: Uma) {
-    let result = this.umaMap.get(uma.Bamei);
-    if (!result) {
-      result = await this.getUmaFromDB(uma);
-      if (result) {
-        this.umaMap.set(result.Bamei, result);
-      }
-    }
-    return result;
-  }
-
-  protected async getUmaFromDB(uma: Uma) {
     return await this.entityManager
       .getRepository(Uma)
       .createQueryBuilder("u")
@@ -37,8 +24,9 @@ export class UmaDao {
   }
 
   public async saveUma(toBe: Uma) {
-    const asIs = await this.getUma(toBe);
+    let asIs = await this.getUma(toBe);
     if (asIs) {
+      asIs = await this.entityManager.preload(Uma, asIs);
       const action = this.tool.changeAsIs(asIs, toBe, []);
       if (action === ActionForDB.None) {
         return asIs;
@@ -47,7 +35,6 @@ export class UmaDao {
     } else {
       toBe = await this.entityManager.persist(toBe);
     }
-    this.umaMap.set(toBe.Bamei, toBe);
     return toBe;
   }
 

@@ -24,10 +24,15 @@ export class DaoTool {
       const asIsValue = asIs[key];
       const toBeValue = toBe[key];
       if (asIsValue !== toBeValue) {
-        asIs[key] = toBeValue;
         if (0 <= keysForInsert.indexOf(key)) {
+          asIs[key] = toBeValue;
           result = ActionForDB.Insert;
         } else {
+          /* tslint:disable:triple-equals */
+          if (toBeValue != null) {
+            asIs[key] = toBeValue;
+          }
+          /* tslint:enable:triple-equals */
           result = ActionForDB.Update;
         }
       }

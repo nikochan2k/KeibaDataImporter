@@ -15,23 +15,13 @@ export class KishuDao {
   @Inject()
   private tool: DaoTool;
 
-  private kishuMeiMap = new Map<string, Kishu>();
-
-  private tanshukuKishuMeiMap = new Map<string, Kishu>();
-
   protected async getKishu(kishu: Kishu) {
     let result: Kishu;
     if (kishu.KishuMei) {
-      result = this.kishuMeiMap.get(kishu.KishuMei);
-      if (!result) {
         result = await this.getKishuByKishuMei(kishu);
-      }
     }
     if (!result) {
-      result = this.tanshukuKishuMeiMap.get(kishu.TanshukuKishuMei);
-      if (!result) {
         result = await this.getKishuByTanshukuKishuMei(kishu);
-      }
     }
     return result;
   }
@@ -111,10 +101,6 @@ export class KishuDao {
       toBe = await this.entityManager.persist(asIs);
     } else {
       toBe = await this.entityManager.persist(toBe);
-    }
-    this.tanshukuKishuMeiMap.set(toBe.TanshukuKishuMei, toBe);
-    if (toBe.KishuMei) {
-      this.kishuMeiMap.set(toBe.KishuMei, toBe);
     }
     return toBe;
   }

@@ -2,7 +2,6 @@ import { Inject, Service } from "typedi";
 import { EntityManager } from "typeorm";
 import { OrmEntityManager } from "typeorm-typedi-extensions";
 import * as $S from "../../../converters/Shussouba";
-import * as $SF from "../../../converters/ShussoubaYosou";
 import { Race } from "../../../entities/Race";
 import { Shussouba } from "../../../entities/Shussouba";
 import { ShussoubaTsuukaJuni } from "../../../entities/ShussoubaTsuukaJuni";
@@ -15,7 +14,7 @@ import {
   readInt,
   readPositiveInt,
   readTime
-} from "../../Reader";
+  } from "../../Reader";
 import { KolChoukyouTool } from "../KolChoukyouTool";
 import { KolTool } from "../KolTool";
 
@@ -76,18 +75,10 @@ export class KolSei2Kd3 extends DataToImport {
     shussouba.KolSeisekiSakuseiNengappi = dataSakuseiNengappi;
 
     await this.saveShussouba(buffer, shussouba, cache);
-    await this.saveShussoubaTsuukaJuni(buffer, shussouba);
+    await this.kolTool.saveShussoubaTsuukaJuni(buffer, 298, shussouba);
     if (!shussouba.KolShutsubahyouSakuseiNengappi) {
-      await this.choukyouTool.saveChoukyou(buffer, shussouba, 307, 1);
+      await this.choukyouTool.saveChoukyou(buffer, 307, shussouba, 1);
     }
-  }
-
-  protected getTimeSa(buffer: Buffer, offset: number) {
-    const timeSa = readDouble(buffer, offset, 3, 0.1);
-    if (99.8 <= timeSa) {
-      return 0.0;
-    }
-    return timeSa;
   }
 
   protected async saveShussouba(buffer: Buffer, shussouba: Shussouba, cache: DataCache) {
@@ -112,7 +103,7 @@ export class KolSei2Kd3 extends DataToImport {
     shussouba.Time = readTime(buffer, 282, 4);
     shussouba.Chakusa1 = readInt(buffer, 286, 2);
     shussouba.Chakusa2 = $S.chakura2.toCodeFromKol(buffer, 288, 1);
-    shussouba.TimeSa = this.getTimeSa(buffer, 289);
+    shussouba.TimeSa = this.kolTool.getTimeSa(buffer, 289);
     if (1200 <= shussouba.Race.Kyori) {
       shussouba.Ten3F = readDouble(buffer, 292, 3, 0.1);
       if (shussouba.Time && shussouba.Ten3F) {
@@ -130,8 +121,8 @@ export class KolSei2Kd3 extends DataToImport {
 
     if (!shussouba.KolShutsubahyouSakuseiNengappi) {
       shussouba.KolRecordShisuu = readInt(buffer, 159, 3);
-      shussouba.KolYosou1 = $SF.yosou.toCodeFromKol(buffer, 265, 1);
-      shussouba.KolYosou2 = $SF.yosou.toCodeFromKol(buffer, 266, 1);
+      shussouba.KolYosou1 = $S.yosou.toCodeFromKol(buffer, 265, 1);
+      shussouba.KolYosou2 = $S.yosou.toCodeFromKol(buffer, 266, 1);
     }
 
     await this.entityManager.persist(shussouba);
@@ -139,33 +130,6 @@ export class KolSei2Kd3 extends DataToImport {
     const shussoubaKeika = cache.getKeika(shussouba.Id);
     if (shussoubaKeika) {
       await this.entityManager.persist(shussoubaKeika);
-    }
-  }
-
-  protected async saveShussoubaTsuukaJuni(buffer: Buffer, shussouba: Shussouba) {
-    for (let bangou = 1, offset = 298; bangou <= 4; bangou++ , offset += 2) {
-      const shussoubaTsuukaJuni = new ShussoubaTsuukaJuni();
-
-      const juni = readPositiveInt(buffer, offset, 2);
-      if (juni === null) {
-        continue;
-      }
-      if (1 <= juni && juni <= 28) {
-        shussoubaTsuukaJuni.Juni = juni;
-      } else if (juni === 31 || juni === 32) {
-        shussoubaTsuukaJuni.Joukyou = juni;
-      } else if (41 <= juni && juni <= 68) {
-        shussoubaTsuukaJuni.Juni = juni - 40;
-        shussoubaTsuukaJuni.Joukyou = 40;
-      } else {
-        this.logger.warn("不正な順位: " + juni);
-        continue;
-      }
-
-      shussoubaTsuukaJuni.Id = shussouba.Id * 10 + bangou;
-      shussoubaTsuukaJuni.Shussouba = shussouba;
-      shussoubaTsuukaJuni.Bangou = bangou;
-      await this.entityManager.persist(shussoubaTsuukaJuni);
     }
   }
 

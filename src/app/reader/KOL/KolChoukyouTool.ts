@@ -58,7 +58,7 @@ export class KolChoukyouTool {
     this.logger = getLogger(this);
   }
 
-  public async saveChoukyou(buffer: Buffer, shussouba: Shussouba, offset: number, bangou: number, awase?: string
+  public async saveChoukyou(buffer: Buffer, offset: number, shussouba: Shussouba, bangou: number, awase?: string
   ) {
     const kijousha = readStrWithNoSpace(buffer, offset + 1, 8);
     if (!kijousha) {

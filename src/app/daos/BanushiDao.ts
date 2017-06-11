@@ -9,25 +9,12 @@ export class BanushiDao {
   @OrmEntityManager()
   private entityManager: EntityManager;
 
-  private banushiMeiMap = new Map<string, Banushi>();
-
   protected async getBanushi(banushi: Banushi) {
-    let result = this.banushiMeiMap.get(banushi.BanushiMei);
-    if (!result) {
-      result = await this.getBanushiFromDB(banushi);
-      if (result) {
-        this.banushiMeiMap.set(banushi.BanushiMei, banushi);
-      }
-    }
-    return result;
-  }
-
-  protected async getBanushiFromDB(banushi: Banushi) {
     return await this.entityManager
       .getRepository(Banushi)
       .createQueryBuilder("b")
-      .where("b.BanushiMei = :BanushiMei")
-      .setParameter("BanushiMei", banushi.BanushiMei)
+      .where("b.BanushiMei = :banushiMei")
+      .setParameter("banushiMei", banushi.BanushiMei)
       .getOne();
   }
 
@@ -37,7 +24,6 @@ export class BanushiDao {
       toBe = asIs;
     } else {
       toBe = await this.entityManager.persist(toBe);
-      this.banushiMeiMap.set(toBe.BanushiMei, toBe);
     }
     return toBe;
   }

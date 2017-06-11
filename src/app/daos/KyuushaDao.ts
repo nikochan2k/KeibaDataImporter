@@ -15,30 +15,7 @@ export class KyuushaDao {
   @Inject()
   private tool: DaoTool;
 
-  private kyuushaMeiMap = new Map<string, Kyuusha>();
-
-  private kolKyuushaCodeMap = new Map<number, Kyuusha>();
-
-  private jrdbKyuushaCodeMap = new Map<number, Kyuusha>();
-
   protected async getKyuusha(kyuusha: Kyuusha) {
-    let result: Kyuusha;
-    if (kyuusha.KyuushaMei) {
-      result = this.kyuushaMeiMap.get(kyuusha.KyuushaMei);
-    }
-    if (!result && kyuusha.KolKyuushaCode) {
-      result = this.kolKyuushaCodeMap.get(kyuusha.KolKyuushaCode);
-    }
-    if (!result && kyuusha.JrdbKyuushaCode) {
-      result = this.jrdbKyuushaCodeMap.get(kyuusha.JrdbKyuushaCode);
-    }
-    if (!result) {
-      result = await this.getKyuushaFromDB(kyuusha);
-    }
-    return result;
-  }
-
-  protected async getKyuushaFromDB(kyuusha: Kyuusha) {
     const qb = await this.entityManager
       .getRepository(Kyuusha)
       .createQueryBuilder("k")
@@ -81,15 +58,6 @@ export class KyuushaDao {
       toBe = await this.entityManager.persist(asIs);
     } else {
       toBe = await this.entityManager.persist(toBe);
-    }
-    if (toBe.KyuushaMei) {
-      this.kyuushaMeiMap.set(toBe.KyuushaMei, toBe);
-    }
-    if (toBe.KolKyuushaCode) {
-      this.kolKyuushaCodeMap.set(toBe.KolKyuushaCode, toBe);
-    }
-    if (toBe.JrdbKyuushaCode) {
-      this.jrdbKyuushaCodeMap.set(toBe.JrdbKyuushaCode, toBe);
     }
     return toBe;
   }

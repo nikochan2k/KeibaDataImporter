@@ -90,6 +90,9 @@ export class Race {
   @Column("smallint", { nullable: true })
   public Seed?: number;
 
+  @Column("string", { nullable: true, length: 30 })
+  public GaikokuKeibajouMei: string;
+
   @Column("float", { nullable: true })
   public ShougaiHeikin1F?: number;
 

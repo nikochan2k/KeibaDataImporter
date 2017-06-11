@@ -76,7 +76,7 @@ export class KolSei1Kd3 extends DataToImport {
     await this.saveRaceHaitou(buffer, race);
   }
 
-  public async saveRace(buffer: Buffer, race: Race) {
+  protected async saveRace(buffer: Buffer, race: Race) {
     race.Basho = $C.basho.toCodeFromKol(buffer, 0, 2);
     race.Nen = readPositiveInt(buffer, 2, 4);
     race.Kaiji = readPositiveInt(buffer, 6, 2);
@@ -129,7 +129,7 @@ export class KolSei1Kd3 extends DataToImport {
     await this.entityManager.persist(race);
   }
 
-  public async saveRaceClass(buffer: Buffer) {
+  protected async saveRaceClass(buffer: Buffer) {
     const rc = new RaceClass();
     rc.KouryuuFlag = $R.kouryuuFlag.toCodeFromKol(buffer, 22, 1);
     rc.ChuuouChihouGaikoku = $R.chuuouChihouGaikoku.toCodeFromKol(buffer, 23, 1);
@@ -156,7 +156,7 @@ export class KolSei1Kd3 extends DataToImport {
     return raceClass;
   }
 
-  public async saveRaceShoukin(buffer: Buffer, race: Race) {
+  protected async saveRaceShoukin(buffer: Buffer, race: Race) {
     await this.kolRaceTool.saveRaceShoukin(buffer, race, [
       { chakujun: 1, offset: 288, length: 9, fukashou: 0 },
       { chakujun: 2, offset: 297, length: 9, fukashou: 0 },
@@ -169,7 +169,7 @@ export class KolSei1Kd3 extends DataToImport {
     ], 1);
   }
 
-  public async saveRaceLapTime(buffer: Buffer, race: Race) {
+  protected async saveRaceLapTime(buffer: Buffer, race: Race) {
     const lapTime1 = readDouble(buffer, 402, 3, 0.1);
     if (lapTime1) {
       await this.saveNormalRaceLapTime(buffer, race);
@@ -186,7 +186,7 @@ export class KolSei1Kd3 extends DataToImport {
     }
   }
 
-  public async saveNormalRaceLapTime(buffer: Buffer, race: Race) {
+  protected async saveNormalRaceLapTime(buffer: Buffer, race: Race) {
     const end = Math.ceil(race.Kyori / 200.0);
     const odd = (race.Kyori % 200 !== 0);
     let shuuryouKyori = 0;
@@ -207,7 +207,7 @@ export class KolSei1Kd3 extends DataToImport {
     }
   }
 
-  public async saveShougaiRaceLapTime(buffer: Buffer, race: Race) {
+  protected async saveShougaiRaceLapTime(buffer: Buffer, race: Race) {
     const raceLapTime = new RaceLapTime();
 
     raceLapTime.Race = race;
@@ -237,7 +237,7 @@ export class KolSei1Kd3 extends DataToImport {
     }
   }
 
-  public async saveChihouRaceLapTime(buffer: Buffer, race: Race) {
+  protected async saveChihouRaceLapTime(buffer: Buffer, race: Race) {
     const raceLapTime = new RaceLapTime();
 
     raceLapTime.Race = race;
@@ -285,7 +285,7 @@ export class KolSei1Kd3 extends DataToImport {
     }
   }
 
-  public async saveRaceKeika(buffer: Buffer, race: Race, cache: DataCache) {
+  protected async saveRaceKeika(buffer: Buffer, race: Race, cache: DataCache) {
     for (let bangou = 1, offset = 456; bangou <= 9; bangou++ , offset += 113) {
       const keika = readStr(buffer, offset + 3, 110);
       if (!keika) {
@@ -306,7 +306,7 @@ export class KolSei1Kd3 extends DataToImport {
     }
   }
 
-  public async saveRaceHaitou(buffer: Buffer, race: Race) {
+  protected async saveRaceHaitou(buffer: Buffer, race: Race) {
     await this.kolRaceTool.saveRaceHaitou(
       buffer, race,
       [

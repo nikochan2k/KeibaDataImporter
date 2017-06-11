@@ -20,7 +20,7 @@ export class RaceClass {
   @Column("int")
   public JoukenFuka: number;
 
-  @Column("smallint")
+  @Column("smallint", { nullable: true })
   public JoukenKei: number;
 
   @Column("smallint", { nullable: true })

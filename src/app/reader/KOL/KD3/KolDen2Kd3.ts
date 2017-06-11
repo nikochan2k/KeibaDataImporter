@@ -2,7 +2,6 @@ import { Inject, Service } from "typedi";
 import { EntityManager } from "typeorm";
 import { OrmEntityManager } from "typeorm-typedi-extensions";
 import * as $S from "../../../converters/Shussouba";
-import * as $SF from "../../../converters/ShussoubaYosou";
 import { Race } from "../../../entities/Race";
 import { Shussouba } from "../../../entities/Shussouba";
 import { Choukyou } from "../../../entities/Choukyou";
@@ -86,8 +85,8 @@ export class KolDen2Kd3 extends DataToImport {
       shussouba.Kyuusha = await this.kolTool.saveKyuusha(buffer, 206);
     }
 
-    shussouba.KolYosou1 = $SF.yosou.toCodeFromKol(buffer, 254, 1);
-    shussouba.KolYosou2 = $SF.yosou.toCodeFromKol(buffer, 255, 1);
+    shussouba.KolYosou1 = $S.yosou.toCodeFromKol(buffer, 254, 1);
+    shussouba.KolYosou2 = $S.yosou.toCodeFromKol(buffer, 255, 1);
     shussouba.ChoukyouTanpyou = readStr(buffer, 694, 24);
     shussouba.ChoukyouHonsuuCourse = readPositiveInt(buffer, 718, 3);
     shussouba.ChoukyouHonsuuHanro = readPositiveInt(buffer, 721, 3);
@@ -102,11 +101,11 @@ export class KolDen2Kd3 extends DataToImport {
   protected async saveChoukyou(buffer: Buffer, shussouba: Shussouba) {
     const choukyouAwaseFlag = readPositiveInt(buffer, 607, 1);
     const choukyouAwase = readStr(buffer, 608, 86);
-    await this.choukyouTool.saveChoukyou(buffer, shussouba, 256, 1,
+    await this.choukyouTool.saveChoukyou(buffer, 256, shussouba, 1,
       choukyouAwaseFlag === 1 ? choukyouAwase : null);
-    await this.choukyouTool.saveChoukyou(buffer, shussouba, 373, 2,
+    await this.choukyouTool.saveChoukyou(buffer, 373, shussouba, 2,
       choukyouAwaseFlag === 2 ? choukyouAwase : null);
-    await this.choukyouTool.saveChoukyou(buffer, shussouba, 490, 3,
+    await this.choukyouTool.saveChoukyou(buffer, 490, shussouba, 3,
       choukyouAwaseFlag === 3 ? choukyouAwase : null);
   }
 
