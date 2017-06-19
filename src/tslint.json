@@ -69,6 +69,7 @@
     "no-switch-case-fall-through": true,
     "triple-equals": true,
     "jsdoc-format": true,
-    "await-promise": true
+    "await-promise": true,
+    "no-floating-promises": true
   }
 }

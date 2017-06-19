@@ -1,8 +1,5 @@
 import { Inject, Service } from "typedi";
-import { EntityManager } from "typeorm";
-import { OrmEntityManager } from "typeorm-typedi-extensions";
 import * as $S from "../../../converters/Shussouba";
-import { Race } from "../../../entities/Race";
 import { Shussouba } from "../../../entities/Shussouba";
 import { Choukyou } from "../../../entities/Choukyou";
 import { DataToImport } from "../../DataToImport";
@@ -18,9 +15,6 @@ import { KolTool } from "../KolTool";
 
 @Service()
 export class KolDen2Kd3 extends DataToImport {
-
-  @OrmEntityManager()
-  private entityManager: EntityManager;
 
   @Inject()
   private choukyouTool: KolChoukyouTool;
@@ -42,12 +36,11 @@ export class KolDen2Kd3 extends DataToImport {
   }
 
   protected async save(buffer: Buffer, cache: DataCache) {
-    const race = new Race();
-    race.Id = this.kolTool.getRaceId(buffer);
+    const race = await this.kolTool.getRace(buffer);
     const umaban = readPositiveInt(buffer, 23, 2);
     if (umaban === null) {
       this.logger.warn("馬番がありません");
-      return null;
+      return;
     }
     const id = race.Id * 100 + umaban;
     let shussouba = await this.entityManager.findOneById(Shussouba, id);
@@ -76,13 +69,13 @@ export class KolDen2Kd3 extends DataToImport {
   protected async saveShussouba(buffer: Buffer, shussouba: Shussouba, cache: DataCache) {
     if (!shussouba.KolSeisekiSakuseiNengappi) {
       shussouba.Wakuban = readPositiveInt(buffer, 22, 1);
-      shussouba.Kyousouba = await this.kolTool.saveUma(buffer, 32);
+      const kyuusha = await this.kolTool.saveKyuusha(buffer, 206);
+      shussouba.Kyousouba = await this.kolTool.saveUma(buffer, 32, kyuusha, shussouba.Race.Nengappi);
       shussouba.Nenrei = readPositiveInt(buffer, 65, 2);
       shussouba.Blinker = $S.blinker.toCodeFromKol(buffer, 147, 1);
       shussouba.Kinryou = readDouble(buffer, 148, 3, 0.1);
-      shussouba.Kishu = await this.kolTool.saveKishu(buffer, 151);
+      shussouba.Kishu = await this.kolTool.saveKishu(buffer, 151, shussouba.Race.Nengappi);
       shussouba.Norikawari = $S.norikawari.toCodeFromKol(buffer, 205, 1);
-      shussouba.Kyuusha = await this.kolTool.saveKyuusha(buffer, 206);
     }
 
     shussouba.KolYosou1 = $S.yosou.toCodeFromKol(buffer, 254, 1);

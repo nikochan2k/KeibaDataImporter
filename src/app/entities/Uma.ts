@@ -9,21 +9,23 @@ import {
 } from "typeorm";
 import { Banushi } from "./Banushi";
 import { Kyuusha } from "./Kyuusha";
-import { Record } from "./Record";
 import { Seisansha } from "./Seisansha";
 import { Shussouba } from "./Shussouba";
 
 @Entity("Uma")
-@Index("IxUma", (u: Uma) => [u.Bamei], { unique: true })
+@Index("IxUma", (u: Uma) => [u.Bamei])
 export class Uma {
   @PrimaryGeneratedColumn("int")
   public Id: number;
 
-  @Column("string", { length: 45 })
+  @Column("varchar", { length: 54 })
   public Bamei: string;
 
-  @Column("string", { length: 60, nullable: true })
-  public KyuuBamei?: string;
+  @Column("date", { nullable: true })
+  public FromDate: Date;
+
+  @Column("date", { nullable: true })
+  public ToDate: Date;
 
   @Column("date", { nullable: true })
   public Seinengappi?: Date;
@@ -71,7 +73,7 @@ export class Uma {
   @JoinColumn({ name: "KyuushaId" })
   public Kyuusha?: Kyuusha;
 
-  @Column("string", { length: 12, nullable: true })
+  @Column("varchar", { length: 12, nullable: true })
   public KoueiGaikokuKyuushaMei?: string;
 
   @Column("smallint", { nullable: true })
@@ -80,21 +82,18 @@ export class Uma {
   @Column("date", { nullable: true })
   public MasshouNengappi?: Date;
 
-  @Column("string", { length: 9, nullable: true })
+  @Column("varchar", { length: 9, nullable: true })
   public Jiyuu?: string;
 
-  @Column("string", { length: 15, nullable: true })
+  @Column("varchar", { length: 15, nullable: true })
   public Ikisaki?: string;
 
   @Column("smallint", { nullable: true })
   public YunyuubaFlag?: number;
 
   @Column("smallint", { nullable: true })
-  public SibouNen?: number;
+  public ShibouNen?: number;
 
   @OneToMany(() => Shussouba, s => s.Kyousouba)
   public ShussoubaList: Shussouba[];
-
-  @OneToMany(() => Record, r => r.Kyousouba)
-  public RecordList: Record[];
 }

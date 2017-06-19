@@ -4,16 +4,12 @@ import { OrmEntityManager } from "typeorm-typedi-extensions";
 import * as $C from "../../converters/Common";
 import { HaitouInfo } from "../../converters/RaceHaitou";
 import { ShoukinInfo } from "../../converters/RaceShoukin";
-import { Kishu } from "../../entities/Kishu";
 import { Race } from "../../entities/Race";
+import { RaceHaitou } from "../../entities/RaceHaitou";
 import { RaceKeika } from "../../entities/RaceKeika";
 import { RaceLapTime } from "../../entities/RaceLapTime";
-import { RaceHaitou } from "../../entities/RaceHaitou";
 import { RaceShoukin } from "../../entities/RaceShoukin";
 import { Record } from "../../entities/Record";
-import { Uma } from "../../entities/Uma";
-import { KishuDao } from "../../daos/KishuDao";
-import { UmaDao } from "../../daos/UmaDao";
 import { DataTool } from "../DataTool";
 import {
   readDate,
@@ -21,7 +17,7 @@ import {
   readPositiveInt,
   readStrWithNoSpace,
   readTime
-} from "../Reader";
+  } from "../Reader";
 
 @Service()
 export class KolRaceTool {
@@ -31,12 +27,6 @@ export class KolRaceTool {
 
   @Inject()
   private tool: DataTool;
-
-  @Inject()
-  private umaDao: UmaDao;
-
-  @Inject()
-  private kishuDao: KishuDao;
 
   public async deleteOldShutsubahyou(race: Race) {
     await this.entityManager
@@ -86,17 +76,15 @@ export class KolRaceTool {
       return null;
     }
 
-    let kyousouba = new Uma();
-    kyousouba.Bamei = readStrWithNoSpace(buffer, offset + 12, 30);
-    kyousouba = await this.umaDao.saveUma(kyousouba);
+    const kyousouba = readStrWithNoSpace(buffer, offset + 12, 30);
 
     let record = await this.entityManager
       .getRepository(Record)
       .createQueryBuilder("r")
       .where("r.Nengappi = :nengappi")
-      .andWhere("r.KyousoubaId = :kyousoubaId")
+      .andWhere("r.Kyousouba = :kyousouba")
       .setParameter("nengappi", this.tool.toDateString(nengappi))
-      .setParameter("kyousoubaId", kyousouba.Id)
+      .setParameter("kyousouba", kyousouba)
       .getOne();
     if (record) {
       return record;
@@ -107,13 +95,9 @@ export class KolRaceTool {
     record.Time = readTime(buffer, offset + 8, 4);
     record.Kyousouba = kyousouba;
     record.Kinryou = readDouble(buffer, offset + 42, 3, 0.1);
-    const kishu = new Kishu();
-    kishu.TanshukuKishuMei = readStrWithNoSpace(buffer, offset + 45, 8);
-    record.Kishu = await this.kishuDao.saveKishu(kishu);
+    record.TanshukuKishuMei = readStrWithNoSpace(buffer, offset + 45, 8);
     record.Basho = $C.basho.toCodeFromKol(buffer, bashoOffset, 2);
-    record = await this.entityManager.persist(record);
-
-    return record;
+    return this.entityManager.persist(record);
   }
 
   public async saveRaceShoukin(buffer: Buffer, race: Race, infos: ShoukinInfo[],

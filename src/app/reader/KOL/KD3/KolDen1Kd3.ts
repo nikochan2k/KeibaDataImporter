@@ -1,7 +1,4 @@
 import { Inject, Service } from "typedi";
-import { EntityManager } from "typeorm";
-import { OrmEntityManager } from "typeorm-typedi-extensions";
-import * as $C from "../../../converters/Common";
 import * as $R from "../../../converters/Race";
 import { Race } from "../../../entities/Race";
 import { RaceClass } from "../../../entities/RaceClass";
@@ -22,9 +19,6 @@ import { KolTool } from "../KolTool";
 @Service()
 export class KolDen1Kd3 extends DataToImport {
 
-  @OrmEntityManager()
-  private entityManager: EntityManager;
-
   @Inject()
   private tool: DataTool;
 
@@ -39,24 +33,15 @@ export class KolDen1Kd3 extends DataToImport {
   }
 
   protected async save(buffer: Buffer, cache: DataCache) {
-    const id = this.kolTool.getRaceId(buffer);
-    if (!id) {
-      return;
-    }
-    let race = await this.entityManager.findOneById(Race, id);
+    const race = await this.kolTool.getRace(buffer);
     const dataSakuseiNengappi = readDate(buffer, 418, 8);
-    if (race) {
-      if (race.KolShutsubahyouSakuseiNengappi) {
-        if (dataSakuseiNengappi <= race.KolShutsubahyouSakuseiNengappi) {
-          this.logger.debug("既に最新の出走馬レースデータが格納されています: " + id);
-          return;
-        } else {
-          await this.kolRaceTool.deleteOldSeiseki(race);
-        }
+    if (race.KolShutsubahyouSakuseiNengappi) {
+      if (dataSakuseiNengappi <= race.KolShutsubahyouSakuseiNengappi) {
+        this.logger.debug("既に最新の出走馬レースデータが格納されています: " + race.Id);
+        return;
+      } else {
+        await this.kolRaceTool.deleteOldSeiseki(race);
       }
-    } else {
-      race = new Race();
-      race.Id = id;
     }
 
     race.KolShutsubahyouSakuseiNengappi = dataSakuseiNengappi;
@@ -68,12 +53,6 @@ export class KolDen1Kd3 extends DataToImport {
 
   protected async saveRace(buffer: Buffer, race: Race) {
     if (!race.KolSeisekiSakuseiNengappi) {
-      race.Basho = $C.basho.toCodeFromKol(buffer, 0, 2);
-      race.Nen = readPositiveInt(buffer, 2, 4);
-      race.Kaiji = readPositiveInt(buffer, 6, 2);
-      race.Nichiji = readPositiveInt(buffer, 8, 2);
-      race.RaceBangou = readPositiveInt(buffer, 10, 2);
-      race.Nengappi = readDate(buffer, 12, 8);
       race.Kyuujitsu = $R.kyuujitsu.toCodeFromKol(buffer, 20, 1);
       race.Youbi = $R.youbi.toCodeFromKol(buffer, 21, 1);
       race.RaceClass = await this.saveRaceClass(buffer);
@@ -113,7 +92,7 @@ export class KolDen1Kd3 extends DataToImport {
     await this.entityManager.persist(race);
   }
 
-  protected async saveRaceClass(buffer: Buffer) {
+  protected saveRaceClass(buffer: Buffer) {
     const rc = new RaceClass();
     rc.KouryuuFlag = $R.kouryuuFlag.toCodeFromKol(buffer, 22, 1);
     rc.ChuuouChihouGaikoku = $R.chuuouChihouGaikoku.toCodeFromKol(buffer, 23, 1);
@@ -124,8 +103,7 @@ export class KolDen1Kd3 extends DataToImport {
     rc.Grade = $R.grade.toCodeFromKol(buffer, 72, 1);
     rc.JoukenKei = $R.joukenKei.toCodeFromKol(buffer, 98, 1);
     rc.Jouken1 = $R.jouken.toCodeFromKol(buffer, 100, 5);
-    const raceClass = await this.tool.saveRaceClass(rc);
-    return raceClass;
+    return this.tool.saveRaceClass(rc);
   }
 
   protected async saveRaceShoukin(buffer: Buffer, race: Race) {

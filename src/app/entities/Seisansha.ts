@@ -13,10 +13,10 @@ export class Seisansha {
   @PrimaryGeneratedColumn("int")
   public Id: number;
 
-  @Column("string", { length: 60 })
+  @Column("varchar", { length: 60 })
   public SeisanshaMei: string;
 
-  @Column("string", { length: 30 })
+  @Column("varchar", { length: 30 })
   public TanshukuSeisanshaMei: string;
 
   @OneToMany(() => Uma, u => u.Seisansha)

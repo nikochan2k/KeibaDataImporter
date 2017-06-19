@@ -26,10 +26,10 @@ export class RaceClass {
   @Column("smallint", { nullable: true })
   public KouryuuFlag?: number;
 
-  @Column("string", { nullable: true, length: 45 })
+  @Column("varchar", { nullable: true, length: 45 })
   public TokubetsuMei: string;
 
-  @Column("string", { nullable: true, length: 21 })
+  @Column("varchar", { nullable: true, length: 21 })
   public TanshukuTokubetsuMei: string;
 
   @Column("smallint", { nullable: true })

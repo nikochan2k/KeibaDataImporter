@@ -2,7 +2,9 @@ import "reflect-metadata";
 import { createConnection, useContainer } from "typeorm";
 import { Container } from "typedi";
 import { Traversal } from "./Traversal";
-import { logging } from "./LogUtil";
+import { logging, getLogger } from "./LogUtil";
+
+const logger = getLogger("main");
 
 let dirName = "";
 if (3 <= process.argv.length) {
@@ -18,7 +20,10 @@ createConnection({
   ],
   logging: logging
 }).then(async (con) => {
+  await con.query("PRAGMA journal_mode = WAL");
   await con.syncSchema(false);
   const traversal = Container.get(Traversal);
   await traversal.traverse(dirName);
+}).catch((reason) => {
+  logger.fatal(reason);
 });

@@ -9,7 +9,6 @@ import {
 } from "typeorm";
 import { Choukyou } from "./Choukyou";
 import { Kishu } from "./Kishu";
-import { Kyuusha } from "./Kyuusha";
 import { Race } from "./Race";
 import { ShussoubaBagu } from "./ShussoubaBagu";
 import { ShussoubaKeika } from "./ShussoubaKeika";
@@ -72,11 +71,6 @@ export class Shussouba {
   @Column("smallint", { nullable: true })
   public Norikawari?: number;
 
-  @Column("int", { name: "KyuushaId", nullable: true })
-  @ManyToOne(() => Kyuusha, k => k.ShussoubaList)
-  @JoinColumn({ name: "KyuushaId" })
-  public Kyuusha: Kyuusha;
-
   @Column("smallint", { nullable: true })
   public KolYosou1?: number;
 
@@ -137,7 +131,7 @@ export class Shussouba {
   @Column("smallint", { nullable: true })
   public KyuuyouRiyuuCode?: number;
 
-  @Column("string", { length: 7, nullable: true })
+  @Column("varchar", { length: 7, nullable: true })
   public ChoukyouTanpyou?: string;
 
   @Column("smallint", { nullable: true })
@@ -149,7 +143,7 @@ export class Shussouba {
   @Column("smallint", { nullable: true })
   public ChoukyouHonsuuPool?: number;
 
-  @Column("string", { length: 90, nullable: true })
+  @Column("varchar", { length: 90, nullable: true })
   public KyuuyouRiyuu?: string;
 
   @Column("float", { nullable: true })

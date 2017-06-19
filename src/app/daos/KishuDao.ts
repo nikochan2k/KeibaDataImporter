@@ -1,48 +1,24 @@
-import { Inject, Service } from "typedi";
-import { EntityManager } from "typeorm";
-import { OrmEntityManager } from "typeorm-typedi-extensions";
-import { DaoTool, ActionForDB } from "./RepositoryTool";
+import { Service } from "typedi";
+import { Repository } from "typeorm";
+import { OrmRepository } from "typeorm-typedi-extensions";
 import { Kishu } from "../entities/Kishu";
 
 @Service()
 export class KishuDao {
 
-  private static readonly insertKeys = ["TouzaiBetsu", "ShozokuBasho", "ShikakuKubun", "MinaraiKubun", "Kyuusha"];
+  @OrmRepository(Kishu)
+  private repository: Repository<Kishu>;
 
-  @OrmEntityManager()
-  private entityManager: EntityManager;
-
-  @Inject()
-  private tool: DaoTool;
-
-  protected async getKishu(kishu: Kishu) {
-    let result: Kishu;
-    if (kishu.KishuMei) {
-        result = await this.getKishuByKishuMei(kishu);
+  protected getKishu(kishu: Kishu) {
+    if (!kishu.FromDate || !kishu.ToDate) {
+      return null;
     }
-    if (!result) {
-        result = await this.getKishuByTanshukuKishuMei(kishu);
-    }
-    return result;
-  }
-
-  protected async getKishuByTanshukuKishuMei(kishu: Kishu) {
-    return await this.entityManager
-      .getRepository(Kishu)
+    const qb = this.repository
       .createQueryBuilder("k")
-      .where("k.TanshukuKishuMei = :tanshukuKishuMei")
-      .setParameter("tanshukuKishuMei", kishu.TanshukuKishuMei)
-      .getOne();
-  }
-
-  protected async getKishuByKishuMei(kishu: Kishu) {
-    const qb = this.entityManager
-      .getRepository(Kishu)
-      .createQueryBuilder("k")
-      .where("k.TanshukuKishuMei = :tanshukuKishuMei")
-      .setParameter("tanshukuKishuMei", kishu.TanshukuKishuMei)
-      .andWhere("k.KishuMei = :kishuMei")
-      .setParameter("kishuMei", kishu.KishuMei);
+      .where("k.KishuMei = :kishuMei")
+      .setParameter("kishuMei", kishu.KishuMei)
+      .andWhere("k.TanshukuKishuMei = :tanshukuKishuMei")
+      .setParameter("tanshukuKishuMei", kishu.TanshukuKishuMei);
     /* tslint:disable:triple-equals */
     if (kishu.TouzaiBetsu != null) {
       qb.andWhere("k.TouzaiBetsu = :touzaiBetsu")
@@ -62,45 +38,64 @@ export class KishuDao {
     } else {
       qb.andWhere("k.MinaraiKubun IS NULL");
     }
-    if (kishu.ShikakuKubun != null) {
-      qb.andWhere("k.ShikakuKubun = :shikakuKubun")
-        .setParameter("shikakuKubun", kishu.ShikakuKubun);
-    } else {
-      qb.andWhere("k.ShikakuKubun IS NULL");
-    }
-    if (kishu.Kyuusha != null) {
+    if (kishu.Kyuusha) {
       qb.andWhere("k.KyuushaId = :kyuushaId")
         .setParameter("kyuushaId", kishu.Kyuusha.Id);
     } else {
       qb.andWhere("k.KyuushaId IS NULL");
     }
     /* tslint:enable:triple-equals */
-    return await qb.getOne();
+    return qb.getOne();
   }
 
   public async saveKishu(toBe: Kishu) {
     const asIs = await this.getKishu(toBe);
     if (asIs) {
-      let action: ActionForDB;
-      if (!asIs.KishuMei) {
-        if (toBe.KishuMei) {
-          this.tool.changeAsIs(asIs, toBe, KishuDao.insertKeys);
-          action = ActionForDB.Update;
-        } else {
-          return asIs;
-        }
-      } else {
-        action = this.tool.changeAsIs(asIs, toBe, KishuDao.insertKeys);
-        if (action === ActionForDB.None) {
-          return asIs;
-        }
-        if (action === ActionForDB.Insert) {
-          asIs.Id = null;
-        }
+      let update = false;
+      /* tslint:disable:triple-equals */
+      if (asIs.Furigana == null && toBe.Furigana != null) {
+        asIs.Furigana = toBe.Furigana;
+        update = true;
       }
-      toBe = await this.entityManager.persist(asIs);
+      if (asIs.KolKishuCode == null && toBe.KolKishuCode != null) {
+        asIs.KolKishuCode = toBe.KolKishuCode;
+        update = true;
+      }
+      if (asIs.JrdbKishuCode == null && toBe.JrdbKishuCode != null) {
+        asIs.JrdbKishuCode = toBe.JrdbKishuCode;
+        update = true;
+      }
+      if (asIs.Seinengappi == null && toBe.Seinengappi != null) {
+        asIs.Seinengappi = toBe.Seinengappi;
+        update = true;
+      }
+      if (asIs.HatsuMenkyoNen == null && toBe.HatsuMenkyoNen != null) {
+        asIs.HatsuMenkyoNen = toBe.HatsuMenkyoNen;
+        update = true;
+      }
+      if (asIs.TouzaiBetsu == null && toBe.TouzaiBetsu != null) {
+        asIs.TouzaiBetsu = toBe.TouzaiBetsu;
+        update = true;
+      }
+      if (toBe.FromDate < asIs.FromDate) {
+        asIs.FromDate = toBe.FromDate;
+        update = true;
+      }
+      if (asIs.ToDate < toBe.ToDate) {
+        asIs.ToDate = toBe.ToDate;
+        update = true;
+      }
+      /* tslint:enable:triple-equals */
+      if (update) {
+        await this.repository.updateById(asIs.Id, asIs);
+      }
+      toBe = asIs;
     } else {
-      toBe = await this.entityManager.persist(toBe);
+      try {
+        toBe = await this.repository.save(toBe);
+      } catch (e) {
+        toBe = await this.getKishu(toBe);
+      }
     }
     return toBe;
   }

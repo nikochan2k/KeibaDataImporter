@@ -1,8 +1,5 @@
 import "reflect-metadata";
 import { Inject, Service } from "typedi";
-import { EntityManager } from "typeorm";
-import { OrmEntityManager } from "typeorm-typedi-extensions";
-import * as $C from "../../../converters/Common";
 import * as $R from "../../../converters/Race";
 import * as $S from "../../../converters/Shussouba";
 import * as $U from "../../../converters/Uma";
@@ -12,6 +9,7 @@ import { RaceClass } from "../../../entities/RaceClass";
 import { Shussouba } from "../../../entities/Shussouba";
 import { Uma } from "../../../entities/Uma";
 import { DataToImport } from "../../DataToImport";
+import { Kyuusha } from "../../../entities/Kyuusha";
 import { DataTool } from "../../DataTool";
 import {
   readDate,
@@ -29,8 +27,7 @@ import { KolTool } from "../KolTool";
 @Service()
 export class KolUmaKd3 extends DataToImport {
 
-  @OrmEntityManager()
-  private entityManager: EntityManager;
+  private static readonly raceOffsets = [1064, 1654, 2244, 2834, 3424];
 
   @Inject()
   private tool: DataTool;
@@ -49,31 +46,23 @@ export class KolUmaKd3 extends DataToImport {
   }
 
   protected async saveOyaUma(buffer: Buffer, offset: number, seibetsu: $U.Seibetsu, chichiOffset?: number, hahaOffset?: number) {
-    let uma = new Uma();
+    const uma = new Uma();
     uma.Bamei = readStr(buffer, offset, 34);
-    uma = await this.umaDao.saveUma(uma);
-
-    let needPersist = !uma.Id;
     if (chichiOffset && !uma.ChichiUma) {
       uma.ChichiUma = await this.saveOyaUma(buffer, chichiOffset, $U.Seibetsu.Boba);
-      needPersist = true;
     }
     if (hahaOffset && !uma.HahaUma) {
       uma.HahaUma = await this.saveOyaUma(buffer, hahaOffset, $U.Seibetsu.Hinba);
-      needPersist = true;
     }
+    uma.Seibetsu = seibetsu;
 
-    if (needPersist) {
-      uma.Seibetsu = seibetsu;
-      uma = await this.entityManager.persist(uma);
-    }
-
-    return uma;
+    return this.umaDao.saveUma(uma);
   }
 
   protected async save(buffer: Buffer) {
     const kyousouba = await this.saveUma(buffer);
-    [1064, 1654, 2244, 2834, 3424].forEach(async (offset) => {
+    for (let i = 0; i < KolUmaKd3.raceOffsets.length; i++) {
+      const offset = KolUmaKd3.raceOffsets[i];
       const raceBuffer = buffer.slice(offset, offset + 151);
       const race = await this.saveRace(raceBuffer);
       if (race) {
@@ -82,13 +71,12 @@ export class KolUmaKd3 extends DataToImport {
         await this.kolTool.saveShussoubaTsuukaJuni(shussoubaBuffer, 239, shussouba);
         await this.choukyouTool.saveChoukyou(shussoubaBuffer, 248, shussouba, 1);
       }
-    });
+    }
   }
 
   protected async saveUma(buffer: Buffer) {
     const kyousouba = new Uma();
     kyousouba.Bamei = readStr(buffer, 7, 30);
-    kyousouba.KyuuBamei = readStr(buffer, 37, 40);
     kyousouba.Seinengappi = readDate(buffer, 77, 8);
     kyousouba.Keiro = $U.keiro.toCodeFromKol(buffer, 85, 2);
     kyousouba.Kesshu = $U.kesshu.toCodeFromKol(buffer, 87, 2);
@@ -105,26 +93,19 @@ export class KolUmaKd3 extends DataToImport {
     kyousouba.MasshouNengappi = readDate(buffer, 545, 8);
     kyousouba.Jiyuu = readStr(buffer, 553, 6);
     kyousouba.Ikisaki = readStr(buffer, 559, 10);
-    return await this.umaDao.saveUma(kyousouba);
+    const dataSakuseiNengappi = readDate(buffer, 624, 8);
+    kyousouba.FromDate = dataSakuseiNengappi;
+    kyousouba.ToDate = dataSakuseiNengappi;
+    return this.umaDao.saveUma(kyousouba);
   }
 
   protected async saveRace(buffer: Buffer) {
-    const id = this.kolTool.getRaceId(buffer);
-    if (!id) {
+    const race = await this.kolTool.getRace(buffer);
+    if (!race) {
       return null;
-    }
-    let race = await this.entityManager.findOneById(Race, id);
-    if (race) {
+    } else if (race.Youbi) {
       return race;
     }
-    race = new Race();
-    race.Id = id;
-    race.Basho = $C.basho.toCodeFromKol(buffer, 0, 2);
-    race.Nen = readPositiveInt(buffer, 2, 4);
-    race.Kaiji = readPositiveInt(buffer, 6, 2);
-    race.Nichiji = readPositiveInt(buffer, 8, 2);
-    race.RaceBangou = readPositiveInt(buffer, 10, 2);
-    race.Nengappi = readDate(buffer, 12, 8);
     race.Kyuujitsu = $R.kyuujitsu.toCodeFromKol(buffer, 20, 1);
     race.Youbi = $R.youbi.toCodeFromKol(buffer, 21, 1);
     race.RaceClass = await this.saveRaceClass(buffer);
@@ -156,7 +137,7 @@ export class KolUmaKd3 extends DataToImport {
     race.Baba = $R.baba.toCodeFromKol(buffer, 129, 1);
     race.Seed = $R.seed.toCodeFromKol(buffer, 130, 1);
     race.GaikokuKeibajouMei = readStr(buffer, 131, 20);
-    return await this.entityManager.persist(race);
+    return this.entityManager.persist(race);
   }
 
   protected async saveRaceClass(buffer: Buffer) {
@@ -176,8 +157,7 @@ export class KolUmaKd3 extends DataToImport {
       rc.Jouken2 = $R.jouken.toCodeFromKol(buffer, 108, 5);
       rc.Kumi2 = readPositiveInt(buffer, 113, 2);
     }
-    const raceClass = await this.tool.saveRaceClass(rc);
-    return raceClass;
+    return this.tool.saveRaceClass(rc);
   }
 
   protected async saveShussouba(buffer: Buffer, race: Race, kyousouba: Uma) {
@@ -203,16 +183,16 @@ export class KolUmaKd3 extends DataToImport {
     shussouba.Wakuban = readPositiveInt(buffer, 0, 1);
     shussouba.Umaban = umaban;
     shussouba.Gate = readPositiveInt(buffer, 3, 2);
-    shussouba.Kyousouba = await this.saveKyousouba(buffer, kyousouba);
+    const kyuusha = await this.kolTool.saveKyuusha(buffer, 158);
+    shussouba.Kyousouba = await this.saveKyousouba(buffer, kyousouba.Bamei, kyuusha, race.Nengappi);
     shussouba.Nenrei = readPositiveInt(buffer, 8, 2);
     shussouba.Blinker = $S.blinker.toCodeFromKol(buffer, 90, 1);
     shussouba.Kinryou = readDouble(buffer, 91, 3, 0.1);
     shussouba.Bataijuu = readPositiveInt(buffer, 94, 3);
     shussouba.Zougen = readInt(buffer, 97, 3);
     shussouba.KolRecordShisuu = readInt(buffer, 100, 3);
-    shussouba.Kishu = await this.kolTool.saveKishu(buffer, 103);
+    shussouba.Kishu = await this.kolTool.saveKishu(buffer, 103, race.Nengappi);
     shussouba.Norikawari = $S.norikawari.toCodeFromKol(buffer, 157, 1);
-    shussouba.Kyuusha = await this.kolTool.saveKyuusha(buffer, 158);
     shussouba.KolYosou1 = $S.yosou.toCodeFromKol(buffer, 206, 1);
     shussouba.KolYosou2 = $S.yosou.toCodeFromKol(buffer, 207, 1);
     shussouba.Ninki = readPositiveInt(buffer, 208, 2);
@@ -240,16 +220,19 @@ export class KolUmaKd3 extends DataToImport {
       shussouba.Chuukan = shussouba.Time - shussouba.Ten3F - shussouba.Agari3F;
     }
     shussouba.YonCornerIchiDori = $S.yonCornerIchiDori.toCodeFromKol(buffer, 247, 1);
-    return await this.entityManager.persist(shussouba);
+    return this.entityManager.persist(shussouba);
   }
 
-  public async saveKyousouba(buffer: Buffer, kyousouba: Uma) {
+  public async saveKyousouba(buffer: Buffer, bamei: string, kyuusha: Kyuusha, nengappi: Date) {
     const uma = new Uma();
-    uma.Bamei = kyousouba.Bamei;
+    uma.Bamei = bamei;
     uma.UmaKigou = $U.umaKigou.toCodeFromKol(buffer, 5, 2);
     uma.Seibetsu = $U.seibetsu.toCodeFromKol(buffer, 7, 1);
     uma.Banushi = await this.kolTool.saveBanushi(buffer, 10);
-    return await this.umaDao.saveUma(uma);
+    uma.Kyuusha = kyuusha;
+    uma.FromDate = nengappi;
+    uma.ToDate = nengappi;
+    return this.umaDao.saveUma(uma);
   }
 
 }

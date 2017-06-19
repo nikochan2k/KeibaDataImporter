@@ -6,7 +6,6 @@ import {
   PrimaryGeneratedColumn
   } from "typeorm";
 import { Kishu } from "./Kishu";
-import { Shussouba } from "./Shussouba";
 import { Uma } from "./Uma";
 
 @Entity("Kyuusha")
@@ -23,13 +22,13 @@ export class Kyuusha {
   @Column("int", { nullable: true })
   public JrdbKyuushaCode?: number;
 
-  @Column("string", { length: 48, nullable: true })
+  @Column("varchar", { length: 48, nullable: true })
   public KyuushaMei?: string;
 
-  @Column("string", { length: 12, nullable: true })
+  @Column("varchar", { length: 12, nullable: true })
   public TanshukuKyuushaMei?: string;
 
-  @Column("string", { length: 72, nullable: true })
+  @Column("varchar", { length: 72, nullable: true })
   public Furigana?: string;
 
   @Column("date", { nullable: true })
@@ -52,7 +51,4 @@ export class Kyuusha {
 
   @OneToMany(() => Uma, u => u.Kyuusha)
   public KyousoubaList: Uma[];
-
-  @OneToMany(() => Shussouba, s => s.Kyuusha)
-  public ShussoubaList: Shussouba[];
 }

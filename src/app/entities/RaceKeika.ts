@@ -21,7 +21,7 @@ export class RaceKeika {
   @JoinColumn({ name: "RaceId" })
   public Race: Race;
 
-  @Column("string", { length: 165 })
+  @Column("varchar", { length: 165 })
   public Keika: string;
 
   @Column("smallint", { nullable: true })

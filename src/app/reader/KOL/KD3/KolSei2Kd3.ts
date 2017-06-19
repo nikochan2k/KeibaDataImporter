@@ -1,8 +1,5 @@
 import { Inject, Service } from "typedi";
-import { EntityManager } from "typeorm";
-import { OrmEntityManager } from "typeorm-typedi-extensions";
 import * as $S from "../../../converters/Shussouba";
-import { Race } from "../../../entities/Race";
 import { Shussouba } from "../../../entities/Shussouba";
 import { ShussoubaTsuukaJuni } from "../../../entities/ShussoubaTsuukaJuni";
 import { DataCache } from "../../DataCache";
@@ -14,15 +11,12 @@ import {
   readInt,
   readPositiveInt,
   readTime
-  } from "../../Reader";
+} from "../../Reader";
 import { KolChoukyouTool } from "../KolChoukyouTool";
 import { KolTool } from "../KolTool";
 
 @Service()
 export class KolSei2Kd3 extends DataToImport {
-
-  @OrmEntityManager()
-  private entityManager: EntityManager;
 
   @Inject()
   private choukyouTool: KolChoukyouTool;
@@ -47,12 +41,11 @@ export class KolSei2Kd3 extends DataToImport {
   }
 
   protected async save(buffer: Buffer, cache: DataCache) {
-    const race = new Race();
-    race.Id = this.kolTool.getRaceId(buffer);
+    const race = await this.kolTool.getRace(buffer);
     const umaban = readPositiveInt(buffer, 23, 2);
     if (umaban === null) {
       this.logger.warn("馬番がありません");
-      return null;
+      return;
     }
     const id = race.Id * 100 + umaban;
     let shussouba = await this.entityManager.findOneById(Shussouba, id);
@@ -84,15 +77,15 @@ export class KolSei2Kd3 extends DataToImport {
   protected async saveShussouba(buffer: Buffer, shussouba: Shussouba, cache: DataCache) {
     shussouba.Wakuban = readPositiveInt(buffer, 22, 1);
     shussouba.Gate = readPositiveInt(buffer, 25, 2);
-    shussouba.Kyousouba = await this.kolTool.saveUma(buffer, 34);
+    const kyuusha = await this.kolTool.saveKyuusha(buffer, 217);
+    shussouba.Kyousouba = await this.kolTool.saveUma(buffer, 34, kyuusha, shussouba.Race.Nengappi);
     shussouba.Nenrei = readPositiveInt(buffer, 67, 2);
     shussouba.Blinker = $S.blinker.toCodeFromKol(buffer, 149, 1);
     shussouba.Kinryou = readDouble(buffer, 150, 3, 0.1);
     shussouba.Bataijuu = readPositiveInt(buffer, 153, 3);
     shussouba.Zougen = readInt(buffer, 156, 3);
-    shussouba.Kishu = await this.kolTool.saveKishu(buffer, 162);
+    shussouba.Kishu = await this.kolTool.saveKishu(buffer, 162, shussouba.Race.Nengappi);
     shussouba.Norikawari = $S.norikawari.toCodeFromKol(buffer, 216, 1);
-    shussouba.Kyuusha = await this.kolTool.saveKyuusha(buffer, 217);
     shussouba.Ninki = readPositiveInt(buffer, 267, 2);
     shussouba.Odds = readDouble(buffer, 269, 5, 0.1);
     shussouba.KakuteiChakujun = this.tool.getChakujun(buffer, 274, 2);

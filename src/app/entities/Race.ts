@@ -54,7 +54,7 @@ export class Race {
   @Column("smallint", { nullable: true })
   public BetteiBareiHandi?: number;
 
-  @Column("string", { nullable: true, length: 27 })
+  @Column("varchar", { nullable: true, length: 27 })
   public BetteiBareiHandiReigai: string;
 
   @Column("smallint", { nullable: true })
@@ -78,7 +78,7 @@ export class Race {
   @Column("smallint", { nullable: true })
   public MaeuriFlag?: number;
 
-  @Column("string", { nullable: true, length: 5 })
+  @Column("varchar", { nullable: true, length: 5 })
   public YoteiHassouJikan: string;
 
   @Column("smallint")
@@ -102,7 +102,7 @@ export class Race {
   @Column("smallint", { nullable: true })
   public Seed?: number;
 
-  @Column("string", { nullable: true, length: 30 })
+  @Column("varchar", { nullable: true, length: 30 })
   public GaikokuKeibajouMei: string;
 
   @Column("float", { nullable: true })
@@ -150,7 +150,7 @@ export class Race {
   @Column("smallint", { nullable: true })
   public YosouPace?: number;
 
-  @Column("string", { nullable: true, length: 18 })
+  @Column("varchar", { nullable: true, length: 18 })
   public Yosoushamei2: string;
 
   @OneToMany(() => RaceShoukin, rs => rs.Race)

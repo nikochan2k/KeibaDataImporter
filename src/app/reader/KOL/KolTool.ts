@@ -11,16 +11,18 @@ import { KishuDao } from "../../daos/KishuDao";
 import { KyuushaDao } from "../../daos/KyuushaDao";
 import { SeisanshaDao } from "../../daos/SeisanshaDao";
 import { UmaDao } from "../../daos/UmaDao";
-import { Shussouba } from "../../entities/Shussouba";
-import { ShussoubaTsuukaJuni } from "../../entities/ShussoubaTsuukaJuni";
 import { Banushi } from "../../entities/Banushi";
 import { Kishu } from "../../entities/Kishu";
 import { Kyuusha } from "../../entities/Kyuusha";
+import { Race } from "../../entities/Race";
 import { Seisansha } from "../../entities/Seisansha";
+import { Shussouba } from "../../entities/Shussouba";
+import { ShussoubaTsuukaJuni } from "../../entities/ShussoubaTsuukaJuni";
 import { Uma } from "../../entities/Uma";
 import { getLogger } from "../../LogUtil";
 import { DataTool } from "../DataTool";
 import {
+  readDate,
   readDouble,
   readInt,
   readPositiveInt,
@@ -58,7 +60,7 @@ export class KolTool {
     this.logger = getLogger(this);
   }
 
-  public getRaceId(buffer: Buffer) {
+  public async getRace(buffer: Buffer) {
     const yyyymmdd = readPositiveInt(buffer, 12, 8);
     const basho = $C.basho.toCodeFromKol(buffer, 0, 2);
     const raceBangou = readInt(buffer, 10, 2);
@@ -66,14 +68,27 @@ export class KolTool {
       return null;
     }
     const id = this.tool.getRaceId(yyyymmdd, basho, raceBangou);
-    return id;
+    let race = await this.entityManager.getRepository(Race).findOneById(id);
+    if (!race) {
+      race = new Race();
+      race.Id = id;
+      race.Basho = basho;
+      race.Nen = readPositiveInt(buffer, 2, 4);
+      race.Kaiji = readPositiveInt(buffer, 6, 2);
+      race.Nichiji = readPositiveInt(buffer, 8, 2);
+      race.RaceBangou = raceBangou;
+      race.Nengappi = readDate(buffer, 12, 8);
+    }
+    return race;
   }
 
-  public async saveKishu(buffer: Buffer, offset: number) {
-    let kishu = new Kishu();
+  public async saveKishu(buffer: Buffer, offset: number, nengappi: Date) {
+    const kishu = new Kishu();
     kishu.KolKishuCode = readInt(buffer, offset, 5);
     kishu.KishuMei = readStrWithNoSpace(buffer, offset + 5, 32);
     kishu.TanshukuKishuMei = readStrWithNoSpace(buffer, offset + 37, 8);
+    kishu.FromDate = nengappi;
+    kishu.ToDate = nengappi;
     kishu.TouzaiBetsu = $C.touzaiBetsu.toCodeFromKol(buffer, offset + 45, 1);
     kishu.ShozokuBasho = $C.basho.toCodeFromKol(buffer, offset + 46, 2);
     const kyuushaCode = readPositiveInt(buffer, offset + 48, 5);
@@ -84,34 +99,36 @@ export class KolTool {
       kishu.Kyuusha = kyuusha;
     }
     kishu.MinaraiKubun = $KI.minaraiKubun.toCodeFromKol(buffer, 53, 1);
-    kishu = await this.kishuDao.saveKishu(kishu);
-    return kishu;
+    return this.kishuDao.saveKishu(kishu);
   }
 
-  public async saveBanushi(buffer: Buffer, offset: number) {
+  public saveBanushi(buffer: Buffer, offset: number) {
     const banushi = new Banushi();
-    banushi.BanushiMei = this.tool.normalizeHoujinMei(buffer, offset, 40); // , 69
-    banushi.TanshukuBanushiMei = this.tool.normalizeTanshukuHoujinMei(buffer, offset + 40, 20); // , 109
-    return await this.banushiDao.saveBanushi(banushi);
+    banushi.BanushiMei = this.tool.normalizeHoujinMei(buffer, offset, 40);
+    banushi.TanshukuBanushiMei = this.tool.normalizeTanshukuHoujinMei(buffer, offset + 40, 20);
+    return this.banushiDao.saveBanushi(banushi);
   }
 
-  public async saveUma(buffer: Buffer, offset: number) {
+  public async saveUma(buffer: Buffer, offset: number, kyuusha: Kyuusha, nengappi: Date) {
     const uma = new Uma();
     uma.Bamei = readStr(buffer, offset, 30);
+    uma.FromDate = nengappi;
+    uma.ToDate = nengappi;
     uma.UmaKigou = $U.umaKigou.toCodeFromKol(buffer, offset + 30, 2);
     uma.Seibetsu = $U.seibetsu.toCodeFromKol(buffer, offset + 32, 1);
     uma.Banushi = await this.saveBanushi(buffer, offset + 35);
-    return await this.umaDao.saveUma(uma);
+    uma.Kyuusha = kyuusha;
+    return this.umaDao.saveUma(uma);
   }
 
-  public async saveSeisansha(buffer: Buffer, offset: number) {
+  public saveSeisansha(buffer: Buffer, offset: number) {
     const seisansha = new Seisansha();
     seisansha.SeisanshaMei = this.tool.normalizeHoujinMei(buffer, offset, 40);
     seisansha.TanshukuSeisanshaMei = this.tool.normalizeTanshukuHoujinMei(buffer, offset + 40, 20);
-    return await this.seisanshaDao.saveSeisansha(seisansha);
+    return this.seisanshaDao.saveSeisansha(seisansha);
   }
 
-  public async saveKyuusha(buffer: Buffer, offset: number) {
+  public saveKyuusha(buffer: Buffer, offset: number) {
     const kyuushaMei = readStrWithNoSpace(buffer, offset + 5, 32);
     if (!kyuushaMei) {
       return null;
@@ -122,7 +139,7 @@ export class KolTool {
     kyuusha.TanshukuKyuushaMei = readStrWithNoSpace(buffer, offset + 37, 8);
     kyuusha.ShozokuBasho = $C.basho.toCodeFromKol(buffer, offset + 45, 2);
     kyuusha.RitsuHokuNanBetsu = $KY.ritsuHokuNanBetsu.toCodeFromKol(buffer, offset + 47, 1);
-    return await this.kyuushaDao.saveKyuusha(kyuusha);
+    return this.kyuushaDao.saveKyuusha(kyuusha);
   }
 
   public getTimeSa(buffer: Buffer, offset: number) {

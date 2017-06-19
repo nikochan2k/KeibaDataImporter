@@ -1,29 +1,20 @@
 import { Service } from "typedi";
-import { EntityManager } from "typeorm";
-import { OrmEntityManager } from "typeorm-typedi-extensions";
+import { Repository } from "typeorm";
+import { OrmRepository } from "typeorm-typedi-extensions";
 import { Seisansha } from "../entities/Seisansha";
 
 @Service()
 export class SeisanshaDao {
 
-  @OrmEntityManager()
-  private entityManager: EntityManager;
-
-  protected async getSeisansha(seisansha: Seisansha) {
-    return await this.entityManager
-      .getRepository(Seisansha)
-      .createQueryBuilder("s")
-      .where("s.SeisanshaMei = :seisanshaMei")
-      .setParameter("seisanshaMei", seisansha.SeisanshaMei)
-      .getOne();
-  }
+  @OrmRepository(Seisansha)
+  private repository: Repository<Seisansha>;
 
   public async saveSeisansha(toBe: Seisansha) {
-    const asIs = await this.getSeisansha(toBe);
+    const asIs = await this.repository.findOne({ SeisanshaMei: toBe.SeisanshaMei });
     if (asIs) {
       toBe = asIs;
     } else {
-      toBe = await this.entityManager.persist(toBe);
+      toBe = await this.repository.save(toBe);
     }
     return toBe;
   }

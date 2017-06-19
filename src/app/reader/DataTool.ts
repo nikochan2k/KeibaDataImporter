@@ -68,7 +68,7 @@ export class DataTool {
     return id;
   }
 
-  public async normalizeNenrei(shussouba: Shussouba) {
+  public normalizeNenrei(shussouba: Shussouba) {
     if (shussouba.Race.Nen <= 2000) {
       shussouba.Nenrei--;
     }
@@ -93,7 +93,7 @@ export class DataTool {
   }
 
   public async saveRaceClass(rc: RaceClass) {
-    const qb = await this.entityManager
+    const qb = this.entityManager
       .getRepository(RaceClass)
       .createQueryBuilder("rc")
       .where("rc.ChuuouChihouGaikoku = :chuuouChihouGaikoku")

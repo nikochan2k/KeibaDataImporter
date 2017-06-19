@@ -1,14 +1,10 @@
 import { Logger } from "log4js";
-import { Inject, Service } from "typedi";
+import { Service } from "typedi";
 import { EntityManager } from "typeorm";
 import { OrmEntityManager } from "typeorm-typedi-extensions";
 import * as $CH from "../../converters/Choukyou";
-import { KishuDao } from "../../daos/KishuDao";
-import { UmaDao } from "../../daos/UmaDao";
 import { Choukyou } from "../../entities/Choukyou";
 import { ChoukyouTime } from "../../entities/ChoukyouTime";
-import { Kishu } from "../../entities/Kishu";
-import { Uma } from "../../entities/Uma";
 import { Shussouba } from "../../entities/Shussouba";
 import { getLogger } from "../../LogUtil";
 import {
@@ -48,12 +44,6 @@ export class KolChoukyouTool {
   @OrmEntityManager()
   private entityManager: EntityManager;
 
-  @Inject()
-  private kishuDao: KishuDao;
-
-  @Inject()
-  private umaDao: UmaDao;
-
   constructor() {
     this.logger = getLogger(this);
   }
@@ -72,10 +62,8 @@ export class KolChoukyouTool {
     choukyou.Noriyaku = $CH.noriyaku.toCodeFromKol(kijousha);
     choukyou.Nengappi = readDate(buffer, offset + 9, 8);
     if (!choukyou.Noriyaku) {
-      const kishu = new Kishu();
-      kishu.TanshukuKishuMei = kijousha;
-      choukyou.Kishu = await this.kishuDao.saveKishu(kishu);
-      if (shussouba.Kishu.Id === choukyou.Kishu.Id) {
+      choukyou.TanshukuKishuMei = kijousha;
+      if (shussouba.Kishu.TanshukuKishuMei === kijousha) {
         choukyou.Noriyaku = 3; // 本番騎手
       } else {
         choukyou.Noriyaku = 4; // 調教騎手
@@ -108,9 +96,7 @@ export class KolChoukyouTool {
       let reigai = false;
       let execed = /^[\u30A1-\u30FC]+/.exec(awase);
       if (execed && 0 < execed.length) {
-        const uma = new Uma();
-        uma.Bamei = execed[0];
-        choukyou.AwaseUma = await this.umaDao.saveUma(uma);
+        choukyou.AwaseUma = execed[0];
       } else {
         reigai = true;
       }

@@ -8,19 +8,24 @@ import {
   PrimaryGeneratedColumn
 } from "typeorm";
 import { Kyuusha } from "./Kyuusha";
-import { Record } from "./Record";
 import { Shussouba } from "./Shussouba";
 
 @Entity("Kishu")
-@Index("IxKishu", (k: Kishu) => [k.TanshukuKishuMei])
+@Index("IxKishu", (k: Kishu) => [k.KishuMei, k.TanshukuKishuMei, k.ShozokuBasho, k.MinaraiKubun], { unique: true })
 export class Kishu {
   @PrimaryGeneratedColumn("int")
   public Id: number;
 
-  @Column("string", { length: 12 })
+  @Column("varchar", { length: 12 })
   public TanshukuKishuMei: string;
 
-  @Column("string", { length: 48, nullable: true })
+  @Column("date")
+  public FromDate: Date;
+
+  @Column("date")
+  public ToDate: Date;
+
+  @Column("varchar", { length: 48, nullable: true })
   public KishuMei?: string;
 
   @Column("int", { nullable: true })
@@ -29,7 +34,7 @@ export class Kishu {
   @Column("int", { nullable: true })
   public JrdbKishuCode?: number;
 
-  @Column("string", { length: 72, nullable: true })
+  @Column("varchar", { length: 72, nullable: true })
   public Furigana?: string;
 
   @Column("date", { nullable: true })
@@ -45,9 +50,6 @@ export class Kishu {
   public ShozokuBasho?: number;
 
   @Column("smallint", { nullable: true })
-  public ShikakuKubun?: number;
-
-  @Column("smallint", { nullable: true })
   public MinaraiKubun?: number;
 
   @Column("int", { name: "KyuushaId", nullable: true })
@@ -57,7 +59,4 @@ export class Kishu {
 
   @OneToMany(() => Shussouba, s => s.Kishu)
   public ShussoubaList: Shussouba[];
-
-  @OneToMany(() => Record, r => r.Kishu)
-  public RecordList: Record[];
 }

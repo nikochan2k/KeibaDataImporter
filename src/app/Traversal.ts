@@ -1,4 +1,4 @@
-import { exec } from "child_process";
+import { execSync } from "child_process";
 import * as fs from "fs";
 import * as glob from "glob";
 import { Logger } from "log4js";
@@ -23,10 +23,10 @@ export class Traversal {
     this.logger = getLogger(this);
   }
 
-  public traverse(dirName: string) {
+  public async traverse(dirName: string) {
     const lzhDir = this.checkDir(path.join(process.cwd(), dirName)) || this.checkDir(dirName);
     if (lzhDir) {
-      this.traverseLzhDir(lzhDir);
+      await this.traverseLzhDir(lzhDir);
     } else {
       this.logger.error('"' + lzhDir + '" is not a directory.');
     }
@@ -45,38 +45,20 @@ export class Traversal {
     return null;
   }
 
-  protected traverseLzhDir(lzhDir: string) {
+  protected async traverseLzhDir(lzhDir: string) {
     const pattern = path.join(lzhDir, "**/*.lzh");
-    glob(pattern, (err, matches) => {
-      if (err) {
-        this.logger.warn(err.message, err);
-        return;
-      }
-
-      matches.forEach((lzhFile) => {
-        this.uncompressLzhFile(lzhFile);
-      });
-    });
+    const matches = glob.sync(pattern);
+    for (let i = 0; i < matches.length; i++) {
+      const lzhFile = matches[i];
+      await this.uncompressLzhFile(lzhFile);
+    }
   }
 
-  protected uncompressLzhFile(lzhFile: string) {
-    tmp.dir((err, dataDir) => {
-      if (err) {
-        this.logger.warn(err.stack || err);
-        return;
-      }
-      const cmd = 'lha xw="' + dataDir + '" "' + lzhFile + '"';
-      exec(cmd, async (error, stdout, stderr) => {
-        if (error || stderr) {
-          if (error) this.logger.warn(error.stack);
-          if (stderr) this.logger.warn(stderr);
-          else if (stdout) this.logger.warn(stdout);
-          this.rmdir(dataDir);
-        } else {
-          await this.traverseDataDir(dataDir);
-        }
-      });
-    });
+  protected async uncompressLzhFile(lzhFile: string) {
+    const dataDir = tmp.dirSync();
+    const cmd = 'lha xw="' + dataDir.name + '" "' + lzhFile + '"';
+    execSync(cmd);
+    await this.traverseDataDir(dataDir.name);
   }
 
   protected async traverseDataDir(dataDir: string) {
@@ -85,8 +67,8 @@ export class Traversal {
     const pattern = path.join(dataDir, "*");
     const pathes = glob.sync(pattern);
     pathes.forEach((dataFile) => {
-        const basename = path.basename(dataFile);
-        entries[basename] = dataFile;
+      const basename = path.basename(dataFile);
+      entries[basename] = dataFile;
     });
 
     try {

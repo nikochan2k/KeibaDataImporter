@@ -1,29 +1,30 @@
 import { Service } from "typedi";
-import { EntityManager } from "typeorm";
-import { OrmEntityManager } from "typeorm-typedi-extensions";
+import { Repository } from "typeorm";
+import { OrmRepository } from "typeorm-typedi-extensions";
 import { Banushi } from "../entities/Banushi";
 
 @Service()
 export class BanushiDao {
 
-  @OrmEntityManager()
-  private entityManager: EntityManager;
-
-  protected async getBanushi(banushi: Banushi) {
-    return await this.entityManager
-      .getRepository(Banushi)
-      .createQueryBuilder("b")
-      .where("b.BanushiMei = :banushiMei")
-      .setParameter("banushiMei", banushi.BanushiMei)
-      .getOne();
-  }
+  @OrmRepository(Banushi)
+  private repository: Repository<Banushi>;
 
   public async saveBanushi(toBe: Banushi) {
-    const asIs = await this.getBanushi(toBe);
+    const asIs = await this.repository.findOne({ BanushiMei: toBe.BanushiMei });
     if (asIs) {
+      /* tslint:disable:triple-equals */
+      if (asIs.BanushiKaiCode == null && toBe.BanushiKaiCode != null) {
+        asIs.BanushiKaiCode = toBe.BanushiKaiCode;
+        await this.repository.updateById(asIs.Id, asIs);
+      }
+      /* tslint:enable:triple-equals */
       toBe = asIs;
     } else {
-      toBe = await this.entityManager.persist(toBe);
+      try {
+        toBe = await this.repository.save(toBe);
+      } catch (e) {
+        toBe = await this.repository.findOne({ BanushiMei: toBe.BanushiMei });
+      }
     }
     return toBe;
   }

@@ -1,8 +1,6 @@
 import * as fs from "fs";
 import { Logger } from "log4js";
 import { Container, Service } from "typedi";
-import { EntityManager } from "typeorm";
-import { OrmEntityManager } from "typeorm-typedi-extensions";
 import { getLogger } from "./LogUtil";
 import { DataToImport } from "./reader/DataToImport";
 import { KolDen1Kd3 } from "./reader/KOL/KD3/KolDen1Kd3";
@@ -25,9 +23,6 @@ export class Importer {
 
   private logger: Logger;
 
-  @OrmEntityManager()
-  private entityManager: EntityManager;
-
   private readers: Readers;
 
   constructor() {
@@ -43,31 +38,28 @@ export class Importer {
   }
 
   public async import(entries: Entries) {
-    await this.entityManager.query("PRAGMA journal_mode = WAL");
-    await this.entityManager.transaction(async () => {
-      const cache = new DataCache();
-      for (const basename in this.readers) {
-        const dataFile = entries[basename];
-        if (!dataFile) {
-          continue;
-        }
-        const dataToImport = this.readers[basename];
-        if (!dataToImport) {
-          this.logger.debug('"' + basename + '" is not suppoted.');
-          continue;
-        }
-        this.logger.debug('Reading "' + dataFile + "'");
-        let fd: number;
-        try {
-          fd = fs.openSync(dataFile, "r");
-          await dataToImport.readAll(fd, cache);
-        } catch (e) {
-          this.logger.error(e.stack || e);
-        }
-        finally {
-          fs.closeSync(fd);
-        }
+    const cache = new DataCache();
+    for (const basename in this.readers) {
+      const dataFile = entries[basename];
+      if (!dataFile) {
+        continue;
       }
-    });
+      const dataToImport = this.readers[basename];
+      if (!dataToImport) {
+        this.logger.debug('"' + basename + '" is not suppoted.');
+        continue;
+      }
+      this.logger.debug('Reading "' + dataFile + "'");
+      let fd: number;
+      try {
+        fd = fs.openSync(dataFile, "r");
+        await dataToImport.readAll(fd, cache);
+      } catch (e) {
+        this.logger.error(e.stack || e);
+      }
+      finally {
+        fs.closeSync(fd);
+      }
+    }
   }
 }

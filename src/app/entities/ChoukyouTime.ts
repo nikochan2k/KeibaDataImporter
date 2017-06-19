@@ -25,6 +25,6 @@ export class ChoukyouTime {
   @Column("float", { nullable: true })
   public Time?: number;
 
-  @Column("string", { nullable: true })
+  @Column("varchar", { nullable: true })
   public Comment?: string;
 }

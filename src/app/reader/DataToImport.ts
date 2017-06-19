@@ -1,5 +1,7 @@
 import * as fs from "fs";
 import * as log4js from "log4js";
+import { EntityManager } from "typeorm";
+import { OrmEntityManager } from "typeorm-typedi-extensions";
 import { getLogger } from "../LogUtil";
 import { DataCache } from "./DataCache";
 
@@ -11,6 +13,9 @@ export abstract class DataToImport {
     this.logger = getLogger(this);
   }
 
+  @OrmEntityManager()
+  protected entityManager: EntityManager;
+
   protected abstract getBufferLength();
 
   protected abstract save(buffer: Buffer, cache?: DataCache);
@@ -19,7 +24,16 @@ export abstract class DataToImport {
     let buffer: Buffer;
     const length = this.getBufferLength();
     while ((buffer = this.readLine(fd, length)) !== null) {
-      await this.save(buffer, cache);
+      const con = (<any>this.entityManager.connection.driver).databaseConnection;
+      await new Promise((resolve) => {
+        con.serialize(async () => {
+          await this.entityManager.transaction(async () => {
+            console.log("1:DataToImport");
+            await this.save(buffer, cache);
+          });
+          resolve();
+        });
+      });
     }
   }
 

@@ -13,10 +13,10 @@ export class Banushi {
   @PrimaryGeneratedColumn("int")
   public Id: number;
 
-  @Column("string", { length: 60 })
+  @Column("varchar", { length: 60 })
   public BanushiMei: string;
 
-  @Column("string", { length: 30 })
+  @Column("varchar", { length: 30 })
   public TanshukuBanushiMei: string;
 
   @Column("smallint", { nullable: true })
