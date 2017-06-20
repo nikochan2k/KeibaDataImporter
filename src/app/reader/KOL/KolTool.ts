@@ -12,6 +12,7 @@ import { KyuushaDao } from "../../daos/KyuushaDao";
 import { SeisanshaDao } from "../../daos/SeisanshaDao";
 import { UmaDao } from "../../daos/UmaDao";
 import { Banushi } from "../../entities/Banushi";
+import { KyousoubaRireki } from "../../entities/KyousoubaRireki";
 import { Kishu } from "../../entities/Kishu";
 import { KishuShozoku } from "../../entities/KishuShozoku";
 import { Kyuusha } from "../../entities/Kyuusha";
@@ -29,7 +30,7 @@ import {
   readPositiveInt,
   readStr,
   readStrWithNoSpace
-  } from "../Reader";
+} from "../Reader";
 
 @Service()
 export class KolTool {
@@ -109,16 +110,15 @@ export class KolTool {
     return this.banushiDao.saveBanushi(banushi);
   }
 
-  public async saveUma(buffer: Buffer, offset: number, kyuusha: Kyuusha, nengappi: Date) {
+  public async saveKyousouba(buffer: Buffer, offset: number, kyuusha: Kyuusha) {
     const uma = new Uma();
     uma.Bamei = readStr(buffer, offset, 30);
-    uma.FromDate = nengappi;
-    uma.ToDate = nengappi;
-    uma.UmaKigou = $U.umaKigou.toCodeFromKol(buffer, offset + 30, 2);
     uma.Seibetsu = $U.seibetsu.toCodeFromKol(buffer, offset + 32, 1);
-    uma.Banushi = await this.saveBanushi(buffer, offset + 35);
-    uma.Kyuusha = kyuusha;
-    return this.umaDao.saveUma(uma);
+    const kyousoubaRireki = new KyousoubaRireki();
+    kyousoubaRireki.UmaKigou = $U.umaKigou.toCodeFromKol(buffer, offset + 30, 2);
+    kyousoubaRireki.Banushi = await this.saveBanushi(buffer, offset + 35);
+    kyousoubaRireki.Kyuusha = kyuusha;
+    return this.umaDao.saveKyousouba(uma, kyousoubaRireki);
   }
 
   public saveSeisansha(buffer: Buffer, offset: number) {

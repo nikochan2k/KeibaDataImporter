@@ -6,11 +6,9 @@ import {
   ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn
-} from "typeorm";
-import { Banushi } from "./Banushi";
-import { Kyuusha } from "./Kyuusha";
+  } from "typeorm";
+import { Kyousouba } from "./Kyousouba";
 import { Seisansha } from "./Seisansha";
-import { Shussouba } from "./Shussouba";
 
 @Entity("Uma")
 @Index("IxUma", (u: Uma) => [u.Bamei])
@@ -20,12 +18,6 @@ export class Uma {
 
   @Column("varchar", { length: 54 })
   public Bamei: string;
-
-  @Column("date", { nullable: true })
-  public FromDate: Date;
-
-  @Column("date", { nullable: true })
-  public ToDate: Date;
 
   @Column("date", { nullable: true })
   public Seinengappi?: Date;
@@ -39,11 +31,8 @@ export class Uma {
   @Column("smallint", { nullable: true })
   public Sanchi?: number;
 
-  @Column("smallint", { nullable: true })
-  public UmaKigou?: number;
-
-  @Column("smallint", { nullable: true })
-  public Seibetsu?: number;
+  @Column("smallint")
+  public Seibetsu: number;
 
   @OneToMany(() => Uma, Uma => Uma.ChichiUma)
   public Children: Uma[];
@@ -58,23 +47,10 @@ export class Uma {
   @JoinColumn({ name: "HahaUmaId" })
   public HahaUma?: Uma;
 
-  @Column("int", { name: "BanushiId", nullable: true })
-  @ManyToOne(() => Banushi, Banushi => Banushi.UmaList)
-  @JoinColumn({ name: "BanushiId" })
-  public Banushi?: Banushi;
-
   @Column("int", { name: "SeisanshaId", nullable: true })
   @ManyToOne(() => Seisansha, Seisansha => Seisansha.UmaList)
   @JoinColumn({ name: "SeisanshaId" })
   public Seisansha?: Seisansha;
-
-  @Column("int", { name: "KyuushaId", nullable: true })
-  @ManyToOne(() => Kyuusha, Kyuusha => Kyuusha.KyousoubaList)
-  @JoinColumn({ name: "KyuushaId" })
-  public Kyuusha?: Kyuusha;
-
-  @Column("varchar", { length: 12, nullable: true })
-  public KoueiGaikokuKyuushaMei?: string;
 
   @Column("smallint", { nullable: true })
   public MasshouFlag?: number;
@@ -94,6 +70,6 @@ export class Uma {
   @Column("smallint", { nullable: true })
   public ShibouNen?: number;
 
-  @OneToMany(() => Shussouba, s => s.Kyousouba)
-  public ShussoubaList: Shussouba[];
+  @OneToMany(() => Kyousouba, k => k.Uma)
+  public KyousoubaList: Kyousouba[];
 }

@@ -1,51 +1,60 @@
 import { Service } from "typedi";
 import { Repository } from "typeorm";
 import { OrmRepository } from "typeorm-typedi-extensions";
+import * as $U from "../converters/Uma";
+import { Kyousouba } from "../entities/Kyousouba";
+import { KyousoubaRireki } from "../entities/KyousoubaRireki";
 import { Uma } from "../entities/Uma";
 
 @Service()
 export class UmaDao {
 
+  @OrmRepository(Kyousouba)
+  private kyousoubaRepository: Repository<Kyousouba>;
+
   @OrmRepository(Uma)
-  private repository: Repository<Uma>;
+  private umaRepository: Repository<Uma>;
+
+  @OrmRepository(KyousoubaRireki)
+  private kyousoubaRirekiRepository: Repository<KyousoubaRireki>;
 
   protected getUma(uma: Uma) {
-    return this.repository
-      .createQueryBuilder("u")
-      .where("u.Bamei = :bamei")
-      .setParameter("bamei", uma.Bamei)
-      .andWhere("u.Seibetsu = :seibetsu")
-      .setParameter("seibetsu", uma.Seibetsu)
+    return this.umaRepository.findOne({ Bamei: uma.Bamei });
+  }
+
+  protected getKyousoubaRireki(kyousoubaRireki: KyousoubaRireki) {
+    const qb = this.kyousoubaRirekiRepository
+      .createQueryBuilder("kr")
+      .where("kr.UmaKigou = :umaKigou")
+      .setParameter("umaKigou", kyousoubaRireki.UmaKigou)
+      .andWhere("kr.BanushiId = :banushiId")
+      .setParameter("banushiId", kyousoubaRireki.Banushi.Id);
+    if (kyousoubaRireki.Kyuusha) {
+      qb.andWhere("kr.KyuushaId = :kyuushaId")
+        .setParameter("kyuushaId", kyousoubaRireki.Kyuusha.Id);
+    } else {
+      qb.andWhere("kr.KyuushaId IS NULL");
+    }
+    return qb.getOne();
+  }
+
+  public getKyousouba(kyousouba: Kyousouba) {
+    return this.kyousoubaRepository
+      .createQueryBuilder("k")
+      .where("k.UmaId = umaId")
+      .setParameter("umaId", kyousouba.Uma.Id)
+      .andWhere("k.Seibetsu = :seibetsu")
+      .setParameter("seibetsu", kyousouba.Seibetsu)
+      .andWhere("k.KyousoubaRirekiId = :kyousoubaRirekiId")
+      .setParameter("kyousoubaRirekiId", kyousouba.KyousoubaRireki.Id)
       .getOne();
   }
 
   public async saveUma(toBe: Uma) {
-    if (toBe.Id) {
-      return toBe;
-    }
     const asIs = await this.getUma(toBe);
     if (asIs) {
       let update = false;
-      let insert = false;
       /* tslint:disable:triple-equals */
-      if (toBe.Banushi) {
-        if (!asIs.Banushi) {
-          asIs.Banushi = toBe.Banushi;
-          update = true;
-        } else if (asIs.Banushi.Id !== toBe.Banushi.Id) {
-          asIs.Banushi = toBe.Banushi;
-          insert = true;
-        }
-      }
-      if (toBe.Kyuusha) {
-        if (!asIs.Kyuusha) {
-          asIs.Kyuusha = toBe.Kyuusha;
-          update = true;
-        } else if (asIs.Kyuusha.Id !== toBe.Kyuusha.Id) {
-          asIs.Kyuusha = toBe.Kyuusha;
-          insert = true;
-        }
-      }
       if (asIs.Seinengappi == null && toBe.Seinengappi != null) {
         asIs.Seinengappi = toBe.Seinengappi;
         update = true;
@@ -62,10 +71,6 @@ export class UmaDao {
         asIs.Sanchi = toBe.Sanchi;
         update = true;
       }
-      if (asIs.UmaKigou == null && toBe.UmaKigou != null) {
-        asIs.UmaKigou = toBe.UmaKigou;
-        update = true;
-      }
       if (asIs.ChichiUma == null && toBe.ChichiUma != null) {
         asIs.ChichiUma = toBe.ChichiUma;
         update = true;
@@ -76,10 +81,6 @@ export class UmaDao {
       }
       if (asIs.Seisansha == null && toBe.Seisansha != null) {
         asIs.Seisansha = toBe.Seisansha;
-        update = true;
-      }
-      if (asIs.KoueiGaikokuKyuushaMei == null && toBe.KoueiGaikokuKyuushaMei != null) {
-        asIs.KoueiGaikokuKyuushaMei = toBe.KoueiGaikokuKyuushaMei;
         update = true;
       }
       if (asIs.MasshouFlag == null && toBe.MasshouFlag != null) {
@@ -102,25 +103,49 @@ export class UmaDao {
         asIs.ShibouNen = toBe.ShibouNen;
         update = true;
       }
-      if (toBe.FromDate < asIs.FromDate) {
-        asIs.FromDate = toBe.FromDate;
-        update = true;
-      }
-      if (asIs.ToDate < toBe.ToDate) {
-        asIs.ToDate = toBe.ToDate;
-        update = true;
-      }
       /* tslint:enable:triple-equals */
-      if (insert) {
-        return await this.repository.save(asIs);
-      }
       if (update) {
-        await this.repository.updateById(asIs.Id, asIs);
+        await this.umaRepository.updateById(asIs.Id, asIs);
       }
       toBe = asIs;
     } else {
-      toBe = await this.repository.save(toBe);
+      toBe = await this.umaRepository.save(toBe);
     }
+    return toBe;
+  }
+
+  protected async saveKyousoubaRireki(toBe: KyousoubaRireki) {
+    const asIs = await this.getKyousoubaRireki(toBe);
+    if (asIs) {
+      if (!asIs.KoueiGaikokuKyuushaMei && toBe.KoueiGaikokuKyuushaMei) {
+        asIs.KoueiGaikokuKyuushaMei = toBe.KoueiGaikokuKyuushaMei;
+        await this.kyousoubaRirekiRepository.updateById(asIs.Id, asIs);
+      }
+      toBe = asIs;
+    } else {
+      toBe = await this.kyousoubaRirekiRepository.save(toBe);
+    }
+    return toBe;
+  }
+
+  public async saveKyousouba(uma: Uma, kyousoubaRireki: KyousoubaRireki) {
+    let toBe = new Kyousouba();
+    if (toBe.Seibetsu === $U.Seibetsu.Senba) {
+      uma.Seibetsu = $U.Seibetsu.Boba;
+    }
+    uma = await this.saveUma(uma);
+    toBe.Uma = uma;
+    kyousoubaRireki = await this.saveKyousoubaRireki(kyousoubaRireki);
+    toBe.KyousoubaRireki = kyousoubaRireki;
+    toBe.Seibetsu = uma.Seibetsu;
+    const asIs = await this.getKyousouba(toBe);
+    if (asIs) {
+      toBe = asIs;
+    } else {
+      toBe = await this.kyousoubaRepository.save(toBe);
+    }
+    toBe.Uma = uma;
+    toBe.KyousoubaRireki = kyousoubaRireki;
     return toBe;
   }
 

@@ -2,6 +2,7 @@ import { Codes } from "./Codes";
 
 export const umaKigou = new Codes(
   [
+    { code: 0, kol: /00|\s+/, naiyou: "" },
     { code: 1, kol: "01", jrdb: "01", naiyou: "○抽" },
     { code: 2, kol: "02", jrdb: "02", naiyou: "□抽" },
     { code: 3, kol: "03", jrdb: "03", naiyou: "○父" },

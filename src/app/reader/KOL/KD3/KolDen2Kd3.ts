@@ -70,7 +70,7 @@ export class KolDen2Kd3 extends DataToImport {
     if (!shussouba.KolSeisekiSakuseiNengappi) {
       shussouba.Wakuban = readPositiveInt(buffer, 22, 1);
       const kyuusha = await this.kolTool.saveKyuusha(buffer, 206);
-      shussouba.Kyousouba = await this.kolTool.saveUma(buffer, 32, kyuusha, shussouba.Race.Nengappi);
+      shussouba.Kyousouba = await this.kolTool.saveKyousouba(buffer, 32, kyuusha);
       shussouba.Nenrei = readPositiveInt(buffer, 65, 2);
       shussouba.Blinker = $S.blinker.toCodeFromKol(buffer, 147, 1);
       shussouba.Kinryou = readDouble(buffer, 148, 3, 0.1);

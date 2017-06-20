@@ -78,7 +78,7 @@ export class KolSei2Kd3 extends DataToImport {
     shussouba.Wakuban = readPositiveInt(buffer, 22, 1);
     shussouba.Gate = readPositiveInt(buffer, 25, 2);
     const kyuusha = await this.kolTool.saveKyuusha(buffer, 217);
-    shussouba.Kyousouba = await this.kolTool.saveUma(buffer, 34, kyuusha, shussouba.Race.Nengappi);
+    shussouba.Kyousouba = await this.kolTool.saveKyousouba(buffer, 34, kyuusha);
     shussouba.Nenrei = readPositiveInt(buffer, 67, 2);
     shussouba.Blinker = $S.blinker.toCodeFromKol(buffer, 149, 1);
     shussouba.Kinryou = readDouble(buffer, 150, 3, 0.1);

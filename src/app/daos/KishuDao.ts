@@ -107,8 +107,10 @@ export class KishuDao {
 
   public async saveKijouKishu(kishu: Kishu, kishuShozoku: KishuShozoku, minaraiKubun: number) {
     let toBe = new KijouKishu();
-    toBe.Kishu = await this.saveKishu(kishu);
-    toBe.KishuShozoku = await this.saveKishuShozoku(kishuShozoku);
+    kishu = await this.saveKishu(kishu);
+    toBe.Kishu = kishu;
+    kishuShozoku = await this.saveKishuShozoku(kishuShozoku);
+    toBe.KishuShozoku = kishuShozoku;
     toBe.MinaraiKubun = minaraiKubun;
     const asIs = await this.getKijouKishu(toBe);
     if (asIs) {
@@ -116,6 +118,8 @@ export class KishuDao {
     } else {
       toBe = await this.kijouKishuRepository.save(toBe);
     }
+    toBe.Kishu = kishu;
+    toBe.KishuShozoku = kishuShozoku;
     return toBe;
   }
 

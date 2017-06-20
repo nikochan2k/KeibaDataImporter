@@ -13,7 +13,7 @@ import { Race } from "./Race";
 import { ShussoubaBagu } from "./ShussoubaBagu";
 import { ShussoubaKeika } from "./ShussoubaKeika";
 import { ShussoubaTsuukaJuni } from "./ShussoubaTsuukaJuni";
-import { Uma } from "./Uma";
+import { Kyousouba } from "./Kyousouba";
 
 @Entity("Shussouba")
 @Index("IxShussouba1", (s: Shussouba) => [s.Race, s.Umaban])
@@ -41,9 +41,9 @@ export class Shussouba {
   public Gate?: number;
 
   @Column("int", { name: "KyousoubaId" })
-  @ManyToOne(() => Uma, u => u.ShussoubaList)
+  @ManyToOne(() => Kyousouba, k => k.ShussoubaList)
   @JoinColumn({ name: "KyousoubaId" })
-  public Kyousouba: Uma;
+  public Kyousouba: Kyousouba;
 
   @Column("smallint")
   public Nenrei: number;
