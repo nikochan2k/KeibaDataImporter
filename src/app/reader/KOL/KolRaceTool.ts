@@ -4,20 +4,22 @@ import { OrmEntityManager } from "typeorm-typedi-extensions";
 import * as $C from "../../converters/Common";
 import { HaitouInfo } from "../../converters/RaceHaitou";
 import { ShoukinInfo } from "../../converters/RaceShoukin";
+import { RaceDao } from "../../daos/RaceDao";
+import { UmaDao } from "../../daos/UmaDao";
 import { Race } from "../../entities/Race";
 import { RaceHaitou } from "../../entities/RaceHaitou";
 import { RaceKeika } from "../../entities/RaceKeika";
 import { RaceLapTime } from "../../entities/RaceLapTime";
 import { RaceShoukin } from "../../entities/RaceShoukin";
 import { Record } from "../../entities/Record";
-import { DataTool } from "../DataTool";
+import { Uma } from "../../entities/Uma";
 import {
   readDate,
   readDouble,
   readPositiveInt,
   readStrWithNoSpace,
   readTime
-  } from "../Reader";
+} from "../Reader";
 
 @Service()
 export class KolRaceTool {
@@ -26,7 +28,10 @@ export class KolRaceTool {
   private entityManager: EntityManager;
 
   @Inject()
-  private tool: DataTool;
+  private umaDao: UmaDao;
+
+  @Inject()
+  private raceDao: RaceDao;
 
   public async deleteOldShutsubahyou(race: Race) {
     await this.entityManager
@@ -70,34 +75,21 @@ export class KolRaceTool {
   }
 
   public async getRecord(buffer: Buffer, offset: number, bashoOffset: number) {
-    const nengappi = readDate(buffer, offset, 8);
     const bamei = readStrWithNoSpace(buffer, offset + 12, 30);
-    if (!nengappi || !bamei) {
+    if (!bamei) {
       return null;
     }
 
-    const kyousouba = readStrWithNoSpace(buffer, offset + 12, 30);
-
-    let record = await this.entityManager
-      .getRepository(Record)
-      .createQueryBuilder("r")
-      .where("r.Nengappi = :nengappi")
-      .andWhere("r.Kyousouba = :kyousouba")
-      .setParameter("nengappi", this.tool.toDateString(nengappi))
-      .setParameter("kyousouba", kyousouba)
-      .getOne();
-    if (record) {
-      return record;
-    }
-
-    record = new Record();
-    record.Nengappi = nengappi;
+    const record = new Record();
+    record.Nengappi = readDate(buffer, offset, 8);
     record.Time = readTime(buffer, offset + 8, 4);
-    record.Kyousouba = kyousouba;
+    const uma = new Uma();
+    uma.Bamei = bamei;
+    record.Uma = await this.umaDao.saveUma(uma);
     record.Kinryou = readDouble(buffer, offset + 42, 3, 0.1);
     record.TanshukuKishuMei = readStrWithNoSpace(buffer, offset + 45, 8);
     record.Basho = $C.basho.toCodeFromKol(buffer, bashoOffset, 2);
-    return this.entityManager.persist(record);
+    return this.raceDao.saveRecord(record);
   }
 
   public async saveRaceShoukin(buffer: Buffer, race: Race, infos: ShoukinInfo[],

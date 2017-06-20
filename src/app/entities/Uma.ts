@@ -8,6 +8,7 @@ import {
   PrimaryGeneratedColumn
   } from "typeorm";
 import { Kyousouba } from "./Kyousouba";
+import { Record } from "./Record";
 import { Seisansha } from "./Seisansha";
 
 @Entity("Uma")
@@ -31,8 +32,8 @@ export class Uma {
   @Column("smallint", { nullable: true })
   public Sanchi?: number;
 
-  @Column("smallint")
-  public Seibetsu: number;
+  @Column("smallint", { nullable: true })
+  public Seibetsu?: number;
 
   @OneToMany(() => Uma, Uma => Uma.ChichiUma)
   public Children: Uma[];
@@ -72,4 +73,7 @@ export class Uma {
 
   @OneToMany(() => Kyousouba, k => k.Uma)
   public KyousoubaList: Kyousouba[];
+
+  @OneToMany(() => Record, r => r.Uma)
+  public RecordList: Record[];
 }

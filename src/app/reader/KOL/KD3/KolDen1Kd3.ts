@@ -1,6 +1,7 @@
 import { Inject, Service } from "typedi";
 import * as $R from "../../../converters/Race";
 import { Race } from "../../../entities/Race";
+import { RaceDao } from "../../../daos/RaceDao";
 import { RaceClass } from "../../../entities/RaceClass";
 import { DataToImport } from "../../DataToImport";
 import { DataTool } from "../../DataTool";
@@ -27,6 +28,9 @@ export class KolDen1Kd3 extends DataToImport {
 
   @Inject()
   private kolRaceTool: KolRaceTool;
+
+  @Inject()
+  private raceDao: RaceDao;
 
   protected getBufferLength() {
     return 848;
@@ -103,7 +107,7 @@ export class KolDen1Kd3 extends DataToImport {
     rc.Grade = $R.grade.toCodeFromKol(buffer, 72, 1);
     rc.JoukenKei = $R.joukenKei.toCodeFromKol(buffer, 98, 1);
     rc.Jouken1 = $R.jouken.toCodeFromKol(buffer, 100, 5);
-    return this.tool.saveRaceClass(rc);
+    return this.raceDao.saveRaceClass(rc);
   }
 
   protected async saveRaceShoukin(buffer: Buffer, race: Race) {

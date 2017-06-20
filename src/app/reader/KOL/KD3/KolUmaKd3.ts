@@ -4,6 +4,7 @@ import * as $R from "../../../converters/Race";
 import * as $S from "../../../converters/Shussouba";
 import * as $U from "../../../converters/Uma";
 import { UmaDao } from "../../../daos/UmaDao";
+import { RaceDao } from "../../../daos/RaceDao";
 import { Kyuusha } from "../../../entities/Kyuusha";
 import { Race } from "../../../entities/Race";
 import { RaceClass } from "../../../entities/RaceClass";
@@ -42,6 +43,9 @@ export class KolUmaKd3 extends DataToImport {
 
   @Inject()
   private umaDao: UmaDao;
+
+  @Inject()
+  private raceDao: RaceDao;
 
   protected getBufferLength() {
     return 5166;
@@ -157,7 +161,7 @@ export class KolUmaKd3 extends DataToImport {
       rc.Jouken2 = $R.jouken.toCodeFromKol(buffer, 108, 5);
       rc.Kumi2 = readPositiveInt(buffer, 113, 2);
     }
-    return this.tool.saveRaceClass(rc);
+    return this.raceDao.saveRaceClass(rc);
   }
 
   protected async saveShussouba(buffer: Buffer, race: Race, kyousouba: Kyousouba) {

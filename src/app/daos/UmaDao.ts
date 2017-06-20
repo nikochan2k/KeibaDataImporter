@@ -71,6 +71,10 @@ export class UmaDao {
         asIs.Sanchi = toBe.Sanchi;
         update = true;
       }
+      if (asIs.Seibetsu == null && toBe.Seibetsu != null) {
+        asIs.Seibetsu = toBe.Seibetsu;
+        update = true;
+      }
       if (asIs.ChichiUma == null && toBe.ChichiUma != null) {
         asIs.ChichiUma = toBe.ChichiUma;
         update = true;

@@ -3,6 +3,7 @@ import * as $R from "../../../converters/Race";
 import { Baken } from "../../../converters/RaceHaitou";
 import * as $RK from "../../../converters/RaceKeika";
 import { Race } from "../../../entities/Race";
+import { RaceDao } from "../../../daos/RaceDao";
 import { RaceClass } from "../../../entities/RaceClass";
 import { RaceKeika } from "../../../entities/RaceKeika";
 import { RaceLapTime } from "../../../entities/RaceLapTime";
@@ -36,6 +37,9 @@ export class KolSei1Kd3 extends DataToImport {
 
   @Inject()
   private keikaTool: KeikaTool;
+
+  @Inject()
+  private raceDao: RaceDao;
 
   protected getBufferLength() {
     return 3200;
@@ -140,7 +144,7 @@ export class KolSei1Kd3 extends DataToImport {
       rc.Jouken2 = $R.jouken.toCodeFromKol(buffer, 109, 5);
       rc.Kumi2 = readPositiveInt(buffer, 114, 2);
     }
-    return this.tool.saveRaceClass(rc);
+    return this.raceDao.saveRaceClass(rc);
   }
 
   protected async saveRaceShoukin(buffer: Buffer, race: Race) {
