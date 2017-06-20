@@ -6,10 +6,10 @@ import {
   ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn
-} from "typeorm";
-import { Uma } from "./Uma";
+  } from "typeorm";
 import { KyousoubaRireki } from "./KyousoubaRireki";
 import { Shussouba } from "./Shussouba";
+import { Uma } from "./Uma";
 
 @Entity("Kyousouba")
 @Index("IxKyousouba", (k: Kyousouba) => [k.Uma, k.Seibetsu, k.KyousoubaRireki])
