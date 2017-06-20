@@ -10,6 +10,7 @@ import {
 import { Kyousouba } from "./Kyousouba";
 import { Record } from "./Record";
 import { Seisansha } from "./Seisansha";
+import { Choukyou } from "./Choukyou";
 
 @Entity("Uma")
 @Index("IxUma", (u: Uma) => [u.Bamei])
@@ -76,4 +77,7 @@ export class Uma {
 
   @OneToMany(() => Record, r => r.Uma)
   public RecordList: Record[];
+
+  @OneToMany(() => Choukyou, c => c.AwaseUma)
+  public ChoukyouList: Choukyou[];
 }

@@ -1,11 +1,13 @@
 import { Logger } from "log4js";
-import { Service } from "typedi";
+import { Inject, Service } from "typedi";
 import { EntityManager } from "typeorm";
 import { OrmEntityManager } from "typeorm-typedi-extensions";
 import * as $CH from "../../converters/Choukyou";
+import { UmaDao } from "../../daos/UmaDao";
 import { Choukyou } from "../../entities/Choukyou";
 import { ChoukyouTime } from "../../entities/ChoukyouTime";
 import { Shussouba } from "../../entities/Shussouba";
+import { Uma } from "../../entities/Uma";
 import { getLogger } from "../../LogUtil";
 import {
   readDate,
@@ -43,6 +45,9 @@ export class KolChoukyouTool {
 
   @OrmEntityManager()
   private entityManager: EntityManager;
+
+  @Inject()
+  private umaDao: UmaDao;
 
   constructor() {
     this.logger = getLogger(this);
@@ -96,7 +101,10 @@ export class KolChoukyouTool {
       let reigai = false;
       let execed = /^[\u30A1-\u30FC]+/.exec(awase);
       if (execed && 0 < execed.length) {
-        choukyou.AwaseUma = execed[0];
+        const awaseUma = execed[0];
+        const uma = new Uma();
+        uma.Bamei = awaseUma;
+        choukyou.AwaseUma = await this.umaDao.saveUma(uma);
       } else {
         reigai = true;
       }

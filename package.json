@@ -1,7 +1,7 @@
 {
-  "name": "vscode-typescript-boilerplate",
-  "version": "1.2.1",
-  "description": "A project skeleton for TypeScript development in Visual Studio Code.",
+  "name": "keiba-data-importer",
+  "version": "0.0.1",
+  "description": "Keiba Data Importer",
   "main": "build/app/app.js",
   "scripts": {
     "build": "tsc -p src || true",
@@ -13,26 +13,9 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/codesleuth/vscode-typescript-boilerplate.git"
+    "url": "git+"
   },
-  "keywords": [
-    "vscode",
-    "typescript",
-    "example",
-    "boilerplate",
-    "project",
-    "skeleton",
-    "debug",
-    "intellisense",
-    "compile",
-    "transpile"
-  ],
-  "author": "David Wood <david.p.wood@gmail.com> (http://www.codesleuth.co.uk/)",
   "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/codesleuth/vscode-typescript-boilerplate/issues"
-  },
-  "homepage": "https://github.com/codesleuth/vscode-typescript-boilerplate#readme",
   "private": true,
   "devDependencies": {
     "@types/glob": "^5.0.30",

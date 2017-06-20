@@ -9,6 +9,7 @@ import {
 } from "typeorm";
 import { ChoukyouTime } from "./ChoukyouTime";
 import { Shussouba } from "./Shussouba";
+import { Uma } from "./Uma";
 
 @Entity("Choukyou")
 @Index("IxChoukyou", (c: Choukyou) => [c.Shussouba])
@@ -72,8 +73,10 @@ export class Choukyou {
   @Column("varchar", { length: 60, nullable: true })
   public Reigai?: string;
 
-  @Column("varchar", { length: 54, nullable: true })
-  public AwaseUma?: string;
+  @Column("int", { name: "AwaseUmaId", nullable: true })
+  @ManyToOne(() => Uma, u => u.ChoukyouList)
+  @JoinColumn({ name: "AwaseUmaId" })
+  public AwaseUma?: Uma;
 
   @Column("smallint", { nullable: true })
   public AwaseKekka?: number;
