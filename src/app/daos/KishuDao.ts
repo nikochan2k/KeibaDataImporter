@@ -1,54 +1,65 @@
 import { Service } from "typedi";
 import { Repository } from "typeorm";
 import { OrmRepository } from "typeorm-typedi-extensions";
+import { KijouKishu } from "../entities/KijouKishu";
 import { Kishu } from "../entities/Kishu";
+import { KishuShozoku } from "../entities/KishuShozoku";
 
 @Service()
 export class KishuDao {
 
   @OrmRepository(Kishu)
-  private repository: Repository<Kishu>;
+  private kishuRepository: Repository<Kishu>;
+
+  @OrmRepository(KijouKishu)
+  private kijouKishuRepository: Repository<KijouKishu>;
+
+  @OrmRepository(KishuShozoku)
+  private kishuShozokuRepository: Repository<KishuShozoku>;
 
   protected getKishu(kishu: Kishu) {
-    if (!kishu.FromDate || !kishu.ToDate) {
-      return null;
-    }
-    const qb = this.repository
-      .createQueryBuilder("k")
-      .where("k.KishuMei = :kishuMei")
-      .setParameter("kishuMei", kishu.KishuMei)
-      .andWhere("k.TanshukuKishuMei = :tanshukuKishuMei")
-      .setParameter("tanshukuKishuMei", kishu.TanshukuKishuMei);
+    return this.kishuRepository.findOne({ KishuMei: kishu.KishuMei });
+  }
+
+  protected getKishuShozoku(kishuShozoku: KishuShozoku) {
+    const qb = this.kishuShozokuRepository
+      .createQueryBuilder("ks")
+      .where("1 = 1");
     /* tslint:disable:triple-equals */
-    if (kishu.TouzaiBetsu != null) {
-      qb.andWhere("k.TouzaiBetsu = :touzaiBetsu")
-        .setParameter("touzaiBetsu", kishu.TouzaiBetsu);
+    if (kishuShozoku.ShozokuBasho != null) {
+      qb.andWhere("ks.ShozokuBasho = :shozokuBasho")
+        .setParameter("shozokuBasho", kishuShozoku.ShozokuBasho);
     } else {
-      qb.andWhere("k.TouzaiBetsu IS NULL");
+      qb.andWhere("ks.ShozokuBasho IS NULL");
     }
-    if (kishu.ShozokuBasho != null) {
-      qb.andWhere("k.ShozokuBasho = :shozokuBasho")
-        .setParameter("shozokuBasho", kishu.ShozokuBasho);
+    if (kishuShozoku.TouzaiBetsu != null) {
+      qb.andWhere("ks.TouzaiBetsu = :touzaiBetsu")
+        .setParameter("touzaiBetsu", kishuShozoku.TouzaiBetsu);
     } else {
-      qb.andWhere("k.ShozokuBasho IS NULL");
+      qb.andWhere("ks.TouzaiBetsu IS NULL");
     }
-    if (kishu.MinaraiKubun != null) {
-      qb.andWhere("k.MinaraiKubun = :minaraiKubun")
-        .setParameter("minaraiKubun", kishu.MinaraiKubun);
+    if (kishuShozoku.Kyuusha) {
+      qb.andWhere("ks.KyuushaId = :KyuushaId")
+        .setParameter("KyuushaId", kishuShozoku.Kyuusha.Id);
     } else {
-      qb.andWhere("k.MinaraiKubun IS NULL");
+      qb.andWhere("ks.KyuushaId IS NULL");
     }
-    if (kishu.Kyuusha) {
-      qb.andWhere("k.KyuushaId = :kyuushaId")
-        .setParameter("kyuushaId", kishu.Kyuusha.Id);
-    } else {
-      qb.andWhere("k.KyuushaId IS NULL");
-    }
-    /* tslint:enable:triple-equals */
     return qb.getOne();
   }
 
-  public async saveKishu(toBe: Kishu) {
+  protected getKijouKishu(kijouKishu: KijouKishu) {
+    return this.kijouKishuRepository
+      .createQueryBuilder("kk")
+      .where("kk.KishuId = :kishuId")
+      .setParameter("kishuId", kijouKishu.Kishu.Id)
+      .andWhere("kk.KishuShozokuId = :kishuShozokuId")
+      .setParameter("kishuShozokuId", kijouKishu.KishuShozoku.Id)
+      .andWhere("kk.MinaraiKubun = :minaraiKubun")
+      .setParameter("minaraiKubun", kijouKishu.MinaraiKubun)
+      .getOne();
+  }
+
+  protected async saveKishu(toBe: Kishu) {
     const asIs = await this.getKishu(toBe);
     if (asIs) {
       let update = false;
@@ -73,29 +84,37 @@ export class KishuDao {
         asIs.HatsuMenkyoNen = toBe.HatsuMenkyoNen;
         update = true;
       }
-      if (asIs.TouzaiBetsu == null && toBe.TouzaiBetsu != null) {
-        asIs.TouzaiBetsu = toBe.TouzaiBetsu;
-        update = true;
-      }
-      if (toBe.FromDate < asIs.FromDate) {
-        asIs.FromDate = toBe.FromDate;
-        update = true;
-      }
-      if (asIs.ToDate < toBe.ToDate) {
-        asIs.ToDate = toBe.ToDate;
-        update = true;
-      }
       /* tslint:enable:triple-equals */
       if (update) {
-        await this.repository.updateById(asIs.Id, asIs);
+        await this.kishuRepository.updateById(asIs.Id, asIs);
       }
       toBe = asIs;
     } else {
-      try {
-        toBe = await this.repository.save(toBe);
-      } catch (e) {
-        toBe = await this.getKishu(toBe);
-      }
+      toBe = await this.kishuRepository.save(toBe);
+    }
+    return toBe;
+  }
+
+  protected async saveKishuShozoku(toBe: KishuShozoku) {
+    const asIs = await this.getKishuShozoku(toBe);
+    if (asIs) {
+      toBe = asIs;
+    } else {
+      toBe = await this.kishuShozokuRepository.save(toBe);
+    }
+    return toBe;
+  }
+
+  public async saveKijouKishu(kishu: Kishu, kishuShozoku: KishuShozoku, minaraiKubun: number) {
+    let toBe = new KijouKishu();
+    toBe.Kishu = await this.saveKishu(kishu);
+    toBe.KishuShozoku = await this.saveKishuShozoku(kishuShozoku);
+    toBe.MinaraiKubun = minaraiKubun;
+    const asIs = await this.getKijouKishu(toBe);
+    if (asIs) {
+      toBe = asIs;
+    } else {
+      toBe = await this.kijouKishuRepository.save(toBe);
     }
     return toBe;
   }

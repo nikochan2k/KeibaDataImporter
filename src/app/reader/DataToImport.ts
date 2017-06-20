@@ -24,16 +24,9 @@ export abstract class DataToImport {
     let buffer: Buffer;
     const length = this.getBufferLength();
     while ((buffer = this.readLine(fd, length)) !== null) {
-      const con = (<any>this.entityManager.connection.driver).databaseConnection;
-      await new Promise((resolve) => {
-        con.serialize(async () => {
-          await this.entityManager.transaction(async () => {
-            console.log("1:DataToImport");
-            await this.save(buffer, cache);
-          });
-          resolve();
-        });
-      });
+      await this.entityManager.transaction(await (async () => {
+        await this.save(buffer, cache);
+      }));
     }
   }
 

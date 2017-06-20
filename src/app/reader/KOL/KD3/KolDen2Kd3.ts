@@ -1,15 +1,15 @@
 import { Inject, Service } from "typedi";
 import * as $S from "../../../converters/Shussouba";
-import { Shussouba } from "../../../entities/Shussouba";
 import { Choukyou } from "../../../entities/Choukyou";
-import { DataToImport } from "../../DataToImport";
+import { Shussouba } from "../../../entities/Shussouba";
 import { DataCache } from "../../DataCache";
+import { DataToImport } from "../../DataToImport";
 import {
-  readStr,
   readDate,
   readDouble,
-  readPositiveInt
-} from "../../Reader";
+  readPositiveInt,
+  readStr
+  } from "../../Reader";
 import { KolChoukyouTool } from "../KolChoukyouTool";
 import { KolTool } from "../KolTool";
 
@@ -74,7 +74,7 @@ export class KolDen2Kd3 extends DataToImport {
       shussouba.Nenrei = readPositiveInt(buffer, 65, 2);
       shussouba.Blinker = $S.blinker.toCodeFromKol(buffer, 147, 1);
       shussouba.Kinryou = readDouble(buffer, 148, 3, 0.1);
-      shussouba.Kishu = await this.kolTool.saveKishu(buffer, 151, shussouba.Race.Nengappi);
+      shussouba.KijouKishu = await this.kolTool.saveKijouKishu(buffer, 151);
       shussouba.Norikawari = $S.norikawari.toCodeFromKol(buffer, 205, 1);
     }
 

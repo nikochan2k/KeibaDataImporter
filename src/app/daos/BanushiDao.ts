@@ -20,11 +20,7 @@ export class BanushiDao {
       /* tslint:enable:triple-equals */
       toBe = asIs;
     } else {
-      try {
-        toBe = await this.repository.save(toBe);
-      } catch (e) {
-        toBe = await this.repository.findOne({ BanushiMei: toBe.BanushiMei });
-      }
+      toBe = await this.repository.save(toBe);
     }
     return toBe;
   }

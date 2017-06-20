@@ -4,12 +4,12 @@ import * as $R from "../../../converters/Race";
 import * as $S from "../../../converters/Shussouba";
 import * as $U from "../../../converters/Uma";
 import { UmaDao } from "../../../daos/UmaDao";
+import { Kyuusha } from "../../../entities/Kyuusha";
 import { Race } from "../../../entities/Race";
 import { RaceClass } from "../../../entities/RaceClass";
 import { Shussouba } from "../../../entities/Shussouba";
 import { Uma } from "../../../entities/Uma";
 import { DataToImport } from "../../DataToImport";
-import { Kyuusha } from "../../../entities/Kyuusha";
 import { DataTool } from "../../DataTool";
 import {
   readDate,
@@ -19,7 +19,7 @@ import {
   readStr,
   readStrWithNoSpace,
   readTime
-} from "../../Reader";
+  } from "../../Reader";
 import { KolChoukyouTool } from "../KolChoukyouTool";
 import { KolTool } from "../KolTool";
 
@@ -191,7 +191,7 @@ export class KolUmaKd3 extends DataToImport {
     shussouba.Bataijuu = readPositiveInt(buffer, 94, 3);
     shussouba.Zougen = readInt(buffer, 97, 3);
     shussouba.KolRecordShisuu = readInt(buffer, 100, 3);
-    shussouba.Kishu = await this.kolTool.saveKishu(buffer, 103, race.Nengappi);
+    shussouba.KijouKishu = await this.kolTool.saveKijouKishu(buffer, 103);
     shussouba.Norikawari = $S.norikawari.toCodeFromKol(buffer, 157, 1);
     shussouba.KolYosou1 = $S.yosou.toCodeFromKol(buffer, 206, 1);
     shussouba.KolYosou2 = $S.yosou.toCodeFromKol(buffer, 207, 1);

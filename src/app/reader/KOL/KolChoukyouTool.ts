@@ -63,7 +63,7 @@ export class KolChoukyouTool {
     choukyou.Nengappi = readDate(buffer, offset + 9, 8);
     if (!choukyou.Noriyaku) {
       choukyou.TanshukuKishuMei = kijousha;
-      if (shussouba.Kishu.TanshukuKishuMei === kijousha) {
+      if (shussouba.KijouKishu.Kishu.TanshukuKishuMei === kijousha) {
         choukyou.Noriyaku = 3; // 本番騎手
       } else {
         choukyou.Noriyaku = 4; // 調教騎手

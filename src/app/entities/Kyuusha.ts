@@ -5,7 +5,7 @@ import {
   OneToMany,
   PrimaryGeneratedColumn
   } from "typeorm";
-import { Kishu } from "./Kishu";
+import { KishuShozoku } from "./KishuShozoku";
 import { Uma } from "./Uma";
 
 @Entity("Kyuusha")
@@ -46,8 +46,8 @@ export class Kyuusha {
   @Column("smallint", { nullable: true })
   public RitsuHokuNanBetsu?: number;
 
-  @OneToMany(() => Kishu, k => k.Kyuusha)
-  public KishuList: Kishu[];
+  @OneToMany(() => KishuShozoku, ks => ks.Kyuusha)
+  public KishuShozokuList: KishuShozoku[];
 
   @OneToMany(() => Uma, u => u.Kyuusha)
   public KyousoubaList: Uma[];

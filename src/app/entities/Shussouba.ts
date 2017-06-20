@@ -6,9 +6,9 @@ import {
   ManyToOne,
   OneToMany,
   PrimaryColumn
-} from "typeorm";
+  } from "typeorm";
 import { Choukyou } from "./Choukyou";
-import { Kishu } from "./Kishu";
+import { KijouKishu } from "./KijouKishu";
 import { Race } from "./Race";
 import { ShussoubaBagu } from "./ShussoubaBagu";
 import { ShussoubaKeika } from "./ShussoubaKeika";
@@ -21,7 +21,7 @@ import { Uma } from "./Uma";
 @Index("IxShussouba3", (s: Shussouba) => [s.Ten3F])
 @Index("IxShussouba4", (s: Shussouba) => [s.Agari3F])
 @Index("IxShussouba5", (s: Shussouba) => [s.Kyousouba])
-@Index("IxShussouba6", (s: Shussouba) => [s.Kishu])
+@Index("IxShussouba6", (s: Shussouba) => [s.KijouKishu])
 export class Shussouba {
   @PrimaryColumn("bigint")
   public Id: number;
@@ -63,10 +63,10 @@ export class Shussouba {
   @Column("smallint", { nullable: true })
   public KolRecordShisuu?: number;
 
-  @Column("int", { name: "KishuId" })
-  @ManyToOne(() => Kishu, k => k.ShussoubaList)
-  @JoinColumn({ name: "KishuId" })
-  public Kishu: Kishu;
+  @Column("int", { name: "KijouKishuId" })
+  @ManyToOne(() => KijouKishu, k => k.ShussoubaList)
+  @JoinColumn({ name: "KijouKishuId" })
+  public KijouKishu: KijouKishu;
 
   @Column("smallint", { nullable: true })
   public Norikawari?: number;

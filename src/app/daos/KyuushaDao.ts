@@ -77,11 +77,7 @@ export class KyuushaDao {
       }
       toBe = asIs;
     } else {
-      try {
-        toBe = await this.repository.save(toBe);
-      } catch (e) {
-        toBe = await this.getKyuusha(toBe);
-      }
+      toBe = await this.repository.save(toBe);
     }
     return toBe;
   }

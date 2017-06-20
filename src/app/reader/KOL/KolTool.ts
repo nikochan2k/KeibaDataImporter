@@ -13,6 +13,7 @@ import { SeisanshaDao } from "../../daos/SeisanshaDao";
 import { UmaDao } from "../../daos/UmaDao";
 import { Banushi } from "../../entities/Banushi";
 import { Kishu } from "../../entities/Kishu";
+import { KishuShozoku } from "../../entities/KishuShozoku";
 import { Kyuusha } from "../../entities/Kyuusha";
 import { Race } from "../../entities/Race";
 import { Seisansha } from "../../entities/Seisansha";
@@ -28,7 +29,7 @@ import {
   readPositiveInt,
   readStr,
   readStrWithNoSpace
-} from "../Reader";
+  } from "../Reader";
 
 @Service()
 export class KolTool {
@@ -82,24 +83,23 @@ export class KolTool {
     return race;
   }
 
-  public async saveKishu(buffer: Buffer, offset: number, nengappi: Date) {
+  public async saveKijouKishu(buffer: Buffer, offset: number) {
     const kishu = new Kishu();
     kishu.KolKishuCode = readInt(buffer, offset, 5);
     kishu.KishuMei = readStrWithNoSpace(buffer, offset + 5, 32);
     kishu.TanshukuKishuMei = readStrWithNoSpace(buffer, offset + 37, 8);
-    kishu.FromDate = nengappi;
-    kishu.ToDate = nengappi;
-    kishu.TouzaiBetsu = $C.touzaiBetsu.toCodeFromKol(buffer, offset + 45, 1);
-    kishu.ShozokuBasho = $C.basho.toCodeFromKol(buffer, offset + 46, 2);
+    const kishuShozoku = new KishuShozoku();
+    kishuShozoku.TouzaiBetsu = $C.touzaiBetsu.toCodeFromKol(buffer, offset + 45, 1);
+    kishuShozoku.ShozokuBasho = $C.basho.toCodeFromKol(buffer, offset + 46, 2);
     const kyuushaCode = readPositiveInt(buffer, offset + 48, 5);
     if (kyuushaCode) {
       let kyuusha = new Kyuusha();
       kyuusha.KolKyuushaCode = kyuushaCode;
       kyuusha = await this.kyuushaDao.saveKyuusha(kyuusha);
-      kishu.Kyuusha = kyuusha;
+      kishuShozoku.Kyuusha = kyuusha;
     }
-    kishu.MinaraiKubun = $KI.minaraiKubun.toCodeFromKol(buffer, 53, 1);
-    return this.kishuDao.saveKishu(kishu);
+    const minaraiKubun = $KI.minaraiKubun.toCodeFromKol(buffer, offset + 53, 1);
+    return this.kishuDao.saveKijouKishu(kishu, kishuShozoku, minaraiKubun);
   }
 
   public saveBanushi(buffer: Buffer, offset: number) {
