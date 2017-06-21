@@ -3,9 +3,11 @@ import { Inject, Service } from "typedi";
 import { EntityManager } from "typeorm";
 import { OrmEntityManager } from "typeorm-typedi-extensions";
 import * as $CH from "../../converters/Choukyou";
+import { KishuDao } from "../../daos/KishuDao";
 import { UmaDao } from "../../daos/UmaDao";
 import { Choukyou } from "../../entities/Choukyou";
 import { ChoukyouTime } from "../../entities/ChoukyouTime";
+import { Kishu } from "../../entities/Kishu";
 import { Shussouba } from "../../entities/Shussouba";
 import { Uma } from "../../entities/Uma";
 import { getLogger } from "../../LogUtil";
@@ -14,7 +16,7 @@ import {
   readPositiveInt,
   readStr,
   readStrWithNoSpace
-} from "../Reader";
+  } from "../Reader";
 
 export interface FurlongOffset {
   f: number;
@@ -49,6 +51,9 @@ export class KolChoukyouTool {
   @Inject()
   private umaDao: UmaDao;
 
+  @Inject()
+  private kishuDao: KishuDao;
+
   constructor() {
     this.logger = getLogger(this);
   }
@@ -65,9 +70,14 @@ export class KolChoukyouTool {
     choukyou.Bangou = bangou;
     choukyou.ChoukyouFlag = $CH.choukyouFlag.toCodeFromKol(buffer, offset, 1);
     choukyou.Noriyaku = $CH.noriyaku.toCodeFromKol(kijousha);
-    choukyou.Nengappi = readDate(buffer, offset + 9, 8);
+    const nengappi = readDate(buffer, offset + 9, 8);
+    choukyou.Nengappi = nengappi;
     if (!choukyou.Noriyaku) {
-      choukyou.TanshukuKishuMei = kijousha;
+      const kishu = new Kishu();
+      kishu.TanshukuKishuMei = kijousha;
+      kishu.FromDate = nengappi;
+      kishu.ToDate = nengappi;
+      choukyou.Kishu = await this.kishuDao.saveKishu(kishu);
       if (shussouba.KijouKishu.Kishu.TanshukuKishuMei === kijousha) {
         choukyou.Noriyaku = 3; // 本番騎手
       } else {

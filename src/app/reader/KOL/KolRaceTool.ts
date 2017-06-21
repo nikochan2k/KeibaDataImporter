@@ -4,8 +4,10 @@ import { OrmEntityManager } from "typeorm-typedi-extensions";
 import * as $C from "../../converters/Common";
 import { HaitouInfo } from "../../converters/RaceHaitou";
 import { ShoukinInfo } from "../../converters/RaceShoukin";
+import { KishuDao } from "../../daos/KishuDao";
 import { RaceDao } from "../../daos/RaceDao";
 import { UmaDao } from "../../daos/UmaDao";
+import { Kishu } from "../../entities/Kishu";
 import { Race } from "../../entities/Race";
 import { RaceHaitou } from "../../entities/RaceHaitou";
 import { RaceKeika } from "../../entities/RaceKeika";
@@ -29,6 +31,9 @@ export class KolRaceTool {
 
   @Inject()
   private umaDao: UmaDao;
+
+  @Inject()
+  private kishuDao: KishuDao;
 
   @Inject()
   private raceDao: RaceDao;
@@ -81,13 +86,19 @@ export class KolRaceTool {
     }
 
     const record = new Record();
-    record.Nengappi = readDate(buffer, offset, 8);
+    const nengappi = readDate(buffer, offset, 8);
+    record.Nengappi = nengappi;
     record.Time = readTime(buffer, offset + 8, 4);
     const uma = new Uma();
     uma.Bamei = bamei;
     record.Uma = await this.umaDao.saveUma(uma);
     record.Kinryou = readDouble(buffer, offset + 42, 3, 0.1);
-    record.TanshukuKishuMei = readStrWithNoSpace(buffer, offset + 45, 8);
+    const kishu = new Kishu();
+    kishu.TanshukuKishuMei = readStrWithNoSpace(buffer, offset + 45, 8);
+    kishu.FromDate = nengappi;
+    kishu.ToDate = nengappi;
+    kishu.TanshukuKishuMei = readStrWithNoSpace(buffer, offset + 45, 8);
+    record.Kishu = await this.kishuDao.saveKishu(kishu);
     record.Basho = $C.basho.toCodeFromKol(buffer, bashoOffset, 2);
     return this.raceDao.saveRecord(record);
   }

@@ -6,7 +6,7 @@ import {
   ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn
-  } from "typeorm";
+} from "typeorm";
 import { Kyousouba } from "./Kyousouba";
 import { Record } from "./Record";
 import { Seisansha } from "./Seisansha";
@@ -20,6 +20,9 @@ export class Uma {
 
   @Column("varchar", { length: 54 })
   public Bamei: string;
+
+  @Column("varchar", { length: 60, nullable: true })
+  public KyuuBamei: string;
 
   @Column("date", { nullable: true })
   public Seinengappi?: Date;

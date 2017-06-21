@@ -5,19 +5,28 @@ import {
   OneToMany,
   PrimaryGeneratedColumn
   } from "typeorm";
+import { Choukyou } from "./Choukyou";
 import { KijouKishu } from "./KijouKishu";
+import { Record } from "./Record";
 
 @Entity("Kishu")
-@Index("IxKishu", (k: Kishu) => [k.KishuMei], { unique: true })
+@Index("IxKishu1", (k: Kishu) => [k.TanshukuKishuMei, k.KishuMei], { unique: true })
+@Index("IxKishu2", (k: Kishu) => [k.KishuMei])
 export class Kishu {
   @PrimaryGeneratedColumn("int")
   public Id: number;
 
-  @Column("varchar", { length: 48 })
-  public KishuMei: string;
-
   @Column("varchar", { length: 12 })
   public TanshukuKishuMei: string;
+
+  @Column("date")
+  public FromDate: Date;
+
+  @Column("date")
+  public ToDate: Date;
+
+  @Column("varchar", { length: 48, nullable: true })
+  public KishuMei?: string;
 
   @Column("int", { nullable: true })
   public KolKishuCode?: number;
@@ -36,4 +45,10 @@ export class Kishu {
 
   @OneToMany(() => KijouKishu, kk => kk.Kishu)
   public KijouKishuList: KijouKishu[];
+
+  @OneToMany(() => Choukyou, c => c.Kishu)
+  public ChoukyouList: Choukyou[];
+
+  @OneToMany(() => Record, r => r.Kishu)
+  public RecordList: Record[];
 }

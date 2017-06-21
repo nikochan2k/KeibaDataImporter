@@ -17,8 +17,44 @@ export class KishuDao {
   @OrmRepository(KishuShozoku)
   private kishuShozokuRepository: Repository<KishuShozoku>;
 
-  protected getKishu(kishu: Kishu) {
-    return this.kishuRepository.findOne({ KishuMei: kishu.KishuMei });
+  protected getTime(date: any) {
+    if (date.getTime) {
+      return (<Date>date).getTime();
+    } else {
+      return Date.parse(date);
+    }
+  }
+
+  protected async getKishu(kishu: Kishu) {
+    let result: Kishu;
+    if (kishu.KishuMei) {
+      result = await this.kishuRepository.findOne({ KishuMei: kishu.KishuMei });
+    }
+    if (!result) {
+      const list = await this.kishuRepository.find({ TanshukuKishuMei: kishu.TanshukuKishuMei });
+      const length = list.length;
+      if (length === 0) {
+        result = null;
+      } else if (length === 1) {
+        result = list[0];
+      } else {
+        let diff = Number.MAX_VALUE;
+        let result: Kishu;
+        list.forEach((item) => {
+          const fromDiff = Math.abs(this.getTime(item.FromDate) - this.getTime(kishu.FromDate));
+          if (fromDiff < diff) {
+            diff = fromDiff;
+            result = item;
+          }
+          const toDiff = Math.abs(this.getTime(kishu.ToDate) - this.getTime(item.ToDate));
+          if (toDiff < diff) {
+            diff = toDiff;
+            result = item;
+          }
+        });
+      }
+    }
+    return result;
   }
 
   protected getKishuShozoku(kishuShozoku: KishuShozoku) {
@@ -59,11 +95,26 @@ export class KishuDao {
       .getOne();
   }
 
-  protected async saveKishu(toBe: Kishu) {
+  public async saveKishu(toBe: Kishu) {
+    if (3 < toBe.TanshukuKishuMei.length) {
+      toBe.TanshukuKishuMei = toBe.TanshukuKishuMei.substring(0, 3);
+    }
     const asIs = await this.getKishu(toBe);
     if (asIs) {
       let update = false;
       /* tslint:disable:triple-equals */
+      if (toBe.FromDate < asIs.FromDate) {
+        asIs.FromDate = toBe.FromDate;
+        update = true;
+      }
+      if (asIs.ToDate < toBe.ToDate) {
+        asIs.ToDate = toBe.ToDate;
+        update = true;
+      }
+      if (asIs.KishuMei == null && toBe.KishuMei != null) {
+        asIs.KishuMei = toBe.KishuMei;
+        update = true;
+      }
       if (asIs.Furigana == null && toBe.Furigana != null) {
         asIs.Furigana = toBe.Furigana;
         update = true;

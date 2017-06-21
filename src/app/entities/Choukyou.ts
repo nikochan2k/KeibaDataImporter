@@ -10,6 +10,7 @@ import {
 import { ChoukyouTime } from "./ChoukyouTime";
 import { Shussouba } from "./Shussouba";
 import { Uma } from "./Uma";
+import { Kishu } from "./Kishu";
 
 @Entity("Choukyou")
 @Index("IxChoukyou", (c: Choukyou) => [c.Shussouba])
@@ -31,8 +32,10 @@ export class Choukyou {
   @Column("smallint", { nullable: true })
   public Noriyaku?: number;
 
-  @Column("varchar", { length: 12, nullable: true })
-  public TanshukuKishuMei?: string;
+  @Column("int", { name: "KishuId", nullable: true })
+  @ManyToOne(() => Kishu, k => k.ChoukyouList)
+  @JoinColumn({ name: "KishuId" })
+  public Kishu: Kishu;
 
   @Column("date", { nullable: true })
   public Nengappi?: Date;

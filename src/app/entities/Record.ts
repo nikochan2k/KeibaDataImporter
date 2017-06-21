@@ -7,6 +7,7 @@ import {
   OneToMany,
   PrimaryGeneratedColumn
   } from "typeorm";
+import { Kishu } from "./Kishu";
 import { Race } from "./Race";
 import { Uma } from "./Uma";
 
@@ -30,8 +31,10 @@ export class Record {
   @Column("float")
   public Kinryou: number;
 
-  @Column("varchar", { length: 12 })
-  public TanshukuKishuMei: string;
+  @Column("int", { name: "KishuId" })
+  @ManyToOne(() => Kishu, k => k.RecordList)
+  @JoinColumn({ name: "KishuId" })
+  public Kishu: Kishu;
 
   @Column("smallint")
   public Basho: number;

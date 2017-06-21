@@ -18,8 +18,12 @@ export class UmaDao {
   @OrmRepository(KyousoubaRireki)
   private kyousoubaRirekiRepository: Repository<KyousoubaRireki>;
 
-  protected getUma(uma: Uma) {
-    return this.umaRepository.findOne({ Bamei: uma.Bamei });
+  protected async getUma(uma: Uma) {
+    let asIs = await this.umaRepository.findOne({ Bamei: uma.Bamei });
+    if (!asIs) {
+      asIs = await this.umaRepository.findOne({ KyuuBamei: uma.Bamei });
+    }
+    return asIs;
   }
 
   protected getKyousoubaRireki(kyousoubaRireki: KyousoubaRireki) {

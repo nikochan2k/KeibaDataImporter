@@ -84,8 +84,10 @@ export class KolTool {
     return race;
   }
 
-  public async saveKijouKishu(buffer: Buffer, offset: number) {
+  public async saveKijouKishu(buffer: Buffer, offset: number, date: Date) {
     const kishu = new Kishu();
+    kishu.FromDate = date;
+    kishu.ToDate = date;
     kishu.KolKishuCode = readInt(buffer, offset, 5);
     kishu.KishuMei = readStrWithNoSpace(buffer, offset + 5, 32);
     kishu.TanshukuKishuMei = readStrWithNoSpace(buffer, offset + 37, 8);
