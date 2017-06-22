@@ -11,7 +11,7 @@ import { RaceClass } from "../../../entities/RaceClass";
 import { Shussouba } from "../../../entities/Shussouba";
 import { Uma } from "../../../entities/Uma";
 import { Kyousouba } from "../../../entities/Kyousouba";
-import { KyousoubaRireki } from "../../../entities/KyousoubaRireki";
+import { KyousoubaKanri } from "../../../entities/KyousoubaKanri";
 import { DataToImport } from "../../DataToImport";
 import { DataTool } from "../../DataTool";
 import {
@@ -96,7 +96,7 @@ export class KolUmaKd3 extends DataToImport {
     uma.MasshouNengappi = readDate(buffer, 545, 8);
     uma.Jiyuu = readStr(buffer, 553, 6);
     uma.Ikisaki = readStr(buffer, 559, 10);
-    const kyousoubaRireki = new KyousoubaRireki();
+    const kyousoubaRireki = new KyousoubaKanri();
     kyousoubaRireki.UmaKigou = $U.umaKigou.toCodeFromKol(buffer, 92, 2);
     kyousoubaRireki.Banushi = await this.kolTool.saveBanushi(buffer, 343);
     kyousoubaRireki.Kyuusha = await this.kolTool.saveKyuusha(buffer, 488);
@@ -232,7 +232,7 @@ export class KolUmaKd3 extends DataToImport {
     const uma = new Uma();
     uma.Bamei = bamei;
     uma.Seibetsu = $U.seibetsu.toCodeFromKol(buffer, 7, 1);
-    const kyousoubaRireki = new KyousoubaRireki();
+    const kyousoubaRireki = new KyousoubaKanri();
     kyousoubaRireki.UmaKigou = $U.umaKigou.toCodeFromKol(buffer, 5, 2);
     kyousoubaRireki.Banushi = await this.kolTool.saveBanushi(buffer, 10);
     kyousoubaRireki.Kyuusha = kyuusha;

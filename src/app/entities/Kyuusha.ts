@@ -6,7 +6,7 @@ import {
   PrimaryGeneratedColumn
   } from "typeorm";
 import { KishuShozoku } from "./KishuShozoku";
-import { KyousoubaRireki } from "./KyousoubaRireki";
+import { KyousoubaKanri } from "./KyousoubaKanri";
 
 @Entity("Kyuusha")
 @Index("IxKyuusha1", (k: Kyuusha) => [k.KyuushaMei], { unique: true })
@@ -49,6 +49,6 @@ export class Kyuusha {
   @OneToMany(() => KishuShozoku, ks => ks.Kyuusha)
   public KishuShozokuList: KishuShozoku[];
 
-  @OneToMany(() => KyousoubaRireki, kr => kr.Kyuusha)
-  public KyousoubaRirekiList: KyousoubaRireki[];
+  @OneToMany(() => KyousoubaKanri, kr => kr.Kyuusha)
+  public KyousoubaRirekiList: KyousoubaKanri[];
 }

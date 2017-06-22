@@ -7,7 +7,7 @@ import {
   OneToMany,
   PrimaryGeneratedColumn
   } from "typeorm";
-import { KyousoubaRireki } from "./KyousoubaRireki";
+import { KyousoubaKanri } from "./KyousoubaKanri";
 import { Shussouba } from "./Shussouba";
 import { Uma } from "./Uma";
 
@@ -26,9 +26,9 @@ export class Kyousouba {
   public Seibetsu: number;
 
   @Column("int", { name: "KyousoubaRirekiId" })
-  @ManyToOne(() => KyousoubaRireki, kr => kr.KyousoubaList)
+  @ManyToOne(() => KyousoubaKanri, kr => kr.KyousoubaList)
   @JoinColumn({ name: "KyousoubaRirekiId" })
-  public KyousoubaRireki: KyousoubaRireki;
+  public KyousoubaRireki: KyousoubaKanri;
 
   @OneToMany(() => Shussouba, s => s.Kyousouba)
   public ShussoubaList: Shussouba[];

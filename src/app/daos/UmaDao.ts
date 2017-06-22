@@ -3,7 +3,7 @@ import { Repository } from "typeorm";
 import { OrmRepository } from "typeorm-typedi-extensions";
 import * as $U from "../converters/Uma";
 import { Kyousouba } from "../entities/Kyousouba";
-import { KyousoubaRireki } from "../entities/KyousoubaRireki";
+import { KyousoubaKanri } from "../entities/KyousoubaKanri";
 import { Uma } from "../entities/Uma";
 
 @Service()
@@ -15,8 +15,8 @@ export class UmaDao {
   @OrmRepository(Uma)
   private umaRepository: Repository<Uma>;
 
-  @OrmRepository(KyousoubaRireki)
-  private kyousoubaRirekiRepository: Repository<KyousoubaRireki>;
+  @OrmRepository(KyousoubaKanri)
+  private kyousoubaRirekiRepository: Repository<KyousoubaKanri>;
 
   protected async getUma(uma: Uma) {
     let asIs = await this.umaRepository.findOne({ Bamei: uma.Bamei });
@@ -26,7 +26,7 @@ export class UmaDao {
     return asIs;
   }
 
-  protected getKyousoubaRireki(kyousoubaRireki: KyousoubaRireki) {
+  protected getKyousoubaRireki(kyousoubaRireki: KyousoubaKanri) {
     const qb = this.kyousoubaRirekiRepository
       .createQueryBuilder("kr")
       .where("kr.UmaKigou = :umaKigou")
@@ -122,7 +122,7 @@ export class UmaDao {
     return toBe;
   }
 
-  protected async saveKyousoubaRireki(toBe: KyousoubaRireki) {
+  protected async saveKyousoubaRireki(toBe: KyousoubaKanri) {
     const asIs = await this.getKyousoubaRireki(toBe);
     if (asIs) {
       if (!asIs.KoueiGaikokuKyuushaMei && toBe.KoueiGaikokuKyuushaMei) {
@@ -136,7 +136,7 @@ export class UmaDao {
     return toBe;
   }
 
-  public async saveKyousouba(uma: Uma, kyousoubaRireki: KyousoubaRireki) {
+  public async saveKyousouba(uma: Uma, kyousoubaRireki: KyousoubaKanri) {
     let toBe = new Kyousouba();
     if (toBe.Seibetsu === $U.Seibetsu.Senba) {
       uma.Seibetsu = $U.Seibetsu.Boba;

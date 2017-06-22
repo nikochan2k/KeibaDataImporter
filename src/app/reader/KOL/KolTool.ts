@@ -12,7 +12,7 @@ import { KyuushaDao } from "../../daos/KyuushaDao";
 import { SeisanshaDao } from "../../daos/SeisanshaDao";
 import { UmaDao } from "../../daos/UmaDao";
 import { Banushi } from "../../entities/Banushi";
-import { KyousoubaRireki } from "../../entities/KyousoubaRireki";
+import { KyousoubaKanri } from "../../entities/KyousoubaKanri";
 import { Kishu } from "../../entities/Kishu";
 import { KishuShozoku } from "../../entities/KishuShozoku";
 import { Kyuusha } from "../../entities/Kyuusha";
@@ -116,7 +116,7 @@ export class KolTool {
     const uma = new Uma();
     uma.Bamei = readStr(buffer, offset, 30);
     uma.Seibetsu = $U.seibetsu.toCodeFromKol(buffer, offset + 32, 1);
-    const kyousoubaRireki = new KyousoubaRireki();
+    const kyousoubaRireki = new KyousoubaKanri();
     kyousoubaRireki.UmaKigou = $U.umaKigou.toCodeFromKol(buffer, offset + 30, 2);
     kyousoubaRireki.Banushi = await this.saveBanushi(buffer, offset + 35);
     kyousoubaRireki.Kyuusha = kyuusha;

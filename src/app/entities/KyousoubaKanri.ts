@@ -12,8 +12,8 @@ import { Kyousouba } from "./Kyousouba";
 import { Kyuusha } from "./Kyuusha";
 
 @Entity("KyousoubaRireki")
-@Index("IxKyousoubaRireki", (kr: KyousoubaRireki) => [kr.UmaKigou, kr.Banushi, kr.Kyuusha], { unique: true })
-export class KyousoubaRireki {
+@Index("IxKyousoubaRireki", (kr: KyousoubaKanri) => [kr.UmaKigou, kr.Banushi, kr.Kyuusha], { unique: true })
+export class KyousoubaKanri {
   @PrimaryGeneratedColumn("int")
   public Id: number;
 
