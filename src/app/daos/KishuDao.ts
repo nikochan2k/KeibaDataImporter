@@ -30,28 +30,36 @@ export class KishuDao {
     if (kishu.KishuMei) {
       result = await this.kishuRepository.findOne({ KishuMei: kishu.KishuMei });
     }
-    if (!result) {
-      const list = await this.kishuRepository.find({ TanshukuKishuMei: kishu.TanshukuKishuMei });
-      const length = list.length;
-      if (length === 0) {
-        result = null;
-      } else if (length === 1) {
-        result = list[0];
+    if (result) {
+      return result;
+    }
+
+    const list = await this.kishuRepository.find({ TanshukuKishuMei: kishu.TanshukuKishuMei });
+    const length = list.length;
+    if (length === 0) {
+      return null;
+    }
+    if (length === 1) {
+      return list[0];
+    }
+
+    let diff = Number.MAX_VALUE;
+    for (let i = 0; i < length; i++) {
+      const item = list[i];
+      if (kishu.FromDate < item.FromDate) {
+        const fromDiff = this.getTime(item.FromDate) - this.getTime(kishu.FromDate);
+        if (fromDiff < diff) {
+          diff = fromDiff;
+          result = item;
+        }
+      } else if (item.ToDate < kishu.ToDate) {
+        const toDiff = this.getTime(kishu.ToDate) - this.getTime(item.ToDate);
+        if (toDiff < diff) {
+          diff = toDiff;
+          result = item;
+        }
       } else {
-        let diff = Number.MAX_VALUE;
-        let result: Kishu;
-        list.forEach((item) => {
-          const fromDiff = Math.abs(this.getTime(item.FromDate) - this.getTime(kishu.FromDate));
-          if (fromDiff < diff) {
-            diff = fromDiff;
-            result = item;
-          }
-          const toDiff = Math.abs(this.getTime(kishu.ToDate) - this.getTime(item.ToDate));
-          if (toDiff < diff) {
-            diff = toDiff;
-            result = item;
-          }
-        });
+        return item;
       }
     }
     return result;
