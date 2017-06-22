@@ -116,11 +116,11 @@ export class KolTool {
     const uma = new Uma();
     uma.Bamei = readStr(buffer, offset, 30);
     uma.Seibetsu = $U.seibetsu.toCodeFromKol(buffer, offset + 32, 1);
-    const kyousoubaRireki = new KyousoubaKanri();
-    kyousoubaRireki.UmaKigou = $U.umaKigou.toCodeFromKol(buffer, offset + 30, 2);
-    kyousoubaRireki.Banushi = await this.saveBanushi(buffer, offset + 35);
-    kyousoubaRireki.Kyuusha = kyuusha;
-    return this.umaDao.saveKyousouba(uma, kyousoubaRireki);
+    const kyousoubaKanri = new KyousoubaKanri();
+    kyousoubaKanri.UmaKigou = $U.umaKigou.toCodeFromKol(buffer, offset + 30, 2);
+    kyousoubaKanri.Banushi = await this.saveBanushi(buffer, offset + 35);
+    kyousoubaKanri.Kyuusha = kyuusha;
+    return this.umaDao.saveKyousouba(uma, kyousoubaKanri);
   }
 
   public saveSeisansha(buffer: Buffer, offset: number) {

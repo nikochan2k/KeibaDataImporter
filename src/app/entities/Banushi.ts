@@ -22,6 +22,6 @@ export class Banushi {
   @Column("smallint", { nullable: true })
   public BanushiKaiCode: number;
 
-  @OneToMany(() => KyousoubaKanri, kr => kr.Banushi)
-  public KyousoubaRirekiList: KyousoubaKanri[];
+  @OneToMany(() => KyousoubaKanri, kk => kk.Banushi)
+  public KyousoubaKanriList: KyousoubaKanri[];
 }

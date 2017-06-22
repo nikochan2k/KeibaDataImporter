@@ -12,7 +12,7 @@ import { Shussouba } from "./Shussouba";
 import { Uma } from "./Uma";
 
 @Entity("Kyousouba")
-@Index("IxKyousouba", (k: Kyousouba) => [k.Uma, k.Seibetsu, k.KyousoubaRireki])
+@Index("IxKyousouba", (k: Kyousouba) => [k.Uma, k.Seibetsu, k.KyousoubaKanri])
 export class Kyousouba {
   @PrimaryGeneratedColumn("int")
   public Id: number;
@@ -25,10 +25,10 @@ export class Kyousouba {
   @Column("smallint")
   public Seibetsu: number;
 
-  @Column("int", { name: "KyousoubaRirekiId" })
-  @ManyToOne(() => KyousoubaKanri, kr => kr.KyousoubaList)
-  @JoinColumn({ name: "KyousoubaRirekiId" })
-  public KyousoubaRireki: KyousoubaKanri;
+  @Column("int", { name: "KyousoubaKanriId" })
+  @ManyToOne(() => KyousoubaKanri, kk => kk.KyousoubaList)
+  @JoinColumn({ name: "KyousoubaKanriId" })
+  public KyousoubaKanri: KyousoubaKanri;
 
   @OneToMany(() => Shussouba, s => s.Kyousouba)
   public ShussoubaList: Shussouba[];

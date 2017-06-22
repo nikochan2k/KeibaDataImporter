@@ -49,6 +49,6 @@ export class Kyuusha {
   @OneToMany(() => KishuShozoku, ks => ks.Kyuusha)
   public KishuShozokuList: KishuShozoku[];
 
-  @OneToMany(() => KyousoubaKanri, kr => kr.Kyuusha)
-  public KyousoubaRirekiList: KyousoubaKanri[];
+  @OneToMany(() => KyousoubaKanri, kk => kk.Kyuusha)
+  public KyousoubaKanriList: KyousoubaKanri[];
 }

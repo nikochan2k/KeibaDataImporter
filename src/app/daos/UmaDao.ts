@@ -16,7 +16,7 @@ export class UmaDao {
   private umaRepository: Repository<Uma>;
 
   @OrmRepository(KyousoubaKanri)
-  private kyousoubaRirekiRepository: Repository<KyousoubaKanri>;
+  private kyousoubaKanriRepository: Repository<KyousoubaKanri>;
 
   protected async getUma(uma: Uma) {
     let asIs = await this.umaRepository.findOne({ Bamei: uma.Bamei });
@@ -26,16 +26,16 @@ export class UmaDao {
     return asIs;
   }
 
-  protected getKyousoubaRireki(kyousoubaRireki: KyousoubaKanri) {
-    const qb = this.kyousoubaRirekiRepository
+  protected getKyousoubaKanri(kyousoubaKanri: KyousoubaKanri) {
+    const qb = this.kyousoubaKanriRepository
       .createQueryBuilder("kr")
       .where("kr.UmaKigou = :umaKigou")
-      .setParameter("umaKigou", kyousoubaRireki.UmaKigou)
+      .setParameter("umaKigou", kyousoubaKanri.UmaKigou)
       .andWhere("kr.BanushiId = :banushiId")
-      .setParameter("banushiId", kyousoubaRireki.Banushi.Id);
-    if (kyousoubaRireki.Kyuusha) {
+      .setParameter("banushiId", kyousoubaKanri.Banushi.Id);
+    if (kyousoubaKanri.Kyuusha) {
       qb.andWhere("kr.KyuushaId = :kyuushaId")
-        .setParameter("kyuushaId", kyousoubaRireki.Kyuusha.Id);
+        .setParameter("kyuushaId", kyousoubaKanri.Kyuusha.Id);
     } else {
       qb.andWhere("kr.KyuushaId IS NULL");
     }
@@ -49,8 +49,8 @@ export class UmaDao {
       .setParameter("umaId", kyousouba.Uma.Id)
       .andWhere("k.Seibetsu = :seibetsu")
       .setParameter("seibetsu", kyousouba.Seibetsu)
-      .andWhere("k.KyousoubaRirekiId = :kyousoubaRirekiId")
-      .setParameter("kyousoubaRirekiId", kyousouba.KyousoubaRireki.Id)
+      .andWhere("k.KyousoubaKanriId = :kyousoubaKanriId")
+      .setParameter("kyousoubaKanriId", kyousouba.KyousoubaKanri.Id)
       .getOne();
   }
 
@@ -122,29 +122,29 @@ export class UmaDao {
     return toBe;
   }
 
-  protected async saveKyousoubaRireki(toBe: KyousoubaKanri) {
-    const asIs = await this.getKyousoubaRireki(toBe);
+  protected async saveKyousoubaKanri(toBe: KyousoubaKanri) {
+    const asIs = await this.getKyousoubaKanri(toBe);
     if (asIs) {
       if (!asIs.KoueiGaikokuKyuushaMei && toBe.KoueiGaikokuKyuushaMei) {
         asIs.KoueiGaikokuKyuushaMei = toBe.KoueiGaikokuKyuushaMei;
-        await this.kyousoubaRirekiRepository.updateById(asIs.Id, asIs);
+        await this.kyousoubaKanriRepository.updateById(asIs.Id, asIs);
       }
       toBe = asIs;
     } else {
-      toBe = await this.kyousoubaRirekiRepository.save(toBe);
+      toBe = await this.kyousoubaKanriRepository.save(toBe);
     }
     return toBe;
   }
 
-  public async saveKyousouba(uma: Uma, kyousoubaRireki: KyousoubaKanri) {
+  public async saveKyousouba(uma: Uma, kyousoubaKanri: KyousoubaKanri) {
     let toBe = new Kyousouba();
     if (toBe.Seibetsu === $U.Seibetsu.Senba) {
       uma.Seibetsu = $U.Seibetsu.Boba;
     }
     uma = await this.saveUma(uma);
     toBe.Uma = uma;
-    kyousoubaRireki = await this.saveKyousoubaRireki(kyousoubaRireki);
-    toBe.KyousoubaRireki = kyousoubaRireki;
+    kyousoubaKanri = await this.saveKyousoubaKanri(kyousoubaKanri);
+    toBe.KyousoubaKanri = kyousoubaKanri;
     toBe.Seibetsu = uma.Seibetsu;
     const asIs = await this.getKyousouba(toBe);
     if (asIs) {
@@ -153,7 +153,7 @@ export class UmaDao {
       toBe = await this.kyousoubaRepository.save(toBe);
     }
     toBe.Uma = uma;
-    toBe.KyousoubaRireki = kyousoubaRireki;
+    toBe.KyousoubaKanri = kyousoubaKanri;
     return toBe;
   }
 
