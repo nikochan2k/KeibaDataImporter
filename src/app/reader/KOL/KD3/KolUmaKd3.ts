@@ -196,7 +196,7 @@ export class KolUmaKd3 extends DataToImport {
     shussouba.Bataijuu = readPositiveInt(buffer, 94, 3);
     shussouba.Zougen = readInt(buffer, 97, 3);
     shussouba.KolRecordShisuu = readInt(buffer, 100, 3);
-    shussouba.KijouKishu = await this.kolTool.saveKijouKishu(buffer, 103, shussouba.Race.Nengappi);
+    shussouba.Kijou = await this.kolTool.saveKijou(buffer, 103, shussouba.Race.Nengappi);
     shussouba.Norikawari = $S.norikawari.toCodeFromKol(buffer, 157, 1);
     shussouba.KolYosou1 = $S.yosou.toCodeFromKol(buffer, 206, 1);
     shussouba.KolYosou2 = $S.yosou.toCodeFromKol(buffer, 207, 1);

@@ -84,7 +84,7 @@ export class KolSei2Kd3 extends DataToImport {
     shussouba.Kinryou = readDouble(buffer, 150, 3, 0.1);
     shussouba.Bataijuu = readPositiveInt(buffer, 153, 3);
     shussouba.Zougen = readInt(buffer, 156, 3);
-    shussouba.KijouKishu = await this.kolTool.saveKijouKishu(buffer, 162, shussouba.Race.Nengappi);
+    shussouba.Kijou = await this.kolTool.saveKijou(buffer, 162, shussouba.Race.Nengappi);
     shussouba.Norikawari = $S.norikawari.toCodeFromKol(buffer, 216, 1);
     shussouba.Ninki = readPositiveInt(buffer, 267, 2);
     shussouba.Odds = readDouble(buffer, 269, 5, 0.1);

@@ -14,7 +14,7 @@ import { UmaDao } from "../../daos/UmaDao";
 import { Banushi } from "../../entities/Banushi";
 import { KyousoubaKanri } from "../../entities/KyousoubaKanri";
 import { Kishu } from "../../entities/Kishu";
-import { KishuShozoku } from "../../entities/KishuShozoku";
+import { Shozoku } from "../../entities/Shozoku";
 import { Kyuusha } from "../../entities/Kyuusha";
 import { Race } from "../../entities/Race";
 import { Seisansha } from "../../entities/Seisansha";
@@ -84,25 +84,25 @@ export class KolTool {
     return race;
   }
 
-  public async saveKijouKishu(buffer: Buffer, offset: number, date: Date) {
+  public async saveKijou(buffer: Buffer, offset: number, date: Date) {
     const kishu = new Kishu();
     kishu.FromDate = date;
     kishu.ToDate = date;
     kishu.KolKishuCode = readInt(buffer, offset, 5);
     kishu.KishuMei = readStrWithNoSpace(buffer, offset + 5, 32);
     kishu.TanshukuKishuMei = readStrWithNoSpace(buffer, offset + 37, 8);
-    const kishuShozoku = new KishuShozoku();
-    kishuShozoku.TouzaiBetsu = $C.touzaiBetsu.toCodeFromKol(buffer, offset + 45, 1);
-    kishuShozoku.ShozokuBasho = $C.basho.toCodeFromKol(buffer, offset + 46, 2);
+    const shozoku = new Shozoku();
+    shozoku.TouzaiBetsu = $C.touzaiBetsu.toCodeFromKol(buffer, offset + 45, 1);
+    shozoku.ShozokuBasho = $C.basho.toCodeFromKol(buffer, offset + 46, 2);
     const kyuushaCode = readPositiveInt(buffer, offset + 48, 5);
     if (kyuushaCode) {
       let kyuusha = new Kyuusha();
       kyuusha.KolKyuushaCode = kyuushaCode;
       kyuusha = await this.kyuushaDao.saveKyuusha(kyuusha);
-      kishuShozoku.Kyuusha = kyuusha;
+      shozoku.Kyuusha = kyuusha;
     }
     const minaraiKubun = $KI.minaraiKubun.toCodeFromKol(buffer, offset + 53, 1);
-    return this.kishuDao.saveKijouKishu(kishu, kishuShozoku, minaraiKubun);
+    return this.kishuDao.saveKijou(kishu, shozoku, minaraiKubun);
   }
 
   public saveBanushi(buffer: Buffer, offset: number) {

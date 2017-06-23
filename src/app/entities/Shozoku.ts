@@ -7,12 +7,12 @@ import {
   OneToMany,
   PrimaryGeneratedColumn
   } from "typeorm";
-import { KijouKishu } from "./KijouKishu";
+import { Kijou } from "./Kijou";
 import { Kyuusha } from "./Kyuusha";
 
-@Entity("KishuShozoku")
-@Index("IxKishuShozoku", (ks: KishuShozoku) => [ks.TouzaiBetsu, ks.ShozokuBasho, ks.Kyuusha], { unique: true })
-export class KishuShozoku {
+@Entity("Shozoku")
+@Index("IxShozoku", (k: Shozoku) => [k.TouzaiBetsu, k.ShozokuBasho, k.Kyuusha], { unique: true })
+export class Shozoku {
   @PrimaryGeneratedColumn("int")
   public Id: number;
 
@@ -23,10 +23,10 @@ export class KishuShozoku {
   public ShozokuBasho?: number;
 
   @Column("int", { name: "KyuushaId", nullable: true })
-  @ManyToOne(() => Kyuusha, Kyuusha => Kyuusha.KishuShozokuList)
+  @ManyToOne(() => Kyuusha, Kyuusha => Kyuusha.ShozokuList)
   @JoinColumn({ name: "KyuushaId" })
   public Kyuusha?: Kyuusha;
 
-  @OneToMany(() => KijouKishu, kk => kk.Kishu)
-  public KijouKishuList: KijouKishu[];
+  @OneToMany(() => Kijou, k => k.Kishu)
+  public KijouList: Kijou[];
 }

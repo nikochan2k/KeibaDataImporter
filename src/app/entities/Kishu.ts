@@ -6,7 +6,7 @@ import {
   PrimaryGeneratedColumn
   } from "typeorm";
 import { Choukyou } from "./Choukyou";
-import { KijouKishu } from "./KijouKishu";
+import { Kijou } from "./Kijou";
 import { Record } from "./Record";
 
 @Entity("Kishu")
@@ -43,8 +43,8 @@ export class Kishu {
   @Column("smallint", { nullable: true })
   public HatsuMenkyoNen?: number;
 
-  @OneToMany(() => KijouKishu, kk => kk.Kishu)
-  public KijouKishuList: KijouKishu[];
+  @OneToMany(() => Kijou, k => k.Kishu)
+  public KijouList: Kijou[];
 
   @OneToMany(() => Choukyou, c => c.Kishu)
   public ChoukyouList: Choukyou[];

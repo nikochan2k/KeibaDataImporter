@@ -78,7 +78,7 @@ export class KolChoukyouTool {
       kishu.FromDate = nengappi;
       kishu.ToDate = nengappi;
       choukyou.Kishu = await this.kishuDao.saveKishu(kishu);
-      if (shussouba.KijouKishu.Kishu.TanshukuKishuMei === kijousha) {
+      if (shussouba.Kijou.Kishu.TanshukuKishuMei === kijousha) {
         choukyou.Noriyaku = 3; // 本番騎手
       } else {
         choukyou.Noriyaku = 4; // 調教騎手

@@ -74,7 +74,7 @@ export class KolDen2Kd3 extends DataToImport {
       shussouba.Nenrei = readPositiveInt(buffer, 65, 2);
       shussouba.Blinker = $S.blinker.toCodeFromKol(buffer, 147, 1);
       shussouba.Kinryou = readDouble(buffer, 148, 3, 0.1);
-      shussouba.KijouKishu = await this.kolTool.saveKijouKishu(buffer, 151, shussouba.Race.Nengappi);
+      shussouba.Kijou = await this.kolTool.saveKijou(buffer, 151, shussouba.Race.Nengappi);
       shussouba.Norikawari = $S.norikawari.toCodeFromKol(buffer, 205, 1);
     }
 
