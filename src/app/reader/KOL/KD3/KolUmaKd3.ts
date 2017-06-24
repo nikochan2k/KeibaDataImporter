@@ -191,7 +191,7 @@ export class KolUmaKd3 extends DataToImport {
     shussouba.Umaban = umaban;
     shussouba.Gate = readPositiveInt(buffer, 3, 2);
     const kyuusha = await this.kolTool.saveKyuusha(buffer, 158);
-    shussouba.Kyousouba = await this.saveKyousoubaOfRace(buffer, kyousouba.Uma.Bamei, kyuusha);
+    shussouba.Kyousouba = await this.saveKyousoubaOfRace(buffer, kyousouba, kyuusha);
     shussouba.Nenrei = readPositiveInt(buffer, 8, 2);
     shussouba.Blinker = $S.blinker.toCodeFromKol(buffer, 90, 1);
     shussouba.Kinryou = readDouble(buffer, 91, 3, 0.1);
@@ -230,16 +230,16 @@ export class KolUmaKd3 extends DataToImport {
     return this.entityManager.persist(shussouba);
   }
 
-  public async saveKyousoubaOfRace(buffer: Buffer, bamei: string, kyuusha: Kyuusha) {
+  public async saveKyousoubaOfRace(buffer: Buffer, current: Kyousouba, kyuusha: Kyuusha) {
     const seibetsu = $U.seibetsu.toCodeFromKol(buffer, 7, 1);
     const uma = new Uma();
-    uma.Bamei = bamei;
-    uma.Seibetsu = seibetsu;
+    uma.Bamei = current.Uma.Bamei;
+    uma.Seibetsu = seibetsu || current.Uma.Seibetsu;
     const kyousouba = new Kyousouba();
     kyousouba.Uma = await this.umaDao.saveUma(uma);
-    kyousouba.Seibetsu = seibetsu;
-    kyousouba.UmaKigou = $U.umaKigou.toCodeFromKol(buffer, 5, 2);
-    kyousouba.Banushi = await this.kolTool.saveBanushi(buffer, 10);
+    kyousouba.Seibetsu = seibetsu || current.Seibetsu;
+    kyousouba.UmaKigou = $U.umaKigou.toCodeFromKol(buffer, 5, 2) || current.UmaKigou;
+    kyousouba.Banushi = await this.kolTool.saveBanushi(buffer, 10) || current.Banushi;
     kyousouba.Kyuusha = kyuusha;
     return this.umaDao.saveKyousouba(kyousouba);
   }

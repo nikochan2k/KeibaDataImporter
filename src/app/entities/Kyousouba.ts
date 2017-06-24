@@ -7,12 +7,13 @@ import {
   OneToMany,
   PrimaryGeneratedColumn
   } from "typeorm";
-import { KyousoubaKanri } from "./KyousoubaKanri";
+import { Banushi } from "./Banushi";
+import { Kyuusha } from "./Kyuusha";
 import { Shussouba } from "./Shussouba";
 import { Uma } from "./Uma";
 
 @Entity("Kyousouba")
-@Index("IxKyousouba", (k: Kyousouba) => [k.Uma, k.Seibetsu, k.KyousoubaKanri])
+@Index("IxKyousouba", (k: Kyousouba) => [k.Uma])
 export class Kyousouba {
   @PrimaryGeneratedColumn("int")
   public Id: number;
@@ -25,10 +26,21 @@ export class Kyousouba {
   @Column("smallint")
   public Seibetsu: number;
 
-  @Column("int", { name: "KyousoubaKanriId" })
-  @ManyToOne(() => KyousoubaKanri, kk => kk.KyousoubaList)
-  @JoinColumn({ name: "KyousoubaKanriId" })
-  public KyousoubaKanri: KyousoubaKanri;
+  @Column("smallint")
+  public UmaKigou: number;
+
+  @Column("int", { name: "BanushiId" })
+  @ManyToOne(() => Banushi, Banushi => Banushi.KyousoubaList)
+  @JoinColumn({ name: "BanushiId" })
+  public Banushi: Banushi;
+
+  @Column("int", { name: "KyuushaId", nullable: true })
+  @ManyToOne(() => Kyuusha, k => k.KyousoubaList)
+  @JoinColumn({ name: "KyuushaId" })
+  public Kyuusha?: Kyuusha;
+
+  @Column("varchar", { length: 12, nullable: true })
+  public KoueiGaikokuKyuushaMei?: string;
 
   @OneToMany(() => Shussouba, s => s.Kyousouba)
   public ShussoubaList: Shussouba[];

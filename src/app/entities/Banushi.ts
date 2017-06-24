@@ -5,7 +5,7 @@ import {
   OneToMany,
   PrimaryGeneratedColumn
 } from "typeorm";
-import { KyousoubaKanri } from "./KyousoubaKanri";
+import { Kyousouba } from "./Kyousouba";
 
 @Entity("Banushi")
 @Index("IxBanushi", (b: Banushi) => [b.BanushiMei], { unique: true })
@@ -22,6 +22,6 @@ export class Banushi {
   @Column("smallint", { nullable: true })
   public BanushiKaiCode: number;
 
-  @OneToMany(() => KyousoubaKanri, kk => kk.Banushi)
-  public KyousoubaKanriList: KyousoubaKanri[];
+  @OneToMany(() => Kyousouba, k => k.Banushi)
+  public KyousoubaList: Kyousouba[];
 }
