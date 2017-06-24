@@ -11,7 +11,6 @@ import { RaceClass } from "../../../entities/RaceClass";
 import { Shussouba } from "../../../entities/Shussouba";
 import { Uma } from "../../../entities/Uma";
 import { Kyousouba } from "../../../entities/Kyousouba";
-import { KyousoubaKanri } from "../../../entities/KyousoubaKanri";
 import { DataToImport } from "../../DataToImport";
 import { DataTool } from "../../DataTool";
 import {
@@ -81,6 +80,7 @@ export class KolUmaKd3 extends DataToImport {
   }
 
   protected async saveKyousouba(buffer: Buffer) {
+    const seibetsu = $U.seibetsu.toCodeFromKol(buffer, 94, 1);
     const uma = new Uma();
     uma.Bamei = readStr(buffer, 7, 30);
     uma.KyuuBamei = readStr(buffer, 37, 40);
@@ -88,7 +88,7 @@ export class KolUmaKd3 extends DataToImport {
     uma.Keiro = $U.keiro.toCodeFromKol(buffer, 85, 2);
     uma.Kesshu = $U.kesshu.toCodeFromKol(buffer, 87, 2);
     uma.Sanchi = $U.sanch.toCodeFromKol(buffer, 89, 3);
-    uma.Seibetsu = $U.seibetsu.toCodeFromKol(buffer, 94, 1);
+    uma.Seibetsu = seibetsu;
     uma.ChichiUma = await this.saveOyaUma(buffer, 104, $U.Seibetsu.Boba);
     uma.HahaUma = await this.saveOyaUma(buffer, 145, $U.Seibetsu.Hinba, 186, 227);
     uma.Seisansha = await this.kolTool.saveSeisansha(buffer, 423);
@@ -96,12 +96,14 @@ export class KolUmaKd3 extends DataToImport {
     uma.MasshouNengappi = readDate(buffer, 545, 8);
     uma.Jiyuu = readStr(buffer, 553, 6);
     uma.Ikisaki = readStr(buffer, 559, 10);
-    const kyousoubaKanri = new KyousoubaKanri();
-    kyousoubaKanri.UmaKigou = $U.umaKigou.toCodeFromKol(buffer, 92, 2);
-    kyousoubaKanri.Banushi = await this.kolTool.saveBanushi(buffer, 343);
-    kyousoubaKanri.Kyuusha = await this.kolTool.saveKyuusha(buffer, 488);
-    kyousoubaKanri.KoueiGaikokuKyuushaMei = readStr(buffer, 536, 8);
-    return this.umaDao.saveKyousouba(uma, kyousoubaKanri);
+    const kyousouba = new Kyousouba();
+    kyousouba.Uma = await this.umaDao.saveUma(uma);
+    kyousouba.Seibetsu = seibetsu;
+    kyousouba.UmaKigou = $U.umaKigou.toCodeFromKol(buffer, 92, 2);
+    kyousouba.Banushi = await this.kolTool.saveBanushi(buffer, 343);
+    kyousouba.Kyuusha = await this.kolTool.saveKyuusha(buffer, 488);
+    kyousouba.KoueiGaikokuKyuushaMei = readStr(buffer, 536, 8);
+    return this.umaDao.saveKyousouba(kyousouba);
   }
 
   protected async saveRace(buffer: Buffer) {
@@ -229,14 +231,17 @@ export class KolUmaKd3 extends DataToImport {
   }
 
   public async saveKyousoubaOfRace(buffer: Buffer, bamei: string, kyuusha: Kyuusha) {
+    const seibetsu = $U.seibetsu.toCodeFromKol(buffer, 7, 1);
     const uma = new Uma();
     uma.Bamei = bamei;
-    uma.Seibetsu = $U.seibetsu.toCodeFromKol(buffer, 7, 1);
-    const kyousoubaKanri = new KyousoubaKanri();
-    kyousoubaKanri.UmaKigou = $U.umaKigou.toCodeFromKol(buffer, 5, 2);
-    kyousoubaKanri.Banushi = await this.kolTool.saveBanushi(buffer, 10);
-    kyousoubaKanri.Kyuusha = kyuusha;
-    return this.umaDao.saveKyousouba(uma, kyousoubaKanri);
+    uma.Seibetsu = seibetsu;
+    const kyousouba = new Kyousouba();
+    kyousouba.Uma = await this.umaDao.saveUma(uma);
+    kyousouba.Seibetsu = seibetsu;
+    kyousouba.UmaKigou = $U.umaKigou.toCodeFromKol(buffer, 5, 2);
+    kyousouba.Banushi = await this.kolTool.saveBanushi(buffer, 10);
+    kyousouba.Kyuusha = kyuusha;
+    return this.umaDao.saveKyousouba(kyousouba);
   }
 
 }
