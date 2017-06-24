@@ -128,11 +128,11 @@ export class KolSei2Kd3 extends DataToImport {
       shussouba.KolYosou2 = $S.yosou.toCodeFromKol(buffer, 266, 1);
     }
 
-    await this.entityManager.persist(shussouba);
+    await this.entityManager.save(shussouba);
 
     const shussoubaKeika = cache.getKeika(shussouba.Id);
     if (shussoubaKeika) {
-      await this.entityManager.persist(shussoubaKeika);
+      await this.entityManager.save(shussoubaKeika);
     }
   }
 

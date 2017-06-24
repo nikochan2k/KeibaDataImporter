@@ -154,7 +154,7 @@ export class KolTool {
       shussoubaTsuukaJuni.Id = shussouba.Id * 10 + bangou;
       shussoubaTsuukaJuni.Shussouba = shussouba;
       shussoubaTsuukaJuni.Bangou = bangou;
-      await this.entityManager.persist(shussoubaTsuukaJuni);
+      await this.entityManager.save(shussoubaTsuukaJuni);
     }
   }
 

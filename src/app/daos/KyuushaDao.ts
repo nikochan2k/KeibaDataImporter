@@ -72,10 +72,7 @@ export class KyuushaDao {
         update = true;
       }
       /* tslint:enable:triple-equals */
-      if (update) {
-        await this.repository.updateById(asIs.Id, asIs);
-      }
-      toBe = asIs;
+      toBe = update ? await this.repository.save(asIs) : asIs;
     } else {
       toBe = await this.repository.save(toBe);
     }

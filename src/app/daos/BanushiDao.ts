@@ -15,10 +15,11 @@ export class BanushiDao {
       /* tslint:disable:triple-equals */
       if (asIs.BanushiKaiCode == null && toBe.BanushiKaiCode != null) {
         asIs.BanushiKaiCode = toBe.BanushiKaiCode;
-        await this.repository.updateById(asIs.Id, asIs);
+        toBe = await this.repository.save(asIs);
+      } else {
+        toBe = asIs;
       }
       /* tslint:enable:triple-equals */
-      toBe = asIs;
     } else {
       toBe = await this.repository.save(toBe);
     }

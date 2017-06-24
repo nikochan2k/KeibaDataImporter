@@ -109,10 +109,7 @@ export class UmaDao {
         update = true;
       }
       /* tslint:enable:triple-equals */
-      if (update) {
-        await this.umaRepository.updateById(asIs.Id, asIs);
-      }
-      toBe = asIs;
+      toBe = update ? await this.umaRepository.save(asIs) : asIs;
     } else {
       toBe = await this.umaRepository.save(toBe);
     }

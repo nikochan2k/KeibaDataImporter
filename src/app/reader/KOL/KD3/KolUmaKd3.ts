@@ -150,7 +150,7 @@ export class KolUmaKd3 extends DataToImport {
     race.Baba = $R.baba.toCodeFromKol(buffer, 129, 1);
     race.Seed = $R.seed.toCodeFromKol(buffer, 130, 1);
     race.GaikokuKeibajouMei = readStr(buffer, 131, 20);
-    return this.entityManager.persist(race);
+    return this.entityManager.save(race);
   }
 
   protected async saveRaceClass(buffer: Buffer) {
@@ -233,7 +233,7 @@ export class KolUmaKd3 extends DataToImport {
       shussouba.Chuukan = shussouba.Time - shussouba.Ten3F - shussouba.Agari3F;
     }
     shussouba.YonCornerIchiDori = $S.yonCornerIchiDori.toCodeFromKol(buffer, 247, 1);
-    return this.entityManager.persist(shussouba);
+    return this.entityManager.save(shussouba);
   }
 
   public async saveKyousoubaOfRace(buffer: Buffer, current: Kyousouba, kyuusha: Kyuusha) {

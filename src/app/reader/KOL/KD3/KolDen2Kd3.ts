@@ -98,7 +98,7 @@ export class KolDen2Kd3 extends DataToImport {
     shussouba.KyuuyouRiyuu = readStr(buffer, 783, 60);
     shussouba.YosouTenkai = cache.getYosouTenkai(shussouba.Id);
 
-    await this.entityManager.persist(shussouba);
+    await this.entityManager.save(shussouba);
   }
 
   protected async saveChoukyou(buffer: Buffer, shussouba: Shussouba) {

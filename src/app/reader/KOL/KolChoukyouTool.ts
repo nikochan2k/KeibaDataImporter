@@ -141,7 +141,7 @@ export class KolChoukyouTool {
         choukyou.AwaseReigai = awase;
       }
     }
-    await this.entityManager.persist(choukyou);
+    await this.entityManager.save(choukyou);
 
     if (choukyou.Type === $CH.ChoukyouType.Hanro) {
       await this.saveChoukyouTime(buffer, choukyou, offset, KolChoukyouTool.hanroFurlongOffsets);
@@ -167,7 +167,7 @@ export class KolChoukyouTool {
       } else {
         choukyouTime.Time = time;
       }
-      await this.entityManager.persist(choukyouTime);
+      await this.entityManager.save(choukyouTime);
     }
   }
 

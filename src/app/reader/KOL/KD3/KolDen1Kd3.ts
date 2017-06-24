@@ -89,7 +89,7 @@ export class KolDen1Kd3 extends DataToImport {
     race.SuiteiTimeOmoFuryou = readTime(buffer, 345, 4);
     race.YosouPace = $R.pace.toCodeFromKol(buffer, 349, 1);
 
-    await this.entityManager.persist(race);
+    await this.entityManager.save(race);
   }
 
   protected saveRaceClass(buffer: Buffer) {

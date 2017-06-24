@@ -145,7 +145,7 @@ export class KolRaceTool {
       raceShoukin.Chakujun = info.chakujun;
       raceShoukin.Shoukin = shoukin;
       raceShoukin.Fukashou = info.fukashou;
-      await this.entityManager.persist(raceShoukin);
+      await this.entityManager.save(raceShoukin);
     }
   }
 
@@ -171,7 +171,7 @@ export class KolRaceTool {
       if (info.ninki) {
         raceHaitou.Ninki = readPositiveInt(buffer, info.ninki, info.ninkiLen);
       }
-      await this.entityManager.persist(raceHaitou);
+      await this.entityManager.save(raceHaitou);
     }
   }
 }

@@ -144,10 +144,7 @@ export class KishuDao {
         update = true;
       }
       /* tslint:enable:triple-equals */
-      if (update) {
-        await this.kishuRepository.updateById(asIs.Id, asIs);
-      }
-      toBe = asIs;
+      toBe = update ? await this.kishuRepository.save(asIs) : asIs;
     } else {
       toBe = await this.kishuRepository.save(toBe);
     }
