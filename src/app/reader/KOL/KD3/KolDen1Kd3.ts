@@ -1,11 +1,11 @@
 import { Inject, Service } from "typedi";
 import * as $R from "../../../converters/Race";
-import { Race } from "../../../entities/Race";
 import { RaceDao } from "../../../daos/RaceDao";
+import { Race } from "../../../entities/Race";
 import { RaceClass } from "../../../entities/RaceClass";
+import { DataCache } from "../../DataCache";
 import { DataToImport } from "../../DataToImport";
 import { DataTool } from "../../DataTool";
-import { DataCache } from "../../DataCache";
 import {
   readDate,
   readInt,
@@ -15,16 +15,12 @@ import {
   readTime
 } from "../../Reader";
 import { KolRaceTool } from "../KolRaceTool";
-import { KolTool } from "../KolTool";
 
 @Service()
 export class KolDen1Kd3 extends DataToImport {
 
   @Inject()
   private tool: DataTool;
-
-  @Inject()
-  private kolTool: KolTool;
 
   @Inject()
   private kolRaceTool: KolRaceTool;
@@ -37,7 +33,7 @@ export class KolDen1Kd3 extends DataToImport {
   }
 
   protected async save(buffer: Buffer, cache: DataCache) {
-    const race = await this.kolTool.getRace(buffer);
+    const race = await this.kolRaceTool.getRace(buffer);
     const dataSakuseiNengappi = readDate(buffer, 418, 8);
     if (race.KolShutsubahyouSakuseiNengappi) {
       if (dataSakuseiNengappi <= race.KolShutsubahyouSakuseiNengappi) {

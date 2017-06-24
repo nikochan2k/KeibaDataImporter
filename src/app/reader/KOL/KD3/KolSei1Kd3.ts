@@ -2,14 +2,15 @@ import { Inject, Service } from "typedi";
 import * as $R from "../../../converters/Race";
 import { Baken } from "../../../converters/RaceHaitou";
 import * as $RK from "../../../converters/RaceKeika";
-import { Race } from "../../../entities/Race";
 import { RaceDao } from "../../../daos/RaceDao";
+import { Race } from "../../../entities/Race";
 import { RaceClass } from "../../../entities/RaceClass";
 import { RaceKeika } from "../../../entities/RaceKeika";
 import { RaceLapTime } from "../../../entities/RaceLapTime";
+import { DataCache } from "../../DataCache";
 import { DataToImport } from "../../DataToImport";
 import { DataTool } from "../../DataTool";
-import { DataCache } from "../../DataCache";
+import { KeikaTool } from "../../KeikaTool";
 import {
   readDate,
   readDouble,
@@ -20,17 +21,12 @@ import {
   readTime
 } from "../../Reader";
 import { KolRaceTool } from "../KolRaceTool";
-import { KolTool } from "../KolTool";
-import { KeikaTool } from "../../KeikaTool";
 
 @Service()
 export class KolSei1Kd3 extends DataToImport {
 
   @Inject()
   private tool: DataTool;
-
-  @Inject()
-  private kolTool: KolTool;
 
   @Inject()
   private kolRaceTool: KolRaceTool;
@@ -46,7 +42,7 @@ export class KolSei1Kd3 extends DataToImport {
   }
 
   protected async save(buffer: Buffer, cache: DataCache) {
-    const race = await this.kolTool.getRace(buffer);
+    const race = await this.kolRaceTool.getRace(buffer);
     const dataSakuseiNengappi = readDate(buffer, 2910, 8);
     if (race.KolSeisekiSakuseiNengappi) {
       if (dataSakuseiNengappi <= race.KolSeisekiSakuseiNengappi) {

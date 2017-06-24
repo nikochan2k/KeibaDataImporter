@@ -24,6 +24,7 @@ import {
 } from "../../Reader";
 import { KolChoukyouTool } from "../KolChoukyouTool";
 import { KolTool } from "../KolTool";
+import { KolRaceTool } from "../KolRaceTool";
 
 
 @Service()
@@ -36,6 +37,9 @@ export class KolUmaKd3 extends DataToImport {
 
   @Inject()
   private kolTool: KolTool;
+
+  @Inject()
+  private kolRaceTool: KolRaceTool;
 
   @Inject()
   private choukyouTool: KolChoukyouTool;
@@ -73,8 +77,10 @@ export class KolUmaKd3 extends DataToImport {
       if (race) {
         const shussoubaBuffer = buffer.slice(offset + 151, offset + 590);
         const shussouba = await this.saveShussouba(shussoubaBuffer, race, kyousouba);
-        await this.kolTool.saveShussoubaTsuukaJuni(shussoubaBuffer, 239, shussouba);
-        await this.choukyouTool.saveChoukyou(shussoubaBuffer, 248, shussouba, 1);
+        if (shussouba) {
+          await this.kolTool.saveShussoubaTsuukaJuni(shussoubaBuffer, 239, shussouba);
+          await this.choukyouTool.saveChoukyou(shussoubaBuffer, 248, shussouba, 1);
+        }
       }
     }
   }
@@ -107,7 +113,7 @@ export class KolUmaKd3 extends DataToImport {
   }
 
   protected async saveRace(buffer: Buffer) {
-    const race = await this.kolTool.getRace(buffer);
+    const race = await this.kolRaceTool.getRace(buffer);
     if (!race) {
       return null;
     } else if (race.Youbi) {

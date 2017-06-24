@@ -16,7 +16,6 @@ import { Banushi } from "../../entities/Banushi";
 import { Kishu } from "../../entities/Kishu";
 import { Shozoku } from "../../entities/Shozoku";
 import { Kyuusha } from "../../entities/Kyuusha";
-import { Race } from "../../entities/Race";
 import { Seisansha } from "../../entities/Seisansha";
 import { Shussouba } from "../../entities/Shussouba";
 import { ShussoubaTsuukaJuni } from "../../entities/ShussoubaTsuukaJuni";
@@ -24,7 +23,6 @@ import { Uma } from "../../entities/Uma";
 import { getLogger } from "../../LogUtil";
 import { DataTool } from "../DataTool";
 import {
-  readDate,
   readDouble,
   readInt,
   readPositiveInt,
@@ -60,28 +58,6 @@ export class KolTool {
 
   constructor() {
     this.logger = getLogger(this);
-  }
-
-  public async getRace(buffer: Buffer) {
-    const yyyymmdd = readPositiveInt(buffer, 12, 8);
-    const basho = $C.basho.toCodeFromKol(buffer, 0, 2);
-    const raceBangou = readInt(buffer, 10, 2);
-    if (yyyymmdd === null || basho === null || raceBangou === null) {
-      return null;
-    }
-    const id = this.tool.getRaceId(yyyymmdd, basho, raceBangou);
-    let race = await this.entityManager.getRepository(Race).findOneById(id);
-    if (!race) {
-      race = new Race();
-      race.Id = id;
-      race.Basho = basho;
-      race.Nen = readPositiveInt(buffer, 2, 4);
-      race.Kaiji = readPositiveInt(buffer, 6, 2);
-      race.Nichiji = readPositiveInt(buffer, 8, 2);
-      race.RaceBangou = raceBangou;
-      race.Nengappi = readDate(buffer, 12, 8);
-    }
-    return race;
   }
 
   public async saveKijou(buffer: Buffer, offset: number, date: Date) {

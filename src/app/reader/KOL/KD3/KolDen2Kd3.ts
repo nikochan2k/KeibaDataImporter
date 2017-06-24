@@ -9,8 +9,9 @@ import {
   readDouble,
   readPositiveInt,
   readStr
-  } from "../../Reader";
+} from "../../Reader";
 import { KolChoukyouTool } from "../KolChoukyouTool";
+import { KolRaceTool } from "../KolRaceTool";
 import { KolTool } from "../KolTool";
 
 @Service()
@@ -21,6 +22,9 @@ export class KolDen2Kd3 extends DataToImport {
 
   @Inject()
   private kolTool: KolTool;
+
+  @Inject()
+  private kolRaceTool: KolRaceTool;
 
   protected getBufferLength() {
     return 1000;
@@ -36,12 +40,18 @@ export class KolDen2Kd3 extends DataToImport {
   }
 
   protected async save(buffer: Buffer, cache: DataCache) {
-    const race = await this.kolTool.getRace(buffer);
     const umaban = readPositiveInt(buffer, 23, 2);
     if (umaban === null) {
       this.logger.warn("馬番がありません");
       return;
     }
+    const race = await this.kolRaceTool.getRace(buffer);
+    /* tslint:disable:triple-equals */
+    if (!race || race.Youbi == null) {
+      this.logger.warn("レース成績データが存在しません: " + race.Id);
+      return;
+    }
+    /* tslint:enable:triple-equals */
     const id = race.Id * 100 + umaban;
     let shussouba = await this.entityManager.findOneById(Shussouba, id);
     const dataSakuseiNengappi = readDate(buffer, 727, 8);

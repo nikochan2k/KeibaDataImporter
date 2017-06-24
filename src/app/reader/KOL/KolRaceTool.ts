@@ -15,9 +15,11 @@ import { RaceLapTime } from "../../entities/RaceLapTime";
 import { RaceShoukin } from "../../entities/RaceShoukin";
 import { Record } from "../../entities/Record";
 import { Uma } from "../../entities/Uma";
+import { DataTool } from "../DataTool";
 import {
   readDate,
   readDouble,
+  readInt,
   readPositiveInt,
   readStrWithNoSpace,
   readTime
@@ -28,6 +30,9 @@ export class KolRaceTool {
 
   @OrmEntityManager()
   private entityManager: EntityManager;
+
+  @Inject()
+  private tool: DataTool;
 
   @Inject()
   private umaDao: UmaDao;
@@ -77,6 +82,28 @@ export class KolRaceTool {
       .where("rh.RaceId = :raceId")
       .setParameter("raceId", race.Id)
       .execute();
+  }
+
+  public async getRace(buffer: Buffer) {
+    const yyyymmdd = readPositiveInt(buffer, 12, 8);
+    const basho = $C.basho.toCodeFromKol(buffer, 0, 2);
+    const raceBangou = readInt(buffer, 10, 2);
+    if (yyyymmdd === null || basho === null || raceBangou === null) {
+      return null;
+    }
+    const id = this.tool.getRaceId(yyyymmdd, basho, raceBangou);
+    let race = await this.entityManager.getRepository(Race).findOneById(id);
+    if (!race) {
+      race = new Race();
+      race.Id = id;
+      race.Basho = basho;
+      race.Nen = readPositiveInt(buffer, 2, 4);
+      race.Kaiji = readPositiveInt(buffer, 6, 2);
+      race.Nichiji = readPositiveInt(buffer, 8, 2);
+      race.RaceBangou = raceBangou;
+      race.Nengappi = readDate(buffer, 12, 8);
+    }
+    return race;
   }
 
   public async getRecord(buffer: Buffer, offset: number, bashoOffset: number) {
