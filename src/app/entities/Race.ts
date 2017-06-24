@@ -43,7 +43,6 @@ export class Race {
   @Column("smallint", { nullable: true })
   public JuushouKaisuu?: number;
 
-  @Column("int", { name: "RaceClassId" })
   @ManyToOne(() => RaceClass, rc => rc.Id)
   @JoinColumn({ name: "RaceClassId" })
   public RaceClass: RaceClass;
@@ -108,18 +107,15 @@ export class Race {
   @Column("float", { nullable: true })
   public ShougaiHeikin1F?: number;
 
-  @Column("int", { name: "CourseRecordId", nullable: true })
-  @ManyToOne(() => Record, r => r.CourseRecordList)
+  @ManyToOne(() => Record, r => r.CourseRecordList, { nullable: true })
   @JoinColumn({ name: "CourseRecordId" })
   public CourseRecord?: Record;
 
-  @Column("int", { name: "KyoriRecordId", nullable: true })
-  @ManyToOne(() => Record, r => r.KyoriRecordList)
+  @ManyToOne(() => Record, r => r.KyoriRecordList, { nullable: true })
   @JoinColumn({ name: "KyoriRecordId" })
   public KyoriRecord?: Record;
 
-  @Column("int", { name: "RaceRecordId", nullable: true })
-  @ManyToOne(() => Record, r => r.RaceRecordList)
+  @ManyToOne(() => Record, r => r.RaceRecordList, { nullable: true })
   @JoinColumn({ name: "RaceRecordId" })
   public RaceRecord?: Record;
 

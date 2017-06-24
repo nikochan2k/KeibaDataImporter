@@ -17,7 +17,6 @@ export class OddsKubun {
   @PrimaryColumn("bigint")
   public Id: number;
 
-  @Column("bigint", { name: "RaceId" })
   @ManyToOne(() => Race, Race => Race.OddsKubunList)
   @JoinColumn({ name: "RaceId" })
   public Race: Race;

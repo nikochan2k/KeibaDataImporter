@@ -15,12 +15,10 @@ export class ShussoubaKeika {
   @PrimaryColumn("bigint")
   public Id: number;
 
-  @Column("bigint", { name: "RaceKeikaId" })
   @ManyToOne(() => RaceKeika, rk => rk.ShussoubaKeikaList)
   @JoinColumn({ name: "RaceKeikaId" })
   public RaceKeika: RaceKeika;
 
-  @Column("bigint", { name: "ShussoubaId" })
   @ManyToOne(() => Shussouba, s => s.ShussoubaKeikaList)
   @JoinColumn({ name: "ShussoubaId" })
   public Shussouba: Shussouba;

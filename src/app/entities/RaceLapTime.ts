@@ -14,7 +14,6 @@ export class RaceLapTime {
   @PrimaryColumn("bigint")
   public Id: number;
 
-  @Column("bigint", { name: "RaceId" })
   @ManyToOne(() => Race, r => r.RaceLapTimeList)
   @JoinColumn({ name: "RaceId" })
   public Race: Race;

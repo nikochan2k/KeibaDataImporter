@@ -14,7 +14,6 @@ export class ChoukyouTime {
   @PrimaryColumn("bigint")
   public Id: number;
 
-  @Column("bigint", { name: "ChoukyouId" })
   @ManyToOne(() => Choukyou, c => c.ChoukyouTimeList)
   @JoinColumn({ name: "ChoukyouId" })
   public Choukyou: Choukyou;

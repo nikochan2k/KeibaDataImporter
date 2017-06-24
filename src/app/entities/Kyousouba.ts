@@ -6,7 +6,7 @@ import {
   ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn
-  } from "typeorm";
+} from "typeorm";
 import { Banushi } from "./Banushi";
 import { Kyuusha } from "./Kyuusha";
 import { Shussouba } from "./Shussouba";
@@ -18,7 +18,6 @@ export class Kyousouba {
   @PrimaryGeneratedColumn("int")
   public Id: number;
 
-  @Column("int", { name: "UmaId" })
   @ManyToOne(() => Uma, u => u.KyousoubaList)
   @JoinColumn({ name: "UmaId" })
   public Uma: Uma;
@@ -29,13 +28,11 @@ export class Kyousouba {
   @Column("smallint")
   public UmaKigou: number;
 
-  @Column("int", { name: "BanushiId" })
   @ManyToOne(() => Banushi, Banushi => Banushi.KyousoubaList)
   @JoinColumn({ name: "BanushiId" })
   public Banushi: Banushi;
 
-  @Column("int", { name: "KyuushaId", nullable: true })
-  @ManyToOne(() => Kyuusha, k => k.KyousoubaList)
+  @ManyToOne(() => Kyuusha, k => k.KyousoubaList, { nullable: true })
   @JoinColumn({ name: "KyuushaId" })
   public Kyuusha?: Kyuusha;
 

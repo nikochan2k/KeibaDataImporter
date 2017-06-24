@@ -17,12 +17,10 @@ export class Kijou {
   @PrimaryGeneratedColumn("int")
   public Id: number;
 
-  @Column("int", { name: "KishuId" })
   @ManyToOne(() => Kishu, k => k.KijouList)
   @JoinColumn({ name: "KishuId" })
   public Kishu: Kishu;
 
-  @Column("int", { name: "ShozokuId" })
   @ManyToOne(() => Shozoku, k => k.KijouList)
   @JoinColumn({ name: "ShozokuId" })
   public Shozoku: Shozoku;

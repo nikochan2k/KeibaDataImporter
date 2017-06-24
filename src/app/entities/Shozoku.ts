@@ -6,7 +6,7 @@ import {
   ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn
-  } from "typeorm";
+} from "typeorm";
 import { Kijou } from "./Kijou";
 import { Kyuusha } from "./Kyuusha";
 
@@ -22,8 +22,7 @@ export class Shozoku {
   @Column("smallint", { nullable: true })
   public ShozokuBasho?: number;
 
-  @Column("int", { name: "KyuushaId", nullable: true })
-  @ManyToOne(() => Kyuusha, Kyuusha => Kyuusha.ShozokuList)
+  @ManyToOne(() => Kyuusha, Kyuusha => Kyuusha.ShozokuList, { nullable: true })
   @JoinColumn({ name: "KyuushaId" })
   public Kyuusha?: Kyuusha;
 

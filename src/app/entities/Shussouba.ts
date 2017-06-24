@@ -40,7 +40,6 @@ export class Shussouba {
   @Column("smallint", { nullable: true })
   public Gate?: number;
 
-  @Column("int", { name: "KyousoubaId" })
   @ManyToOne(() => Kyousouba, k => k.ShussoubaList)
   @JoinColumn({ name: "KyousoubaId" })
   public Kyousouba: Kyousouba;
@@ -63,7 +62,6 @@ export class Shussouba {
   @Column("smallint", { nullable: true })
   public KolRecordShisuu?: number;
 
-  @Column("int", { name: "KijouId" })
   @ManyToOne(() => Kijou, k => k.ShussoubaList)
   @JoinColumn({ name: "KijouId" })
   public Kijou: Kijou;

@@ -8,9 +8,9 @@ import {
   PrimaryColumn
 } from "typeorm";
 import { ChoukyouTime } from "./ChoukyouTime";
+import { Kishu } from "./Kishu";
 import { Shussouba } from "./Shussouba";
 import { Uma } from "./Uma";
-import { Kishu } from "./Kishu";
 
 @Entity("Choukyou")
 @Index("IxChoukyou", (c: Choukyou) => [c.Shussouba])
@@ -18,7 +18,6 @@ export class Choukyou {
   @PrimaryColumn("bigint")
   public Id: number;
 
-  @Column("bigint", { name: "ShussoubaId" })
   @ManyToOne(() => Shussouba, s => s.ChoukyouList)
   @JoinColumn({ name: "ShussoubaId" })
   public Shussouba: Shussouba;
@@ -32,8 +31,7 @@ export class Choukyou {
   @Column("smallint", { nullable: true })
   public Noriyaku?: number;
 
-  @Column("int", { name: "KishuId", nullable: true })
-  @ManyToOne(() => Kishu, k => k.ChoukyouList)
+  @ManyToOne(() => Kishu, k => k.ChoukyouList, { nullable: true })
   @JoinColumn({ name: "KishuId" })
   public Kishu: Kishu;
 
@@ -76,8 +74,7 @@ export class Choukyou {
   @Column("varchar", { length: 60, nullable: true })
   public Reigai?: string;
 
-  @Column("int", { name: "AwaseUmaId", nullable: true })
-  @ManyToOne(() => Uma, u => u.ChoukyouList)
+  @ManyToOne(() => Uma, u => u.ChoukyouList, { nullable: true })
   @JoinColumn({ name: "AwaseUmaId" })
   public AwaseUma?: Uma;
 

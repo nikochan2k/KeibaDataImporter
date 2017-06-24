@@ -42,18 +42,15 @@ export class Uma {
   @OneToMany(() => Uma, Uma => Uma.ChichiUma)
   public Children: Uma[];
 
-  @Column("int", { name: "ChichiUmaId", nullable: true })
-  @ManyToOne(() => Uma, Uma => Uma.Children)
+  @ManyToOne(() => Uma, Uma => Uma.Children, { nullable: true })
   @JoinColumn({ name: "ChichiUmaId" })
   public ChichiUma?: Uma;
 
-  @Column("int", { name: "HahaUmaId", nullable: true })
-  @ManyToOne(() => Uma, Uma => Uma.Children)
+  @ManyToOne(() => Uma, Uma => Uma.Children, { nullable: true })
   @JoinColumn({ name: "HahaUmaId" })
   public HahaUma?: Uma;
 
-  @Column("int", { name: "SeisanshaId", nullable: true })
-  @ManyToOne(() => Seisansha, Seisansha => Seisansha.UmaList)
+  @ManyToOne(() => Seisansha, Seisansha => Seisansha.UmaList, { nullable: true })
   @JoinColumn({ name: "SeisanshaId" })
   public Seisansha?: Seisansha;
 

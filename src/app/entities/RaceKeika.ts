@@ -16,7 +16,6 @@ export class RaceKeika {
   @PrimaryColumn("bigint")
   public Id: number;
 
-  @Column("bigint", { name: "RaceId" })
   @ManyToOne(() => Race, Race => Race.RaceKeikaList)
   @JoinColumn({ name: "RaceId" })
   public Race: Race;

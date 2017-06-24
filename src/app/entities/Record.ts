@@ -23,7 +23,6 @@ export class Record {
   @Column("float")
   public Time: number;
 
-  @Column("int", { name: "UmaId" })
   @ManyToOne(() => Uma, u => u.RecordList)
   @JoinColumn({ name: "UmaId" })
   public Uma: Uma;
@@ -31,7 +30,6 @@ export class Record {
   @Column("float")
   public Kinryou: number;
 
-  @Column("int", { name: "KishuId" })
   @ManyToOne(() => Kishu, k => k.RecordList)
   @JoinColumn({ name: "KishuId" })
   public Kishu: Kishu;

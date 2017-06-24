@@ -14,7 +14,6 @@ export class Odds {
   @PrimaryGeneratedColumn()
   public Id: number;
 
-  @Column("bigint", { name: "OddsKubunId" })
   @ManyToOne(() => OddsKubun, ok => ok.OddsList)
   @JoinColumn({ name: "OddsKubunId" })
   public OddsKubun: OddsKubun;
