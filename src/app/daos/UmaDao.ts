@@ -1,12 +1,15 @@
 import { Service } from "typedi";
-import { Repository } from "typeorm";
-import { OrmRepository } from "typeorm-typedi-extensions";
+import { EntityManager, Repository } from "typeorm";
+import { OrmEntityManager, OrmRepository } from "typeorm-typedi-extensions";
 import * as $U from "../converters/Uma";
 import { Kyousouba } from "../entities/Kyousouba";
 import { Uma } from "../entities/Uma";
 
 @Service()
 export class UmaDao {
+
+  @OrmEntityManager()
+  protected entityManager: EntityManager;
 
   @OrmRepository(Kyousouba)
   private kyousoubaRepository: Repository<Kyousouba>;
@@ -15,9 +18,33 @@ export class UmaDao {
   private umaRepository: Repository<Uma>;
 
   protected async getUma(uma: Uma) {
-    let asIs = await this.umaRepository.findOne({ Bamei: uma.Bamei });
+    let asIs = await this.umaRepository.findOne({
+      where: {
+        Bamei: uma.Bamei
+      },
+      join: {
+        alias: "Uma",
+        leftJoinAndSelect: {
+          ChichiUma: "Uma.ChichiUma",
+          HahaUma: "Uma.HahaUma",
+          Seisansha: "Uma.Seisansha"
+        }
+      }
+    });
     if (!asIs) {
-      asIs = await this.umaRepository.findOne({ KyuuBamei: uma.Bamei });
+      asIs = await this.umaRepository.findOne({
+        where: {
+          KyuuBamei: uma.Bamei
+        },
+        join: {
+          alias: "Uma",
+          leftJoinAndSelect: {
+            ChichiUma: "Uma.ChichiUma",
+            HahaUma: "Uma.HahaUma",
+            Seisansha: "Uma.Seisansha"
+          }
+        }
+      });
     }
     return asIs;
   }
@@ -54,62 +81,60 @@ export class UmaDao {
     }
     const asIs = await this.getUma(toBe);
     if (asIs) {
-      let update = false;
+      const updateSet: any = {};
       /* tslint:disable:triple-equals */
       if (asIs.Seinengappi == null && toBe.Seinengappi != null) {
-        asIs.Seinengappi = toBe.Seinengappi;
-        update = true;
+        updateSet.Seinengappi = asIs.Seinengappi = toBe.Seinengappi;
       }
       if (asIs.Keiro == null && toBe.Keiro != null) {
-        asIs.Keiro = toBe.Keiro;
-        update = true;
+        updateSet.Keiro = asIs.Keiro = toBe.Keiro;
       }
       if (asIs.Kesshu == null && toBe.Kesshu != null) {
-        asIs.Kesshu = toBe.Kesshu;
-        update = true;
+        updateSet.Kesshu = asIs.Keiro = toBe.Kesshu;
       }
       if (asIs.Sanchi == null && toBe.Sanchi != null) {
-        asIs.Sanchi = toBe.Sanchi;
-        update = true;
+        updateSet.Sanchi = asIs.Sanchi = toBe.Sanchi;
       }
       if (asIs.Seibetsu == null && toBe.Seibetsu != null) {
-        asIs.Seibetsu = toBe.Seibetsu;
-        update = true;
+        updateSet.Seibetsu = asIs.Seibetsu = toBe.Seibetsu;
       }
       if (asIs.ChichiUma == null && toBe.ChichiUma != null) {
         asIs.ChichiUma = toBe.ChichiUma;
-        update = true;
+        updateSet.ChichiUmaId = toBe.ChichiUma.Id;
       }
       if (asIs.HahaUma == null && toBe.HahaUma != null) {
         asIs.HahaUma = toBe.HahaUma;
-        update = true;
+        updateSet.HahaUmaId = toBe.HahaUma.Id;
       }
       if (asIs.Seisansha == null && toBe.Seisansha != null) {
         asIs.Seisansha = toBe.Seisansha;
-        update = true;
+        updateSet.SeisanshaId = toBe.Seisansha.Id;
       }
       if (asIs.MasshouFlag == null && toBe.MasshouFlag != null) {
-        asIs.MasshouFlag = toBe.MasshouFlag;
-        update = true;
+        updateSet.MasshouFlag = asIs.MasshouFlag = toBe.MasshouFlag;
       }
       if (asIs.MasshouNengappi == null && toBe.MasshouNengappi != null) {
-        asIs.MasshouNengappi = toBe.MasshouNengappi;
-        update = true;
+        updateSet.MasshouNengappi = asIs.MasshouNengappi = toBe.MasshouNengappi;
       }
       if (asIs.Jiyuu == null && toBe.Jiyuu != null) {
-        asIs.Jiyuu = toBe.Jiyuu;
-        update = true;
+        updateSet.Jiyuu = asIs.Jiyuu = toBe.Jiyuu;
       }
       if (asIs.Ikisaki == null && toBe.Ikisaki != null) {
-        asIs.Ikisaki = toBe.Ikisaki;
-        update = true;
+        updateSet.Ikisaki = asIs.Ikisaki = toBe.Ikisaki;
       }
       if (asIs.ShibouNen == null && toBe.ShibouNen != null) {
-        asIs.ShibouNen = toBe.ShibouNen;
-        update = true;
+        updateSet.ShibouNen = asIs.ShibouNen = toBe.ShibouNen;
       }
       /* tslint:enable:triple-equals */
-      toBe = update ? await this.umaRepository.save(asIs) : asIs;
+      if (0 < Object.keys(updateSet).length) {
+        await this.entityManager
+          .createQueryBuilder()
+          .update(Uma, updateSet)
+          .where("Id = :id")
+          .setParameter("id", asIs.Id)
+          .execute();
+      }
+      toBe = asIs;
     } else {
       toBe = await this.umaRepository.save(toBe);
     }

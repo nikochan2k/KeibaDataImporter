@@ -1,5 +1,6 @@
 import { Inject, Service } from "typedi";
 import { DataToImport } from "../../DataToImport";
+import { Race } from "../../../entities/Race";
 import {
   readDate,
   readStr,
@@ -38,7 +39,12 @@ export class KolSei3Kd3 extends DataToImport {
       }
     }
     if (update) {
-      await this.entityManager.query("UPDATE Race SET SeisaiNaiyou = ? WHERE Id = ?", [seisaiNaiyou, race.Id]);
+      await this.entityManager
+        .createQueryBuilder()
+        .update(Race, { SeisaiNaiyou: seisaiNaiyou })
+        .where("Id = :id")
+        .setParameter("id", race.Id)
+        .execute();
     }
   }
 }
