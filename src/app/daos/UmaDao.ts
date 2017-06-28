@@ -59,7 +59,7 @@ export class UmaDao {
       .andWhere("k.UmaKigou = :umaKigou")
       .setParameter("umaKigou", kyousouba.UmaKigou)
       .andWhere("k.BanushiId = :banushiId")
-      .setParameter("banushiId", kyousouba.Banushi.Id);
+      .setParameter("banushiId", kyousouba.BanushiId);
     if (kyousouba.Kyuusha) {
       qb.andWhere("k.KyuushaId = :kyuushaId")
         .setParameter("kyuushaId", kyousouba.Kyuusha.Id);

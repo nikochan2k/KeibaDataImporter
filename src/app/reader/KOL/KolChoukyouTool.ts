@@ -159,7 +159,7 @@ export class KolChoukyouTool {
       }
       const choukyouTime = new ChoukyouTime();
       choukyouTime.Id = choukyou.Id + cf.f;
-      choukyouTime.Choukyou = choukyou;
+      choukyouTime.ChoukyouId = choukyou.Id;
       choukyouTime.F = cf.f;
       const time = parseFloat(comment);
       if (isNaN(time)) {

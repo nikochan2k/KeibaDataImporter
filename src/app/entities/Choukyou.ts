@@ -4,10 +4,8 @@ import {
   Index,
   JoinColumn,
   ManyToOne,
-  OneToMany,
   PrimaryColumn
 } from "typeorm";
-import { ChoukyouTime } from "./ChoukyouTime";
 import { Kishu } from "./Kishu";
 import { Shussouba } from "./Shussouba";
 import { Uma } from "./Uma";
@@ -89,7 +87,4 @@ export class Choukyou {
 
   @Column("varchar", { length: 129, nullable: true })
   public AwaseReigai?: string;
-
-  @OneToMany(() => ChoukyouTime, ct => ct.Choukyou)
-  public ChoukyouTimeList: ChoukyouTime[];
 }

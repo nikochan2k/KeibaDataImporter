@@ -106,7 +106,7 @@ export class KolUmaKd3 extends DataToImport {
     kyousouba.Uma = await this.umaDao.saveUma(uma);
     kyousouba.Seibetsu = seibetsu;
     kyousouba.UmaKigou = $U.umaKigou.toCodeFromKol(buffer, 92, 2);
-    kyousouba.Banushi = await this.kolTool.saveBanushi(buffer, 343);
+    kyousouba.BanushiId = (await this.kolTool.saveBanushi(buffer, 343)).Id;
     kyousouba.Kyuusha = await this.kolTool.saveKyuusha(buffer, 488);
     kyousouba.KoueiGaikokuKyuushaMei = readStr(buffer, 536, 8);
     return this.umaDao.saveKyousouba(kyousouba);
@@ -245,7 +245,7 @@ export class KolUmaKd3 extends DataToImport {
     kyousouba.Uma = await this.umaDao.saveUma(uma);
     kyousouba.Seibetsu = seibetsu || current.Seibetsu;
     kyousouba.UmaKigou = $U.umaKigou.toCodeFromKol(buffer, 5, 2) || current.UmaKigou;
-    kyousouba.Banushi = await this.kolTool.saveBanushi(buffer, 10) || current.Banushi;
+    kyousouba.BanushiId = (await this.kolTool.saveBanushi(buffer, 10)).Id || current.BanushiId;
     kyousouba.Kyuusha = kyuusha;
     return this.umaDao.saveKyousouba(kyousouba);
   }

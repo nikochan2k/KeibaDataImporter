@@ -85,7 +85,7 @@ export class KolTool {
     const banushi = new Banushi();
     banushi.BanushiMei = this.tool.normalizeHoujinMei(buffer, offset, 40);
     banushi.TanshukuBanushiMei = this.tool.normalizeTanshukuHoujinMei(buffer, offset + 40, 20);
-    return this.banushiDao.saveBanushi(banushi);
+    return this.banushiDao.save(banushi);
   }
 
   public async saveKyousouba(buffer: Buffer, offset: number, kyuusha: Kyuusha) {
@@ -97,7 +97,7 @@ export class KolTool {
     kyousouba.Uma = await this.umaDao.saveUma(uma);
     kyousouba.Seibetsu = seibetsu;
     kyousouba.UmaKigou = $U.umaKigou.toCodeFromKol(buffer, offset + 30, 2);
-    kyousouba.Banushi = await this.saveBanushi(buffer, offset + 35);
+    kyousouba.BanushiId = (await this.saveBanushi(buffer, offset + 35)).Id;
     kyousouba.Kyuusha = kyuusha;
     return this.umaDao.saveKyousouba(kyousouba);
   }

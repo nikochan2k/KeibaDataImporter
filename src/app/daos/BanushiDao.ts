@@ -9,7 +9,16 @@ export class BanushiDao {
   @OrmRepository(Banushi)
   private repository: Repository<Banushi>;
 
-  public async saveBanushi(toBe: Banushi) {
+  public findOneById(id: number) {
+    /* tslint:disable:triple-equals */
+    if (id == null) {
+      return null;
+    }
+    /* tslint:enable:triple-equals */
+    return this.repository.findOneById(id);
+  }
+
+  public async save(toBe: Banushi) {
     const asIs = await this.repository.findOne({ BanushiMei: toBe.BanushiMei });
     if (asIs) {
       /* tslint:disable:triple-equals */
