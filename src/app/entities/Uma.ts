@@ -2,14 +2,11 @@ import {
   Column,
   Entity,
   Index,
-  JoinColumn,
-  ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn
 } from "typeorm";
 import { Kyousouba } from "./Kyousouba";
 import { Record } from "./Record";
-import { Seisansha } from "./Seisansha";
 import { Choukyou } from "./Choukyou";
 
 @Entity("Uma")
@@ -39,20 +36,14 @@ export class Uma {
   @Column("smallint", { nullable: true })
   public Seibetsu?: number;
 
-  @OneToMany(() => Uma, Uma => Uma.ChichiUma)
-  public Children: Uma[];
+  @Column("int", { nullable: true })
+  public ChichiUmaId?: number;
 
-  @ManyToOne(() => Uma, Uma => Uma.Children, { nullable: true })
-  @JoinColumn({ name: "ChichiUmaId" })
-  public ChichiUma?: Uma;
+  @Column("int", { nullable: true })
+  public HahaUmaId?: number;
 
-  @ManyToOne(() => Uma, Uma => Uma.Children, { nullable: true })
-  @JoinColumn({ name: "HahaUmaId" })
-  public HahaUma?: Uma;
-
-  @ManyToOne(() => Seisansha, Seisansha => Seisansha.UmaList, { nullable: true })
-  @JoinColumn({ name: "SeisanshaId" })
-  public Seisansha?: Seisansha;
+  @Column("int", { nullable: true })
+  public SeisanshaId?: number;
 
   @Column("smallint", { nullable: true })
   public MasshouFlag?: number;

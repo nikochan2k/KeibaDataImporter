@@ -17,36 +17,8 @@ export class UmaDao {
   @OrmRepository(Uma)
   private umaRepository: Repository<Uma>;
 
-  protected async getUma(uma: Uma) {
-    let asIs = await this.umaRepository.findOne({
-      where: {
-        Bamei: uma.Bamei
-      },
-      join: {
-        alias: "Uma",
-        leftJoinAndSelect: {
-          ChichiUma: "Uma.ChichiUma",
-          HahaUma: "Uma.HahaUma",
-          Seisansha: "Uma.Seisansha"
-        }
-      }
-    });
-    if (!asIs) {
-      asIs = await this.umaRepository.findOne({
-        where: {
-          KyuuBamei: uma.Bamei
-        },
-        join: {
-          alias: "Uma",
-          leftJoinAndSelect: {
-            ChichiUma: "Uma.ChichiUma",
-            HahaUma: "Uma.HahaUma",
-            Seisansha: "Uma.Seisansha"
-          }
-        }
-      });
-    }
-    return asIs;
+  protected getUma(uma: Uma) {
+    return this.umaRepository.findOne({ Bamei: uma.Bamei });
   }
 
   public getKyousouba(kyousouba: Kyousouba) {
@@ -83,6 +55,9 @@ export class UmaDao {
     if (asIs) {
       const updateSet: any = {};
       /* tslint:disable:triple-equals */
+      if (asIs.KyuuBamei == null && toBe.KyuuBamei != null) {
+        updateSet.KyuuBamei = asIs.KyuuBamei = toBe.KyuuBamei;
+      }
       if (asIs.Seinengappi == null && toBe.Seinengappi != null) {
         updateSet.Seinengappi = asIs.Seinengappi = toBe.Seinengappi;
       }
@@ -98,17 +73,14 @@ export class UmaDao {
       if (asIs.Seibetsu == null && toBe.Seibetsu != null) {
         updateSet.Seibetsu = asIs.Seibetsu = toBe.Seibetsu;
       }
-      if (asIs.ChichiUma == null && toBe.ChichiUma != null) {
-        asIs.ChichiUma = toBe.ChichiUma;
-        updateSet.ChichiUmaId = toBe.ChichiUma.Id;
+      if (asIs.ChichiUmaId == null && toBe.ChichiUmaId != null) {
+        updateSet.ChichiUmaId = asIs.ChichiUmaId = toBe.ChichiUmaId;
       }
-      if (asIs.HahaUma == null && toBe.HahaUma != null) {
-        asIs.HahaUma = toBe.HahaUma;
-        updateSet.HahaUmaId = toBe.HahaUma.Id;
+      if (asIs.HahaUmaId == null && toBe.HahaUmaId != null) {
+        updateSet.HahaUmaId = asIs.HahaUmaId = toBe.HahaUmaId;
       }
-      if (asIs.Seisansha == null && toBe.Seisansha != null) {
-        asIs.Seisansha = toBe.Seisansha;
-        updateSet.SeisanshaId = toBe.Seisansha.Id;
+      if (asIs.SeisanshaId == null && toBe.SeisanshaId != null) {
+        updateSet.SeisanshaId = asIs.SeisanshaId = toBe.SeisanshaId;
       }
       if (asIs.MasshouFlag == null && toBe.MasshouFlag != null) {
         updateSet.MasshouFlag = asIs.MasshouFlag = toBe.MasshouFlag;

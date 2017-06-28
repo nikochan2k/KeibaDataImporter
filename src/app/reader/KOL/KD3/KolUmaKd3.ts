@@ -57,11 +57,11 @@ export class KolUmaKd3 extends DataToImport {
   protected async saveOyaUma(buffer: Buffer, offset: number, seibetsu: $U.Seibetsu, chichiOffset?: number, hahaOffset?: number) {
     const uma = new Uma();
     uma.Bamei = readStr(buffer, offset, 34);
-    if (chichiOffset && !uma.ChichiUma) {
-      uma.ChichiUma = await this.saveOyaUma(buffer, chichiOffset, $U.Seibetsu.Boba);
+    if (chichiOffset && !uma.ChichiUmaId) {
+      uma.ChichiUmaId = (await this.saveOyaUma(buffer, chichiOffset, $U.Seibetsu.Boba)).Id;
     }
-    if (hahaOffset && !uma.HahaUma) {
-      uma.HahaUma = await this.saveOyaUma(buffer, hahaOffset, $U.Seibetsu.Hinba);
+    if (hahaOffset && !uma.HahaUmaId) {
+      uma.HahaUmaId = (await this.saveOyaUma(buffer, hahaOffset, $U.Seibetsu.Hinba)).Id;
     }
     uma.Seibetsu = seibetsu;
 
@@ -95,9 +95,9 @@ export class KolUmaKd3 extends DataToImport {
     uma.Kesshu = $U.kesshu.toCodeFromKol(buffer, 87, 2);
     uma.Sanchi = $U.sanch.toCodeFromKol(buffer, 89, 3);
     uma.Seibetsu = seibetsu;
-    uma.ChichiUma = await this.saveOyaUma(buffer, 104, $U.Seibetsu.Boba);
-    uma.HahaUma = await this.saveOyaUma(buffer, 145, $U.Seibetsu.Hinba, 186, 227);
-    uma.Seisansha = await this.kolTool.saveSeisansha(buffer, 423);
+    uma.ChichiUmaId = (await this.saveOyaUma(buffer, 104, $U.Seibetsu.Boba)).Id;
+    uma.HahaUmaId = (await this.saveOyaUma(buffer, 145, $U.Seibetsu.Hinba, 186, 227)).Id;
+    uma.SeisanshaId = (await this.kolTool.saveSeisansha(buffer, 423)).Id;
     uma.MasshouFlag = $U.masshouFlag.toCodeFromKol(buffer, 544, 1);
     uma.MasshouNengappi = readDate(buffer, 545, 8);
     uma.Jiyuu = readStr(buffer, 553, 6);
