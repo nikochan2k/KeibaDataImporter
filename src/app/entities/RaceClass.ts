@@ -1,10 +1,4 @@
-import {
-  Column,
-  Entity,
-  OneToMany,
-  PrimaryGeneratedColumn
-  } from "typeorm";
-import { Race } from "./Race";
+import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity("RaceClass")
 export class RaceClass {
@@ -49,9 +43,6 @@ export class RaceClass {
 
   @Column("smallint", { nullable: true })
   public Kumi2?: number;
-
-  @OneToMany(() => Race, r => r.RaceClass)
-  public RaceList: Race[];
 
 }
 

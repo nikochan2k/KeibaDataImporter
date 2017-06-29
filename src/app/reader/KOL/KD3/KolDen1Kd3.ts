@@ -55,7 +55,7 @@ export class KolDen1Kd3 extends DataToImport {
     if (!race.KolSeisekiSakuseiNengappi) {
       race.Kyuujitsu = $R.kyuujitsu.toCodeFromKol(buffer, 20, 1);
       race.Youbi = $R.youbi.toCodeFromKol(buffer, 21, 1);
-      race.RaceClass = await this.saveRaceClass(buffer);
+      race.RaceClassId = (await this.saveRaceClass(buffer)).Id;
       race.BetteiBareiHandi = $R.betteiBareiHandi.toCodeFromKol(buffer, 74, 2);
       const betteiBareiHandiShousai = readStr(buffer, 76, 18);
       if (race.BetteiBareiHandi === null) {

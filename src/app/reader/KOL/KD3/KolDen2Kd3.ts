@@ -8,7 +8,8 @@ import {
   readDate,
   readDouble,
   readPositiveInt,
-  readStr
+  readStr,
+  readStrWithNoSpace
 } from "../../Reader";
 import { KolChoukyouTool } from "../KolChoukyouTool";
 import { KolRaceTool } from "../KolRaceTool";
@@ -73,7 +74,8 @@ export class KolDen2Kd3 extends DataToImport {
     shussouba.KolShutsubahyouSakuseiNengappi = dataSakuseiNengappi;
 
     await this.saveShussouba(buffer, shussouba, cache);
-    await this.saveChoukyou(buffer, shussouba);
+    const tanshukuKishuMei = readStrWithNoSpace(buffer, 188, 8);
+    await this.saveChoukyou(buffer, shussouba, tanshukuKishuMei);
   }
 
   protected async saveShussouba(buffer: Buffer, shussouba: Shussouba, cache: DataCache) {
@@ -101,14 +103,14 @@ export class KolDen2Kd3 extends DataToImport {
     await this.entityManager.save(shussouba);
   }
 
-  protected async saveChoukyou(buffer: Buffer, shussouba: Shussouba) {
+  protected async saveChoukyou(buffer: Buffer, shussouba: Shussouba, tanshukuKishuMei: string) {
     const choukyouAwaseFlag = readPositiveInt(buffer, 607, 1);
     const choukyouAwase = readStr(buffer, 608, 86);
-    await this.choukyouTool.saveChoukyou(buffer, 256, shussouba, 1,
+    await this.choukyouTool.saveChoukyou(buffer, 256, shussouba, tanshukuKishuMei, 1,
       choukyouAwaseFlag === 1 ? choukyouAwase : null);
-    await this.choukyouTool.saveChoukyou(buffer, 373, shussouba, 2,
+    await this.choukyouTool.saveChoukyou(buffer, 373, shussouba, tanshukuKishuMei, 2,
       choukyouAwaseFlag === 2 ? choukyouAwase : null);
-    await this.choukyouTool.saveChoukyou(buffer, 490, shussouba, 3,
+    await this.choukyouTool.saveChoukyou(buffer, 490, shussouba, tanshukuKishuMei, 3,
       choukyouAwaseFlag === 3 ? choukyouAwase : null);
   }
 

@@ -75,7 +75,7 @@ export class KolTool {
       let kyuusha = new Kyuusha();
       kyuusha.KolKyuushaCode = kyuushaCode;
       kyuusha = await this.kyuushaDao.saveKyuusha(kyuusha);
-      shozoku.Kyuusha = kyuusha;
+      shozoku.KyuushaId = kyuusha.Id;
     }
     const minaraiKubun = $KI.minaraiKubun.toCodeFromKol(buffer, offset + 53, 1);
     return this.kishuDao.saveKijou(kishu, shozoku, minaraiKubun);

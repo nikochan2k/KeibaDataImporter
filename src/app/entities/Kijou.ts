@@ -2,28 +2,22 @@ import {
   Column,
   Entity,
   Index,
-  JoinColumn,
-  ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn
-  } from "typeorm";
-import { Kishu } from "./Kishu";
-import { Shozoku } from "./Shozoku";
+} from "typeorm";
 import { Shussouba } from "./Shussouba";
 
 @Entity("Kijou")
-@Index("IxKijou", (k: Kijou) => [k.Kishu, k.Shozoku, k.MinaraiKubun], { unique: true })
+@Index("IxKijou", (k: Kijou) => [k.KishuId, k.ShozokuId, k.MinaraiKubun], { unique: true })
 export class Kijou {
   @PrimaryGeneratedColumn("int")
   public Id: number;
 
-  @ManyToOne(() => Kishu, k => k.KijouList)
-  @JoinColumn({ name: "KishuId" })
-  public Kishu: Kishu;
+  @Column("int")
+  public KishuId: number;
 
-  @ManyToOne(() => Shozoku, k => k.KijouList)
-  @JoinColumn({ name: "ShozokuId" })
-  public Shozoku: Shozoku;
+  @Column("int")
+  public ShozokuId: number;
 
   @Column("smallint")
   public MinaraiKubun: number;

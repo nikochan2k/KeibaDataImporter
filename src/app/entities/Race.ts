@@ -1,5 +1,4 @@
 import { OddsKubun } from "./OddsKubun";
-import { RaceClass } from "./RaceClass";
 import { RaceHaitou } from "./RaceHaitou";
 import { RaceKeika } from "./RaceKeika";
 import { RaceLapTime } from "./RaceLapTime";
@@ -43,9 +42,8 @@ export class Race {
   @Column("smallint", { nullable: true })
   public JuushouKaisuu?: number;
 
-  @ManyToOne(() => RaceClass, rc => rc.Id)
-  @JoinColumn({ name: "RaceClassId" })
-  public RaceClass: RaceClass;
+  @Column("int")
+  public RaceClassId: number;
 
   @Column("int")
   public JoukenFuka: number;

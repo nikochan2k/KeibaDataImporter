@@ -2,16 +2,11 @@ import {
   Column,
   Entity,
   Index,
-  JoinColumn,
-  ManyToOne,
-  OneToMany,
   PrimaryGeneratedColumn
 } from "typeorm";
-import { Kijou } from "./Kijou";
-import { Kyuusha } from "./Kyuusha";
 
 @Entity("Shozoku")
-@Index("IxShozoku", (k: Shozoku) => [k.TouzaiBetsu, k.ShozokuBasho, k.Kyuusha], { unique: true })
+@Index("IxShozoku", (k: Shozoku) => [k.TouzaiBetsu, k.ShozokuBasho, k.KyuushaId], { unique: true })
 export class Shozoku {
   @PrimaryGeneratedColumn("int")
   public Id: number;
@@ -22,10 +17,6 @@ export class Shozoku {
   @Column("smallint", { nullable: true })
   public ShozokuBasho?: number;
 
-  @ManyToOne(() => Kyuusha, Kyuusha => Kyuusha.ShozokuList, { nullable: true })
-  @JoinColumn({ name: "KyuushaId" })
-  public Kyuusha?: Kyuusha;
-
-  @OneToMany(() => Kijou, k => k.Kishu)
-  public KijouList: Kijou[];
+  @Column("int", { nullable: true })
+  public KyuushaId?: number;
 }

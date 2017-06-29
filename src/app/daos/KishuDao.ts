@@ -82,9 +82,9 @@ export class KishuDao {
     } else {
       qb.andWhere("k.TouzaiBetsu IS NULL");
     }
-    if (shozoku.Kyuusha) {
+    if (shozoku.KyuushaId) {
       qb.andWhere("k.KyuushaId = :KyuushaId")
-        .setParameter("KyuushaId", shozoku.Kyuusha.Id);
+        .setParameter("KyuushaId", shozoku.KyuushaId);
     } else {
       qb.andWhere("k.KyuushaId IS NULL");
     }
@@ -95,9 +95,9 @@ export class KishuDao {
     return this.kijouRepository
       .createQueryBuilder("k")
       .where("k.KishuId = :kishuId")
-      .setParameter("kishuId", kijou.Kishu.Id)
+      .setParameter("kishuId", kijou.KishuId)
       .andWhere("k.ShozokuId = :shozokuId")
-      .setParameter("shozokuId", kijou.Shozoku.Id)
+      .setParameter("shozokuId", kijou.ShozokuId)
       .andWhere("k.MinaraiKubun = :minaraiKubun")
       .setParameter("minaraiKubun", kijou.MinaraiKubun)
       .getOne();
@@ -164,9 +164,9 @@ export class KishuDao {
   public async saveKijou(kishu: Kishu, shozoku: Shozoku, minaraiKubun: number) {
     let toBe = new Kijou();
     kishu = await this.saveKishu(kishu);
-    toBe.Kishu = kishu;
+    toBe.KishuId = kishu.Id;
     shozoku = await this.saveShozoku(shozoku);
-    toBe.Shozoku = shozoku;
+    toBe.ShozokuId = shozoku.Id;
     toBe.MinaraiKubun = minaraiKubun;
     const asIs = await this.getKijou(toBe);
     if (asIs) {
@@ -174,8 +174,6 @@ export class KishuDao {
     } else {
       toBe = await this.kijouRepository.save(toBe);
     }
-    toBe.Kishu = kishu;
-    toBe.Shozoku = shozoku;
     return toBe;
   }
 

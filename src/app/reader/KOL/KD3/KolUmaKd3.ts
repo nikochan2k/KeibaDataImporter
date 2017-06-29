@@ -79,7 +79,8 @@ export class KolUmaKd3 extends DataToImport {
         const shussouba = await this.saveShussouba(shussoubaBuffer, race, kyousouba);
         if (shussouba) {
           await this.kolTool.saveShussoubaTsuukaJuni(shussoubaBuffer, 239, shussouba);
-          await this.choukyouTool.saveChoukyou(shussoubaBuffer, 248, shussouba, 1);
+          const tanshukuKishuMei = readStrWithNoSpace(shussoubaBuffer, 140, 8);
+          await this.choukyouTool.saveChoukyou(shussoubaBuffer, 248, shussouba, tanshukuKishuMei, 1);
         }
       }
     }
@@ -121,7 +122,7 @@ export class KolUmaKd3 extends DataToImport {
     }
     race.Kyuujitsu = $R.kyuujitsu.toCodeFromKol(buffer, 20, 1);
     race.Youbi = $R.youbi.toCodeFromKol(buffer, 21, 1);
-    race.RaceClass = await this.saveRaceClass(buffer);
+    race.RaceClassId = (await this.saveRaceClass(buffer)).Id;
     race.BetteiBareiHandi = $R.betteiBareiHandi.toCodeFromKol(buffer, 74, 2);
     const betteiBareiHandiShousai = readStr(buffer, 76, 18);
     if (race.BetteiBareiHandi === null) {

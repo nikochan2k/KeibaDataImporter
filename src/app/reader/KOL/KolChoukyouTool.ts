@@ -16,7 +16,7 @@ import {
   readPositiveInt,
   readStr,
   readStrWithNoSpace
-  } from "../Reader";
+} from "../Reader";
 
 export interface FurlongOffset {
   f: number;
@@ -58,7 +58,7 @@ export class KolChoukyouTool {
     this.logger = getLogger(this);
   }
 
-  public async saveChoukyou(buffer: Buffer, offset: number, shussouba: Shussouba, bangou: number, awase?: string
+  public async saveChoukyou(buffer: Buffer, offset: number, shussouba: Shussouba, tanshukuKishuMei: string, bangou: number, awase?: string
   ) {
     const kijousha = readStrWithNoSpace(buffer, offset + 1, 8);
     if (!kijousha) {
@@ -78,7 +78,7 @@ export class KolChoukyouTool {
       kishu.FromDate = nengappi;
       kishu.ToDate = nengappi;
       choukyou.Kishu = await this.kishuDao.saveKishu(kishu);
-      if (shussouba.Kijou.Kishu.TanshukuKishuMei === kijousha) {
+      if (tanshukuKishuMei === kijousha) {
         choukyou.Noriyaku = 3; // 本番騎手
       } else {
         choukyou.Noriyaku = 4; // 調教騎手

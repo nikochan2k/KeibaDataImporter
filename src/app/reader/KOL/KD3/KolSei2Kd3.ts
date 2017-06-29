@@ -10,7 +10,8 @@ import {
   readDouble,
   readInt,
   readPositiveInt,
-  readTime
+  readTime,
+  readStrWithNoSpace
 } from "../../Reader";
 import { KolChoukyouTool } from "../KolChoukyouTool";
 import { KolRaceTool } from "../KolRaceTool";
@@ -80,7 +81,8 @@ export class KolSei2Kd3 extends DataToImport {
     await this.saveShussouba(buffer, shussouba, cache);
     await this.kolTool.saveShussoubaTsuukaJuni(buffer, 298, shussouba);
     if (!shussouba.KolShutsubahyouSakuseiNengappi) {
-      await this.choukyouTool.saveChoukyou(buffer, 307, shussouba, 1);
+      const tanshukuKishuMei = readStrWithNoSpace(buffer, 199, 8);
+      await this.choukyouTool.saveChoukyou(buffer, 307, shussouba, tanshukuKishuMei, 1);
     }
   }
 
