@@ -2,17 +2,13 @@ import {
   Column,
   Entity,
   Index,
-  JoinColumn,
-  ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn
   } from "typeorm";
-import { Kishu } from "./Kishu";
 import { Race } from "./Race";
-import { Uma } from "./Uma";
 
 @Entity("Record")
-@Index("IxRecord", (r: Record) => [r.Nengappi, r.Uma])
+@Index("IxRecord", (r: Record) => [r.Nengappi, r.UmaId])
 export class Record {
   @PrimaryGeneratedColumn("bigint")
   public Id: number;
@@ -23,16 +19,14 @@ export class Record {
   @Column("float")
   public Time: number;
 
-  @ManyToOne(() => Uma, u => u.RecordList)
-  @JoinColumn({ name: "UmaId" })
-  public Uma: Uma;
+  @Column("int")
+  public UmaId: number;
 
   @Column("float")
   public Kinryou: number;
 
-  @ManyToOne(() => Kishu, k => k.RecordList)
-  @JoinColumn({ name: "KishuId" })
-  public Kishu: Kishu;
+  @Column("int")
+  public KishuId: number;
 
   @Column("smallint")
   public Basho: number;

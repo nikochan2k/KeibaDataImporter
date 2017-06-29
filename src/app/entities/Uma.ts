@@ -6,8 +6,6 @@ import {
   PrimaryGeneratedColumn
 } from "typeorm";
 import { Kyousouba } from "./Kyousouba";
-import { Record } from "./Record";
-import { Choukyou } from "./Choukyou";
 
 @Entity("Uma")
 @Index("IxUma", (u: Uma) => [u.Bamei])
@@ -65,10 +63,4 @@ export class Uma {
 
   @OneToMany(() => Kyousouba, k => k.Uma)
   public KyousoubaList: Kyousouba[];
-
-  @OneToMany(() => Record, r => r.Uma)
-  public RecordList: Record[];
-
-  @OneToMany(() => Choukyou, c => c.AwaseUma)
-  public ChoukyouList: Choukyou[];
 }

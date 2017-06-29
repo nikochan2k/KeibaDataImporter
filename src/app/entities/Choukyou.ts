@@ -2,23 +2,17 @@ import {
   Column,
   Entity,
   Index,
-  JoinColumn,
-  ManyToOne,
   PrimaryColumn
 } from "typeorm";
-import { Kishu } from "./Kishu";
-import { Shussouba } from "./Shussouba";
-import { Uma } from "./Uma";
 
 @Entity("Choukyou")
-@Index("IxChoukyou", (c: Choukyou) => [c.Shussouba])
+@Index("IxChoukyou", (c: Choukyou) => [c.ShussoubaId])
 export class Choukyou {
   @PrimaryColumn("bigint")
   public Id: number;
 
-  @ManyToOne(() => Shussouba, s => s.ChoukyouList)
-  @JoinColumn({ name: "ShussoubaId" })
-  public Shussouba: Shussouba;
+  @Column("bigint")
+  public ShussoubaId: number;
 
   @Column("smallint")
   public Bangou: number;
@@ -29,9 +23,8 @@ export class Choukyou {
   @Column("smallint", { nullable: true })
   public Noriyaku?: number;
 
-  @ManyToOne(() => Kishu, k => k.ChoukyouList, { nullable: true })
-  @JoinColumn({ name: "KishuId" })
-  public Kishu: Kishu;
+  @Column("smallint", { nullable: true })
+  public KishuId: number;
 
   @Column("date", { nullable: true })
   public Nengappi?: Date;
@@ -72,9 +65,8 @@ export class Choukyou {
   @Column("varchar", { length: 60, nullable: true })
   public Reigai?: string;
 
-  @ManyToOne(() => Uma, u => u.ChoukyouList, { nullable: true })
-  @JoinColumn({ name: "AwaseUmaId" })
-  public AwaseUma?: Uma;
+  @Column("int", { nullable: true })
+  public AwaseUmaId?: number;
 
   @Column("smallint", { nullable: true })
   public AwaseKekka?: number;

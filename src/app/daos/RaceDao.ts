@@ -89,7 +89,7 @@ export class RaceDao {
       .where("r.Nengappi = :nengappi")
       .setParameter("nengappi", this.tool.toDateString(toBe.Nengappi))
       .andWhere("r.UmaId = :umaId")
-      .setParameter("umaId", toBe.Uma.Id)
+      .setParameter("umaId", toBe.UmaId)
       .getOne();
     if (asIs) {
       toBe = asIs;

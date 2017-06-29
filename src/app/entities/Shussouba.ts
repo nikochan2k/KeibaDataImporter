@@ -7,7 +7,6 @@ import {
   OneToMany,
   PrimaryColumn
   } from "typeorm";
-import { Choukyou } from "./Choukyou";
 import { Kijou } from "./Kijou";
 import { Race } from "./Race";
 import { ShussoubaBagu } from "./ShussoubaBagu";
@@ -161,9 +160,6 @@ export class Shussouba {
 
   @Column("date", { nullable: true })
   public JrdbSeisekiSakuseiNengappi?: Date;
-
-  @OneToMany(() => Choukyou, c => c.Shussouba)
-  public ChoukyouList: Choukyou[];
 
   @OneToMany(() => ShussoubaTsuukaJuni, stj => stj.Shussouba)
   public ShussoubaTsuukaJuniList: ShussoubaTsuukaJuni[];

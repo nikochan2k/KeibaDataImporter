@@ -66,7 +66,7 @@ export class KolChoukyouTool {
     }
     const choukyou = new Choukyou();
     choukyou.Id = shussouba.Id * 10 + bangou;
-    choukyou.Shussouba = shussouba;
+    choukyou.ShussoubaId = shussouba.Id;
     choukyou.Bangou = bangou;
     choukyou.ChoukyouFlag = $CH.choukyouFlag.toCodeFromKol(buffer, offset, 1);
     choukyou.Noriyaku = $CH.noriyaku.toCodeFromKol(kijousha);
@@ -77,7 +77,7 @@ export class KolChoukyouTool {
       kishu.TanshukuKishuMei = kijousha;
       kishu.FromDate = nengappi;
       kishu.ToDate = nengappi;
-      choukyou.Kishu = await this.kishuDao.saveKishu(kishu);
+      choukyou.KishuId = (await this.kishuDao.saveKishu(kishu)).Id;
       if (tanshukuKishuMei === kijousha) {
         choukyou.Noriyaku = 3; // 本番騎手
       } else {
@@ -114,7 +114,7 @@ export class KolChoukyouTool {
         const awaseUma = execed[0];
         const uma = new Uma();
         uma.Bamei = awaseUma;
-        choukyou.AwaseUma = await this.umaDao.saveUma(uma);
+        choukyou.AwaseUmaId = (await this.umaDao.saveUma(uma)).Id;
       } else {
         reigai = true;
       }

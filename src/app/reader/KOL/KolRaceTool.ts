@@ -118,14 +118,14 @@ export class KolRaceTool {
     record.Time = readTime(buffer, offset + 8, 4);
     const uma = new Uma();
     uma.Bamei = bamei;
-    record.Uma = await this.umaDao.saveUma(uma);
+    record.UmaId = (await this.umaDao.saveUma(uma)).Id;
     record.Kinryou = readDouble(buffer, offset + 42, 3, 0.1);
     const kishu = new Kishu();
     kishu.TanshukuKishuMei = readStrWithNoSpace(buffer, offset + 45, 8);
     kishu.FromDate = nengappi;
     kishu.ToDate = nengappi;
     kishu.TanshukuKishuMei = readStrWithNoSpace(buffer, offset + 45, 8);
-    record.Kishu = await this.kishuDao.saveKishu(kishu);
+    record.KishuId = (await this.kishuDao.saveKishu(kishu)).Id;
     record.Basho = $C.basho.toCodeFromKol(buffer, bashoOffset, 2);
     return this.raceDao.saveRecord(record);
   }

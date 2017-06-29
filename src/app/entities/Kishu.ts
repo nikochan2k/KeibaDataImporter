@@ -2,11 +2,8 @@ import {
   Column,
   Entity,
   Index,
-  OneToMany,
   PrimaryGeneratedColumn
-  } from "typeorm";
-import { Choukyou } from "./Choukyou";
-import { Record } from "./Record";
+} from "typeorm";
 
 @Entity("Kishu")
 @Index("IxKishu1", (k: Kishu) => [k.TanshukuKishuMei, k.KishuMei], { unique: true })
@@ -41,10 +38,4 @@ export class Kishu {
 
   @Column("smallint", { nullable: true })
   public HatsuMenkyoNen?: number;
-
-  @OneToMany(() => Choukyou, c => c.Kishu)
-  public ChoukyouList: Choukyou[];
-
-  @OneToMany(() => Record, r => r.Kishu)
-  public RecordList: Record[];
 }
