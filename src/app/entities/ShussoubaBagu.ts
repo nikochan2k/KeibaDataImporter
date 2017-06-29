@@ -2,21 +2,17 @@ import {
   Column,
   Entity,
   Index,
-  JoinColumn,
-  ManyToOne,
   PrimaryColumn
-  } from "typeorm";
-import { Shussouba } from "./Shussouba";
+} from "typeorm";
 
 @Entity("ShussoubaBagu")
-@Index("IxShussoubaBagu", (sb: ShussoubaBagu) => [sb.Shussouba])
+@Index("IxShussoubaBagu", (sb: ShussoubaBagu) => [sb.ShussoubaId])
 export class ShussoubaBagu {
   @PrimaryColumn("bigint")
   public Id: number;
 
-  @ManyToOne(() => Shussouba, s => s.ShussoubaBaguList)
-  @JoinColumn({ name: "ShussoubaId" })
-  public Shussouba: Shussouba;
+  @Column("bigint")
+  public ShussoubaId: number;
 
   @Column("smallint")
   public BaguShubetsu: number;

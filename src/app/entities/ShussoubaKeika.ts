@@ -2,26 +2,20 @@ import {
   Column,
   Entity,
   Index,
-  JoinColumn,
-  ManyToOne,
   PrimaryColumn
-  } from "typeorm";
-import { RaceKeika } from "./RaceKeika";
-import { Shussouba } from "./Shussouba";
+} from "typeorm";
 
 @Entity("ShussoubaKeika")
-@Index("IxShussoubaKeika", (sk: ShussoubaKeika) => [sk.RaceKeika, sk.Shussouba])
+@Index("IxShussoubaKeika", (sk: ShussoubaKeika) => [sk.RaceKeikaId, sk.ShussoubaId])
 export class ShussoubaKeika {
   @PrimaryColumn("bigint")
   public Id: number;
 
-  @ManyToOne(() => RaceKeika, rk => rk.ShussoubaKeikaList)
-  @JoinColumn({ name: "RaceKeikaId" })
-  public RaceKeika: RaceKeika;
+  @Column("bigint")
+  public RaceKeikaId: number;
 
-  @ManyToOne(() => Shussouba, s => s.ShussoubaKeikaList)
-  @JoinColumn({ name: "ShussoubaId" })
-  public Shussouba: Shussouba;
+  @Column("bigint")
+  public ShussoubaId: number;
 
   @Column("smallint")
   public TateCount: number;

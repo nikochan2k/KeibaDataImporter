@@ -2,23 +2,17 @@ import {
   Column,
   Entity,
   Index,
-  JoinColumn,
-  ManyToOne,
-  OneToMany,
   PrimaryColumn
-  } from "typeorm";
-import { Race } from "./Race";
-import { ShussoubaKeika } from "./ShussoubaKeika";
+} from "typeorm";
 
 @Entity("RaceKeika")
-@Index("IxRaceKeika", (rk: RaceKeika) => [rk.Race])
+@Index("IxRaceKeika", (rk: RaceKeika) => [rk.RaceId])
 export class RaceKeika {
   @PrimaryColumn("bigint")
   public Id: number;
 
-  @ManyToOne(() => Race, Race => Race.RaceKeikaList)
-  @JoinColumn({ name: "RaceId" })
-  public Race: Race;
+  @Column("bigint")
+  public RaceId: number;
 
   @Column("varchar", { length: 165 })
   public Keika: string;
@@ -28,7 +22,4 @@ export class RaceKeika {
 
   @Column("smallint", { nullable: true })
   public Midashi2?: number;
-
-  @OneToMany(() => ShussoubaKeika, sk => sk.RaceKeika)
-  public ShussoubaKeikaList: ShussoubaKeika[];
 }

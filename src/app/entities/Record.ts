@@ -2,10 +2,8 @@ import {
   Column,
   Entity,
   Index,
-  OneToMany,
   PrimaryGeneratedColumn
-  } from "typeorm";
-import { Race } from "./Race";
+} from "typeorm";
 
 @Entity("Record")
 @Index("IxRecord", (r: Record) => [r.Nengappi, r.UmaId])
@@ -30,13 +28,4 @@ export class Record {
 
   @Column("smallint")
   public Basho: number;
-
-  @OneToMany(() => Race, r => r.CourseRecord)
-  public CourseRecordList: Race[];
-
-  @OneToMany(() => Race, r => r.KyoriRecord)
-  public KyoriRecordList: Race[];
-
-  @OneToMany(() => Race, r => r.RaceRecord)
-  public RaceRecordList: Race[];
 }

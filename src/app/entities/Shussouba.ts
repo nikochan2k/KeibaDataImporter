@@ -4,14 +4,10 @@ import {
   Index,
   JoinColumn,
   ManyToOne,
-  OneToMany,
   PrimaryColumn
-  } from "typeorm";
+} from "typeorm";
 import { Kijou } from "./Kijou";
 import { Race } from "./Race";
-import { ShussoubaBagu } from "./ShussoubaBagu";
-import { ShussoubaKeika } from "./ShussoubaKeika";
-import { ShussoubaTsuukaJuni } from "./ShussoubaTsuukaJuni";
 import { Kyousouba } from "./Kyousouba";
 
 @Entity("Shussouba")
@@ -160,13 +156,4 @@ export class Shussouba {
 
   @Column("date", { nullable: true })
   public JrdbSeisekiSakuseiNengappi?: Date;
-
-  @OneToMany(() => ShussoubaTsuukaJuni, stj => stj.Shussouba)
-  public ShussoubaTsuukaJuniList: ShussoubaTsuukaJuni[];
-
-  @OneToMany(() => ShussoubaKeika, sk => sk.Shussouba)
-  public ShussoubaKeikaList: ShussoubaKeika[];
-
-  @OneToMany(() => ShussoubaBagu, sb => sb.Shussouba)
-  public ShussoubaBaguList: ShussoubaBagu[];
 }

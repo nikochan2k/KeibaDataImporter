@@ -76,9 +76,9 @@ export class KolDen1Kd3 extends DataToImport {
       race.UchiSoto = $R.uchiSoto.toCodeFromKol(buffer, 107, 1);
       race.Course = $R.course.toCodeFromKol(buffer, 108, 1);
       race.Kyori = readPositiveInt(buffer, 109, 4);
-      race.CourseRecord = await this.kolRaceTool.getRecord(buffer, 114, 0);
-      race.KyoriRecord = await this.kolRaceTool.getRecord(buffer, 167, 220);
-      race.RaceRecord = await this.kolRaceTool.getRecord(buffer, 222, 275);
+      race.CourseRecordId = (await this.kolRaceTool.getRecord(buffer, 114, 0)).Id;
+      race.KyoriRecordId = (await this.kolRaceTool.getRecord(buffer, 167, 220)).Id;
+      race.RaceRecordId = (await this.kolRaceTool.getRecord(buffer, 222, 275)).Id;
       race.MaeuriFlag = $R.maeuriFlag.toCodeFromKol(buffer, 331, 1);
       race.YoteiHassouJikan = readStr(buffer, 332, 5);
       race.Tousuu = readPositiveInt(buffer, 337, 2);

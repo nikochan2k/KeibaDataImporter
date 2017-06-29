@@ -33,10 +33,10 @@ export class KeikaTool {
   protected buildShussoubaKeika(raceKeika: RaceKeika, shussoubaKeika: ShussoubaKeika, umabanStr: string) {
     const umaban = parseInt(umabanStr);
     const shussouba = new Shussouba();
-    shussouba.Id = raceKeika.Race.Id * 100 + umaban;
+    shussouba.Id = raceKeika.RaceId * 100 + umaban;
     shussoubaKeika.Id = raceKeika.Id * 100 + umaban;
-    shussoubaKeika.RaceKeika = raceKeika;
-    shussoubaKeika.Shussouba = shussouba;
+    shussoubaKeika.RaceKeikaId = raceKeika.Id;
+    shussoubaKeika.ShussoubaId = shussouba.Id;
     return shussoubaKeika;
   }
 

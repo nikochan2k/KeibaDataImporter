@@ -1,12 +1,10 @@
 import { OddsKubun } from "./OddsKubun";
 import { RaceHaitou } from "./RaceHaitou";
-import { RaceKeika } from "./RaceKeika";
 import { RaceLapTime } from "./RaceLapTime";
 import { RaceShoukin } from "./RaceShoukin";
-import { Record } from "./Record";
 import { Shussouba } from "./Shussouba";
 import {
-  Entity, Index, Column, PrimaryColumn, OneToMany, ManyToOne, JoinColumn,
+  Entity, Index, Column, PrimaryColumn, OneToMany,
 } from "typeorm";
 
 @Entity("Race")
@@ -105,17 +103,14 @@ export class Race {
   @Column("float", { nullable: true })
   public ShougaiHeikin1F?: number;
 
-  @ManyToOne(() => Record, r => r.CourseRecordList, { nullable: true })
-  @JoinColumn({ name: "CourseRecordId" })
-  public CourseRecord?: Record;
+  @Column("int", { nullable: true })
+  public CourseRecordId?: number;
 
-  @ManyToOne(() => Record, r => r.KyoriRecordList, { nullable: true })
-  @JoinColumn({ name: "KyoriRecordId" })
-  public KyoriRecord?: Record;
+  @Column("int", { nullable: true })
+  public KyoriRecordId?: number;
 
-  @ManyToOne(() => Record, r => r.RaceRecordList, { nullable: true })
-  @JoinColumn({ name: "RaceRecordId" })
-  public RaceRecord?: Record;
+  @Column("int", { nullable: true })
+  public RaceRecordId?: number;
 
   @Column("text", { nullable: true })
   public HassouJoukyou?: string;
@@ -155,9 +150,6 @@ export class Race {
 
   @OneToMany(() => RaceHaitou, rh => rh.Race)
   public RaceHaitouList: RaceHaitou[];
-
-  @OneToMany(() => RaceKeika, rk => rk.Race)
-  public RaceKeikaList: RaceKeika[];
 
   @OneToMany(() => OddsKubun, ok => ok.Race)
   public OddsKubunList: OddsKubun[];

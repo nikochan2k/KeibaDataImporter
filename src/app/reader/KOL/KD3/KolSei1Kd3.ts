@@ -87,9 +87,9 @@ export class KolSei1Kd3 extends DataToImport {
     race.UchiSoto = $R.uchiSoto.toCodeFromKol(buffer, 118, 1);
     race.Course = $R.course.toCodeFromKol(buffer, 119, 1);
     race.Kyori = readPositiveInt(buffer, 120, 4);
-    race.CourseRecord = await this.kolRaceTool.getRecord(buffer, 125, 0);
-    race.KyoriRecord = await this.kolRaceTool.getRecord(buffer, 178, 231);
-    race.RaceRecord = await this.kolRaceTool.getRecord(buffer, 233, 286);
+    race.CourseRecordId = (await this.kolRaceTool.getRecord(buffer, 125, 0)).Id;
+    race.KyoriRecordId = (await this.kolRaceTool.getRecord(buffer, 178, 231)).Id;
+    race.RaceRecordId = (await this.kolRaceTool.getRecord(buffer, 233, 286)).Id;
     race.MaeuriFlag = $R.maeuriFlag.toCodeFromKol(buffer, 360, 1);
     race.YoteiHassouJikan = readStr(buffer, 361, 5);
     race.Tousuu = readPositiveInt(buffer, 366, 2);
@@ -279,7 +279,7 @@ export class KolSei1Kd3 extends DataToImport {
       }
       const raceKeika = new RaceKeika();
       raceKeika.Id = race.Id * 10 + bangou;
-      raceKeika.Race = race;
+      raceKeika.RaceId = race.Id;
       raceKeika.Midashi1 = $RK.midashi1.toCodeFromKol(buffer, offset, 1);
       raceKeika.Midashi2 = $RK.midashi2.toCodeFromKol(buffer, offset + 1, 2);
       raceKeika.Keika = keika;
@@ -287,7 +287,7 @@ export class KolSei1Kd3 extends DataToImport {
 
       const shussoubaKeikaList = this.keikaTool.parseRaceKeika(raceKeika);
       shussoubaKeikaList.forEach((shussoubaKeika) => {
-        cache.addKeika(shussoubaKeika.Shussouba.Id, shussoubaKeika);
+        cache.addKeika(shussoubaKeika.ShussoubaId, shussoubaKeika);
       });
     }
   }
