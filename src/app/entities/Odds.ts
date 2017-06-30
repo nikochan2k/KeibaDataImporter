@@ -2,21 +2,17 @@ import {
   Column,
   Entity,
   Index,
-  JoinColumn,
-  ManyToOne,
   PrimaryGeneratedColumn
-  } from "typeorm";
-import { OddsKubun } from "./OddsKubun";
+} from "typeorm";
 
 @Entity("Odds")
-@Index("IxOdds", (o: Odds) => [o.OddsKubun])
+@Index("IxOdds", (o: Odds) => [o.OddsKubunId])
 export class Odds {
   @PrimaryGeneratedColumn()
   public Id: number;
 
-  @ManyToOne(() => OddsKubun, ok => ok.OddsList)
-  @JoinColumn({ name: "OddsKubunId" })
-  public OddsKubun: OddsKubun;
+  @Column("bigint")
+  public OddsKubunId: number;
 
   @Column("smallint")
   public Bangou1: number;

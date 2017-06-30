@@ -1,10 +1,8 @@
-import { OddsKubun } from "./OddsKubun";
-import { RaceHaitou } from "./RaceHaitou";
-import { RaceLapTime } from "./RaceLapTime";
-import { RaceShoukin } from "./RaceShoukin";
-import { Shussouba } from "./Shussouba";
 import {
-  Entity, Index, Column, PrimaryColumn, OneToMany,
+  Column,
+  Entity,
+  Index,
+  PrimaryColumn
 } from "typeorm";
 
 @Entity("Race")
@@ -141,19 +139,4 @@ export class Race {
 
   @Column("varchar", { nullable: true, length: 18 })
   public Yosoushamei2: string;
-
-  @OneToMany(() => RaceShoukin, rs => rs.Race)
-  public RaceShoukinList: RaceShoukin[];
-
-  @OneToMany(() => RaceLapTime, rlt => rlt.Race)
-  public RaceLapTimeList: RaceLapTime[];
-
-  @OneToMany(() => RaceHaitou, rh => rh.Race)
-  public RaceHaitouList: RaceHaitou[];
-
-  @OneToMany(() => OddsKubun, ok => ok.Race)
-  public OddsKubunList: OddsKubun[];
-
-  @OneToMany(() => Shussouba, s => s.Race)
-  public ShussoubaList: Shussouba[];
 }

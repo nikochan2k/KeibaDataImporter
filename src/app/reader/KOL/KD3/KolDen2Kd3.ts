@@ -1,6 +1,7 @@
 import { Inject, Service } from "typedi";
 import * as $S from "../../../converters/Shussouba";
 import { Choukyou } from "../../../entities/Choukyou";
+import { Race } from "../../../entities/Race";
 import { Shussouba } from "../../../entities/Shussouba";
 import { DataCache } from "../../DataCache";
 import { DataToImport } from "../../DataToImport";
@@ -69,24 +70,24 @@ export class KolDen2Kd3 extends DataToImport {
       shussouba = new Shussouba();
       shussouba.Id = id;
     }
-    shussouba.Race = race;
+    shussouba.RaceId = race.Id;
     shussouba.Umaban = umaban;
     shussouba.KolShutsubahyouSakuseiNengappi = dataSakuseiNengappi;
 
-    await this.saveShussouba(buffer, shussouba, cache);
+    await this.saveShussouba(buffer, race, shussouba, cache);
     const tanshukuKishuMei = readStrWithNoSpace(buffer, 188, 8);
     await this.saveChoukyou(buffer, shussouba, tanshukuKishuMei);
   }
 
-  protected async saveShussouba(buffer: Buffer, shussouba: Shussouba, cache: DataCache) {
+  protected async saveShussouba(buffer: Buffer, race: Race, shussouba: Shussouba, cache: DataCache) {
     if (!shussouba.KolSeisekiSakuseiNengappi) {
       shussouba.Wakuban = readPositiveInt(buffer, 22, 1);
       const kyuusha = await this.kolTool.saveKyuusha(buffer, 206);
-      shussouba.Kyousouba = await this.kolTool.saveKyousouba(buffer, 32, kyuusha);
+      shussouba.KyousoubaId = (await this.kolTool.saveKyousouba(buffer, 32, kyuusha)).Kyousouba.Id;
       shussouba.Nenrei = readPositiveInt(buffer, 65, 2);
       shussouba.Blinker = $S.blinker.toCodeFromKol(buffer, 147, 1);
       shussouba.Kinryou = readDouble(buffer, 148, 3, 0.1);
-      shussouba.Kijou = await this.kolTool.saveKijou(buffer, 151, shussouba.Race.Nengappi);
+      shussouba.KijouId = (await this.kolTool.saveKijou(buffer, 151, race.Nengappi)).Id;
       shussouba.Norikawari = $S.norikawari.toCodeFromKol(buffer, 205, 1);
     }
 

@@ -2,10 +2,8 @@ import {
   Column,
   Entity,
   Index,
-  OneToMany,
   PrimaryGeneratedColumn
 } from "typeorm";
-import { Kyousouba } from "./Kyousouba";
 
 @Entity("Uma")
 @Index("IxUma", (u: Uma) => [u.Bamei])
@@ -60,7 +58,4 @@ export class Uma {
 
   @Column("smallint", { nullable: true })
   public ShibouNen?: number;
-
-  @OneToMany(() => Kyousouba, k => k.Uma)
-  public KyousoubaList: Kyousouba[];
 }

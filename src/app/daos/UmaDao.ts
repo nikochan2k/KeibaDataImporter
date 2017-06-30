@@ -25,16 +25,16 @@ export class UmaDao {
     const qb = this.kyousoubaRepository
       .createQueryBuilder("k")
       .where("k.UmaId = umaId")
-      .setParameter("umaId", kyousouba.Uma.Id)
+      .setParameter("umaId", kyousouba.UmaId)
       .andWhere("k.Seibetsu = :seibetsu")
       .setParameter("seibetsu", kyousouba.Seibetsu)
       .andWhere("k.UmaKigou = :umaKigou")
       .setParameter("umaKigou", kyousouba.UmaKigou)
       .andWhere("k.BanushiId = :banushiId")
       .setParameter("banushiId", kyousouba.BanushiId);
-    if (kyousouba.Kyuusha) {
+    if (kyousouba.KyuushaId) {
       qb.andWhere("k.KyuushaId = :kyuushaId")
-        .setParameter("kyuushaId", kyousouba.Kyuusha.Id);
+        .setParameter("kyuushaId", kyousouba.KyuushaId);
     } else {
       qb.andWhere("k.KyuushaId IS NULL");
     }
@@ -114,14 +114,12 @@ export class UmaDao {
   }
 
   public async saveKyousouba(toBe: Kyousouba) {
-    const uma = toBe.Uma;
     const asIs = await this.getKyousouba(toBe);
     if (asIs) {
       toBe = asIs;
     } else {
       toBe = await this.kyousoubaRepository.save(toBe);
     }
-    toBe.Uma = uma;
     return toBe;
   }
 

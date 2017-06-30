@@ -2,6 +2,7 @@ import { Logger } from "log4js";
 import { Service } from "typedi";
 import { readInt, readStrWithNoSpace } from "./Reader";
 import { Shussouba } from "../entities/Shussouba";
+import { Race } from "../entities/Race";
 import { getLogger } from "../LogUtil";
 
 @Service()
@@ -62,8 +63,8 @@ export class DataTool {
     return id;
   }
 
-  public normalizeNenrei(shussouba: Shussouba) {
-    if (shussouba.Race.Nen <= 2000) {
+  public normalizeNenrei(race: Race, shussouba: Shussouba) {
+    if (race.Nen <= 2000) {
       shussouba.Nenrei--;
     }
   }

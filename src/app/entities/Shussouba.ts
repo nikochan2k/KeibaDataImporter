@@ -2,29 +2,22 @@ import {
   Column,
   Entity,
   Index,
-  JoinColumn,
-  ManyToOne,
   PrimaryColumn
 } from "typeorm";
-import { Kijou } from "./Kijou";
-import { Race } from "./Race";
-import { Kyousouba } from "./Kyousouba";
 
 @Entity("Shussouba")
-@Index("IxShussouba1", (s: Shussouba) => [s.Race, s.Umaban])
+@Index("IxShussouba1", (s: Shussouba) => [s.RaceId, s.Umaban])
 @Index("IxShussouba2", (s: Shussouba) => [s.Time])
 @Index("IxShussouba3", (s: Shussouba) => [s.Ten3F])
 @Index("IxShussouba4", (s: Shussouba) => [s.Agari3F])
-@Index("IxShussouba5", (s: Shussouba) => [s.Kyousouba])
-@Index("IxShussouba6", (s: Shussouba) => [s.Kijou])
+@Index("IxShussouba5", (s: Shussouba) => [s.KyousoubaId])
+@Index("IxShussouba6", (s: Shussouba) => [s.KijouId])
 export class Shussouba {
   @PrimaryColumn("bigint")
   public Id: number;
 
-  @Column("bigint", { name: "RaceId" })
-  @ManyToOne(() => Race, r => r.ShussoubaList)
-  @JoinColumn({ name: "RaceId" })
-  public Race: Race;
+  @Column("bigint")
+  public RaceId: number;
 
   @Column("smallint", { nullable: true })
   public Wakuban?: number;
@@ -35,9 +28,8 @@ export class Shussouba {
   @Column("smallint", { nullable: true })
   public Gate?: number;
 
-  @ManyToOne(() => Kyousouba, k => k.ShussoubaList)
-  @JoinColumn({ name: "KyousoubaId" })
-  public Kyousouba: Kyousouba;
+  @Column("int", { nullable: true })
+  public KyousoubaId: number;
 
   @Column("smallint")
   public Nenrei: number;
@@ -57,9 +49,8 @@ export class Shussouba {
   @Column("smallint", { nullable: true })
   public KolRecordShisuu?: number;
 
-  @ManyToOne(() => Kijou, k => k.ShussoubaList)
-  @JoinColumn({ name: "KijouId" })
-  public Kijou: Kijou;
+  @Column("int")
+  public KijouId: number;
 
   @Column("smallint", { nullable: true })
   public Norikawari?: number;

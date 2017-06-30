@@ -2,10 +2,8 @@ import {
   Column,
   Entity,
   Index,
-  OneToMany,
   PrimaryGeneratedColumn
 } from "typeorm";
-import { Kyousouba } from "./Kyousouba";
 
 @Entity("Kyuusha")
 @Index("IxKyuusha1", (k: Kyuusha) => [k.KyuushaMei], { unique: true })
@@ -44,7 +42,4 @@ export class Kyuusha {
 
   @Column("smallint", { nullable: true })
   public RitsuHokuNanBetsu?: number;
-
-  @OneToMany(() => Kyousouba, k => k.Kyuusha)
-  public KyousoubaList: Kyousouba[];
 }

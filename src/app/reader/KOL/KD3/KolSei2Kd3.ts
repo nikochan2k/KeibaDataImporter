@@ -1,5 +1,6 @@
 import { Inject, Service } from "typedi";
 import * as $S from "../../../converters/Shussouba";
+import { Race } from "../../../entities/Race";
 import { Shussouba } from "../../../entities/Shussouba";
 import { ShussoubaTsuukaJuni } from "../../../entities/ShussoubaTsuukaJuni";
 import { DataCache } from "../../DataCache";
@@ -10,8 +11,8 @@ import {
   readDouble,
   readInt,
   readPositiveInt,
-  readTime,
-  readStrWithNoSpace
+  readStrWithNoSpace,
+  readTime
 } from "../../Reader";
 import { KolChoukyouTool } from "../KolChoukyouTool";
 import { KolRaceTool } from "../KolRaceTool";
@@ -74,11 +75,11 @@ export class KolSei2Kd3 extends DataToImport {
       shussouba = new Shussouba();
       shussouba.Id = id;
     }
-    shussouba.Race = race;
+    shussouba.RaceId = race.Id;
     shussouba.Umaban = umaban;
     shussouba.KolSeisekiSakuseiNengappi = dataSakuseiNengappi;
 
-    await this.saveShussouba(buffer, shussouba, cache);
+    await this.saveShussouba(buffer, race, shussouba, cache);
     await this.kolTool.saveShussoubaTsuukaJuni(buffer, 298, shussouba);
     if (!shussouba.KolShutsubahyouSakuseiNengappi) {
       const tanshukuKishuMei = readStrWithNoSpace(buffer, 199, 8);
@@ -86,17 +87,17 @@ export class KolSei2Kd3 extends DataToImport {
     }
   }
 
-  protected async saveShussouba(buffer: Buffer, shussouba: Shussouba, cache: DataCache) {
+  protected async saveShussouba(buffer: Buffer, race: Race, shussouba: Shussouba, cache: DataCache) {
     shussouba.Wakuban = readPositiveInt(buffer, 22, 1);
     shussouba.Gate = readPositiveInt(buffer, 25, 2);
     const kyuusha = await this.kolTool.saveKyuusha(buffer, 217);
-    shussouba.Kyousouba = await this.kolTool.saveKyousouba(buffer, 34, kyuusha);
+    shussouba.KyousoubaId = (await this.kolTool.saveKyousouba(buffer, 34, kyuusha)).Kyousouba.Id;
     shussouba.Nenrei = readPositiveInt(buffer, 67, 2);
     shussouba.Blinker = $S.blinker.toCodeFromKol(buffer, 149, 1);
     shussouba.Kinryou = readDouble(buffer, 150, 3, 0.1);
     shussouba.Bataijuu = readPositiveInt(buffer, 153, 3);
     shussouba.Zougen = readInt(buffer, 156, 3);
-    shussouba.Kijou = await this.kolTool.saveKijou(buffer, 162, shussouba.Race.Nengappi);
+    shussouba.KijouId = (await this.kolTool.saveKijou(buffer, 162, race.Nengappi)).Id;
     shussouba.Norikawari = $S.norikawari.toCodeFromKol(buffer, 216, 1);
     shussouba.Ninki = readPositiveInt(buffer, 267, 2);
     shussouba.Odds = readDouble(buffer, 269, 5, 0.1);
@@ -109,7 +110,7 @@ export class KolSei2Kd3 extends DataToImport {
     shussouba.Chakusa1 = readInt(buffer, 286, 2);
     shussouba.Chakusa2 = $S.chakura2.toCodeFromKol(buffer, 288, 1);
     shussouba.TimeSa = this.kolTool.getTimeSa(buffer, 289);
-    if (1200 <= shussouba.Race.Kyori) {
+    if (1200 <= race.Kyori) {
       shussouba.Ten3F = readDouble(buffer, 292, 3, 0.1);
       if (shussouba.Time && shussouba.Ten3F) {
         shussouba.Ten3FIkou = shussouba.Time - shussouba.Ten3F;
@@ -119,7 +120,7 @@ export class KolSei2Kd3 extends DataToImport {
     if (shussouba.Time && shussouba.Agari3F) {
       shussouba.Agari3FIzen = shussouba.Time - shussouba.Agari3F;
     }
-    if (1200 < shussouba.Race.Kyori && shussouba.Ten3F && shussouba.Agari3F) {
+    if (1200 < race.Kyori && shussouba.Ten3F && shussouba.Agari3F) {
       shussouba.Chuukan = shussouba.Time - shussouba.Ten3F - shussouba.Agari3F;
     }
     shussouba.YonCornerIchiDori = $S.yonCornerIchiDori.toCodeFromKol(buffer, 306, 1);

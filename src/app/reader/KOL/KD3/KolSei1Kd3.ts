@@ -87,9 +87,12 @@ export class KolSei1Kd3 extends DataToImport {
     race.UchiSoto = $R.uchiSoto.toCodeFromKol(buffer, 118, 1);
     race.Course = $R.course.toCodeFromKol(buffer, 119, 1);
     race.Kyori = readPositiveInt(buffer, 120, 4);
-    race.CourseRecordId = (await this.kolRaceTool.getRecord(buffer, 125, 0)).Id;
-    race.KyoriRecordId = (await this.kolRaceTool.getRecord(buffer, 178, 231)).Id;
-    race.RaceRecordId = (await this.kolRaceTool.getRecord(buffer, 233, 286)).Id;
+    const courceRecord = await this.kolRaceTool.getRecord(buffer, 125, 0);
+    race.CourseRecordId = courceRecord && courceRecord.Id;
+    const kyoriRecord = await this.kolRaceTool.getRecord(buffer, 178, 231);
+    race.KyoriRecordId = kyoriRecord && kyoriRecord.Id;
+    const raceRecord = await this.kolRaceTool.getRecord(buffer, 233, 286);
+    race.RaceRecordId = raceRecord && raceRecord.Id;
     race.MaeuriFlag = $R.maeuriFlag.toCodeFromKol(buffer, 360, 1);
     race.YoteiHassouJikan = readStr(buffer, 361, 5);
     race.Tousuu = readPositiveInt(buffer, 366, 2);
@@ -184,7 +187,7 @@ export class KolSei1Kd3 extends DataToImport {
       }
       const raceLapTime = new RaceLapTime();
       raceLapTime.Id = race.Id * 100 + i;
-      raceLapTime.Race = race;
+      raceLapTime.RaceId = race.Id;
       raceLapTime.KaishiKyori = shuuryouKyori;
       shuuryouKyori = (i === 0 && odd) ? 100 : (shuuryouKyori + 200);
       raceLapTime.ShuuryouKyori = shuuryouKyori;
@@ -196,7 +199,7 @@ export class KolSei1Kd3 extends DataToImport {
   protected async saveShougaiRaceLapTime(buffer: Buffer, race: Race) {
     const raceLapTime = new RaceLapTime();
 
-    raceLapTime.Race = race;
+    raceLapTime.RaceId = race.Id;
     raceLapTime.ShuuryouKyori = race.Kyori;
 
     let lapTime: number;
@@ -226,7 +229,7 @@ export class KolSei1Kd3 extends DataToImport {
   protected async saveChihouRaceLapTime(buffer: Buffer, race: Race) {
     const raceLapTime = new RaceLapTime();
 
-    raceLapTime.Race = race;
+    raceLapTime.RaceId = race.Id;
 
     let lapTime: number;
 

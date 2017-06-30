@@ -140,7 +140,7 @@ export class KolRaceTool {
       }
       const raceShoukin = new RaceShoukin();
       raceShoukin.Id = race.Id * 100 + kakutei * 10 + i;
-      raceShoukin.Race = race;
+      raceShoukin.RaceId = race.Id;
       raceShoukin.Kakutei = kakutei;
       raceShoukin.Chakujun = info.chakujun;
       raceShoukin.Shoukin = shoukin;
@@ -158,7 +158,7 @@ export class KolRaceTool {
       }
       const raceHaitou = new RaceHaitou();
       raceHaitou.Id = race.Id * 100 + i;
-      raceHaitou.Race = race;
+      raceHaitou.RaceId = race.Id;
       raceHaitou.Baken = info.baken;
       raceHaitou.Bangou1 = bangou1;
       if (info.bangou2) {

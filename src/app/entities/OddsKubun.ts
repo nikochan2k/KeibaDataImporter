@@ -2,24 +2,18 @@ import {
   Column,
   Entity,
   Index,
-  JoinColumn,
-  ManyToOne,
-  OneToMany,
   PrimaryColumn
-  } from "typeorm";
-import { Odds } from "./Odds";
-import { Race } from "./Race";
+} from "typeorm";
 
 @Entity("OddsKubun")
 @Index("IxOddsKubun",
-  (ok: OddsKubun) => [ok.Race, ok.BakenShubetsu, ok.YosouKakutei])
+  (ok: OddsKubun) => [ok.RaceId, ok.BakenShubetsu, ok.YosouKakutei])
 export class OddsKubun {
   @PrimaryColumn("bigint")
   public Id: number;
 
-  @ManyToOne(() => Race, Race => Race.OddsKubunList)
-  @JoinColumn({ name: "RaceId" })
-  public Race: Race;
+  @Column("bigint")
+  public RaceId: number;
 
   @Column("smallint")
   public BakenShubetsu: number;
@@ -29,7 +23,4 @@ export class OddsKubun {
 
   @Column("date")
   public DataSakuseiNengappi: number;
-
-  @OneToMany(() => Odds, o => o.OddsKubun)
-  public OddsList: Odds[];
 }

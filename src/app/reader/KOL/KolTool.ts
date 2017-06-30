@@ -90,16 +90,18 @@ export class KolTool {
 
   public async saveKyousouba(buffer: Buffer, offset: number, kyuusha: Kyuusha) {
     const seibetsu = $U.seibetsu.toCodeFromKol(buffer, offset + 32, 1);
-    const uma = new Uma();
+    let uma = new Uma();
     uma.Bamei = readStr(buffer, offset, 30);
     uma.Seibetsu = seibetsu;
-    const kyousouba = new Kyousouba();
-    kyousouba.Uma = await this.umaDao.saveUma(uma);
+    uma = await this.umaDao.saveUma(uma);
+    let kyousouba = new Kyousouba();
+    kyousouba.Id = uma.Id;
     kyousouba.Seibetsu = seibetsu;
     kyousouba.UmaKigou = $U.umaKigou.toCodeFromKol(buffer, offset + 30, 2);
     kyousouba.BanushiId = (await this.saveBanushi(buffer, offset + 35)).Id;
-    kyousouba.Kyuusha = kyuusha;
-    return this.umaDao.saveKyousouba(kyousouba);
+    kyousouba.KyuushaId = kyuusha.Id;
+    kyousouba = await this.umaDao.saveKyousouba(kyousouba);
+    return { Kyousouba: kyousouba, Uma: uma };
   }
 
   public saveSeisansha(buffer: Buffer, offset: number) {
