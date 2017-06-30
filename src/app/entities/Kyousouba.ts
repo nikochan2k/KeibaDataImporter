@@ -20,8 +20,8 @@ export class Kyousouba {
   @Column("smallint")
   public UmaKigou: number;
 
-  @Column("int")
-  public BanushiId: number;
+  @Column("int", { nullable: true })
+  public BanushiId?: number;
 
   @Column("int", { nullable: true })
   public KyuushaId?: number;

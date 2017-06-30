@@ -55,13 +55,19 @@ export class KolUmaKd3 extends DataToImport {
   }
 
   protected async saveOyaUma(buffer: Buffer, offset: number, seibetsu: $U.Seibetsu, chichiOffset?: number, hahaOffset?: number) {
+    const bamei = readStr(buffer, offset, 34);
+    if (!bamei) {
+      return null;
+    }
     const uma = new Uma();
-    uma.Bamei = readStr(buffer, offset, 34);
+    uma.Bamei = bamei;
     if (chichiOffset && !uma.ChichiUmaId) {
-      uma.ChichiUmaId = (await this.saveOyaUma(buffer, chichiOffset, $U.Seibetsu.Boba)).Id;
+      const chichiUma = await this.saveOyaUma(buffer, chichiOffset, $U.Seibetsu.Boba);
+      uma.ChichiUmaId = chichiUma && chichiUma.Id;
     }
     if (hahaOffset && !uma.HahaUmaId) {
-      uma.HahaUmaId = (await this.saveOyaUma(buffer, hahaOffset, $U.Seibetsu.Hinba)).Id;
+      const hahaUma = await this.saveOyaUma(buffer, hahaOffset, $U.Seibetsu.Hinba);
+      uma.HahaUmaId = hahaUma && hahaUma.Id;
     }
     uma.Seibetsu = seibetsu;
 
@@ -98,9 +104,12 @@ export class KolUmaKd3 extends DataToImport {
     uma.Kesshu = $U.kesshu.toCodeFromKol(buffer, 87, 2);
     uma.Sanchi = $U.sanch.toCodeFromKol(buffer, 89, 3);
     uma.Seibetsu = seibetsu;
-    uma.ChichiUmaId = (await this.saveOyaUma(buffer, 104, $U.Seibetsu.Boba)).Id;
-    uma.HahaUmaId = (await this.saveOyaUma(buffer, 145, $U.Seibetsu.Hinba, 186, 227)).Id;
-    uma.SeisanshaId = (await this.kolTool.saveSeisansha(buffer, 423)).Id;
+    const chichiUma = await this.saveOyaUma(buffer, 104, $U.Seibetsu.Boba);
+    uma.ChichiUmaId = chichiUma && chichiUma.Id;
+    const hahaUma = await this.saveOyaUma(buffer, 145, $U.Seibetsu.Hinba, 186, 227);
+    uma.HahaUmaId = hahaUma && hahaUma.Id;
+    const seisansha = await this.kolTool.saveSeisansha(buffer, 423);
+    uma.SeisanshaId = seisansha && seisansha.Id;
     uma.MasshouFlag = $U.masshouFlag.toCodeFromKol(buffer, 544, 1);
     uma.MasshouNengappi = readDate(buffer, 545, 8);
     uma.Jiyuu = readStr(buffer, 553, 6);
@@ -110,8 +119,10 @@ export class KolUmaKd3 extends DataToImport {
     kyousouba.UmaId = uma.Id;
     kyousouba.Seibetsu = seibetsu;
     kyousouba.UmaKigou = $U.umaKigou.toCodeFromKol(buffer, 92, 2);
-    kyousouba.BanushiId = (await this.kolTool.saveBanushi(buffer, 343)).Id;
-    kyousouba.KyuushaId = (await this.kolTool.saveKyuusha(buffer, 488)).Id;
+    const banushi = await this.kolTool.saveBanushi(buffer, 343);
+    kyousouba.BanushiId = banushi && banushi.Id;
+    const kyuusha = await this.kolTool.saveKyuusha(buffer, 488);
+    kyousouba.KyuushaId = kyuusha && kyuusha.Id;
     kyousouba.KoueiGaikokuKyuushaMei = readStr(buffer, 536, 8);
     kyousouba = await this.umaDao.saveKyousouba(kyousouba);
     return { Kyousouba: kyousouba, Uma: uma };
@@ -251,8 +262,9 @@ export class KolUmaKd3 extends DataToImport {
     kyousouba.UmaId = uma.Id;
     kyousouba.Seibetsu = seibetsu || k.Seibetsu;
     kyousouba.UmaKigou = $U.umaKigou.toCodeFromKol(buffer, 5, 2) || k.UmaKigou;
-    kyousouba.BanushiId = (await this.kolTool.saveBanushi(buffer, 10)).Id || k.BanushiId;
-    kyousouba.KyuushaId = kyuusha && kyuusha.Id;
+    const banushi = await this.kolTool.saveBanushi(buffer, 10);
+    kyousouba.BanushiId = banushi && banushi.Id || k.BanushiId;
+    kyousouba.KyuushaId = kyuusha && kyuusha.Id || k.KyuushaId;
     kyousouba = await this.umaDao.saveKyousouba(kyousouba);
     return { Kyousouba: kyousouba, Uma: uma };
   }

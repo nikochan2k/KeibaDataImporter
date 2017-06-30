@@ -29,9 +29,13 @@ export class UmaDao {
       .andWhere("k.Seibetsu = :seibetsu")
       .setParameter("seibetsu", kyousouba.Seibetsu)
       .andWhere("k.UmaKigou = :umaKigou")
-      .setParameter("umaKigou", kyousouba.UmaKigou)
-      .andWhere("k.BanushiId = :banushiId")
-      .setParameter("banushiId", kyousouba.BanushiId);
+      .setParameter("umaKigou", kyousouba.UmaKigou);
+    if (kyousouba.BanushiId) {
+      qb.andWhere("k.BanushiId = :banushiId")
+        .setParameter("banushiId", kyousouba.BanushiId);
+    } else {
+      qb.andWhere("k.BanushiId IS NULL");
+    }
     if (kyousouba.KyuushaId) {
       qb.andWhere("k.KyuushaId = :kyuushaId")
         .setParameter("kyuushaId", kyousouba.KyuushaId);

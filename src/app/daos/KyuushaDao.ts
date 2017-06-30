@@ -24,8 +24,8 @@ export class KyuushaDao {
   }
 
   public async saveKyuusha(toBe: Kyuusha) {
-    if (toBe.Id) {
-      return toBe;
+    if (!toBe.KyuushaMei && !toBe.KolKyuushaCode && !toBe.JrdbKyuushaCode) {
+      return null;
     }
     const asIs = await this.getKyuusha(toBe);
     if (asIs) {

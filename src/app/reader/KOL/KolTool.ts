@@ -82,8 +82,12 @@ export class KolTool {
   }
 
   public saveBanushi(buffer: Buffer, offset: number) {
+    const banushiMei = this.tool.normalizeHoujinMei(buffer, offset, 40);
+    if (!banushiMei) {
+      return null;
+    }
     const banushi = new Banushi();
-    banushi.BanushiMei = this.tool.normalizeHoujinMei(buffer, offset, 40);
+    banushi.BanushiMei = banushiMei;
     banushi.TanshukuBanushiMei = this.tool.normalizeTanshukuHoujinMei(buffer, offset + 40, 20);
     return this.banushiDao.save(banushi);
   }
@@ -98,15 +102,20 @@ export class KolTool {
     kyousouba.Id = uma.Id;
     kyousouba.Seibetsu = seibetsu;
     kyousouba.UmaKigou = $U.umaKigou.toCodeFromKol(buffer, offset + 30, 2);
-    kyousouba.BanushiId = (await this.saveBanushi(buffer, offset + 35)).Id;
-    kyousouba.KyuushaId = kyuusha.Id;
+    const banushi = await this.saveBanushi(buffer, offset + 35);
+    kyousouba.BanushiId = banushi && banushi.Id;
+    kyousouba.KyuushaId = kyuusha && kyuusha.Id;
     kyousouba = await this.umaDao.saveKyousouba(kyousouba);
     return { Kyousouba: kyousouba, Uma: uma };
   }
 
   public saveSeisansha(buffer: Buffer, offset: number) {
+    const seisanshaMei = this.tool.normalizeHoujinMei(buffer, offset, 40);
+    if (!seisanshaMei) {
+      return null;
+    }
     const seisansha = new Seisansha();
-    seisansha.SeisanshaMei = this.tool.normalizeHoujinMei(buffer, offset, 40);
+    seisansha.SeisanshaMei = seisanshaMei;
     seisansha.TanshukuSeisanshaMei = this.tool.normalizeTanshukuHoujinMei(buffer, offset + 40, 20);
     return this.seisanshaDao.saveSeisansha(seisansha);
   }
