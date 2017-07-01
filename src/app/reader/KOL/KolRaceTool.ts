@@ -88,23 +88,39 @@ export class KolRaceTool {
       .execute();
   }
 
-  public async getRace(buffer: Buffer) {
+  protected getRaceInfo(buffer: Buffer) {
     const yyyymmdd = readPositiveInt(buffer, 12, 8);
     const basho = $C.basho.toCodeFromKol(buffer, 0, 2);
     const raceBangou = readInt(buffer, 10, 2);
     if (yyyymmdd === null || basho === null || raceBangou === null) {
       return null;
     }
-    const id = this.tool.getRaceId(yyyymmdd, basho, raceBangou);
+    return { yyyymmdd: yyyymmdd, basho: basho, raceBangou: raceBangou };
+  }
+
+  public getRaceId(buffer: Buffer) {
+    const info = this.getRaceInfo(buffer);
+    if (!info) {
+      return null;
+    }
+    return this.tool.getRaceId(info.yyyymmdd, info.basho, info.raceBangou);
+  }
+
+  public async getRace(buffer: Buffer) {
+    const info = this.getRaceInfo(buffer);
+    if (!info) {
+      return null;
+    }
+    const id = this.tool.getRaceId(info.yyyymmdd, info.basho, info.raceBangou);
     let race = await this.entityManager.getRepository(Race).findOneById(id);
     if (!race) {
       race = new Race();
       race.Id = id;
-      race.Basho = basho;
+      race.Basho = info.basho;
       race.Nen = readPositiveInt(buffer, 2, 4);
       race.Kaiji = readPositiveInt(buffer, 6, 2);
       race.Nichiji = readPositiveInt(buffer, 8, 2);
-      race.RaceBangou = raceBangou;
+      race.RaceBangou = info.raceBangou;
       race.Nengappi = readDate(buffer, 12, 8);
     }
     return race;

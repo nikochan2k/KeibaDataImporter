@@ -4,10 +4,11 @@ import {
   Index,
   PrimaryColumn
 } from "typeorm";
+import { Baken } from "../converters/Common";
 
 @Entity("OddsKubun")
 @Index("IxOddsKubun",
-  (ok: OddsKubun) => [ok.RaceId, ok.BakenShubetsu, ok.YosouKakutei])
+  (ok: OddsKubun) => [ok.RaceId, ok.Baken, ok.YosouKakutei])
 export class OddsKubun {
   @PrimaryColumn("bigint")
   public Id: number;
@@ -16,11 +17,8 @@ export class OddsKubun {
   public RaceId: number;
 
   @Column("smallint")
-  public BakenShubetsu: number;
+  public Baken: Baken;
 
   @Column("smallint")
   public YosouKakutei: number;
-
-  @Column("date")
-  public DataSakuseiNengappi: number;
 }

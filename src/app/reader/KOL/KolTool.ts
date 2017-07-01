@@ -11,12 +11,13 @@ import { KishuDao } from "../../daos/KishuDao";
 import { KyuushaDao } from "../../daos/KyuushaDao";
 import { SeisanshaDao } from "../../daos/SeisanshaDao";
 import { UmaDao } from "../../daos/UmaDao";
-import { Kyousouba } from "../../entities/Kyousouba";
 import { Banushi } from "../../entities/Banushi";
 import { Kishu } from "../../entities/Kishu";
-import { Shozoku } from "../../entities/Shozoku";
+import { Kyousouba } from "../../entities/Kyousouba";
 import { Kyuusha } from "../../entities/Kyuusha";
+import { Odds } from "../../entities/Odds";
 import { Seisansha } from "../../entities/Seisansha";
+import { Shozoku } from "../../entities/Shozoku";
 import { Shussouba } from "../../entities/Shussouba";
 import { ShussoubaTsuukaJuni } from "../../entities/ShussoubaTsuukaJuni";
 import { Uma } from "../../entities/Uma";
@@ -169,5 +170,169 @@ export class KolTool {
     }
   }
 
+  protected getOdds(buffer: Buffer, offset: number, length: number) {
+    let odds: number;
+    if (readStr(buffer, offset, length) !== "*") {
+      odds = readDouble(buffer, offset, length, 0.1);
+    } else {
+      odds = 10 ** length;
+    }
+    return odds;
+  }
 
+  public async saveTanshouOdds(buffer: Buffer, offset: number, oddsKubunId: number) {
+    for (let bangou = 1; bangou <= 18; bangou++) {
+      const odds1 = this.getOdds(buffer, offset, 5);
+      offset += 5;
+      if (!odds1) {
+        continue;
+      }
+      const odds = new Odds();
+      odds.OddsKubunId = oddsKubunId;
+      odds.Bangou1 = bangou;
+      odds.Odds1 = odds1;
+      await this.entityManager.getRepository(Odds).save(odds);
+    }
+  }
+
+  public async saveWakurenOdds(buffer: Buffer, offset: number, oddsKubunId: number) {
+    for (let bangou1 = 1; bangou1 <= 8; bangou1++) {
+      for (let bangou2 = 1; bangou2 <= 8; bangou2++) {
+        const odds1 = this.getOdds(buffer, offset, 5);
+        offset += 5;
+        if (!odds1) {
+          continue;
+        }
+        const odds = new Odds();
+        odds.OddsKubunId = oddsKubunId;
+        odds.Bangou1 = bangou1;
+        odds.Bangou2 = bangou2;
+        odds.Odds1 = odds1;
+        await this.entityManager.getRepository(Odds).save(odds);
+      }
+    }
+  }
+
+  public async saveUmarenOdds(buffer: Buffer, offset: number, oddsKubunId: number) {
+    for (let bangou1 = 1; bangou1 <= 17; bangou1++) {
+      for (let bangou2 = bangou1 + 1; bangou2 <= 18; bangou2++) {
+        const odds1 = this.getOdds(buffer, offset, 7);
+        offset += 7;
+        if (!odds1) {
+          continue;
+        }
+        const odds = new Odds();
+        odds.OddsKubunId = oddsKubunId;
+        odds.Bangou1 = bangou1;
+        odds.Bangou2 = bangou2;
+        odds.Odds1 = odds1;
+        await this.entityManager.getRepository(Odds).save(odds);
+      }
+    }
+  }
+
+  public async saveFukushouOdds(buffer: Buffer, offset: number, oddsKubunId: number) {
+    for (let bangou = 1; bangou <= 18; bangou++) {
+      const odds1 = this.getOdds(buffer, offset, 3);
+      offset += 3;
+      const odds2 = this.getOdds(buffer, offset, 3);
+      offset += 3;
+      if (!odds1 || !odds2) {
+        continue;
+      }
+      const odds = new Odds();
+      odds.OddsKubunId = oddsKubunId;
+      odds.Bangou1 = bangou;
+      odds.Odds1 = odds1;
+      odds.Odds2 = odds2;
+      await this.entityManager.getRepository(Odds).save(odds);
+    }
+  }
+
+  public async saveWideOdds(buffer: Buffer, offset: number, oddsKubunId: number) {
+    for (let bangou1 = 1; bangou1 <= 17; bangou1++) {
+      for (let bangou2 = bangou1 + 1; bangou2 <= 18; bangou2++) {
+        const odds1 = this.getOdds(buffer, offset, 5);
+        offset += 5;
+        const odds2 = this.getOdds(buffer, offset, 5);
+        offset += 5;
+        if (!odds1 || !odds2) {
+          continue;
+        }
+        const odds = new Odds();
+        odds.OddsKubunId = oddsKubunId;
+        odds.Bangou1 = bangou1;
+        odds.Bangou2 = bangou2;
+        odds.Odds1 = odds1;
+        odds.Odds2 = odds2;
+        await this.entityManager.getRepository(Odds).save(odds);
+      }
+    }
+  }
+
+  public async saveUmatanOdds(buffer: Buffer, offset: number, oddsKubunId: number) {
+    for (let bangou1 = 1; bangou1 <= 18; bangou1++) {
+      for (let bangou2 = 1; bangou2 <= 18; bangou2++) {
+        if (bangou1 === bangou2) {
+          continue;
+        }
+        const odds1 = this.getOdds(buffer, offset, 5);
+        offset += 5;
+        if (!odds1) {
+          continue;
+        }
+        const odds = new Odds();
+        odds.OddsKubunId = oddsKubunId;
+        odds.Bangou1 = bangou1;
+        odds.Bangou2 = bangou2;
+        odds.Odds1 = odds1;
+        await this.entityManager.getRepository(Odds).save(odds);
+      }
+    }
+  }
+
+  public async saveSanrenpukuOdds(buffer: Buffer, offset: number, oddsKubunId: number) {
+    for (let bangou1 = 1; bangou1 <= 16; bangou1++) {
+      for (let bangou2 = bangou1 + 1; bangou2 <= 17; bangou2++) {
+        for (let bangou3 = bangou2 + 1; bangou3 <= 18; bangou3++) {
+          const odds1 = this.getOdds(buffer, offset, 7);
+          offset += 7;
+          if (!odds1) {
+            continue;
+          }
+          const odds = new Odds();
+          odds.OddsKubunId = oddsKubunId;
+          odds.Bangou1 = bangou1;
+          odds.Bangou2 = bangou2;
+          odds.Bangou3 = bangou3;
+          odds.Odds1 = odds1;
+          await this.entityManager.getRepository(Odds).save(odds);
+        }
+      }
+    }
+  }
+
+  public async saveSanrentanOdds(buffer: Buffer, offset: number, oddsKubunId: number) {
+    for (let bangou1 = 1; bangou1 <= 18; bangou1++) {
+      for (let bangou2 = 1; bangou2 <= 18; bangou2++) {
+        for (let bangou3 = 1; bangou3 <= 18; bangou3++) {
+          if (bangou1 === bangou2 || bangou2 === bangou3 || bangou3 === bangou1) {
+            continue;
+          }
+          const odds1 = this.getOdds(buffer, offset, 10);
+          offset += 10;
+          if (!odds1) {
+            continue;
+          }
+          const odds = new Odds();
+          odds.OddsKubunId = oddsKubunId;
+          odds.Bangou1 = bangou1;
+          odds.Bangou2 = bangou2;
+          odds.Bangou3 = bangou3;
+          odds.Odds1 = odds1;
+          await this.entityManager.getRepository(Odds).save(odds);
+        }
+      }
+    }
+  }
 }

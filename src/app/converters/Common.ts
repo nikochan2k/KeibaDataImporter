@@ -107,3 +107,19 @@ export const touzaiBetsu = new Codes(
     { code: 2, kol: "2", naiyou: "招待" }
   ]
 );
+
+export enum Baken {
+  Tanshou,
+  Fukushou,
+  Wakuren,
+  Umaren,
+  Wide,
+  Umatan,
+  Sanrenpuku,
+  Sanrentan
+}
+
+export enum YosouKakutei {
+  Yosou,
+  Kakutei
+}

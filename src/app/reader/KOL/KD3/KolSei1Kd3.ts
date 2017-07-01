@@ -1,6 +1,6 @@
 import { Inject, Service } from "typedi";
+import { Baken } from "../../../converters/Common";
 import * as $R from "../../../converters/Race";
-import { Baken } from "../../../converters/RaceHaitou";
 import * as $RK from "../../../converters/RaceKeika";
 import { RaceDao } from "../../../daos/RaceDao";
 import { Race } from "../../../entities/Race";

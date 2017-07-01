@@ -1,4 +1,5 @@
 import { Codes } from "./Codes";
+import { Baken } from "./Common";
 
 export const bakenShubetsu = new Codes(
   [
@@ -12,17 +13,6 @@ export const bakenShubetsu = new Codes(
     { code: 7, naiyou: "三連単" }
   ]
 );
-
-export enum Baken {
-  Tanshou,
-  Fukushou,
-  Wakuren,
-  Umaren,
-  Wide,
-  Umatan,
-  Sanrenpuku,
-  Sanrentan
-}
 
 export interface HaitouInfo {
   baken: Baken;

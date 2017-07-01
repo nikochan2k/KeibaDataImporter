@@ -8,6 +8,9 @@ import { KolDen2Kd3 } from "./reader/KOL/KD3/KolDen2Kd3";
 import { KolSei1Kd3 } from "./reader/KOL/KD3/KolSei1Kd3";
 import { KolSei2Kd3 } from "./reader/KOL/KD3/KolSei2Kd3";
 import { KolSei3Kd3 } from "./reader/KOL/KD3/KolSei3Kd3";
+import { KolKodKd3 } from "./reader/KOL/KD3/KolKodKd3";
+import { KolKod2Kd3 } from "./reader/KOL/KD3/KolKod2Kd3";
+import { KolKod3Kd3 } from "./reader/KOL/KD3/KolKod3Kd3";
 import { KolUmaKd3 } from "./reader/KOL/KD3/KolUmaKd3";
 import { DataCache } from "./reader/DataCache";
 
@@ -32,6 +35,9 @@ export class Importer {
       "kol_uma.kd3": Container.get(KolUmaKd3),
       "kol_den1.kd3": Container.get(KolDen1Kd3),
       "kol_den2.kd3": Container.get(KolDen2Kd3),
+      "kol_kod.kd3": Container.get(KolKodKd3),
+      "kol_kod2.kd3": Container.get(KolKod2Kd3),
+      "kol_kol3.kd3": Container.get(KolKod3Kd3),
       "kol_sei1.kd3": Container.get(KolSei1Kd3),
       "kol_sei2.kd3": Container.get(KolSei2Kd3),
       "kol_sei3.kd3": Container.get(KolSei3Kd3),

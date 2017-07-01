@@ -1,8 +1,12 @@
 import { Logger } from "log4js";
 import { Service } from "typedi";
+import { EntityManager } from "typeorm";
+import { OrmEntityManager } from "typeorm-typedi-extensions";
 import { readInt, readStrWithNoSpace } from "./Reader";
-import { Shussouba } from "../entities/Shussouba";
+import { Baken, YosouKakutei } from "../converters/Common";
+import { OddsKubun } from "../entities/OddsKubun";
 import { Race } from "../entities/Race";
+import { Shussouba } from "../entities/Shussouba";
 import { getLogger } from "../LogUtil";
 
 @Service()
@@ -13,6 +17,9 @@ export class DataTool {
   constructor() {
     this.logger = getLogger(this);
   }
+
+  @OrmEntityManager()
+  private entityManager: EntityManager;
 
   protected format00(value: number): string {
     if (value < 10) return "0" + value;
@@ -87,4 +94,12 @@ export class DataTool {
     return joukenFuka;
   }
 
+  public async saveOddsKubun(raceId: number, baken: Baken, yosouKakutei: YosouKakutei) {
+    const oddsKubun = new OddsKubun();
+    oddsKubun.Id = raceId * 10 + baken;
+    oddsKubun.Baken = baken;
+    oddsKubun.RaceId = raceId;
+    oddsKubun.YosouKakutei = yosouKakutei;
+    return await this.entityManager.save(oddsKubun);
+  }
 }
