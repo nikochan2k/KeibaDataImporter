@@ -7,7 +7,6 @@ import { Race } from "../../../entities/Race";
 import { RaceClass } from "../../../entities/RaceClass";
 import { RaceKeika } from "../../../entities/RaceKeika";
 import { RaceLapTime } from "../../../entities/RaceLapTime";
-import { DataCache } from "../../DataCache";
 import { DataToImport } from "../../DataToImport";
 import { DataTool } from "../../DataTool";
 import { KeikaTool } from "../../KeikaTool";
@@ -41,7 +40,7 @@ export class KolSei1Kd3 extends DataToImport {
     return 3200;
   }
 
-  protected async save(buffer: Buffer, cache: DataCache) {
+  protected async save(buffer: Buffer) {
     const race = await this.kolRaceTool.getRace(buffer);
     const dataSakuseiNengappi = readDate(buffer, 2910, 8);
     if (race.KolSeisekiSakuseiNengappi) {
@@ -58,7 +57,7 @@ export class KolSei1Kd3 extends DataToImport {
     await this.saveRace(buffer, race, raceClass);
     await this.saveRaceShoukin(buffer, race);
     await this.saveRaceLapTime(buffer, race, raceClass);
-    await this.saveRaceKeika(buffer, race, cache);
+    await this.saveRaceKeika(buffer, race);
     await this.saveRaceHassouJoukyou(buffer, race);
     await this.saveRaceHaitou(buffer, race);
   }
@@ -262,7 +261,7 @@ export class KolSei1Kd3 extends DataToImport {
     }
   }
 
-  protected async saveRaceKeika(buffer: Buffer, race: Race, cache: DataCache) {
+  protected async saveRaceKeika(buffer: Buffer, race: Race) {
     for (let bangou = 1, offset = 456; bangou <= 9; bangou++ , offset += 113) {
       const keika = readStr(buffer, offset + 3, 110);
       if (!keika) {
@@ -276,15 +275,12 @@ export class KolSei1Kd3 extends DataToImport {
       raceKeika.Keika = keika;
       await this.entityManager.save(raceKeika);
 
-      const shussoubaKeikaList = this.keikaTool.parseRaceKeika(raceKeika);
-      shussoubaKeikaList.forEach((shussoubaKeika) => {
-        cache.addKeika(shussoubaKeika.ShussoubaId, shussoubaKeika);
-      });
+      await this.keikaTool.parseRaceKeika(raceKeika);
     }
   }
 
   protected async saveRaceHassouJoukyou(buffer: Buffer, race: Race) {
-    this.kolRaceTool.saveRaceHassouJoukyou(buffer, 1473, race);
+    await this.kolRaceTool.saveRaceHassouJoukyou(buffer, 1473, race);
   }
 
   protected async saveRaceHaitou(buffer: Buffer, race: Race) {

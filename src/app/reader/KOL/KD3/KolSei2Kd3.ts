@@ -3,7 +3,6 @@ import * as $S from "../../../converters/Shussouba";
 import { Race } from "../../../entities/Race";
 import { Shussouba } from "../../../entities/Shussouba";
 import { ShussoubaTsuukaJuni } from "../../../entities/ShussoubaTsuukaJuni";
-import { DataCache } from "../../DataCache";
 import { DataToImport } from "../../DataToImport";
 import { DataTool } from "../../DataTool";
 import {
@@ -46,7 +45,7 @@ export class KolSei2Kd3 extends DataToImport {
       .execute();
   }
 
-  protected async save(buffer: Buffer, cache: DataCache) {
+  protected async save(buffer: Buffer) {
     const umaban = readPositiveInt(buffer, 23, 2);
     if (umaban === null) {
       this.logger.warn("馬番がありません");
@@ -79,7 +78,7 @@ export class KolSei2Kd3 extends DataToImport {
     shussouba.Umaban = umaban;
     shussouba.KolSeisekiSakuseiNengappi = dataSakuseiNengappi;
 
-    await this.saveShussouba(buffer, race, shussouba, cache);
+    await this.saveShussouba(buffer, race, shussouba);
     await this.kolTool.saveShussoubaTsuukaJuni(buffer, 298, shussouba);
     if (!shussouba.KolShutsubahyouSakuseiNengappi) {
       const tanshukuKishuMei = readStrWithNoSpace(buffer, 199, 8);
@@ -87,7 +86,7 @@ export class KolSei2Kd3 extends DataToImport {
     }
   }
 
-  protected async saveShussouba(buffer: Buffer, race: Race, shussouba: Shussouba, cache: DataCache) {
+  protected async saveShussouba(buffer: Buffer, race: Race, shussouba: Shussouba) {
     shussouba.Wakuban = readPositiveInt(buffer, 22, 1);
     shussouba.Gate = readPositiveInt(buffer, 25, 2);
     const kyuusha = await this.kolTool.saveKyuusha(buffer, 217);
@@ -132,11 +131,6 @@ export class KolSei2Kd3 extends DataToImport {
     }
 
     await this.entityManager.save(shussouba);
-
-    const shussoubaKeika = cache.getKeika(shussouba.Id);
-    if (shussoubaKeika) {
-      await this.entityManager.save(shussoubaKeika);
-    }
   }
 
 }
