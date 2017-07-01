@@ -59,6 +59,7 @@ export class KolSei1Kd3 extends DataToImport {
     await this.saveRaceShoukin(buffer, race);
     await this.saveRaceLapTime(buffer, race, raceClass);
     await this.saveRaceKeika(buffer, race, cache);
+    await this.saveRaceHassouJoukyou(buffer, race);
     await this.saveRaceHaitou(buffer, race);
   }
 
@@ -103,19 +104,6 @@ export class KolSei1Kd3 extends DataToImport {
     race.Seed = $R.seed.toCodeFromKol(buffer, 381, 1);
     if (raceClass.HeichiShougai === 1) { // 障害
       race.ShougaiHeikin1F = readDouble(buffer, 398, 4, 0.1);
-    }
-
-    const hassouJoukyouArray: string[] = [];
-    let hassouJoukyou: string;
-    for (let i = 0, offset = 1473; i < 6; i++ , offset += 80) {
-      hassouJoukyou = readStr(buffer, offset, 80);
-      if (hassouJoukyou) {
-        hassouJoukyouArray.push(hassouJoukyou);
-      }
-    }
-    hassouJoukyou = hassouJoukyouArray.join("\n");
-    if (hassouJoukyou) {
-      race.HassouJoukyou = hassouJoukyou;
     }
 
     if (!race.KolShutsubahyouSakuseiNengappi) {
@@ -293,6 +281,10 @@ export class KolSei1Kd3 extends DataToImport {
         cache.addKeika(shussoubaKeika.ShussoubaId, shussoubaKeika);
       });
     }
+  }
+
+  protected async saveRaceHassouJoukyou(buffer: Buffer, race: Race) {
+    this.kolRaceTool.saveRaceHassouJoukyou(buffer, 1473, race);
   }
 
   protected async saveRaceHaitou(buffer: Buffer, race: Race) {

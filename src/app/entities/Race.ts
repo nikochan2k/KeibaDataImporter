@@ -111,9 +111,6 @@ export class Race {
   public RaceRecordId?: number;
 
   @Column("text", { nullable: true })
-  public HassouJoukyou?: string;
-
-  @Column("text", { nullable: true })
   public SeisaiNaiyou?: string;
 
   @Column("date", { nullable: true })

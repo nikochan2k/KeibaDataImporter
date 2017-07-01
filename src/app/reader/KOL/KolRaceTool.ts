@@ -2,6 +2,7 @@ import { Inject, Service } from "typedi";
 import { EntityManager } from "typeorm";
 import { OrmEntityManager } from "typeorm-typedi-extensions";
 import * as $C from "../../converters/Common";
+import * as $R from "../../converters/Race";
 import { HaitouInfo } from "../../converters/RaceHaitou";
 import { ShoukinInfo } from "../../converters/RaceShoukin";
 import { KishuDao } from "../../daos/KishuDao";
@@ -10,6 +11,8 @@ import { UmaDao } from "../../daos/UmaDao";
 import { Kishu } from "../../entities/Kishu";
 import { Race } from "../../entities/Race";
 import { RaceHaitou } from "../../entities/RaceHaitou";
+import { RaceHassouJoukyou } from "../../entities/RaceHassouJoukyou";
+import { ShussoubaHassouJoukyou } from "../../entities/ShussoubaHassouJoukyou";
 import { RaceKeika } from "../../entities/RaceKeika";
 import { RaceLapTime } from "../../entities/RaceLapTime";
 import { RaceShoukin } from "../../entities/RaceShoukin";
@@ -21,6 +24,7 @@ import {
   readDouble,
   readInt,
   readPositiveInt,
+  readStr,
   readStrWithNoSpace,
   readTime
 } from "../Reader";
@@ -128,6 +132,63 @@ export class KolRaceTool {
     record.KishuId = (await this.kishuDao.saveKishu(kishu)).Id;
     record.Basho = $C.basho.toCodeFromKol(buffer, bashoOffset, 2);
     return this.raceDao.saveRecord(record);
+  }
+
+  public async saveRaceHassouJoukyou(buffer: Buffer, offset: number, race: Race) {
+    for (let bangou = 1; bangou <= 6; bangou++ , offset += 80) {
+      const hassouJoukyou = readStr(buffer, offset, 80);
+      if (!hassouJoukyou) {
+        continue;
+      }
+
+      const rhj = new RaceHassouJoukyou();
+      rhj.Id = race.Id * 10 + bangou;
+      rhj.RaceId = race.Id;
+      rhj.HassouJoukyou = hassouJoukyou;
+      const comment = hassouJoukyou.replace(/(\([0-9]+\))+/, "");
+      rhj.Ichi = $R.ichi.toCodeFromKol(comment);
+      rhj.Joukyou = $R.joukyou.toCodeFromKol(comment);
+      let execed: RegExpExecArray;
+      execed = /([0-9.]+|半)馬身(半)?/.exec(comment);
+      if (execed) {
+        const bashinStr = execed[1];
+        let bashin: number;
+        if (bashinStr === "半") {
+          bashin = 0.5;
+        } else {
+          bashin = Number.parseFloat(bashinStr);
+          if (execed[2]) {
+            bashin += 0.5;
+          }
+        }
+        if (0 < bashin) {
+          rhj.FuriBashin = bashin;
+        }
+      }
+      if (!rhj.FuriBashin) {
+        execed = /([0-9.]+)秒/.exec(comment);
+        if (execed) {
+          const byou = Number.parseFloat(execed[1]);
+          if (0 < byou) {
+            rhj.FuriByou = byou;
+          }
+        }
+      }
+      await this.entityManager.getRepository(RaceHassouJoukyou).save(rhj);
+
+      const umabans = /(\([0-9]+\))+/.exec(hassouJoukyou);
+      for (let i = 1; i < umabans.length; i++) {
+        const temp = umabans[i];
+        const umaban = Number.parseInt(temp.replace(/[\(\)]/, ""));
+        if (0 < umaban) {
+          const shj = new ShussoubaHassouJoukyou();
+          shj.Id = rhj.Id * 100 + umaban;
+          shj.RaceHassouJoukyouId = rhj.Id;
+          shj.ShussoubaId = race.Id * 100 + umaban;
+          await this.entityManager.getRepository(ShussoubaHassouJoukyou).save(shj);
+        }
+      }
+    }
   }
 
   public async saveRaceShoukin(buffer: Buffer, race: Race, infos: ShoukinInfo[],

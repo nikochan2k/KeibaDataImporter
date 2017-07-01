@@ -347,3 +347,26 @@ export const seed = new Codes(
     { code: 1, kol: "1", naiyou: "シード" }
   ]
 );
+
+export const ichi = new Codes(
+  [
+    { code: 1, kol: /遅れ|スタート|ゲート|ダッシュ|アオ|外枠|好発/, naiyou: "スタート" },
+    { code: 4, kol: /障害|バンケット|水ごう/, naiyou: "障害" },
+    { code: 2, kol: /正面|直線|ゴール|スタンド/, naiyou: "直線" },
+    { code: 3, kol: /角|コーナ/, naiyou: "コーナ" },
+    { code: 5, kol: /.+/, naiyou: "道中" }
+  ]
+);
+
+export const joukyou = new Codes(
+  [
+    { code: 50, kol: /好発/, naiyou: "好発" },
+    { code: 41, kol: /遅れ|スタート|ゲート|ダッシュ|アオ/, naiyou: "出遅れ" },
+    { code: 42, kol: /外枠/, naiyou: "外枠発走" },
+    { code: 31, kol: /落馬/, naiyou: "落馬" },
+    { code: 33, kol: /中止/, naiyou: "中止" },
+    { code: 43, kol: /ふくれる|ササる|ささる|ヨレる|よれる|斜行|内ラチ|切れる/, naiyou: "斜行" },
+    { code: 44, kol: /不利/, naiyou: "アクシデント" },
+    { code: 99, kol: /.+/, naiyou: "その他" }
+  ]
+);
