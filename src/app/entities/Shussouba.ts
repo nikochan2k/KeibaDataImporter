@@ -136,15 +136,15 @@ export class Shussouba {
   @Column("smallint", { nullable: true })
   public YosouTenkai?: number;
 
-  @Column("date", { nullable: true })
-  public KolShutsubahyouSakuseiNengappi?: Date;
+  @Column("bigint", { nullable: true })
+  public KolShutsubahyouSakuseiNengappi?: number;
 
-  @Column("date", { nullable: true })
-  public KolSeisekiSakuseiNengappi?: Date;
+  @Column("bigint", { nullable: true })
+  public KolSeisekiSakuseiNengappi?: number;
 
-  @Column("date", { nullable: true })
-  public JrdbShutsubahyouSakuseiNengappi?: Date;
+  @Column("bigint", { nullable: true })
+  public JrdbShutsubahyouSakuseiNengappi?: number;
 
-  @Column("date", { nullable: true })
-  public JrdbSeisekiSakuseiNengappi?: Date;
+  @Column("bigint", { nullable: true })
+  public JrdbSeisekiSakuseiNengappi?: number;
 }

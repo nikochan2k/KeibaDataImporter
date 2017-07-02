@@ -1,9 +1,8 @@
-import { Service, Inject } from "typedi";
+import { Service } from "typedi";
 import { Repository } from "typeorm";
 import { OrmRepository } from "typeorm-typedi-extensions";
 import { RaceClass } from "../entities/RaceClass";
 import { Record } from "../entities/Record";
-import { DataTool } from "../reader/DataTool";
 
 @Service()
 export class RaceDao {
@@ -13,9 +12,6 @@ export class RaceDao {
 
   @OrmRepository(Record)
   private recordRepository: Repository<Record>;
-
-  @Inject()
-  private tool: DataTool;
 
   public async saveRaceClass(rc: RaceClass) {
     const qb = this.repository
@@ -87,7 +83,7 @@ export class RaceDao {
     const asIs = await this.recordRepository
       .createQueryBuilder("r")
       .where("r.Nengappi = :nengappi")
-      .setParameter("nengappi", this.tool.toDateString(toBe.Nengappi))
+      .setParameter("nengappi", toBe.Nengappi)
       .andWhere("r.UmaId = :umaId")
       .setParameter("umaId", toBe.UmaId)
       .getOne();

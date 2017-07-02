@@ -26,8 +26,8 @@ export class Choukyou {
   @Column("smallint", { nullable: true })
   public KishuId: number;
 
-  @Column("date", { nullable: true })
-  public Nengappi?: Date;
+  @Column("bigint", { nullable: true })
+  public Nengappi?: number;
 
   @Column("smallint", { nullable: true })
   public Basho?: number;

@@ -103,5 +103,5 @@ export function readDate(buf: Buffer, offset: number, length: number) {
   if (isNaN(date.getTime())) {
     return null;
   }
-  return date;
+  return date.getTime();
 }

@@ -61,7 +61,7 @@ export class KolTool {
     this.logger = getLogger(this);
   }
 
-  public async saveKijou(buffer: Buffer, offset: number, date: Date) {
+  public async saveKijou(buffer: Buffer, offset: number, date: number) {
     const kishu = new Kishu();
     kishu.FromDate = date;
     kishu.ToDate = date;

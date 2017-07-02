@@ -11,8 +11,8 @@ export class Record {
   @PrimaryGeneratedColumn("bigint")
   public Id: number;
 
-  @Column("date")
-  public Nengappi: Date;
+  @Column("bigint")
+  public Nengappi: number;
 
   @Column("float")
   public Time: number;

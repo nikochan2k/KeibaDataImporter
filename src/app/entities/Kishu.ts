@@ -15,11 +15,11 @@ export class Kishu {
   @Column("varchar", { length: 12 })
   public TanshukuKishuMei: string;
 
-  @Column("date")
-  public FromDate: Date;
+  @Column("bigint")
+  public FromDate: number;
 
-  @Column("date")
-  public ToDate: Date;
+  @Column("bigint")
+  public ToDate: number;
 
   @Column("varchar", { length: 48, nullable: true })
   public KishuMei?: string;
@@ -33,8 +33,8 @@ export class Kishu {
   @Column("varchar", { length: 72, nullable: true })
   public Furigana?: string;
 
-  @Column("date", { nullable: true })
-  public Seinengappi?: Date;
+  @Column("bigint", { nullable: true })
+  public Seinengappi?: number;
 
   @Column("smallint", { nullable: true })
   public HatsuMenkyoNen?: number;

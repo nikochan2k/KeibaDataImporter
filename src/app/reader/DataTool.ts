@@ -21,15 +21,6 @@ export class DataTool {
   @OrmEntityManager()
   private entityManager: EntityManager;
 
-  protected format00(value: number): string {
-    if (value < 10) return "0" + value;
-    return "" + value;
-  }
-
-  public toDateString(value: Date): string {
-    return value.getFullYear() + "-" + this.format00(value.getMonth() + 1) + "-" + this.format00(value.getDate());
-  }
-
   public normalizeHoujinMei(buffer, offset, length) {
     let meishou = readStrWithNoSpace(buffer, offset, length);
     if (!meishou) {

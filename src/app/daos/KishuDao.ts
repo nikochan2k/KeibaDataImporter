@@ -17,14 +17,6 @@ export class KishuDao {
   @OrmRepository(Shozoku)
   private shozokuRepository: Repository<Shozoku>;
 
-  protected getTime(date: any) {
-    if (date.getTime) {
-      return (<Date>date).getTime();
-    } else {
-      return Date.parse(date);
-    }
-  }
-
   protected async getKishu(kishu: Kishu) {
     let result: Kishu;
     if (kishu.KishuMei) {
@@ -47,13 +39,13 @@ export class KishuDao {
     for (let i = 0; i < length; i++) {
       const item = list[i];
       if (kishu.FromDate < item.FromDate) {
-        const fromDiff = this.getTime(item.FromDate) - this.getTime(kishu.FromDate);
+        const fromDiff = item.FromDate - kishu.FromDate;
         if (fromDiff < diff) {
           diff = fromDiff;
           result = item;
         }
       } else if (item.ToDate < kishu.ToDate) {
-        const toDiff = this.getTime(kishu.ToDate) - this.getTime(item.ToDate);
+        const toDiff = kishu.ToDate - item.ToDate;
         if (toDiff < diff) {
           diff = toDiff;
           result = item;

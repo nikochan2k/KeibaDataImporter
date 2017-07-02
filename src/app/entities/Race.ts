@@ -26,8 +26,8 @@ export class Race {
   @Column("smallint")
   public RaceBangou: number;
 
-  @Column("date")
-  public Nengappi: Date;
+  @Column("bigint")
+  public Nengappi: number;
 
   @Column("smallint", { nullable: true })
   public Kyuujitsu?: number;
@@ -113,17 +113,17 @@ export class Race {
   @Column("text", { nullable: true })
   public SeisaiNaiyou?: string;
 
-  @Column("date", { nullable: true })
-  public KolShutsubahyouSakuseiNengappi?: Date;
+  @Column("bigint", { nullable: true })
+  public KolShutsubahyouSakuseiNengappi?: number;
 
-  @Column("date", { nullable: true })
-  public KolSeisekiSakuseiNengappi?: Date;
+  @Column("bigint", { nullable: true })
+  public KolSeisekiSakuseiNengappi?: number;
 
-  @Column("date", { nullable: true })
-  public JrdbShutsubahyouSakuseiNengappi?: Date;
+  @Column("bigint", { nullable: true })
+  public JrdbShutsubahyouSakuseiNengappi?: number;
 
-  @Column("date", { nullable: true })
-  public JrdbSeisekiSakuseiNengappi?: Date;
+  @Column("bigint", { nullable: true })
+  public JrdbSeisekiSakuseiNengappi?: number;
 
   @Column("float", { nullable: true })
   public SuiteiTimeRyou?: number;

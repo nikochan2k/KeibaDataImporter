@@ -28,8 +28,8 @@ export class Kyuusha {
   @Column("varchar", { length: 72, nullable: true })
   public Furigana?: string;
 
-  @Column("date", { nullable: true })
-  public Seinengappi?: Date;
+  @Column("bigint", { nullable: true })
+  public Seinengappi?: number;
 
   @Column("smallint", { nullable: true })
   public HatsuMenkyoNen?: number;

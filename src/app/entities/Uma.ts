@@ -17,8 +17,8 @@ export class Uma {
   @Column("varchar", { length: 60, nullable: true })
   public KyuuBamei: string;
 
-  @Column("date", { nullable: true })
-  public Seinengappi?: Date;
+  @Column("bigint", { nullable: true })
+  public Seinengappi?: number;
 
   @Column("smallint", { nullable: true })
   public Keiro?: number;
@@ -44,8 +44,8 @@ export class Uma {
   @Column("smallint", { nullable: true })
   public MasshouFlag?: number;
 
-  @Column("date", { nullable: true })
-  public MasshouNengappi?: Date;
+  @Column("bigint", { nullable: true })
+  public MasshouNengappi?: number;
 
   @Column("varchar", { length: 9, nullable: true })
   public Jiyuu?: string;
