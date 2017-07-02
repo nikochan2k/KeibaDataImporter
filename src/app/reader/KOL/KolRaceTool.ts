@@ -1,3 +1,4 @@
+import { Logger } from "log4js";
 import { Inject, Service } from "typedi";
 import { EntityManager } from "typeorm";
 import { OrmEntityManager } from "typeorm-typedi-extensions";
@@ -12,16 +13,19 @@ import { Kishu } from "../../entities/Kishu";
 import { Race } from "../../entities/Race";
 import { RaceHaitou } from "../../entities/RaceHaitou";
 import { RaceHassouJoukyou } from "../../entities/RaceHassouJoukyou";
-import { ShussoubaHassouJoukyou } from "../../entities/ShussoubaHassouJoukyou";
 import { RaceShoukin } from "../../entities/RaceShoukin";
 import { Record } from "../../entities/Record";
+import { Shussouba } from "../../entities/Shussouba";
+import { ShussoubaHassouJoukyou } from "../../entities/ShussoubaHassouJoukyou";
 import { Uma } from "../../entities/Uma";
+import { getLogger } from "../../LogUtil";
 import { DataTool } from "../DataTool";
 import {
   readDate,
   readDouble,
   readInt,
   readPositiveInt,
+  readRaw,
   readStr,
   readStrWithNoSpace,
   readTime
@@ -29,6 +33,8 @@ import {
 
 @Service()
 export class KolRaceTool {
+
+  private logger: Logger;
 
   @OrmEntityManager()
   private entityManager: EntityManager;
@@ -45,6 +51,10 @@ export class KolRaceTool {
   @Inject()
   private raceDao: RaceDao;
 
+  constructor() {
+    this.logger = getLogger(this);
+  }
+
   public async deleteOldShutsubahyou(race: Race) {
     await this.entityManager
       .createQueryBuilder(RaceShoukin, "rs")
@@ -56,16 +66,39 @@ export class KolRaceTool {
   }
 
   protected getRaceInfo(buffer: Buffer) {
-    const year = readInt(buffer, 12, 4);
-    const month = readInt(buffer, 16, 2);
-    const day = readInt(buffer, 18, 2);
-    const date = new Date(year, month - 1, day);
-    const days = (date.getTime() / (24 * 60 * 60 * 1000)) | 0;
-    const basho = $C.basho.toCodeFromKol(buffer, 0, 2);
-    const raceBangou = readInt(buffer, 10, 2);
-    if (days === null || basho === null || raceBangou === null) {
+    /* tslint:disable:triple-equals */
+    const year = readPositiveInt(buffer, 12, 4);
+    if (year == null) {
       return null;
     }
+    const month = readPositiveInt(buffer, 16, 2);
+    if (month == null || 12 < month) {
+      this.logger.warn("月が不正です: " + readRaw(buffer, 16, 2));
+      return null;
+    }
+    const day = readPositiveInt(buffer, 18, 2);
+    if (day == null || 31 < month) {
+      this.logger.warn("日が不正です: " + readRaw(buffer, 18, 2));
+      return null;
+    }
+    const date = new Date(year, month - 1, day);
+    const time = date.getTime();
+    if (isNaN(time)) {
+      this.logger.warn("不正な日付です");
+      return null;
+    }
+    const days = (time / (24 * 60 * 60 * 1000)) | 0;
+    const basho = $C.basho.toCodeFromKol(buffer, 0, 2);
+    if (basho == null) {
+      this.logger.warn("不正な場所です: " + readRaw(buffer, 0, 2));
+      return null;
+    }
+    const raceBangou = readInt(buffer, 10, 2);
+    if (raceBangou == null) {
+      this.logger.warn("不正なレース番号です: " + readRaw(buffer, 10, 2));
+      return null;
+    }
+    /* tslint:enable:triple-equals */
     return { days: days, basho: basho, raceBangou: raceBangou };
   }
 
@@ -94,6 +127,32 @@ export class KolRaceTool {
       race.Nengappi = readDate(buffer, 12, 8);
     }
     return race;
+  }
+
+  public async getShussoubaInfo(buffer: Buffer, umabanOffset: number) {
+    const umaban = readPositiveInt(buffer, umabanOffset, 2);
+    if (!umaban) {
+      this.logger.warn("不正な馬番です: " + readRaw(buffer, umabanOffset, 2));
+      return null;
+    }
+
+    const race = await this.getRace(buffer);
+    /* tslint:disable:triple-equals */
+    if (!race || race.Youbi == null) {
+      this.logger.warn("レースデータが存在しません: " + race.Id);
+      return null;
+    }
+    /* tslint:enable:triple-equals */
+
+    const id = race.Id * 100 + umaban;
+    let shussouba = await this.entityManager.findOneById(Shussouba, id);
+    if (!shussouba) {
+      shussouba = new Shussouba();
+      shussouba.Id = id;
+      shussouba.RaceId = race.Id;
+      shussouba.Umaban = umaban;
+    }
+    return { race: race, shussouba: shussouba };
   }
 
   public async getRecord(buffer: Buffer, offset: number, bashoOffset: number) {

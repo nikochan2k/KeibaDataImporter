@@ -32,37 +32,21 @@ export class KolDen2Kd3 extends DataToImport {
   }
 
   protected async save(buffer: Buffer, cache: DataCache) {
-    const umaban = readPositiveInt(buffer, 23, 2);
-    if (umaban === null) {
-      this.logger.warn("馬番がありません");
+    const info = await this.kolRaceTool.getShussoubaInfo(buffer, 23);
+    if (!info) {
       return;
     }
-    const race = await this.kolRaceTool.getRace(buffer);
-    /* tslint:disable:triple-equals */
-    if (!race || race.Youbi == null) {
-      this.logger.warn("レース成績データが存在しません: " + race.Id);
-      return;
-    }
-    /* tslint:enable:triple-equals */
-    const id = race.Id * 100 + umaban;
-    let shussouba = await this.entityManager.findOneById(Shussouba, id);
+    const shussouba = info.shussouba;
     const dataSakuseiNengappi = readDate(buffer, 727, 8);
-    if (shussouba) {
-      if (shussouba.KolShutsubahyouSakuseiNengappi) {
-        if (dataSakuseiNengappi <= shussouba.KolSeisekiSakuseiNengappi) {
-          this.logger.info("既に最新の出走馬成績データが格納されています: " + id);
-          return;
-        }
+    if (shussouba.KolShutsubahyouSakuseiNengappi) {
+      if (dataSakuseiNengappi <= shussouba.KolSeisekiSakuseiNengappi) {
+        this.logger.info("既に最新の出走馬成績データが格納されています: " + shussouba.Id);
+        return;
       }
-    } else {
-      shussouba = new Shussouba();
-      shussouba.Id = id;
     }
-    shussouba.RaceId = race.Id;
-    shussouba.Umaban = umaban;
     shussouba.KolShutsubahyouSakuseiNengappi = dataSakuseiNengappi;
 
-    await this.saveShussouba(buffer, race, shussouba, cache);
+    await this.saveShussouba(buffer, info.race, shussouba, cache);
     const tanshukuKishuMei = readStrWithNoSpace(buffer, 188, 8);
     await this.saveChoukyou(buffer, shussouba, tanshukuKishuMei);
   }

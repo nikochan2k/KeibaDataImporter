@@ -36,37 +36,21 @@ export class KolSei2Kd3 extends DataToImport {
   }
 
   protected async save(buffer: Buffer) {
-    const umaban = readPositiveInt(buffer, 23, 2);
-    if (umaban === null) {
-      this.logger.warn("馬番がありません");
+    const info = await this.kolRaceTool.getShussoubaInfo(buffer, 23);
+    if (!info) {
       return;
     }
-    const race = await this.kolRaceTool.getRace(buffer);
-    /* tslint:disable:triple-equals */
-    if (!race || race.Youbi == null) {
-      this.logger.warn("レース成績データが存在しません: " + race.Id);
-      return;
-    }
-    /* tslint:enable:triple-equals */
-    const id = race.Id * 100 + umaban;
-    let shussouba = await this.entityManager.findOneById(Shussouba, id);
+    const shussouba = info.shussouba;
     const dataSakuseiNengappi = readDate(buffer, 424, 8);
-    if (shussouba) {
-      if (shussouba.KolSeisekiSakuseiNengappi) {
-        if (dataSakuseiNengappi <= shussouba.KolSeisekiSakuseiNengappi) {
-          this.logger.info("既に最新の出走馬成績データが格納されています: " + id);
-          return;
-        }
+    if (shussouba.KolSeisekiSakuseiNengappi) {
+      if (dataSakuseiNengappi <= shussouba.KolSeisekiSakuseiNengappi) {
+        this.logger.info("既に最新の出走馬成績データが格納されています: " + shussouba.Id);
+        return;
       }
-    } else {
-      shussouba = new Shussouba();
-      shussouba.Id = id;
     }
-    shussouba.RaceId = race.Id;
-    shussouba.Umaban = umaban;
     shussouba.KolSeisekiSakuseiNengappi = dataSakuseiNengappi;
 
-    await this.saveShussouba(buffer, race, shussouba);
+    await this.saveShussouba(buffer, info.race, shussouba);
     await this.kolTool.saveShussoubaTsuukaJuni(buffer, 298, shussouba);
     if (!shussouba.KolShutsubahyouSakuseiNengappi) {
       const tanshukuKishuMei = readStrWithNoSpace(buffer, 199, 8);
@@ -84,7 +68,11 @@ export class KolSei2Kd3 extends DataToImport {
     shussouba.Kinryou = readDouble(buffer, 150, 3, 0.1);
     shussouba.Bataijuu = readPositiveInt(buffer, 153, 3);
     shussouba.Zougen = readInt(buffer, 156, 3);
-    shussouba.KijouId = (await this.kolTool.saveKijou(buffer, 162, race.Nengappi)).Id;
+    const kijouId = (await this.kolTool.saveKijou(buffer, 162, race.Nengappi)).Id;
+    if (shussouba.KijouId && shussouba.KijouId !== kijouId) {
+      shussouba.KyuuKijouId = shussouba.KijouId;
+    }
+    shussouba.KijouId = kijouId;
     shussouba.Norikawari = $S.norikawari.toCodeFromKol(buffer, 216, 1);
     shussouba.Ninki = readPositiveInt(buffer, 267, 2);
     shussouba.Odds = readDouble(buffer, 269, 5, 0.1);

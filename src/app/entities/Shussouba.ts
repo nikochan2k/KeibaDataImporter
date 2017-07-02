@@ -52,6 +52,9 @@ export class Shussouba {
   @Column("int")
   public KijouId: number;
 
+  @Column("int", { nullable: true })
+  public KyuuKijouId?: number;
+
   @Column("smallint", { nullable: true })
   public Norikawari?: number;
 
@@ -135,6 +138,12 @@ export class Shussouba {
 
   @Column("smallint", { nullable: true })
   public YosouTenkai?: number;
+
+  @Column("text", { nullable: true })
+  public KishuKyuushaComment: string;
+
+  @Column("text", { nullable: true })
+  public JisouhenoMemo: string;
 
   @Column("bigint", { nullable: true })
   public KolShutsubahyouSakuseiNengappi?: number;
