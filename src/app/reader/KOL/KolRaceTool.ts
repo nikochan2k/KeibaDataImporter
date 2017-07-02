@@ -56,13 +56,17 @@ export class KolRaceTool {
   }
 
   protected getRaceInfo(buffer: Buffer) {
-    const yymmdd = readPositiveInt(buffer, 14, 6);
+    const year = readInt(buffer, 12, 4);
+    const month = readInt(buffer, 16, 2);
+    const day = readInt(buffer, 18, 2);
+    const date = new Date(year, month - 1, day);
+    const days = (date.getTime() / (24 * 60 * 60 * 1000)) | 0;
     const basho = $C.basho.toCodeFromKol(buffer, 0, 2);
     const raceBangou = readInt(buffer, 10, 2);
-    if (yymmdd === null || basho === null || raceBangou === null) {
+    if (days === null || basho === null || raceBangou === null) {
       return null;
     }
-    return { yymmdd: yymmdd, basho: basho, raceBangou: raceBangou };
+    return { days: days, basho: basho, raceBangou: raceBangou };
   }
 
   public getRaceId(buffer: Buffer) {
@@ -70,7 +74,7 @@ export class KolRaceTool {
     if (!info) {
       return null;
     }
-    return this.tool.getRaceId(info.yymmdd, info.basho, info.raceBangou);
+    return this.tool.getRaceId(info.days, info.basho, info.raceBangou);
   }
 
   public async getRace(buffer: Buffer) {
@@ -78,7 +82,7 @@ export class KolRaceTool {
     if (!info) {
       return null;
     }
-    const id = this.tool.getRaceId(info.yymmdd, info.basho, info.raceBangou);
+    const id = this.tool.getRaceId(info.days, info.basho, info.raceBangou);
     let race = await this.entityManager.getRepository(Race).findOneById(id);
     if (!race) {
       race = new Race();

@@ -23,11 +23,11 @@ export abstract class DataToImport {
   public async readAll(fd: number, cache: DataCache) {
     let buffer: Buffer;
     const length = this.getBufferLength();
-    while ((buffer = this.readLine(fd, length)) !== null) {
-      await this.entityManager.transaction(await (async () => {
+    await this.entityManager.transaction(await (async () => {
+      while ((buffer = this.readLine(fd, length)) !== null) {
         await this.save(buffer, cache);
-      }));
-    }
+      }
+    }));
   }
 
   protected readLine(fd: number, length: number): Buffer {

@@ -92,16 +92,9 @@ export function readPositiveInt(buf: Buffer, offset: number, length: number, mul
 }
 
 export function readDate(buf: Buffer, offset: number, length: number) {
-  const i = readInt(buf, offset, length);
-  if (i === null) {
+  const date = readInt(buf, offset, length);
+  if (date === null) {
     return null;
   }
-  const year = (i / 10000) | 0;
-  const month = ((i % 10000) / 100) | 0;
-  const day = i % 100;
-  const date = new Date(year, month - 1, day);
-  if (isNaN(date.getTime())) {
-    return null;
-  }
-  return date.getTime();
+  return date;
 }
