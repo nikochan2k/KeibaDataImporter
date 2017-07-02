@@ -88,7 +88,6 @@ export class KolRaceTool {
       race = new Race();
       race.Id = id;
       race.Basho = info.basho;
-      race.Nen = readPositiveInt(buffer, 2, 4);
       race.Kaiji = readPositiveInt(buffer, 6, 2);
       race.Nichiji = readPositiveInt(buffer, 8, 2);
       race.RaceBangou = info.raceBangou;
@@ -187,7 +186,7 @@ export class KolRaceTool {
         continue;
       }
       const raceShoukin = new RaceShoukin();
-      raceShoukin.Id = race.Id * 100 + kakutei * 10 + i;
+      raceShoukin.Id = race.Id * 1000 + kakutei * 100 + info.fukashou * 10 + info.chakujun;
       raceShoukin.RaceId = race.Id;
       raceShoukin.Kakutei = kakutei;
       raceShoukin.Chakujun = info.chakujun;
@@ -205,7 +204,7 @@ export class KolRaceTool {
         continue;
       }
       const raceHaitou = new RaceHaitou();
-      raceHaitou.Id = race.Id * 100 + i;
+      raceHaitou.Id = race.Id * 100 + info.baken * 10 + info.index;
       raceHaitou.RaceId = race.Id;
       raceHaitou.Baken = info.baken;
       raceHaitou.Bangou1 = bangou1;

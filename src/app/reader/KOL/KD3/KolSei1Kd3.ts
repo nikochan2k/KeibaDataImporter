@@ -285,124 +285,124 @@ export class KolSei1Kd3 extends DataToImport {
     await this.kolRaceTool.saveRaceHaitou(
       buffer, race,
       [
-        { baken: Baken.Tanshou, bangou1: 2100, bangou1Len: 2, haitou: 2102, haitouLen: 6 },
-        { baken: Baken.Tanshou, bangou1: 2108, bangou1Len: 2, haitou: 2110, haitouLen: 6 },
-        { baken: Baken.Tanshou, bangou1: 2116, bangou1Len: 2, haitou: 2118, haitouLen: 6 },
-        { baken: Baken.Fukushou, bangou1: 2124, bangou1Len: 2, haitou: 2126, haitouLen: 6 },
-        { baken: Baken.Fukushou, bangou1: 2132, bangou1Len: 2, haitou: 2134, haitouLen: 6 },
-        { baken: Baken.Fukushou, bangou1: 2140, bangou1Len: 2, haitou: 2142, haitouLen: 6 },
-        { baken: Baken.Fukushou, bangou1: 2148, bangou1Len: 2, haitou: 2150, haitouLen: 6 },
-        { baken: Baken.Fukushou, bangou1: 2156, bangou1Len: 2, haitou: 2158, haitouLen: 6 },
+        { baken: Baken.Tanshou, index: 1, bangou1: 2100, bangou1Len: 2, haitou: 2102, haitouLen: 6 },
+        { baken: Baken.Tanshou, index: 2, bangou1: 2108, bangou1Len: 2, haitou: 2110, haitouLen: 6 },
+        { baken: Baken.Tanshou, index: 3, bangou1: 2116, bangou1Len: 2, haitou: 2118, haitouLen: 6 },
+        { baken: Baken.Fukushou, index: 1, bangou1: 2124, bangou1Len: 2, haitou: 2126, haitouLen: 6 },
+        { baken: Baken.Fukushou, index: 2, bangou1: 2132, bangou1Len: 2, haitou: 2134, haitouLen: 6 },
+        { baken: Baken.Fukushou, index: 3, bangou1: 2140, bangou1Len: 2, haitou: 2142, haitouLen: 6 },
+        { baken: Baken.Fukushou, index: 4, bangou1: 2148, bangou1Len: 2, haitou: 2150, haitouLen: 6 },
+        { baken: Baken.Fukushou, index: 5, bangou1: 2156, bangou1Len: 2, haitou: 2158, haitouLen: 6 },
         {
-          baken: Baken.Wakuren, bangou1: 2164, bangou1Len: 1, bangou2: 2165,
+          baken: Baken.Wakuren, index: 1, bangou1: 2164, bangou1Len: 1, bangou2: 2165,
           bangou2Len: 1, haitou: 2166, haitouLen: 6, ninki: 2172, ninkiLen: 2
         },
         {
-          baken: Baken.Wakuren, bangou1: 2174, bangou1Len: 1, bangou2: 2175,
+          baken: Baken.Wakuren, index: 2, bangou1: 2174, bangou1Len: 1, bangou2: 2175,
           bangou2Len: 1, haitou: 2176, haitouLen: 6, ninki: 2182, ninkiLen: 2
         },
         {
-          baken: Baken.Wakuren, bangou1: 2184, bangou1Len: 1, bangou2: 2185,
+          baken: Baken.Wakuren, index: 3, bangou1: 2184, bangou1Len: 1, bangou2: 2185,
           bangou2Len: 1, haitou: 2186, haitouLen: 6, ninki: 2192, ninkiLen: 2
         },
         {
-          baken: Baken.Umaren, bangou1: 2194, bangou1Len: 2, bangou2: 2196,
+          baken: Baken.Umaren, index: 1, bangou1: 2194, bangou1Len: 2, bangou2: 2196,
           bangou2Len: 2, haitou: 2198, haitouLen: 7, ninki: 2205, ninkiLen: 3
         },
         {
-          baken: Baken.Umaren, bangou1: 2208, bangou1Len: 2, bangou2: 2210,
+          baken: Baken.Umaren, index: 2, bangou1: 2208, bangou1Len: 2, bangou2: 2210,
           bangou2Len: 2, haitou: 2212, haitouLen: 7, ninki: 2219, ninkiLen: 3
         },
         {
-          baken: Baken.Umaren, bangou1: 2222, bangou1Len: 2, bangou2: 2224,
+          baken: Baken.Umaren, index: 3, bangou1: 2222, bangou1Len: 2, bangou2: 2224,
           bangou2Len: 2, haitou: 2226, haitouLen: 7, ninki: 2233, ninkiLen: 3
         },
         {
-          baken: Baken.Wide, bangou1: 2236, bangou1Len: 2, bangou2: 2238,
+          baken: Baken.Wide, index: 1, bangou1: 2236, bangou1Len: 2, bangou2: 2238,
           bangou2Len: 2, haitou: 2240, haitouLen: 7, ninki: 2247, ninkiLen: 3
         },
         {
-          baken: Baken.Wide, bangou1: 2250, bangou1Len: 2, bangou2: 2252,
+          baken: Baken.Wide, index: 2, bangou1: 2250, bangou1Len: 2, bangou2: 2252,
           bangou2Len: 2, haitou: 2254, haitouLen: 7, ninki: 2261, ninkiLen: 3
         },
         {
-          baken: Baken.Wide, bangou1: 2264, bangou1Len: 2, bangou2: 2266,
+          baken: Baken.Wide, index: 3, bangou1: 2264, bangou1Len: 2, bangou2: 2266,
           bangou2Len: 2, haitou: 2268, haitouLen: 7, ninki: 2275, ninkiLen: 3
         },
         {
-          baken: Baken.Wide, bangou1: 2278, bangou1Len: 2, bangou2: 2280,
+          baken: Baken.Wide, index: 4, bangou1: 2278, bangou1Len: 2, bangou2: 2280,
           bangou2Len: 2, haitou: 2282, haitouLen: 7, ninki: 2289, ninkiLen: 3
         },
         {
-          baken: Baken.Wide, bangou1: 2292, bangou1Len: 2, bangou2: 2294,
+          baken: Baken.Wide, index: 5, bangou1: 2292, bangou1Len: 2, bangou2: 2294,
           bangou2Len: 2, haitou: 2296, haitouLen: 7, ninki: 2303, ninkiLen: 3
         },
         {
-          baken: Baken.Wide, bangou1: 2306, bangou1Len: 2, bangou2: 2308,
+          baken: Baken.Wide, index: 6, bangou1: 2306, bangou1Len: 2, bangou2: 2308,
           bangou2Len: 2, haitou: 2310, haitouLen: 7, ninki: 2317, ninkiLen: 3
         },
         {
-          baken: Baken.Wide, bangou1: 2320, bangou1Len: 2, bangou2: 2322,
+          baken: Baken.Wide, index: 7, bangou1: 2320, bangou1Len: 2, bangou2: 2322,
           bangou2Len: 2, haitou: 2324, haitouLen: 7, ninki: 2331, ninkiLen: 3
         },
         {
-          baken: Baken.Umatan, bangou1: 2334, bangou1Len: 2, bangou2: 2336,
+          baken: Baken.Umatan, index: 1, bangou1: 2334, bangou1Len: 2, bangou2: 2336,
           bangou2Len: 2, haitou: 2338, haitouLen: 7, ninki: 2345, ninkiLen: 3
         },
         {
-          baken: Baken.Umatan, bangou1: 2348, bangou1Len: 2, bangou2: 2350,
+          baken: Baken.Umatan, index: 2, bangou1: 2348, bangou1Len: 2, bangou2: 2350,
           bangou2Len: 2, haitou: 2352, haitouLen: 7, ninki: 2359, ninkiLen: 3
         },
         {
-          baken: Baken.Umatan, bangou1: 2362, bangou1Len: 2, bangou2: 2364,
+          baken: Baken.Umatan, index: 3, bangou1: 2362, bangou1Len: 2, bangou2: 2364,
           bangou2Len: 2, haitou: 2366, haitouLen: 7, ninki: 2373, ninkiLen: 3
         },
         {
-          baken: Baken.Umatan, bangou1: 2376, bangou1Len: 2, bangou2: 2378,
+          baken: Baken.Umatan, index: 4, bangou1: 2376, bangou1Len: 2, bangou2: 2378,
           bangou2Len: 2, haitou: 2380, haitouLen: 7, ninki: 2345, ninkiLen: 3
         },
         {
-          baken: Baken.Umatan, bangou1: 2390, bangou1Len: 2, bangou2: 2392,
+          baken: Baken.Umatan, index: 5, bangou1: 2390, bangou1Len: 2, bangou2: 2392,
           bangou2Len: 2, haitou: 2394, haitouLen: 7, ninki: 2401, ninkiLen: 3
         },
         {
-          baken: Baken.Umatan, bangou1: 2404, bangou1Len: 2, bangou2: 2406,
+          baken: Baken.Umatan, index: 6, bangou1: 2404, bangou1Len: 2, bangou2: 2406,
           bangou2Len: 2, haitou: 2408, haitouLen: 7, ninki: 2415, ninkiLen: 3
         },
         {
-          baken: Baken.Sanrenpuku, bangou1: 2418, bangou1Len: 2, bangou2: 2420, bangou2Len: 2, bangou3: 2422,
+          baken: Baken.Sanrenpuku, index: 1, bangou1: 2418, bangou1Len: 2, bangou2: 2420, bangou2Len: 2, bangou3: 2422,
           bangou3Len: 2, haitou: 2424, haitouLen: 7, ninki: 2431, ninkiLen: 3
         },
         {
-          baken: Baken.Sanrenpuku, bangou1: 2434, bangou1Len: 2, bangou2: 2436, bangou2Len: 2, bangou3: 2438,
+          baken: Baken.Sanrenpuku, index: 2, bangou1: 2434, bangou1Len: 2, bangou2: 2436, bangou2Len: 2, bangou3: 2438,
           bangou3Len: 2, haitou: 2440, haitouLen: 7, ninki: 2447, ninkiLen: 3
         },
         {
-          baken: Baken.Sanrenpuku, bangou1: 2450, bangou1Len: 2, bangou2: 2452, bangou2Len: 2, bangou3: 2454,
+          baken: Baken.Sanrenpuku, index: 3, bangou1: 2450, bangou1Len: 2, bangou2: 2452, bangou2Len: 2, bangou3: 2454,
           bangou3Len: 2, haitou: 2456, haitouLen: 7, ninki: 2463, ninkiLen: 3
         },
         {
-          baken: Baken.Sanrentan, bangou1: 2466, bangou1Len: 2, bangou2: 2468, bangou2Len: 2, bangou3: 2470,
+          baken: Baken.Sanrentan, index: 1, bangou1: 2466, bangou1Len: 2, bangou2: 2468, bangou2Len: 2, bangou3: 2470,
           bangou3Len: 2, haitou: 2472, haitouLen: 9, ninki: 2481, ninkiLen: 4
         },
         {
-          baken: Baken.Sanrentan, bangou1: 2485, bangou1Len: 2, bangou2: 2487, bangou2Len: 2, bangou3: 2489,
+          baken: Baken.Sanrentan, index: 2, bangou1: 2485, bangou1Len: 2, bangou2: 2487, bangou2Len: 2, bangou3: 2489,
           bangou3Len: 2, haitou: 2491, haitouLen: 9, ninki: 2500, ninkiLen: 4
         },
         {
-          baken: Baken.Sanrentan, bangou1: 2504, bangou1Len: 2, bangou2: 2506, bangou2Len: 2, bangou3: 2508,
+          baken: Baken.Sanrentan, index: 3, bangou1: 2504, bangou1Len: 2, bangou2: 2506, bangou2Len: 2, bangou3: 2508,
           bangou3Len: 2, haitou: 2510, haitouLen: 9, ninki: 2519, ninkiLen: 4
         },
         {
-          baken: Baken.Sanrentan, bangou1: 2523, bangou1Len: 2, bangou2: 2525, bangou2Len: 2, bangou3: 2527,
+          baken: Baken.Sanrentan, index: 4, bangou1: 2523, bangou1Len: 2, bangou2: 2525, bangou2Len: 2, bangou3: 2527,
           bangou3Len: 2, haitou: 2529, haitouLen: 9, ninki: 2538, ninkiLen: 4
         },
         {
-          baken: Baken.Sanrentan, bangou1: 2542, bangou1Len: 2, bangou2: 2544, bangou2Len: 2, bangou3: 2546,
+          baken: Baken.Sanrentan, index: 5, bangou1: 2542, bangou1Len: 2, bangou2: 2544, bangou2Len: 2, bangou3: 2546,
           bangou3Len: 2, haitou: 2548, haitouLen: 9, ninki: 2557, ninkiLen: 4
         },
         {
-          baken: Baken.Sanrentan, bangou1: 2561, bangou1Len: 2, bangou2: 2563, bangou2Len: 2, bangou3: 2565,
+          baken: Baken.Sanrentan, index: 6, bangou1: 2561, bangou1Len: 2, bangou2: 2563, bangou2Len: 2, bangou3: 2565,
           bangou3Len: 2, haitou: 2567, haitouLen: 9, ninki: 2576, ninkiLen: 4
         },
       ]

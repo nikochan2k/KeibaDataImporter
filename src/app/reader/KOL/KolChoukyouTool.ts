@@ -158,7 +158,7 @@ export class KolChoukyouTool {
         continue;
       }
       const choukyouTime = new ChoukyouTime();
-      choukyouTime.Id = choukyou.Id + cf.f;
+      choukyouTime.Id = choukyou.Id * 10 + cf.f;
       choukyouTime.ChoukyouId = choukyou.Id;
       choukyouTime.F = cf.f;
       const time = parseFloat(comment);

@@ -62,7 +62,7 @@ export class DataTool {
   }
 
   public normalizeNenrei(race: Race, shussouba: Shussouba) {
-    if (race.Nen <= 2000) {
+    if (race.Nengappi < 20010000) {
       shussouba.Nenrei--;
     }
   }

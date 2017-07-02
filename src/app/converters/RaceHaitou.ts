@@ -16,6 +16,7 @@ export const bakenShubetsu = new Codes(
 
 export interface HaitouInfo {
   baken: Baken;
+  index: number;
   bangou1: number;
   bangou1Len: number;
   bangou2?: number;

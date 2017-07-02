@@ -15,9 +15,6 @@ export class Race {
   public Basho: number;
 
   @Column("smallint")
-  public Nen: number;
-
-  @Column("smallint")
   public Kaiji: number;
 
   @Column("smallint")
