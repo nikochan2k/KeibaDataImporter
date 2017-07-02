@@ -45,10 +45,8 @@ export class KolSei1Kd3 extends DataToImport {
     const dataSakuseiNengappi = readDate(buffer, 2910, 8);
     if (race.KolSeisekiSakuseiNengappi) {
       if (dataSakuseiNengappi <= race.KolSeisekiSakuseiNengappi) {
-        this.logger.debug("既に最新のレース成績データが格納されています: " + race.Id);
+        this.logger.info("既に最新のレース成績データが格納されています: " + race.Id);
         return;
-      } else {
-        await this.kolRaceTool.deleteOldSeiseki(race);
       }
     }
     race.KolSeisekiSakuseiNengappi = dataSakuseiNengappi;

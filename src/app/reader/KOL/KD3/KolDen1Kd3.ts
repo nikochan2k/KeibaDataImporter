@@ -37,10 +37,8 @@ export class KolDen1Kd3 extends DataToImport {
     const dataSakuseiNengappi = readDate(buffer, 418, 8);
     if (race.KolShutsubahyouSakuseiNengappi) {
       if (dataSakuseiNengappi <= race.KolShutsubahyouSakuseiNengappi) {
-        this.logger.debug("既に最新の出走馬レースデータが格納されています: " + race.Id);
+        this.logger.info("既に最新の出走馬レースデータが格納されています: " + race.Id);
         return;
-      } else {
-        await this.kolRaceTool.deleteOldSeiseki(race);
       }
     }
 

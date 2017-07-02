@@ -65,8 +65,8 @@ export class DataTool {
     return meishou;
   }
 
-  public getRaceId(yyyymmdd: number, basho: number, raceBangou: number) {
-    const id = yyyymmdd * 10000 + basho * 100 + raceBangou;
+  public getRaceId(yymmdd: number, basho: number, raceBangou: number) {
+    const id = yymmdd * 10000 + basho * 100 + raceBangou;
     return id;
   }
 

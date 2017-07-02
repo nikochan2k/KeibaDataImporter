@@ -13,8 +13,6 @@ import { Race } from "../../entities/Race";
 import { RaceHaitou } from "../../entities/RaceHaitou";
 import { RaceHassouJoukyou } from "../../entities/RaceHassouJoukyou";
 import { ShussoubaHassouJoukyou } from "../../entities/ShussoubaHassouJoukyou";
-import { RaceKeika } from "../../entities/RaceKeika";
-import { RaceLapTime } from "../../entities/RaceLapTime";
 import { RaceShoukin } from "../../entities/RaceShoukin";
 import { Record } from "../../entities/Record";
 import { Uma } from "../../entities/Uma";
@@ -57,45 +55,14 @@ export class KolRaceTool {
       .execute();
   }
 
-  public async deleteOldSeiseki(race: Race) {
-    await this.entityManager
-      .createQueryBuilder(RaceShoukin, "rs")
-      .delete()
-      .where("rs.RaceId = :raceId")
-      .andWhere("rs.Kakutei = 1")
-      .setParameter("raceId", race.Id)
-      .execute();
-
-    await this.entityManager
-      .createQueryBuilder(RaceLapTime, "rlt")
-      .delete()
-      .where("rlt.RaceId = :raceId")
-      .setParameter("raceId", race.Id)
-      .execute();
-
-    await this.entityManager
-      .createQueryBuilder(RaceKeika, "rk")
-      .delete()
-      .where("rk.RaceId = :raceId")
-      .setParameter("raceId", race.Id)
-      .execute();
-
-    await this.entityManager
-      .createQueryBuilder(RaceHaitou, "rh")
-      .delete()
-      .where("rh.RaceId = :raceId")
-      .setParameter("raceId", race.Id)
-      .execute();
-  }
-
   protected getRaceInfo(buffer: Buffer) {
-    const yyyymmdd = readPositiveInt(buffer, 12, 8);
+    const yymmdd = readPositiveInt(buffer, 14, 6);
     const basho = $C.basho.toCodeFromKol(buffer, 0, 2);
     const raceBangou = readInt(buffer, 10, 2);
-    if (yyyymmdd === null || basho === null || raceBangou === null) {
+    if (yymmdd === null || basho === null || raceBangou === null) {
       return null;
     }
-    return { yyyymmdd: yyyymmdd, basho: basho, raceBangou: raceBangou };
+    return { yymmdd: yymmdd, basho: basho, raceBangou: raceBangou };
   }
 
   public getRaceId(buffer: Buffer) {
@@ -103,7 +70,7 @@ export class KolRaceTool {
     if (!info) {
       return null;
     }
-    return this.tool.getRaceId(info.yyyymmdd, info.basho, info.raceBangou);
+    return this.tool.getRaceId(info.yymmdd, info.basho, info.raceBangou);
   }
 
   public async getRace(buffer: Buffer) {
@@ -111,7 +78,7 @@ export class KolRaceTool {
     if (!info) {
       return null;
     }
-    const id = this.tool.getRaceId(info.yyyymmdd, info.basho, info.raceBangou);
+    const id = this.tool.getRaceId(info.yymmdd, info.basho, info.raceBangou);
     let race = await this.entityManager.getRepository(Race).findOneById(id);
     if (!race) {
       race = new Race();

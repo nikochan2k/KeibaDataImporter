@@ -2,7 +2,6 @@ import { Inject, Service } from "typedi";
 import * as $S from "../../../converters/Shussouba";
 import { Race } from "../../../entities/Race";
 import { Shussouba } from "../../../entities/Shussouba";
-import { ShussoubaTsuukaJuni } from "../../../entities/ShussoubaTsuukaJuni";
 import { DataToImport } from "../../DataToImport";
 import { DataTool } from "../../DataTool";
 import {
@@ -36,15 +35,6 @@ export class KolSei2Kd3 extends DataToImport {
     return 600;
   }
 
-  protected async deleteOld(shussouba: Shussouba) {
-    await this.entityManager
-      .createQueryBuilder(ShussoubaTsuukaJuni, "stj")
-      .delete()
-      .where("stj.ShussoubaId = :shussoubaId")
-      .setParameter("shussoubaId", shussouba.Id)
-      .execute();
-  }
-
   protected async save(buffer: Buffer) {
     const umaban = readPositiveInt(buffer, 23, 2);
     if (umaban === null) {
@@ -64,10 +54,8 @@ export class KolSei2Kd3 extends DataToImport {
     if (shussouba) {
       if (shussouba.KolSeisekiSakuseiNengappi) {
         if (dataSakuseiNengappi <= shussouba.KolSeisekiSakuseiNengappi) {
-          this.logger.debug("既に最新の出走馬成績データが格納されています: " + id);
+          this.logger.info("既に最新の出走馬成績データが格納されています: " + id);
           return;
-        } else {
-          await this.deleteOld(shussouba);
         }
       }
     } else {

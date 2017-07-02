@@ -170,6 +170,16 @@ export class KolTool {
     }
   }
 
+  protected async deleteOdds(oddsKubunId: number) {
+    await this.entityManager
+      .createQueryBuilder()
+      .delete()
+      .from(Odds)
+      .where("OddsKubunId =:oddsKubunId")
+      .setParameter("oddsKubunId", oddsKubunId)
+      .execute();
+  }
+
   protected getOdds(buffer: Buffer, offset: number, length: number) {
     let odds: number;
     if (readStr(buffer, offset, length) !== "*") {
@@ -181,6 +191,7 @@ export class KolTool {
   }
 
   public async saveTanshouOdds(buffer: Buffer, offset: number, oddsKubunId: number) {
+    await this.deleteOdds(oddsKubunId);
     for (let bangou = 1; bangou <= 18; bangou++) {
       const odds1 = this.getOdds(buffer, offset, 5);
       offset += 5;
@@ -196,6 +207,7 @@ export class KolTool {
   }
 
   public async saveWakurenOdds(buffer: Buffer, offset: number, oddsKubunId: number) {
+    await this.deleteOdds(oddsKubunId);
     for (let bangou1 = 1; bangou1 <= 8; bangou1++) {
       for (let bangou2 = 1; bangou2 <= 8; bangou2++) {
         const odds1 = this.getOdds(buffer, offset, 5);
@@ -214,6 +226,7 @@ export class KolTool {
   }
 
   public async saveUmarenOdds(buffer: Buffer, offset: number, oddsKubunId: number) {
+    await this.deleteOdds(oddsKubunId);
     for (let bangou1 = 1; bangou1 <= 17; bangou1++) {
       for (let bangou2 = bangou1 + 1; bangou2 <= 18; bangou2++) {
         const odds1 = this.getOdds(buffer, offset, 7);
@@ -232,6 +245,7 @@ export class KolTool {
   }
 
   public async saveFukushouOdds(buffer: Buffer, offset: number, oddsKubunId: number) {
+    await this.deleteOdds(oddsKubunId);
     for (let bangou = 1; bangou <= 18; bangou++) {
       const odds1 = this.getOdds(buffer, offset, 3);
       offset += 3;
@@ -250,6 +264,7 @@ export class KolTool {
   }
 
   public async saveWideOdds(buffer: Buffer, offset: number, oddsKubunId: number) {
+    await this.deleteOdds(oddsKubunId);
     for (let bangou1 = 1; bangou1 <= 17; bangou1++) {
       for (let bangou2 = bangou1 + 1; bangou2 <= 18; bangou2++) {
         const odds1 = this.getOdds(buffer, offset, 5);
@@ -271,6 +286,7 @@ export class KolTool {
   }
 
   public async saveUmatanOdds(buffer: Buffer, offset: number, oddsKubunId: number) {
+    await this.deleteOdds(oddsKubunId);
     for (let bangou1 = 1; bangou1 <= 18; bangou1++) {
       for (let bangou2 = 1; bangou2 <= 18; bangou2++) {
         if (bangou1 === bangou2) {
@@ -292,6 +308,7 @@ export class KolTool {
   }
 
   public async saveSanrenpukuOdds(buffer: Buffer, offset: number, oddsKubunId: number) {
+    await this.deleteOdds(oddsKubunId);
     for (let bangou1 = 1; bangou1 <= 16; bangou1++) {
       for (let bangou2 = bangou1 + 1; bangou2 <= 17; bangou2++) {
         for (let bangou3 = bangou2 + 1; bangou3 <= 18; bangou3++) {
@@ -313,6 +330,7 @@ export class KolTool {
   }
 
   public async saveSanrentanOdds(buffer: Buffer, offset: number, oddsKubunId: number) {
+    await this.deleteOdds(oddsKubunId);
     for (let bangou1 = 1; bangou1 <= 18; bangou1++) {
       for (let bangou2 = 1; bangou2 <= 18; bangou2++) {
         for (let bangou3 = 1; bangou3 <= 18; bangou3++) {
