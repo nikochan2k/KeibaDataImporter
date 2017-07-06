@@ -53,13 +53,15 @@ export class Importer {
       }
       const dataToImport = this.readers[basename];
       if (!dataToImport) {
-        this.logger.debug('"' + basename + '" is not suppoted.');
+        this.logger.debug('"' + basename + '"は取り込み対象ではありません');
         continue;
       }
-      this.logger.debug('Reading "' + dataFile + "'");
       let fd: number;
       try {
         fd = fs.openSync(dataFile, "r");
+        if (this.logger.isDebugEnabled) {
+          this.logger.debug('"' + basename + '"を取り込んでいます');
+        }
         await dataToImport.readAll(fd, cache);
       } catch (e) {
         this.logger.error(e.stack || e);

@@ -13,6 +13,7 @@ import { Kishu } from "../../entities/Kishu";
 import { Race } from "../../entities/Race";
 import { RaceHaitou } from "../../entities/RaceHaitou";
 import { RaceHassouJoukyou } from "../../entities/RaceHassouJoukyou";
+import { RaceLapTime } from "../../entities/RaceLapTime";
 import { RaceShoukin } from "../../entities/RaceShoukin";
 import { Record } from "../../entities/Record";
 import { Shussouba } from "../../entities/Shussouba";
@@ -30,6 +31,13 @@ import {
   readStrWithNoSpace,
   readTime
 } from "../Reader";
+
+export interface RaceLapTimeInfo {
+  Offset: number;
+  Length: number;
+  KaishiKyori: number;
+  ShuuryouKyori: number;
+}
 
 @Service()
 export class KolRaceTool {
@@ -232,6 +240,21 @@ export class KolRaceTool {
           shj.ShussoubaId = race.Id * 100 + umaban;
           await this.entityManager.getRepository(ShussoubaHassouJoukyou).save(shj);
         }
+      }
+    }
+  }
+
+  public async saveRaceLapTime(buffer: Buffer, race: Race, infos: RaceLapTimeInfo[]) {
+    const raceLapTime = new RaceLapTime();
+    raceLapTime.RaceId = race.Id;
+    for (let i = 0; i < infos.length; i++) {
+      const info = infos[i];
+      raceLapTime.LapTime = readDouble(buffer, info.Offset, 3, 0.1);
+      if (raceLapTime.LapTime) {
+        raceLapTime.Id = race.Id * 100 + i + 1;
+        raceLapTime.KaishiKyori = info.KaishiKyori;
+        raceLapTime.ShuuryouKyori = info.ShuuryouKyori;
+        await this.entityManager.save(raceLapTime);
       }
     }
   }

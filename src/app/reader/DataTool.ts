@@ -26,8 +26,8 @@ export class DataTool {
     if (!meishou) {
       return meishou;
     }
-    meishou = meishou.replace(/(株)|㈱/g, "株式会社");
-    meishou = meishou.replace(/(有)|㈲/g, "有限会社");
+    meishou = meishou.replace(/(株)|㈱/, "株式会社");
+    meishou = meishou.replace(/(有)|㈲/, "有限会社");
     meishou = meishou.replace(/・/g, "");
     meishou = meishou.replace(/氏$/, "");
     return meishou;

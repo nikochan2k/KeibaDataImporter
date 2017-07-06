@@ -14,11 +14,11 @@ export class Race {
   @Column("smallint")
   public Basho: number;
 
-  @Column("smallint")
-  public Kaiji: number;
+  @Column("smallint", { nullable: true })
+  public Kaiji?: number;
 
-  @Column("smallint")
-  public Nichiji: number;
+  @Column("smallint", { nullable: true })
+  public Nichiji?: number;
 
   @Column("smallint")
   public RaceBangou: number;

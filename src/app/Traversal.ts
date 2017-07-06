@@ -28,26 +28,25 @@ export class Traversal {
     this.logger = getLogger(this);
   }
 
-  public async traverse(dirName: string) {
-    const lzhDir = this.checkDir(path.join(process.cwd(), dirName)) || this.checkDir(dirName);
-    if (lzhDir) {
-      await this.traverseLzhDir(lzhDir);
+  public async traverse(entry: string) {
+    const checked = this.checkPath(path.join(process.cwd(), entry)) || this.checkPath(entry);
+    if (!checked) {
+      this.logger.error('"' + entry + '"は対象外です');
+    } else if (checked.stat.isDirectory()) {
+      await this.traverseLzhDir(checked.entry);
+    } else if (checked.stat.isFile() && /.lzh$/i.test(checked.entry)) {
+      await this.uncompressLzhFile(checked.entry);
     } else {
-      this.logger.error('"' + lzhDir + '" is not a directory.');
+      this.logger.error('"' + entry + '"は対象外です');
     }
   }
 
-  protected checkDir(lzhDir: string): string {
+  protected checkPath(entry: string) {
     try {
-      if (fs.statSync(lzhDir).isDirectory()) {
-        return lzhDir;
-      } else {
-        this.logger.debug(lzhDir + " is not a directory.");
-      }
+      return { stat: fs.statSync(entry), entry: entry };
     } catch (e) {
-      this.logger.debug(e.stack || e);
+      return null;
     }
-    return null;
   }
 
   protected async traverseLzhDir(lzhDir: string) {
@@ -108,6 +107,10 @@ export class Traversal {
 
     for (let i = 0; i < importFiles.length; i++) {
       const importFile = importFiles[i];
+      if (this.logger.isInfoEnabled) {
+        const basename = path.basename(importFile.path);
+        this.logger.info('"' + basename + '"を取り込んでいます');
+      }
       await this.uncompressLzhFile(importFile.path);
     }
   }
@@ -140,8 +143,6 @@ export class Traversal {
     rimraf(dir, (error) => {
       if (error) {
         this.logger.warn(error.stack);
-      } else {
-        this.logger.debug('"' + dir + '" was deleted');
       }
     });
   }

@@ -100,7 +100,7 @@ export class KolTool {
     uma.Seibetsu = seibetsu;
     uma = await this.umaDao.saveUma(uma);
     let kyousouba = new Kyousouba();
-    kyousouba.Id = uma.Id;
+    kyousouba.UmaId = uma.Id;
     kyousouba.Seibetsu = seibetsu;
     kyousouba.UmaKigou = $U.umaKigou.toCodeFromKol(buffer, offset + 30, 2);
     const banushi = await this.saveBanushi(buffer, offset + 35);
@@ -118,6 +118,9 @@ export class KolTool {
     const seisansha = new Seisansha();
     seisansha.SeisanshaMei = seisanshaMei;
     seisansha.TanshukuSeisanshaMei = this.tool.normalizeTanshukuHoujinMei(buffer, offset + 40, 20);
+    if (!seisansha.TanshukuSeisanshaMei) {
+      seisansha.TanshukuSeisanshaMei = seisanshaMei;
+    }
     return this.seisanshaDao.saveSeisansha(seisansha);
   }
 

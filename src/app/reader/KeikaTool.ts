@@ -102,6 +102,10 @@ export class KeikaTool {
               shussoubaKeika.TateCount++;
               bracket = true;
               break;
+            case "*":
+            case "止":
+            case "落":
+              break;
             default:
               this.logger.warn('不正な経過"' + ch + '": ' + raceKeika.Id);
               break;

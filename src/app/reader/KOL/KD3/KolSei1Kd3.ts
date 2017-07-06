@@ -182,81 +182,25 @@ export class KolSei1Kd3 extends DataToImport {
   }
 
   protected async saveShougaiRaceLapTime(buffer: Buffer, race: Race) {
-    const raceLapTime = new RaceLapTime();
-
-    raceLapTime.RaceId = race.Id;
-    raceLapTime.ShuuryouKyori = race.Kyori;
-
-    let lapTime: number;
-
-    lapTime = readDouble(buffer, 382, 5, 0.1);
-    if (lapTime) {
-      raceLapTime.Id = race.Id * 100 + 1;
-      raceLapTime.KaishiKyori = race.Kyori - 1600;
-      await this.entityManager.save(raceLapTime);
-    }
-
-    lapTime = readDouble(buffer, 388, 4, 0.1);
-    if (lapTime) {
-      raceLapTime.Id = race.Id * 100 + 2;
-      raceLapTime.KaishiKyori = race.Kyori - 800;
-      await this.entityManager.save(raceLapTime);
-    }
-
-    lapTime = readDouble(buffer, 393, 4, 0.1);
-    if (lapTime) {
-      raceLapTime.Id = race.Id * 100 + 3;
-      raceLapTime.KaishiKyori = race.Kyori - 600;
-      await this.entityManager.save(raceLapTime);
-    }
+    await this.kolRaceTool.saveRaceLapTime(buffer, race,
+      [
+        { Offset: 382, Length: 5, KaishiKyori: race.Kyori - 1600, ShuuryouKyori: race.Kyori },
+        { Offset: 388, Length: 4, KaishiKyori: race.Kyori - 800, ShuuryouKyori: race.Kyori },
+        { Offset: 393, Length: 4, KaishiKyori: race.Kyori - 600, ShuuryouKyori: race.Kyori },
+      ]
+    );
   }
 
   protected async saveChihouRaceLapTime(buffer: Buffer, race: Race) {
-    const raceLapTime = new RaceLapTime();
-
-    raceLapTime.RaceId = race.Id;
-
-    let lapTime: number;
-
-    lapTime = readDouble(buffer, 441, 3, 0.1);
-    if (lapTime) {
-      raceLapTime.Id = race.Id * 100 + 1;
-      raceLapTime.KaishiKyori = 0;
-      raceLapTime.ShuuryouKyori = 600;
-      await this.entityManager.save(raceLapTime);
-    }
-
-    lapTime = readDouble(buffer, 444, 3, 0.1);
-    if (lapTime) {
-      raceLapTime.Id = race.Id * 100 + 2;
-      raceLapTime.KaishiKyori = 0;
-      raceLapTime.ShuuryouKyori = 800;
-      await this.entityManager.save(raceLapTime);
-    }
-
-    lapTime = readDouble(buffer, 447, 3, 0.1);
-    if (lapTime) {
-      raceLapTime.Id = race.Id * 100 + 3;
-      raceLapTime.KaishiKyori = 0;
-      raceLapTime.ShuuryouKyori = 600;
-      await this.entityManager.save(raceLapTime);
-    }
-
-    lapTime = readDouble(buffer, 450, 3, 0.1);
-    if (lapTime) {
-      raceLapTime.Id = race.Id * 100 + 4;
-      raceLapTime.KaishiKyori = race.Kyori - 800;
-      raceLapTime.ShuuryouKyori = race.Kyori;
-      await this.entityManager.save(raceLapTime);
-    }
-
-    lapTime = readDouble(buffer, 453, 3, 0.1);
-    if (lapTime) {
-      raceLapTime.Id = race.Id * 100 + 5;
-      raceLapTime.KaishiKyori = race.Kyori - 600;
-      raceLapTime.ShuuryouKyori = race.Kyori;
-      await this.entityManager.save(raceLapTime);
-    }
+    await this.kolRaceTool.saveRaceLapTime(buffer, race,
+      [
+        { Offset: 441, Length: 3, KaishiKyori: 0, ShuuryouKyori: 600 },
+        { Offset: 444, Length: 3, KaishiKyori: 0, ShuuryouKyori: 800 },
+        { Offset: 447, Length: 3, KaishiKyori: 0, ShuuryouKyori: 1000 },
+        { Offset: 450, Length: 3, KaishiKyori: race.Kyori - 800, ShuuryouKyori: race.Kyori },
+        { Offset: 453, Length: 3, KaishiKyori: race.Kyori - 600, ShuuryouKyori: race.Kyori }
+      ]
+    );
   }
 
   protected async saveRaceKeika(buffer: Buffer, race: Race) {
