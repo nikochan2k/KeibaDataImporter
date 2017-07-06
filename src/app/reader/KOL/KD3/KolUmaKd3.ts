@@ -190,18 +190,19 @@ export class KolUmaKd3 extends DataToImport {
   }
 
   protected async saveShussouba(buffer: Buffer, race: Race, kyousouba: Kyousouba, uma: Uma) {
-    const umaban = readPositiveInt(buffer, 1, 2);
+    let umaban = readPositiveInt(buffer, 1, 2);
     let id: number;
     let shussouba: Shussouba;
     if (1 <= umaban && umaban <= 28) {
       id = race.Id * 100 + umaban;
       shussouba = await this.entityManager.findOneById(Shussouba, id);
     } else {
-      id = race.Id * 100 + 28;
+      umaban = 28;
       do {
-        id++; // 地方競馬で馬番がない場合 29から始まる
+        umaban++; // 地方競馬で馬番がない場合 29から始まる
+        id = race.Id * 100 + umaban;
         shussouba = await this.entityManager.findOneById(Shussouba, id);
-      } while (!shussouba || shussouba.KyousoubaId === kyousouba.Id);
+      } while (shussouba && shussouba.KyousoubaId !== kyousouba.Id);
     }
     if (shussouba) {
       return shussouba;

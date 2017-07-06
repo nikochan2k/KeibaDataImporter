@@ -125,13 +125,9 @@ export class KolTool {
   }
 
   public saveKyuusha(buffer: Buffer, offset: number) {
-    const kyuushaMei = readStrWithNoSpace(buffer, offset + 5, 32);
-    if (!kyuushaMei) {
-      return null;
-    }
     const kyuusha = new Kyuusha();
     kyuusha.KolKyuushaCode = readPositiveInt(buffer, offset, 5);
-    kyuusha.KyuushaMei = kyuushaMei;
+    kyuusha.KyuushaMei = readStrWithNoSpace(buffer, offset + 5, 32);
     kyuusha.TanshukuKyuushaMei = readStrWithNoSpace(buffer, offset + 37, 8);
     kyuusha.ShozokuBasho = $C.basho.toCodeFromKol(buffer, offset + 45, 2);
     kyuusha.RitsuHokuNanBetsu = $KY.ritsuHokuNanBetsu.toCodeFromKol(buffer, offset + 47, 1);

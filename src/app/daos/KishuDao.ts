@@ -1,12 +1,15 @@
 import { Service } from "typedi";
-import { Repository } from "typeorm";
-import { OrmRepository } from "typeorm-typedi-extensions";
+import { EntityManager, Repository } from "typeorm";
+import { OrmEntityManager, OrmRepository } from "typeorm-typedi-extensions";
 import { Kijou } from "../entities/Kijou";
 import { Kishu } from "../entities/Kishu";
 import { Shozoku } from "../entities/Shozoku";
 
 @Service()
 export class KishuDao {
+
+  @OrmEntityManager()
+  protected entityManager: EntityManager;
 
   @OrmRepository(Kishu)
   private kishuRepository: Repository<Kishu>;
@@ -101,42 +104,42 @@ export class KishuDao {
     }
     const asIs = await this.getKishu(toBe);
     if (asIs) {
-      let update = false;
+      const updateSet: any = {};
       /* tslint:disable:triple-equals */
       if (toBe.FromDate < asIs.FromDate) {
-        asIs.FromDate = toBe.FromDate;
-        update = true;
+        updateSet.FromDate = asIs.FromDate = toBe.FromDate;
       }
       if (asIs.ToDate < toBe.ToDate) {
-        asIs.ToDate = toBe.ToDate;
-        update = true;
+        updateSet.ToDate = asIs.ToDate = toBe.ToDate;
       }
       if (asIs.KishuMei == null && toBe.KishuMei != null) {
-        asIs.KishuMei = toBe.KishuMei;
-        update = true;
+        updateSet.KishuMei = asIs.KishuMei = toBe.KishuMei;
       }
       if (asIs.Furigana == null && toBe.Furigana != null) {
-        asIs.Furigana = toBe.Furigana;
-        update = true;
+        updateSet.Furigana = asIs.Furigana = toBe.Furigana;
       }
       if (asIs.KolKishuCode == null && toBe.KolKishuCode != null) {
-        asIs.KolKishuCode = toBe.KolKishuCode;
-        update = true;
+        updateSet.KolKishuCode = asIs.KolKishuCode = toBe.KolKishuCode;
       }
       if (asIs.JrdbKishuCode == null && toBe.JrdbKishuCode != null) {
-        asIs.JrdbKishuCode = toBe.JrdbKishuCode;
-        update = true;
+        updateSet.JrdbKishuCode = asIs.JrdbKishuCode = toBe.JrdbKishuCode;
       }
       if (asIs.Seinengappi == null && toBe.Seinengappi != null) {
-        asIs.Seinengappi = toBe.Seinengappi;
-        update = true;
+        updateSet.Seinengappi = asIs.Seinengappi = toBe.Seinengappi;
       }
       if (asIs.HatsuMenkyoNen == null && toBe.HatsuMenkyoNen != null) {
-        asIs.HatsuMenkyoNen = toBe.HatsuMenkyoNen;
-        update = true;
+        updateSet.HatsuMenkyoNen = asIs.HatsuMenkyoNen = toBe.HatsuMenkyoNen;
       }
       /* tslint:enable:triple-equals */
-      toBe = update ? await this.kishuRepository.save(asIs) : asIs;
+      if (0 < Object.keys(updateSet).length) {
+        await this.entityManager
+          .createQueryBuilder()
+          .update(Kishu, updateSet)
+          .where("Id = :id")
+          .setParameter("id", asIs.Id)
+          .execute();
+      }
+      toBe = asIs;
     } else {
       toBe = await this.kishuRepository.save(toBe);
     }

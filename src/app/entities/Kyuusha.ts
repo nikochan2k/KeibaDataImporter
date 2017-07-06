@@ -6,7 +6,7 @@ import {
 } from "typeorm";
 
 @Entity("Kyuusha")
-@Index("IxKyuusha1", (k: Kyuusha) => [k.KyuushaMei], { unique: true })
+@Index("IxKyuusha1", (k: Kyuusha) => [k.KyuushaMei])
 @Index("IxKyuusha2", (k: Kyuusha) => [k.KolKyuushaCode], { unique: true })
 @Index("IxKyuusha3", (k: Kyuusha) => [k.JrdbKyuushaCode], { unique: true })
 export class Kyuusha {

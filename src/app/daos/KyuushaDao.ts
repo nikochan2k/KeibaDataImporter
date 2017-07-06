@@ -1,78 +1,75 @@
-import { Repository } from "typeorm";
 import { Service } from "typedi";
-import { OrmRepository } from "typeorm-typedi-extensions";
+import { EntityManager, Repository } from "typeorm";
+import { OrmEntityManager, OrmRepository } from "typeorm-typedi-extensions";
 import { Kyuusha } from "../entities/Kyuusha";
 
 @Service()
 export class KyuushaDao {
 
+  @OrmEntityManager()
+  protected entityManager: EntityManager;
+
   @OrmRepository(Kyuusha)
   private repository: Repository<Kyuusha>;
 
-  protected async getKyuusha(kyuusha: Kyuusha) {
-    let result: Kyuusha;
-    if (kyuusha.KyuushaMei) {
-      result = await this.repository.findOne({ KyuushaMei: kyuusha.KyuushaMei });
+  protected getKyuusha(kyuusha: Kyuusha) {
+    if (kyuusha.KolKyuushaCode) {
+      return this.repository.findOne({ KolKyuushaCode: kyuusha.KolKyuushaCode });
     }
-    if (!result && kyuusha.KolKyuushaCode) {
-      result = await this.repository.findOne({ KolKyuushaCode: kyuusha.KolKyuushaCode });
+    if (kyuusha.JrdbKyuushaCode) {
+      return this.repository.findOne({ JrdbKyuushaCode: kyuusha.JrdbKyuushaCode });
     }
-    if (!result && kyuusha.JrdbKyuushaCode) {
-      result = await this.repository.findOne({ JrdbKyuushaCode: kyuusha.JrdbKyuushaCode });
-    }
-    return result;
+    return null;
   }
 
   public async saveKyuusha(toBe: Kyuusha) {
-    if (!toBe.KyuushaMei && !toBe.KolKyuushaCode && !toBe.JrdbKyuushaCode) {
+    if (!toBe.KolKyuushaCode && !toBe.JrdbKyuushaCode) {
       return null;
     }
     const asIs = await this.getKyuusha(toBe);
     if (asIs) {
-      let update = false;
+      const updateSet: any = {};
       /* tslint:disable:triple-equals */
       if (asIs.KolKyuushaCode == null && toBe.KolKyuushaCode != null) {
-        asIs.KolKyuushaCode = toBe.KolKyuushaCode;
-        update = true;
+        updateSet.KolKyuushaCode = asIs.KolKyuushaCode = toBe.KolKyuushaCode;
       }
       if (asIs.JrdbKyuushaCode == null && toBe.JrdbKyuushaCode != null) {
-        asIs.JrdbKyuushaCode = toBe.JrdbKyuushaCode;
-        update = true;
+        updateSet.JrdbKyuushaCode = asIs.JrdbKyuushaCode = toBe.JrdbKyuushaCode;
       }
       if (asIs.KyuushaMei == null && toBe.KyuushaMei != null) {
-        asIs.KyuushaMei = toBe.KyuushaMei;
-        update = true;
+        updateSet.KyuushaMei = asIs.KyuushaMei = toBe.KyuushaMei;
       }
       if (asIs.TanshukuKyuushaMei == null && toBe.KyuushaMei != null) {
-        asIs.TanshukuKyuushaMei = toBe.TanshukuKyuushaMei;
-        update = true;
+        updateSet.TanshukuKyuushaMei = asIs.TanshukuKyuushaMei = toBe.TanshukuKyuushaMei;
       }
       if (asIs.Furigana == null && toBe.Furigana != null) {
-        asIs.Furigana == toBe.Furigana;
-        update = true;
+        updateSet.Furigana = asIs.Furigana == toBe.Furigana;
       }
       if (asIs.Seinengappi == null && toBe.Seinengappi != null) {
-        asIs.Seinengappi = toBe.Seinengappi;
-        update = true;
+        updateSet.Seinengappi = asIs.Seinengappi = toBe.Seinengappi;
       }
       if (asIs.HatsuMenkyoNen == null && toBe.HatsuMenkyoNen != null) {
-        asIs.HatsuMenkyoNen = toBe.HatsuMenkyoNen;
-        update = true;
+        updateSet.HatsuMenkyoNen = asIs.HatsuMenkyoNen = toBe.HatsuMenkyoNen;
       }
       if (asIs.TouzaiBetsu == null && toBe.TouzaiBetsu != null) {
-        asIs.TouzaiBetsu = toBe.TouzaiBetsu;
-        update = true;
+        updateSet.TouzaiBetsu = asIs.TouzaiBetsu = toBe.TouzaiBetsu;
       }
       if (asIs.ShozokuBasho == null && toBe.ShozokuBasho != null) {
-        asIs.ShozokuBasho = toBe.ShozokuBasho;
-        update = true;
+        updateSet.ShozokuBasho = asIs.ShozokuBasho = toBe.ShozokuBasho;
       }
       if (asIs.RitsuHokuNanBetsu == null && toBe.RitsuHokuNanBetsu != null) {
-        asIs.RitsuHokuNanBetsu = toBe.RitsuHokuNanBetsu;
-        update = true;
+        updateSet.RitsuHokuNanBetsu = asIs.RitsuHokuNanBetsu = toBe.RitsuHokuNanBetsu;
       }
       /* tslint:enable:triple-equals */
-      toBe = update ? await this.repository.save(asIs) : asIs;
+      if (0 < Object.keys(updateSet).length) {
+        await this.entityManager
+          .createQueryBuilder()
+          .update(Kyuusha, updateSet)
+          .where("Id = :id")
+          .setParameter("id", asIs.Id)
+          .execute();
+      }
+      toBe = asIs;
     } else {
       toBe = await this.repository.save(toBe);
     }
