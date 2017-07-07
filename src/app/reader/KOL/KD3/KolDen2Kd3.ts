@@ -4,6 +4,7 @@ import { Race } from "../../../entities/Race";
 import { Shussouba } from "../../../entities/Shussouba";
 import { DataCache } from "../../DataCache";
 import { DataToImport } from "../../DataToImport";
+import { DataTool } from "../../DataTool";
 import {
   readDate,
   readDouble,
@@ -22,6 +23,9 @@ export class KolDen2Kd3 extends DataToImport {
   private choukyouTool: KolChoukyouTool;
 
   @Inject()
+  private tool: DataTool;
+
+  @Inject()
   private kolTool: KolTool;
 
   @Inject()
@@ -36,45 +40,67 @@ export class KolDen2Kd3 extends DataToImport {
     if (!info) {
       return;
     }
-    const shussouba = info.shussouba;
-    const dataSakuseiNengappi = readDate(buffer, 727, 8);
-    if (shussouba.KolShutsubahyouSakuseiNengappi) {
-      if (dataSakuseiNengappi <= shussouba.KolSeisekiSakuseiNengappi) {
-        this.logger.info("既に最新の出走馬成績データが格納されています: " + shussouba.Id);
+    const asIs = info.shussouba;
+    if (asIs) {
+      const dataSakuseiNengappi = readDate(buffer, 727, 8);
+      if (dataSakuseiNengappi <= asIs.KolSeisekiSakuseiNengappi) {
+        this.logger.info("既に最新の出走馬成績データが格納されています: " + asIs.Id);
         return;
       }
     }
-    shussouba.KolShutsubahyouSakuseiNengappi = dataSakuseiNengappi;
 
-    await this.saveShussouba(buffer, info.race, shussouba, cache);
+    const shussouba = await this.saveShussouba(buffer, info.race, asIs, cache);
+    if (!shussouba) {
+      return;
+    }
     const tanshukuKishuMei = readStrWithNoSpace(buffer, 188, 8);
     await this.saveChoukyou(buffer, shussouba, tanshukuKishuMei);
   }
 
-  protected async saveShussouba(buffer: Buffer, race: Race, shussouba: Shussouba, cache: DataCache) {
-    if (!shussouba.KolSeisekiSakuseiNengappi) {
-      shussouba.Wakuban = readPositiveInt(buffer, 22, 1);
-      const kyuusha = await this.kolTool.saveKyuusha(buffer, 206);
-      shussouba.KyousoubaId = (await this.kolTool.saveKyousouba(buffer, 32, kyuusha)).Kyousouba.Id;
-      shussouba.Nenrei = readPositiveInt(buffer, 65, 2);
-      shussouba.Blinker = $S.blinker.toCodeFromKol(buffer, 147, 1);
-      shussouba.Kinryou = readDouble(buffer, 148, 3, 0.1);
-      shussouba.KijouId = (await this.kolTool.saveKijou(buffer, 151, race.Nengappi)).Id;
-      shussouba.Norikawari = $S.norikawari.toCodeFromKol(buffer, 205, 1);
+  protected async saveShussouba(buffer: Buffer, race: Race, asIs: Shussouba, cache: DataCache) {
+    let toBe = this.kolRaceTool.createShussouba(buffer, 23);
+    if (toBe) {
+      return null;
     }
 
-    shussouba.KolYosou1 = $S.yosou.toCodeFromKol(buffer, 254, 1);
-    shussouba.KolYosou2 = $S.yosou.toCodeFromKol(buffer, 255, 1);
-    shussouba.ChoukyouTanpyou = readStr(buffer, 694, 24);
-    shussouba.ChoukyouHonsuuCourse = readPositiveInt(buffer, 718, 3);
-    shussouba.ChoukyouHonsuuHanro = readPositiveInt(buffer, 721, 3);
-    shussouba.ChoukyouHonsuuPool = readPositiveInt(buffer, 724, 3);
-    shussouba.Rating = readDouble(buffer, 739, 3, 0.1);
-    shussouba.KyuuyouRiyuu = readStr(buffer, 783, 60);
-    shussouba.KyuuyouRiyuuCode = $S.kyuuyouRiyuuCode.toCodeFromKol(buffer, 783, 60);
-    shussouba.YosouTenkai = cache.getYosouTenkai(shussouba.Id);
+    if (!asIs || !asIs.KolSeisekiSakuseiNengappi) {
+      toBe.Wakuban = readPositiveInt(buffer, 22, 1);
+      const kyuusha = await this.kolTool.saveKyuusha(buffer, 206);
+      toBe.KyousoubaId = (await this.kolTool.saveKyousouba(buffer, 32, kyuusha)).Kyousouba.Id;
+      toBe.Nenrei = readPositiveInt(buffer, 65, 2);
+      toBe.Blinker = $S.blinker.toCodeFromKol(buffer, 147, 1);
+      toBe.Kinryou = readDouble(buffer, 148, 3, 0.1);
+      toBe.KijouId = (await this.kolTool.saveKijou(buffer, 151, race.Nengappi)).Id;
+      toBe.Norikawari = $S.norikawari.toCodeFromKol(buffer, 205, 1);
+    }
 
-    await this.entityManager.save(shussouba);
+    toBe.KolYosou1 = $S.yosou.toCodeFromKol(buffer, 254, 1);
+    toBe.KolYosou2 = $S.yosou.toCodeFromKol(buffer, 255, 1);
+    toBe.ChoukyouTanpyou = readStr(buffer, 694, 24);
+    toBe.ChoukyouHonsuuCourse = readPositiveInt(buffer, 718, 3);
+    toBe.ChoukyouHonsuuHanro = readPositiveInt(buffer, 721, 3);
+    toBe.ChoukyouHonsuuPool = readPositiveInt(buffer, 724, 3);
+    toBe.KolShutsubahyouSakuseiNengappi = readDate(buffer, 727, 8);
+    toBe.Rating = readDouble(buffer, 739, 3, 0.1);
+    toBe.KyuuyouRiyuu = readStr(buffer, 783, 60);
+    toBe.KyuuyouRiyuuCode = $S.kyuuyouRiyuuCode.toCodeFromKol(buffer, 783, 60);
+    toBe.YosouTenkai = cache.getYosouTenkai(toBe.Id);
+
+    if (asIs) {
+      const updateSet = this.tool.createUpdateSet(asIs, toBe, true);
+      if (updateSet) {
+        await this.entityManager
+          .createQueryBuilder()
+          .update(Shussouba, updateSet)
+          .where("Id = :id")
+          .setParameter("id", asIs.Id)
+          .execute();
+      }
+      toBe = asIs;
+    } else {
+      toBe = await this.entityManager.save(toBe);
+    }
+    return toBe;
   }
 
   protected async saveChoukyou(buffer: Buffer, shussouba: Shussouba, tanshukuKishuMei: string) {
