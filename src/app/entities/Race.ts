@@ -71,8 +71,8 @@ export class Race {
   @Column("varchar", { nullable: true, length: 5 })
   public YoteiHassouJikan: string;
 
-  @Column("smallint")
-  public Tousuu: number;
+  @Column("smallint", { nullable: true })
+  public Tousuu?: number;
 
   @Column("smallint")
   public TorikeshiTousuu: number;

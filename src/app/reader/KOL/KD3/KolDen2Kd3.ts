@@ -71,6 +71,7 @@ export class KolDen2Kd3 extends DataToImport {
     shussouba.ChoukyouHonsuuPool = readPositiveInt(buffer, 724, 3);
     shussouba.Rating = readDouble(buffer, 739, 3, 0.1);
     shussouba.KyuuyouRiyuu = readStr(buffer, 783, 60);
+    shussouba.KyuuyouRiyuuCode = $S.kyuuyouRiyuuCode.toCodeFromKol(buffer, 783, 60);
     shussouba.YosouTenkai = cache.getYosouTenkai(shussouba.Id);
 
     await this.entityManager.save(shussouba);

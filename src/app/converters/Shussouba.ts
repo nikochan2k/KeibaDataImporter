@@ -92,18 +92,20 @@ export const kyuuyouRiyuuCode = new Codes(
     { code: 14, jrdb: "14", naiyou: "調整(病気)" },
     {
       kol: (str) => {
-        if (/放牧/.test(str)) {
-          if (/故障|骨折/.test(str)) return 2;
-          if (/不安|ソエ/.test(str)) return 3;
-          if (/病気/.test(str)) return 4;
-          if (/再審査/.test(str)) return 5;
+        if (!str) {
+          return null;
+        } else if (/放牧/.test(str)) {
+          if (/故障|骨折|屈腱炎/.test(str)) return 2;
+          if (/手術|去勢/.test(str)) return 7;
           if (/出走停止/.test(str)) return 6;
-          if (/手術/.test(str)) return 7;
+          if (/再審査/.test(str)) return 5;
+          if (/病|血|熱|蕁麻疹|鼻|肺|胃|腸|フレグモーネ/.test(str)) return 4;
+          if (/不安|骨|節|股|蹄|肩|爪|トモ|ソエ|捻挫|傷|蟻洞|跛行/.test(str)) return 3;
           return 1;
         } else {
-          if (/故障|骨折/.test(str)) return 12;
-          if (/不安|ソエ/.test(str)) return 13;
-          if (/病気/.test(str)) return 14;
+          if (/故障|骨折|屈腱炎/.test(str)) return 12;
+          if (/病|血|熱|蕁麻疹|鼻|肺|胃|腸|フレグモーネ/.test(str)) return 14;
+          if (/不安|骨|節|股|蹄|肩|爪|トモ|ソエ|捻挫|傷|蟻洞|跛行/.test(str)) return 13;
           return 11;
         }
       }
