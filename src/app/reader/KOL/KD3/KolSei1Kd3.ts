@@ -2,9 +2,7 @@ import { Inject, Service } from "typedi";
 import { Baken } from "../../../converters/Common";
 import * as $R from "../../../converters/Race";
 import * as $RK from "../../../converters/RaceKeika";
-import { RaceDao } from "../../../daos/RaceDao";
 import { Race } from "../../../entities/Race";
-import { RaceClass } from "../../../entities/RaceClass";
 import { RaceKeika } from "../../../entities/RaceKeika";
 import { RaceLapTime } from "../../../entities/RaceLapTime";
 import { DataToImport } from "../../DataToImport";
@@ -33,126 +31,130 @@ export class KolSei1Kd3 extends DataToImport {
   @Inject()
   private keikaTool: KeikaTool;
 
-  @Inject()
-  private raceDao: RaceDao;
-
   protected getBufferLength() {
     return 3200;
   }
 
   protected async save(buffer: Buffer) {
-    const race = await this.kolRaceTool.getRace(buffer);
-    const dataSakuseiNengappi = readDate(buffer, 2910, 8);
-    if (race.KolSeisekiSakuseiNengappi) {
-      if (dataSakuseiNengappi <= race.KolSeisekiSakuseiNengappi) {
-        this.logger.info("既に最新のレース成績データが格納されています: " + race.Id);
+    const asIs = await this.kolRaceTool.getRace(buffer);
+    if (asIs) {
+      const dataSakuseiNengappi = readDate(buffer, 2910, 8);
+      if (dataSakuseiNengappi <= asIs.KolSeisekiSakuseiNengappi) {
+        this.logger.info("既に最新のレース成績データが格納されています: " + asIs.Id);
         return;
       }
     }
-    race.KolSeisekiSakuseiNengappi = dataSakuseiNengappi;
 
-    const raceClass = await this.saveRaceClass(buffer);
-    await this.saveRace(buffer, race, raceClass);
-    await this.saveRaceShoukin(buffer, race);
-    await this.saveRaceLapTime(buffer, race, raceClass);
+    const race = await this.saveRace(buffer, asIs);
+    if (!race) {
+      return;
+    }
+    await this.saveRaceLapTime(buffer, race);
     await this.saveRaceKeika(buffer, race);
     await this.saveRaceHassouJoukyou(buffer, race);
     await this.saveRaceHaitou(buffer, race);
   }
 
-  protected async saveRace(buffer: Buffer, race: Race, raceClass: RaceClass) {
-    race.Kyuujitsu = $R.kyuujitsu.toCodeFromKol(buffer, 20, 1);
-    race.Youbi = $R.youbi.toCodeFromKol(buffer, 21, 1);
-    race.RaceClassId = raceClass.Id;
-    race.BetteiBareiHandi = $R.betteiBareiHandi.toCodeFromKol(buffer, 75, 2);
-    const betteiBareiHandiShousai = readStr(buffer, 77, 18);
-    if (race.BetteiBareiHandi === null) {
-      race.BetteiBareiHandi = $R.betteiBareiHandi2.toCodeFromKol(betteiBareiHandiShousai);
+  protected async saveRace(buffer: Buffer, asIs: Race) {
+    let toBe = this.kolRaceTool.createRace(buffer);
+    if (!toBe) {
+      return null;
     }
-    if (race.BetteiBareiHandi === null) {
-      race.BetteiBareiHandiReigai = betteiBareiHandiShousai;
+    toBe.Kyuujitsu = $R.kyuujitsu.toCodeFromKol(buffer, 20, 1);
+    toBe.Youbi = $R.youbi.toCodeFromKol(buffer, 21, 1);
+    toBe.KouryuuFlag = $R.kouryuuFlag.toCodeFromKol(buffer, 22, 1);
+    toBe.ChuuouChihouGaikoku = $R.chuuouChihouGaikoku.toCodeFromKol(buffer, 23, 1);
+    toBe.IppanTokubetsu = $R.ippanTokubetsu.toCodeFromKol(buffer, 24, 1);
+    toBe.HeichiShougai = $R.heichiShougai.toCodeFromKol(buffer, 25, 1);
+    toBe.JuushouKaisuu = readPositiveInt(buffer, 26, 3);
+    toBe.TokubetsuMei = this.tool.normalizeTokubetsuMei(buffer, 29, 30);
+    toBe.TanshukuTokubetsuMei = readStrWithNoSpace(buffer, 59, 14);
+    toBe.Grade = $R.grade.toCodeFromKol(buffer, 73, 1);
+    toBe.BetteiBareiHandi = $R.betteiBareiHandi.toCodeFromKol(buffer, 75, 2);
+    const betteiBareiHandiShousai = readStr(buffer, 77, 18);
+    if (toBe.BetteiBareiHandi === null) {
+      toBe.BetteiBareiHandi = $R.betteiBareiHandi2.toCodeFromKol(betteiBareiHandiShousai);
+    }
+    if (toBe.BetteiBareiHandi === null) {
+      toBe.BetteiBareiHandiReigai = betteiBareiHandiShousai;
     }
     const joukenFuka1 = $R.joukenFuka1.toCodesFromKol(buffer, 95, 2);
     const joukenFuka2 = $R.joukenFuka2.toCodesFromKol(buffer, 97, 2);
-    race.JoukenFuka = this.tool.getJoukenFuka(joukenFuka1, joukenFuka2);
-    race.JoukenNenreiSeigen = $R.joukenNenreiSeigen.toCodeFromKol(buffer, 100, 1);
-    if (race.JoukenNenreiSeigen === null) {
-      race.JoukenNenreiSeigen = $R.joukenNenreiSeigen2.toCodeFromKol(buffer, 99, 1);
+    toBe.JoukenFuka = this.tool.getJoukenFuka(joukenFuka1, joukenFuka2);
+    toBe.JoukenKei = $R.joukenKei.toCodeFromKol(buffer, 99, 1);
+    toBe.JoukenNenreiSeigen = $R.joukenNenreiSeigen.toCodeFromKol(buffer, 100, 1);
+    if (toBe.JoukenNenreiSeigen === null) {
+      toBe.JoukenNenreiSeigen = $R.joukenNenreiSeigen2.toCodeFromKol(buffer, 99, 1);
     }
-    race.JuushouKaisuu = readPositiveInt(buffer, 26, 3);
-    race.DirtShiba = $R.dirtShiba.toCodeFromKol(buffer, 116, 1);
-    race.MigiHidari = $R.migiHidari.toCodeFromKol(buffer, 117, 1);
-    race.UchiSoto = $R.uchiSoto.toCodeFromKol(buffer, 118, 1);
-    race.Course = $R.course.toCodeFromKol(buffer, 119, 1);
-    race.Kyori = readPositiveInt(buffer, 120, 4);
+    toBe.Jouken1 = $R.jouken.toCodeFromKol(buffer, 101, 5);
+    if (toBe.ChuuouChihouGaikoku !== 0) { // 中央
+      toBe.Kumi1 = readPositiveInt(buffer, 106, 2);
+      toBe.IjouIkaMiman = $R.ijouIkaMiman.toCodeFromKol(buffer, 108, 1);
+      toBe.Jouken2 = $R.jouken.toCodeFromKol(buffer, 109, 5);
+      toBe.Kumi2 = readPositiveInt(buffer, 114, 2);
+    }
+    toBe.DirtShiba = $R.dirtShiba.toCodeFromKol(buffer, 116, 1);
+    toBe.MigiHidari = $R.migiHidari.toCodeFromKol(buffer, 117, 1);
+    toBe.UchiSoto = $R.uchiSoto.toCodeFromKol(buffer, 118, 1);
+    toBe.Course = $R.course.toCodeFromKol(buffer, 119, 1);
+    toBe.Kyori = readPositiveInt(buffer, 120, 4);
     const courceRecord = await this.kolRaceTool.getRecord(buffer, 125, 0);
-    race.CourseRecordId = courceRecord && courceRecord.Id;
+    toBe.CourseRecordId = courceRecord && courceRecord.Id;
     const kyoriRecord = await this.kolRaceTool.getRecord(buffer, 178, 231);
-    race.KyoriRecordId = kyoriRecord && kyoriRecord.Id;
+    toBe.KyoriRecordId = kyoriRecord && kyoriRecord.Id;
     const raceRecord = await this.kolRaceTool.getRecord(buffer, 233, 286);
-    race.RaceRecordId = raceRecord && raceRecord.Id;
-    race.MaeuriFlag = $R.maeuriFlag.toCodeFromKol(buffer, 360, 1);
-    race.YoteiHassouJikan = readStr(buffer, 361, 5);
-    race.Tousuu = readPositiveInt(buffer, 366, 2);
-    race.TorikeshiTousuu = readInt(buffer, 368, 2);
-    race.Pace = $R.pace.toCodeFromKol(buffer, 378, 1);
-    race.Tenki = $R.tenki.toCodeFromKol(buffer, 379, 1);
-    race.Baba = $R.baba.toCodeFromKol(buffer, 380, 1);
-    race.Seed = $R.seed.toCodeFromKol(buffer, 381, 1);
-    if (raceClass.HeichiShougai === 1) { // 障害
-      race.ShougaiHeikin1F = readDouble(buffer, 398, 4, 0.1);
+    toBe.RaceRecordId = raceRecord && raceRecord.Id;
+    toBe.Shoukin1Chaku = readPositiveInt(buffer, 288, 9);
+    toBe.Shoukin2Chaku = readPositiveInt(buffer, 297, 9);
+    toBe.Shoukin3Chaku = readPositiveInt(buffer, 306, 9);
+    toBe.Shoukin4Chaku = readPositiveInt(buffer, 315, 9);
+    toBe.Shoukin5Chaku = readPositiveInt(buffer, 324, 9);
+    toBe.Shoukin5ChakuDouchaku = readPositiveInt(buffer, 333, 9);
+    toBe.Shoukin5ChakuDouchaku2 = readPositiveInt(buffer, 342, 9);
+    toBe.FukaShou = readPositiveInt(buffer, 351, 9);
+    toBe.MaeuriFlag = $R.maeuriFlag.toCodeFromKol(buffer, 360, 1);
+    toBe.YoteiHassouJikan = readStr(buffer, 361, 5);
+    toBe.Tousuu = readPositiveInt(buffer, 366, 2);
+    toBe.TorikeshiTousuu = readInt(buffer, 368, 2);
+    toBe.SuiteiTimeRyou = readTime(buffer, 370, 4);
+    toBe.SuiteiTimeOmoFuryou = readTime(buffer, 374, 4);
+    toBe.Pace = $R.pace.toCodeFromKol(buffer, 378, 1);
+    toBe.Tenki = $R.tenki.toCodeFromKol(buffer, 379, 1);
+    toBe.Baba = $R.baba.toCodeFromKol(buffer, 380, 1);
+    toBe.Seed = $R.seed.toCodeFromKol(buffer, 381, 1);
+    if (toBe.HeichiShougai === 1) { // 障害
+      toBe.ShougaiHeikin1F = readDouble(buffer, 398, 4, 0.1);
+    }
+    toBe.KolSeisekiSakuseiNengappi = readDate(buffer, 2910, 8);
+
+    if (asIs) {
+      const updateSet = this.tool.createUpdateSet(asIs, toBe, true);
+      if (updateSet) {
+        await this.entityManager
+          .createQueryBuilder()
+          .update(Race, updateSet)
+          .where("Id = :id")
+          .setParameter("id", asIs.Id)
+          .execute();
+      }
+      toBe = asIs;
+    } else {
+      toBe = await this.entityManager.save(toBe);
     }
 
-    if (!race.KolShutsubahyouSakuseiNengappi) {
-      race.SuiteiTimeRyou = readTime(buffer, 370, 4);
-      race.SuiteiTimeOmoFuryou = readTime(buffer, 374, 4);
-    }
-
-    await this.entityManager.save(race);
+    return toBe;
   }
 
-  protected saveRaceClass(buffer: Buffer) {
-    const raceClass = new RaceClass();
-    raceClass.KouryuuFlag = $R.kouryuuFlag.toCodeFromKol(buffer, 22, 1);
-    raceClass.ChuuouChihouGaikoku = $R.chuuouChihouGaikoku.toCodeFromKol(buffer, 23, 1);
-    raceClass.IppanTokubetsu = $R.ippanTokubetsu.toCodeFromKol(buffer, 24, 1);
-    raceClass.HeichiShougai = $R.heichiShougai.toCodeFromKol(buffer, 25, 1);
-    raceClass.TokubetsuMei = this.tool.normalizeTokubetsuMei(buffer, 29, 30);
-    raceClass.TanshukuTokubetsuMei = readStrWithNoSpace(buffer, 59, 14);
-    raceClass.Grade = $R.grade.toCodeFromKol(buffer, 73, 1);
-    raceClass.JoukenKei = $R.joukenKei.toCodeFromKol(buffer, 99, 1);
-    raceClass.Jouken1 = $R.jouken.toCodeFromKol(buffer, 101, 5);
-    if (raceClass.ChuuouChihouGaikoku !== 0) {
-      raceClass.Kumi1 = readPositiveInt(buffer, 106, 2);
-      raceClass.IjouIkaMiman = $R.ijouIkaMiman.toCodeFromKol(buffer, 108, 1);
-      raceClass.Jouken2 = $R.jouken.toCodeFromKol(buffer, 109, 5);
-      raceClass.Kumi2 = readPositiveInt(buffer, 114, 2);
-    }
-    return this.raceDao.saveRaceClass(raceClass);
-  }
-
-  protected async saveRaceShoukin(buffer: Buffer, race: Race) {
-    await this.kolRaceTool.saveRaceShoukin(buffer, race, [
-      { chakujun: 1, offset: 288, length: 9, fukashou: 0 },
-      { chakujun: 2, offset: 297, length: 9, fukashou: 0 },
-      { chakujun: 3, offset: 306, length: 9, fukashou: 0 },
-      { chakujun: 4, offset: 315, length: 9, fukashou: 0 },
-      { chakujun: 5, offset: 324, length: 9, fukashou: 0 },
-      { chakujun: 5, offset: 333, length: 9, fukashou: 0 },
-      { chakujun: 5, offset: 342, length: 9, fukashou: 0 },
-      { chakujun: 1, offset: 351, length: 9, fukashou: 1 },
-    ], 1);
-  }
-
-  protected async saveRaceLapTime(buffer: Buffer, race: Race, raceClass: RaceClass) {
+  protected async saveRaceLapTime(buffer: Buffer, race: Race) {
     const lapTime1 = readDouble(buffer, 402, 3, 0.1);
     if (lapTime1) {
       await this.saveNormalRaceLapTime(buffer, race);
     } else {
-      if (raceClass.HeichiShougai === 1) {
+      const heichiShougai = $R.heichiShougai.toCodeFromKol(buffer, 25, 1);
+      if (heichiShougai === 1) {
         await this.saveShougaiRaceLapTime(buffer, race);
       } else {
-        const chuuouChihouGaikoku = raceClass.ChuuouChihouGaikoku;
+        const chuuouChihouGaikoku = race.ChuuouChihouGaikoku;
         if (chuuouChihouGaikoku === 2 || chuuouChihouGaikoku === 3) {
           await this.saveChihouRaceLapTime(buffer, race);
         }

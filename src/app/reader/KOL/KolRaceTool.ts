@@ -5,7 +5,6 @@ import { OrmEntityManager } from "typeorm-typedi-extensions";
 import * as $C from "../../converters/Common";
 import * as $R from "../../converters/Race";
 import { HaitouInfo } from "../../converters/RaceHaitou";
-import { ShoukinInfo } from "../../converters/RaceShoukin";
 import { KishuDao } from "../../daos/KishuDao";
 import { RaceDao } from "../../daos/RaceDao";
 import { UmaDao } from "../../daos/UmaDao";
@@ -14,7 +13,6 @@ import { Race } from "../../entities/Race";
 import { RaceHaitou } from "../../entities/RaceHaitou";
 import { RaceHassouJoukyou } from "../../entities/RaceHassouJoukyou";
 import { RaceLapTime } from "../../entities/RaceLapTime";
-import { RaceShoukin } from "../../entities/RaceShoukin";
 import { Record } from "../../entities/Record";
 import { Shussouba } from "../../entities/Shussouba";
 import { ShussoubaHassouJoukyou } from "../../entities/ShussoubaHassouJoukyou";
@@ -63,16 +61,6 @@ export class KolRaceTool {
     this.logger = getLogger(this);
   }
 
-  public async deleteOldShutsubahyou(race: Race) {
-    await this.entityManager
-      .createQueryBuilder(RaceShoukin, "rs")
-      .delete()
-      .where("rs.RaceId = :raceId")
-      .andWhere("rs.Kakutei = 0")
-      .setParameter("raceId", race.Id)
-      .execute();
-  }
-
   protected getRaceInfo(buffer: Buffer) {
     /* tslint:disable:triple-equals */
     const year = readPositiveInt(buffer, 12, 4);
@@ -118,23 +106,42 @@ export class KolRaceTool {
     return this.tool.getRaceId(info.days, info.basho, info.raceBangou);
   }
 
-  public async getRace(buffer: Buffer) {
+  public createRace(buffer: Buffer) {
+    const info = this.getRaceInfo(buffer);
+    if (!info) {
+      return null;
+    }
+    const race = new Race();
+    race.Id = this.tool.getRaceId(info.days, info.basho, info.raceBangou);
+    race.Basho = info.basho;
+    race.Kaiji = readPositiveInt(buffer, 6, 2);
+    race.Nichiji = readPositiveInt(buffer, 8, 2);
+    race.RaceBangou = info.raceBangou;
+    race.Nengappi = readDate(buffer, 12, 8);
+    return race;
+  }
+
+  public getRace(buffer: Buffer) {
     const info = this.getRaceInfo(buffer);
     if (!info) {
       return null;
     }
     const id = this.tool.getRaceId(info.days, info.basho, info.raceBangou);
-    let race = await this.entityManager.getRepository(Race).findOneById(id);
-    if (!race) {
-      race = new Race();
-      race.Id = id;
-      race.Basho = info.basho;
-      race.Kaiji = readPositiveInt(buffer, 6, 2);
-      race.Nichiji = readPositiveInt(buffer, 8, 2);
-      race.RaceBangou = info.raceBangou;
-      race.Nengappi = readDate(buffer, 12, 8);
+    return this.entityManager.getRepository(Race).findOneById(id);
+  }
+
+  public createShussouba(buffer: Buffer, umabanOffset: number) {
+    const umaban = readPositiveInt(buffer, umabanOffset, 2);
+    if (!umaban) {
+      this.logger.warn("不正な馬番です: " + readRaw(buffer, umabanOffset, 2));
+      return null;
     }
-    return race;
+    const raceId = this.getRaceId(buffer);
+    const shussouba = new Shussouba();
+    shussouba.Id = raceId * 100 + umaban;
+    shussouba.RaceId = raceId;
+    shussouba.Umaban = umaban;
+    return shussouba;
   }
 
   public async getShussoubaInfo(buffer: Buffer, umabanOffset: number) {
@@ -145,21 +152,13 @@ export class KolRaceTool {
     }
 
     const race = await this.getRace(buffer);
-    /* tslint:disable:triple-equals */
-    if (!race || race.Youbi == null) {
+    if (!race) {
       this.logger.warn("レースデータが存在しません: " + race.Id);
       return null;
     }
-    /* tslint:enable:triple-equals */
 
     const id = race.Id * 100 + umaban;
-    let shussouba = await this.entityManager.findOneById(Shussouba, id);
-    if (!shussouba) {
-      shussouba = new Shussouba();
-      shussouba.Id = id;
-      shussouba.RaceId = race.Id;
-      shussouba.Umaban = umaban;
-    }
+    const shussouba = await this.entityManager.findOneById(Shussouba, id);
     return { race: race, shussouba: shussouba };
   }
 
@@ -256,25 +255,6 @@ export class KolRaceTool {
         raceLapTime.ShuuryouKyori = info.ShuuryouKyori;
         await this.entityManager.save(raceLapTime);
       }
-    }
-  }
-
-  public async saveRaceShoukin(buffer: Buffer, race: Race, infos: ShoukinInfo[],
-    kakutei: number, mul?: number) {
-    for (let i = 0; i < infos.length; i++) {
-      const info = infos[i];
-      const shoukin = readPositiveInt(buffer, info.offset, info.length, mul);
-      if (!shoukin) {
-        continue;
-      }
-      const raceShoukin = new RaceShoukin();
-      raceShoukin.Id = race.Id * 1000 + kakutei * 100 + info.fukashou * 10 + info.chakujun;
-      raceShoukin.RaceId = race.Id;
-      raceShoukin.Kakutei = kakutei;
-      raceShoukin.Chakujun = info.chakujun;
-      raceShoukin.Shoukin = shoukin;
-      raceShoukin.Fukashou = info.fukashou;
-      await this.entityManager.save(raceShoukin);
     }
   }
 

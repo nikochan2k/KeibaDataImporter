@@ -1,9 +1,10 @@
-import { Service } from "typedi";
+import { Inject, Service } from "typedi";
 import { EntityManager, Repository } from "typeorm";
 import { OrmEntityManager, OrmRepository } from "typeorm-typedi-extensions";
 import { Kijou } from "../entities/Kijou";
 import { Kishu } from "../entities/Kishu";
 import { Shozoku } from "../entities/Shozoku";
+import { DataTool } from "../reader/DataTool";
 
 @Service()
 export class KishuDao {
@@ -19,6 +20,9 @@ export class KishuDao {
 
   @OrmRepository(Shozoku)
   private shozokuRepository: Repository<Shozoku>;
+
+  @Inject()
+  private tool: DataTool;
 
   protected async getKishu(kishu: Kishu) {
     let result: Kishu;
@@ -104,33 +108,16 @@ export class KishuDao {
     }
     const asIs = await this.getKishu(toBe);
     if (asIs) {
-      const updateSet: any = {};
-      /* tslint:disable:triple-equals */
+      let updateSet = this.tool.createUpdateSet(asIs, toBe, false);
+      if (!updateSet) {
+        updateSet = {};
+      }
       if (toBe.FromDate < asIs.FromDate) {
         updateSet.FromDate = asIs.FromDate = toBe.FromDate;
       }
       if (asIs.ToDate < toBe.ToDate) {
         updateSet.ToDate = asIs.ToDate = toBe.ToDate;
       }
-      if (asIs.KishuMei == null && toBe.KishuMei != null) {
-        updateSet.KishuMei = asIs.KishuMei = toBe.KishuMei;
-      }
-      if (asIs.Furigana == null && toBe.Furigana != null) {
-        updateSet.Furigana = asIs.Furigana = toBe.Furigana;
-      }
-      if (asIs.KolKishuCode == null && toBe.KolKishuCode != null) {
-        updateSet.KolKishuCode = asIs.KolKishuCode = toBe.KolKishuCode;
-      }
-      if (asIs.JrdbKishuCode == null && toBe.JrdbKishuCode != null) {
-        updateSet.JrdbKishuCode = asIs.JrdbKishuCode = toBe.JrdbKishuCode;
-      }
-      if (asIs.Seinengappi == null && toBe.Seinengappi != null) {
-        updateSet.Seinengappi = asIs.Seinengappi = toBe.Seinengappi;
-      }
-      if (asIs.HatsuMenkyoNen == null && toBe.HatsuMenkyoNen != null) {
-        updateSet.HatsuMenkyoNen = asIs.HatsuMenkyoNen = toBe.HatsuMenkyoNen;
-      }
-      /* tslint:enable:triple-equals */
       if (0 < Object.keys(updateSet).length) {
         await this.entityManager
           .createQueryBuilder()

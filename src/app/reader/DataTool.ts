@@ -21,6 +21,31 @@ export class DataTool {
   @OrmEntityManager()
   private entityManager: EntityManager;
 
+  public createUpdateSet(asIs: any, toBe: any, overwrite: boolean) {
+    const updateSet: any = {};
+    const keys = Object.keys(toBe);
+    let created = false;
+    for (let i = 0; i < keys.length; i++) {
+      const key = keys[i];
+      const toBeValue = toBe[key];
+      /* tslint:disable:triple-equals */
+      if (toBeValue == null) {
+        continue;
+      }
+      const asIsValue = asIs[key];
+      if (asIsValue == null || overwrite && asIsValue !== toBeValue) {
+        updateSet[key] = toBeValue;
+        asIs[key] = toBeValue;
+        created = true;
+      }
+      /* tslint:disable:triple-equals */
+    }
+    if (created) {
+      return updateSet;
+    }
+    return null;
+  }
+
   public normalizeHoujinMei(buffer, offset, length) {
     let meishou = readStrWithNoSpace(buffer, offset, length);
     if (!meishou) {

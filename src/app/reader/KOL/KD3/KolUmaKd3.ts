@@ -4,10 +4,8 @@ import * as $R from "../../../converters/Race";
 import * as $S from "../../../converters/Shussouba";
 import * as $U from "../../../converters/Uma";
 import { UmaDao } from "../../../daos/UmaDao";
-import { RaceDao } from "../../../daos/RaceDao";
 import { Kyuusha } from "../../../entities/Kyuusha";
 import { Race } from "../../../entities/Race";
-import { RaceClass } from "../../../entities/RaceClass";
 import { Shussouba } from "../../../entities/Shussouba";
 import { Uma } from "../../../entities/Uma";
 import { Kyousouba } from "../../../entities/Kyousouba";
@@ -46,9 +44,6 @@ export class KolUmaKd3 extends DataToImport {
 
   @Inject()
   private umaDao: UmaDao;
-
-  @Inject()
-  private raceDao: RaceDao;
 
   protected getBufferLength() {
     return 5166;
@@ -129,15 +124,24 @@ export class KolUmaKd3 extends DataToImport {
   }
 
   protected async saveRace(buffer: Buffer) {
-    const race = await this.kolRaceTool.getRace(buffer);
+    let race = await this.kolRaceTool.getRace(buffer);
+    if (race) {
+      return race;
+    }
+    race = this.kolRaceTool.createRace(buffer);
     if (!race) {
       return null;
-    } else if (race.Youbi) {
-      return race;
     }
     race.Kyuujitsu = $R.kyuujitsu.toCodeFromKol(buffer, 20, 1);
     race.Youbi = $R.youbi.toCodeFromKol(buffer, 21, 1);
-    race.RaceClassId = (await this.saveRaceClass(buffer)).Id;
+    race.KouryuuFlag = $R.kouryuuFlag.toCodeFromKol(buffer, 22, 1);
+    race.ChuuouChihouGaikoku = $R.chuuouChihouGaikoku.toCodeFromKol(buffer, 23, 1);
+    race.IppanTokubetsu = $R.ippanTokubetsu.toCodeFromKol(buffer, 24, 1);
+    race.HeichiShougai = $R.heichiShougai.toCodeFromKol(buffer, 25, 1);
+    race.JuushouKaisuu = readPositiveInt(buffer, 26, 3);
+    race.TokubetsuMei = this.tool.normalizeTokubetsuMei(buffer, 29, 30);
+    race.TanshukuTokubetsuMei = readStrWithNoSpace(buffer, 59, 14);
+    race.Grade = $R.grade.toCodeFromKol(buffer, 73, 1);
     race.BetteiBareiHandi = $R.betteiBareiHandi.toCodeFromKol(buffer, 74, 2);
     const betteiBareiHandiShousai = readStr(buffer, 76, 18);
     if (race.BetteiBareiHandi === null) {
@@ -149,11 +153,18 @@ export class KolUmaKd3 extends DataToImport {
     const joukenFuka1 = $R.joukenFuka1.toCodesFromKol(buffer, 94, 2);
     const joukenFuka2 = $R.joukenFuka2.toCodesFromKol(buffer, 96, 2);
     race.JoukenFuka = this.tool.getJoukenFuka(joukenFuka1, joukenFuka2);
+    race.JoukenKei = $R.joukenKei.toCodeFromKol(buffer, 98, 1);
     race.JoukenNenreiSeigen = $R.joukenNenreiSeigen.toCodeFromKol(buffer, 99, 1);
     if (race.JoukenNenreiSeigen === null) {
       race.JoukenNenreiSeigen = $R.joukenNenreiSeigen2.toCodeFromKol(buffer, 98, 1);
     }
-    race.JuushouKaisuu = readPositiveInt(buffer, 26, 3);
+    race.Jouken1 = $R.jouken.toCodeFromKol(buffer, 100, 5);
+    if (race.ChuuouChihouGaikoku !== 0) {
+      race.Kumi1 = readPositiveInt(buffer, 105, 2);
+      race.IjouIkaMiman = $R.ijouIkaMiman.toCodeFromKol(buffer, 107, 1);
+      race.Jouken2 = $R.jouken.toCodeFromKol(buffer, 108, 5);
+      race.Kumi2 = readPositiveInt(buffer, 113, 2);
+    }
     race.DirtShiba = $R.dirtShiba.toCodeFromKol(buffer, 115, 1);
     race.MigiHidari = $R.migiHidari.toCodeFromKol(buffer, 116, 1);
     race.UchiSoto = $R.uchiSoto.toCodeFromKol(buffer, 117, 1);
@@ -167,26 +178,6 @@ export class KolUmaKd3 extends DataToImport {
     race.Seed = $R.seed.toCodeFromKol(buffer, 130, 1);
     race.GaikokuKeibajouMei = readStr(buffer, 131, 20);
     return this.entityManager.save(race);
-  }
-
-  protected async saveRaceClass(buffer: Buffer) {
-    const rc = new RaceClass();
-    rc.KouryuuFlag = $R.kouryuuFlag.toCodeFromKol(buffer, 22, 1);
-    rc.ChuuouChihouGaikoku = $R.chuuouChihouGaikoku.toCodeFromKol(buffer, 23, 1);
-    rc.IppanTokubetsu = $R.ippanTokubetsu.toCodeFromKol(buffer, 24, 1);
-    rc.HeichiShougai = $R.heichiShougai.toCodeFromKol(buffer, 25, 1);
-    rc.TokubetsuMei = this.tool.normalizeTokubetsuMei(buffer, 29, 30);
-    rc.TanshukuTokubetsuMei = readStrWithNoSpace(buffer, 59, 14);
-    rc.Grade = $R.grade.toCodeFromKol(buffer, 73, 1);
-    rc.JoukenKei = $R.joukenKei.toCodeFromKol(buffer, 98, 1);
-    rc.Jouken1 = $R.jouken.toCodeFromKol(buffer, 100, 5);
-    if (rc.ChuuouChihouGaikoku !== 0) {
-      rc.Kumi1 = readPositiveInt(buffer, 105, 2);
-      rc.IjouIkaMiman = $R.ijouIkaMiman.toCodeFromKol(buffer, 107, 1);
-      rc.Jouken2 = $R.jouken.toCodeFromKol(buffer, 108, 5);
-      rc.Kumi2 = readPositiveInt(buffer, 113, 2);
-    }
-    return this.raceDao.saveRaceClass(rc);
   }
 
   protected async saveShussouba(buffer: Buffer, race: Race, kyousouba: Kyousouba, uma: Uma) {

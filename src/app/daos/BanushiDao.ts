@@ -1,13 +1,20 @@
-import { Service } from "typedi";
-import { Repository } from "typeorm";
-import { OrmRepository } from "typeorm-typedi-extensions";
+import { Inject, Service } from "typedi";
+import { EntityManager, Repository } from "typeorm";
+import { OrmEntityManager, OrmRepository } from "typeorm-typedi-extensions";
 import { Banushi } from "../entities/Banushi";
+import { DataTool } from "../reader/DataTool";
 
 @Service()
 export class BanushiDao {
 
+  @OrmEntityManager()
+  protected entityManager: EntityManager;
+
   @OrmRepository(Banushi)
   private repository: Repository<Banushi>;
+
+  @Inject()
+  private tool: DataTool;
 
   public findOneById(id: number) {
     /* tslint:disable:triple-equals */
@@ -21,14 +28,16 @@ export class BanushiDao {
   public async save(toBe: Banushi) {
     const asIs = await this.repository.findOne({ BanushiMei: toBe.BanushiMei });
     if (asIs) {
-      /* tslint:disable:triple-equals */
-      if (asIs.BanushiKaiCode == null && toBe.BanushiKaiCode != null) {
-        asIs.BanushiKaiCode = toBe.BanushiKaiCode;
-        toBe = await this.repository.save(asIs);
-      } else {
-        toBe = asIs;
+      const updateSet = this.tool.createUpdateSet(asIs, toBe, false);
+      if (updateSet) {
+        await this.entityManager
+          .createQueryBuilder()
+          .update(Banushi, updateSet)
+          .where("Id = :id")
+          .setParameter("id", asIs.Id)
+          .execute();
       }
-      /* tslint:enable:triple-equals */
+      toBe = asIs;
     } else {
       toBe = await this.repository.save(toBe);
     }

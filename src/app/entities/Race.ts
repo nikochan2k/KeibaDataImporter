@@ -33,13 +33,34 @@ export class Race {
   public Youbi: number;
 
   @Column("smallint", { nullable: true })
+  public KouryuuFlag?: number;
+
+  @Column("smallint", { nullable: true })
+  public ChuuouChihouGaikoku?: number;
+
+  @Column("smallint")
+  public IppanTokubetsu: number;
+
+  @Column("smallint")
+  public HeichiShougai: number;
+
+  @Column("smallint", { nullable: true })
   public JuushouKaisuu?: number;
 
-  @Column("int")
-  public RaceClassId: number;
+  @Column("varchar", { nullable: true, length: 45 })
+  public TokubetsuMei?: string;
+
+  @Column("smallint", { nullable: true })
+  public Grade?: number;
+
+  @Column("varchar", { nullable: true, length: 21 })
+  public TanshukuTokubetsuMei?: string;
 
   @Column("int")
   public JoukenFuka: number;
+
+  @Column("smallint", { nullable: true })
+  public JoukenKei: number;
 
   @Column("smallint", { nullable: true })
   public BetteiBareiHandi?: number;
@@ -49,6 +70,21 @@ export class Race {
 
   @Column("smallint", { nullable: true })
   public JoukenNenreiSeigen?: number;
+
+  @Column("smallint", { nullable: true })
+  public Jouken1?: number;
+
+  @Column("smallint", { nullable: true })
+  public Kumi1?: number;
+
+  @Column("smallint", { nullable: true })
+  public IjouIkaMiman?: number;
+
+  @Column("smallint", { nullable: true })
+  public Jouken2?: number;
+
+  @Column("smallint", { nullable: true })
+  public Kumi2?: number;
 
   @Column("smallint")
   public DirtShiba: number;
@@ -74,8 +110,8 @@ export class Race {
   @Column("smallint", { nullable: true })
   public Tousuu?: number;
 
-  @Column("smallint")
-  public TorikeshiTousuu: number;
+  @Column("smallint", { nullable: true })
+  public TorikeshiTousuu?: number;
 
   @Column("smallint", { nullable: true })
   public Pace?: number;
@@ -106,6 +142,30 @@ export class Race {
 
   @Column("int", { nullable: true })
   public RaceRecordId?: number;
+
+  @Column("int", { nullable: true })
+  public Shoukin1Chaku: number;
+
+  @Column("int", { nullable: true })
+  public Shoukin2Chaku: number;
+
+  @Column("int", { nullable: true })
+  public Shoukin3Chaku: number;
+
+  @Column("int", { nullable: true })
+  public Shoukin4Chaku: number;
+
+  @Column("int", { nullable: true })
+  public Shoukin5Chaku: number;
+
+  @Column("int", { nullable: true })
+  public Shoukin5ChakuDouchaku: number;
+
+  @Column("int", { nullable: true })
+  public Shoukin5ChakuDouchaku2: number;
+
+  @Column("int", { nullable: true })
+  public FukaShou?: number;
 
   @Column("text", { nullable: true })
   public SeisaiNaiyou?: string;
