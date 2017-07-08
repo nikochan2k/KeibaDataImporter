@@ -33,9 +33,6 @@ export class Race {
   public Youbi: number;
 
   @Column("smallint", { nullable: true })
-  public KouryuuFlag?: number;
-
-  @Column("smallint", { nullable: true })
   public ChuuouChihouGaikoku?: number;
 
   @Column("smallint")
@@ -58,9 +55,6 @@ export class Race {
 
   @Column("int")
   public JoukenFuka: number;
-
-  @Column("smallint", { nullable: true })
-  public JoukenKei: number;
 
   @Column("smallint", { nullable: true })
   public BetteiBareiHandi?: number;
@@ -124,9 +118,6 @@ export class Race {
 
   @Column("smallint", { nullable: true })
   public BabaShousai?: number; // 0:普通 1:速い 2:遅い
-
-  @Column("smallint", { nullable: true })
-  public Seed?: number;
 
   @Column("varchar", { nullable: true, length: 30 })
   public GaikokuKeibajouMei: string;

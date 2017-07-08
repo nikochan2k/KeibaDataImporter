@@ -59,6 +59,7 @@ export class KolDen1Kd3 extends DataToImport {
       toBe.TokubetsuMei = this.tool.normalizeTokubetsuMei(buffer, 28, 30);
       toBe.TanshukuTokubetsuMei = readStrWithNoSpace(buffer, 58, 14);
       toBe.Grade = $R.grade.toCodeFromKol(buffer, 72, 1);
+      toBe.Grade += $R.jpnFlag.toCodeFromKol(buffer, 73, 1);
       toBe.BetteiBareiHandi = $R.betteiBareiHandi.toCodeFromKol(buffer, 74, 2);
       const betteiBareiHandiShousai = readStr(buffer, 76, 18);
       if (toBe.BetteiBareiHandi === null) {
@@ -69,8 +70,8 @@ export class KolDen1Kd3 extends DataToImport {
       }
       const joukenFuka1 = $R.joukenFuka1.toCodesFromKol(buffer, 94, 2);
       const joukenFuka2 = $R.joukenFuka2.toCodesFromKol(buffer, 96, 2);
-      toBe.JoukenFuka = this.tool.getJoukenFuka(joukenFuka1, joukenFuka2);
-      toBe.JoukenKei = $R.joukenKei.toCodeFromKol(buffer, 98, 1);
+      const joukenKei = $R.joukenKei.toCodesFromKol(buffer, 98, 1);
+      toBe.JoukenFuka = this.tool.getJoukenFuka(joukenFuka1, joukenFuka2, joukenKei);
       toBe.JoukenNenreiSeigen = $R.joukenNenreiSeigen.toCodeFromKol(buffer, 99, 1);
       if (toBe.JoukenNenreiSeigen === null) {
         toBe.JoukenNenreiSeigen = $R.joukenNenreiSeigen2.toCodeFromKol(buffer, 98, 1);

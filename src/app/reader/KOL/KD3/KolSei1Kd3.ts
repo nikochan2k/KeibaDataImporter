@@ -62,7 +62,6 @@ export class KolSei1Kd3 extends DataToImport {
     }
     toBe.Kyuujitsu = $R.kyuujitsu.toCodeFromKol(buffer, 20, 1);
     toBe.Youbi = $R.youbi.toCodeFromKol(buffer, 21, 1);
-    toBe.KouryuuFlag = $R.kouryuuFlag.toCodeFromKol(buffer, 22, 1);
     toBe.ChuuouChihouGaikoku = $R.chuuouChihouGaikoku.toCodeFromKol(buffer, 23, 1);
     toBe.IppanTokubetsu = $R.ippanTokubetsu.toCodeFromKol(buffer, 24, 1);
     toBe.HeichiShougai = $R.heichiShougai.toCodeFromKol(buffer, 25, 1);
@@ -70,6 +69,7 @@ export class KolSei1Kd3 extends DataToImport {
     toBe.TokubetsuMei = this.tool.normalizeTokubetsuMei(buffer, 29, 30);
     toBe.TanshukuTokubetsuMei = readStrWithNoSpace(buffer, 59, 14);
     toBe.Grade = $R.grade.toCodeFromKol(buffer, 73, 1);
+    toBe.Grade += $R.jpnFlag.toCodeFromKol(buffer, 74, 1);
     toBe.BetteiBareiHandi = $R.betteiBareiHandi.toCodeFromKol(buffer, 75, 2);
     const betteiBareiHandiShousai = readStr(buffer, 77, 18);
     if (toBe.BetteiBareiHandi === null) {
@@ -78,10 +78,12 @@ export class KolSei1Kd3 extends DataToImport {
     if (toBe.BetteiBareiHandi === null) {
       toBe.BetteiBareiHandiReigai = betteiBareiHandiShousai;
     }
+    const kouryuuFlag = $R.kouryuuFlag.toCodesFromKol(buffer, 22, 1);
     const joukenFuka1 = $R.joukenFuka1.toCodesFromKol(buffer, 95, 2);
     const joukenFuka2 = $R.joukenFuka2.toCodesFromKol(buffer, 97, 2);
-    toBe.JoukenFuka = this.tool.getJoukenFuka(joukenFuka1, joukenFuka2);
-    toBe.JoukenKei = $R.joukenKei.toCodeFromKol(buffer, 99, 1);
+    const joukenKei = $R.joukenKei.toCodesFromKol(buffer, 99, 1);
+    const seed = $R.seed.toCodesFromKol(buffer, 381, 1);
+    toBe.JoukenFuka = this.tool.getJoukenFuka(kouryuuFlag, joukenFuka1, joukenFuka2, joukenKei, seed);
     toBe.JoukenNenreiSeigen = $R.joukenNenreiSeigen.toCodeFromKol(buffer, 100, 1);
     if (toBe.JoukenNenreiSeigen === null) {
       toBe.JoukenNenreiSeigen = $R.joukenNenreiSeigen2.toCodeFromKol(buffer, 99, 1);
@@ -121,7 +123,6 @@ export class KolSei1Kd3 extends DataToImport {
     toBe.Pace = $R.pace.toCodeFromKol(buffer, 378, 1);
     toBe.Tenki = $R.tenki.toCodeFromKol(buffer, 379, 1);
     toBe.Baba = $R.baba.toCodeFromKol(buffer, 380, 1);
-    toBe.Seed = $R.seed.toCodeFromKol(buffer, 381, 1);
     if (toBe.HeichiShougai === 1) { // 障害
       toBe.ShougaiHeikin1F = readDouble(buffer, 398, 4, 0.1);
     }

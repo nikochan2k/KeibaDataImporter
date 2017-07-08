@@ -134,7 +134,6 @@ export class KolUmaKd3 extends DataToImport {
     }
     toBe.Kyuujitsu = $R.kyuujitsu.toCodeFromKol(buffer, 20, 1);
     toBe.Youbi = $R.youbi.toCodeFromKol(buffer, 21, 1);
-    toBe.KouryuuFlag = $R.kouryuuFlag.toCodeFromKol(buffer, 22, 1);
     toBe.ChuuouChihouGaikoku = $R.chuuouChihouGaikoku.toCodeFromKol(buffer, 23, 1);
     toBe.IppanTokubetsu = $R.ippanTokubetsu.toCodeFromKol(buffer, 24, 1);
     toBe.HeichiShougai = $R.heichiShougai.toCodeFromKol(buffer, 25, 1);
@@ -150,10 +149,12 @@ export class KolUmaKd3 extends DataToImport {
     if (toBe.BetteiBareiHandi === null) {
       toBe.BetteiBareiHandiReigai = betteiBareiHandiShousai;
     }
+    const kouryuuFlag = $R.kouryuuFlag.toCodesFromKol(buffer, 22, 1);
     const joukenFuka1 = $R.joukenFuka1.toCodesFromKol(buffer, 94, 2);
     const joukenFuka2 = $R.joukenFuka2.toCodesFromKol(buffer, 96, 2);
-    toBe.JoukenFuka = this.tool.getJoukenFuka(joukenFuka1, joukenFuka2);
-    toBe.JoukenKei = $R.joukenKei.toCodeFromKol(buffer, 98, 1);
+    const joukenKei = $R.joukenKei.toCodesFromKol(buffer, 98, 1);
+    const seed = $R.seed.toCodesFromKol(buffer, 130, 1);
+    toBe.JoukenFuka = this.tool.getJoukenFuka(kouryuuFlag, joukenFuka1, joukenFuka2, joukenKei, seed);
     toBe.JoukenNenreiSeigen = $R.joukenNenreiSeigen.toCodeFromKol(buffer, 99, 1);
     if (toBe.JoukenNenreiSeigen === null) {
       toBe.JoukenNenreiSeigen = $R.joukenNenreiSeigen2.toCodeFromKol(buffer, 98, 1);
@@ -175,7 +176,6 @@ export class KolUmaKd3 extends DataToImport {
     toBe.Pace = $R.pace.toCodeFromKol(buffer, 127, 1);
     toBe.Tenki = $R.tenki.toCodeFromKol(buffer, 128, 1);
     toBe.Baba = $R.baba.toCodeFromKol(buffer, 129, 1);
-    toBe.Seed = $R.seed.toCodeFromKol(buffer, 130, 1);
     toBe.GaikokuKeibajouMei = readStr(buffer, 131, 20);
     if (asIs) {
       const updateSet = this.tool.createUpdateSet(asIs, toBe, true);

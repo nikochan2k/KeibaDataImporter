@@ -20,12 +20,6 @@ export const youbi = new Codes(
   ]
 );
 
-export const kouryuuFlag = new Codes(
-  [
-    { code: 1, kol: "1", jrdb: /..[1-4]/, naiyou: "交流" }
-  ]
-);
-
 export const chuuouChihouGaikoku = new Codes(
   [
     { code: 0, kol: "0", naiyou: "中央" },
@@ -54,15 +48,25 @@ export const heichiShougai = new Codes(
 
 export const grade = new Codes(
   [
-    { code: 0, kol: /0|3/, jrdb: "1", naiyou: "G1" },
-    { code: 1, kol: /1|4/, jrdb: "2", naiyou: "G2" },
-    { code: 2, kol: /2|5/, jrdb: "3", naiyou: "G3" }
+    { code: 1, kol: "0", jrdb: "1", naiyou: "G1" },
+    { code: 2, kol: "1", jrdb: "2", naiyou: "G2" },
+    { code: 3, kol: "2", jrdb: "3", naiyou: "G3" },
+    { code: 4, kol: "3", naiyou: "JG1" },
+    { code: 5, kol: "4", naiyou: "JG2" },
+    { code: 6, kol: "5", naiyou: "JG3" },
+    { code: 11, naiyou: "G1(Jpn)" },
+    { code: 12, naiyou: "G2(Jpn)" },
+    { code: 13, naiyou: "G3(Jpn)" },
+    { code: 14, naiyou: "JG1(Jpn)" },
+    { code: 15, naiyou: "JG2(Jpn)" },
+    { code: 16, naiyou: "JG3(Jpn)" },
   ]
 );
 
-export const kokusaiFlag = new Codes(
+export const jpnFlag = new Codes(
   [
-    { code: 6, kol: " ", naiyou: "○国際" }
+    { code: 10, kol: "1", naiyou: "Jpn" },
+    { code: 0, kol: ".", naiyou: "" },
   ]
 );
 
@@ -78,63 +82,77 @@ export const betteiBareiHandi = new Codes(
 
 export const betteiBareiHandi2 = new Codes(
   [
-    { code: 0, kol: /別定/,  naiyou: "別定" },
-    { code: 1, kol: /馬齢/,  naiyou: "馬齢" },
-    { code: 2, kol: /ハンデ/,  naiyou: "ハンデ" },
-    { code: 3, kol: /定量/,  naiyou: "定量" },
+    { code: 0, kol: /別定/, naiyou: "別定" },
+    { code: 1, kol: /馬齢/, naiyou: "馬齢" },
+    { code: 2, kol: /ハンデ/, naiyou: "ハンデ" },
+    { code: 3, kol: /定量/, naiyou: "定量" },
     { code: 4, kol: /規定/, naiyou: "規定" }
-  ]
-);
-
-export const joukenFuka1 = new Codes(
-  [
-    { code: 2 ** 0, kol: /04|08|10|13|27|38/, jrdb: /1../, naiyou: "○混" },
-    { code: 2 ** 1, kol: "05", jrdb: /2../, naiyou: "○父" },
-    { code: 2 ** 2, kol: /07|11|19|20/, jrdb: /3../, naiyou: "○市" },
-    { code: 2 ** 3, kol: /09|14|15|16|19|20/, jrdb: /3../, naiyou: "○抽" },
-    { code: 2 ** 4, kol: /06|07|17|18/, naiyou: "□抽" },
-    { code: 2 ** 5, kol: /29|35|40/, jrdb: /5../, naiyou: "○国際" },
-    { code: 2 ** 6, kol: "12", naiyou: "○招" },
-    { code: 2 ** 7, kol: /13|21|30/, jrdb: /..1/, naiyou: "○指" },
-    { code: 2 ** 8, kol: "31", jrdb: /..3/, naiyou: "○特指" },
-    { code: 2 ** 9, kol: "32", jrdb: /..2/, naiyou: "□指" },
-    { code: 2 ** 10, kol: /00|08|14/, naiyou: "勝入" },
-    { code: 2 ** 11, kol: "02", naiyou: "内国" },
-    { code: 2 ** 12, kol: "25", naiyou: "交流" },
-    { code: 2 ** 13, jrdb: /..4/, naiyou: "若手" },
-    { code: 2 ** 14, kol: "01", jrdb: /4../, naiyou: "九州産馬" },
-    { code: 2 ** 15, kol: "26", naiyou: "千葉産" },
-    { code: 2 ** 16, kol: /15|17|19/, naiyou: "関西配布馬" },
-    { code: 2 ** 17, kol: /16|18|20/, naiyou: "関東配布馬" },
-    { code: 2 ** 18, kol: "34", naiyou: "JRA認定" },
-    { code: 2 ** 19, kol: "39", naiyou: "JRA指定" },
-    { code: 2 ** 20, kol: "22", naiyou: "芦毛" },
-    { code: 2 ** 21, kol: "23", naiyou: "栗毛" },
-    { code: 2 ** 22, kol: "36", naiyou: "芦・白" },
-    { code: 2 ** 23, kol: "37", naiyou: "黒鹿毛" },
-    { code: 2 ** 24, kol: /24|27|28|33|38|40/, jrdb: /.[134]./, naiyou: "牡" },
-    { code: 2 ** 25, kol: /03|10|33|35|38|40/, jrdb: /.[24]./, naiyou: "牝" },
-    { code: 2 ** 26, kol: /24|27|28/, jrdb: /.3./, naiyou: "せん" },
-  ]
-);
-
-export const joukenFuka2 = new Codes(
-  [
-    { code: 2 ** 6, kol: "1", naiyou: "○指" },
-    { code: 2 ** 7, kol: "2", naiyou: "○特指" },
-    { code: 2 ** 8, kol: "3", naiyou: "□指" },
-    { code: 2 ** 6, kol: "4", naiyou: "○指" }
   ]
 );
 
 export const joukenKei = new Codes(
   [
     {
-      code: 0,
+      code: 2 ** 0,
       kol: /0|1|2|3|4|8|9|B|K/,
       naiyou: "サラ系"
     },
-    { code: 0, kol: /5|6|7|A|C/, naiyou: "アラブ系" }
+    { code: 2 ** 1, kol: /5|6|7|A|C/, naiyou: "アラブ系" }
+  ]
+);
+
+export const joukenFuka1 = new Codes(
+  [
+    { code: 2 ** 0, naiyou: "サラ系" },
+    { code: 2 ** 1, naiyou: "アラブ系" },
+    { code: 2 ** 2, kol: /24|27|28|33|38|40/, jrdb: /.[134]./, naiyou: "牡" },
+    { code: 2 ** 3, kol: /03|10|33|35|38|40/, jrdb: /.[24]./, naiyou: "牝" },
+    { code: 2 ** 4, kol: /24|27|28/, jrdb: /.3./, naiyou: "せん" },
+    { code: 2 ** 5, kol: /04|08|10|13|27|38/, jrdb: /1../, naiyou: "○混" },
+    { code: 2 ** 6, kol: "05", jrdb: /2../, naiyou: "○父" },
+    { code: 2 ** 7, kol: /07|11|19|20/, jrdb: /3../, naiyou: "○市" },
+    { code: 2 ** 8, kol: /09|14|15|16|19|20/, jrdb: /3../, naiyou: "○抽" },
+    { code: 2 ** 9, kol: /06|07|17|18/, naiyou: "□抽" },
+    { code: 2 ** 10, kol: /29|35|40/, jrdb: /5../, naiyou: "○国際" },
+    { code: 2 ** 11, kol: "12", naiyou: "○招" },
+    { code: 2 ** 12, kol: /13|21|30/, jrdb: /..1/, naiyou: "○指" },
+    { code: 2 ** 13, kol: "31", jrdb: /..3/, naiyou: "○特指" },
+    { code: 2 ** 14, kol: "32", jrdb: /..2/, naiyou: "□指" },
+    { code: 2 ** 15, kol: /00|08|14/, naiyou: "勝入" },
+    { code: 2 ** 16, kol: "02", naiyou: "内国" },
+    { code: 2 ** 17, kol: "25", naiyou: "交流" },
+    { code: 2 ** 18, jrdb: /..4/, naiyou: "若手" },
+    { code: 2 ** 19, kol: "01", jrdb: /4../, naiyou: "九州産馬" },
+    { code: 2 ** 20, kol: "26", naiyou: "千葉産" },
+    { code: 2 ** 21, kol: /15|17|19/, naiyou: "関西配布馬" },
+    { code: 2 ** 22, kol: /16|18|20/, naiyou: "関東配布馬" },
+    { code: 2 ** 23, kol: "34", naiyou: "JRA認定" },
+    { code: 2 ** 24, kol: "39", naiyou: "JRA指定" },
+    { code: 2 ** 25, kol: "22", naiyou: "芦毛" },
+    { code: 2 ** 26, kol: "23", naiyou: "栗毛" },
+    { code: 2 ** 27, kol: "36", naiyou: "芦・白" },
+    { code: 2 ** 28, kol: "37", naiyou: "黒鹿毛" },
+  ]
+);
+
+export const joukenFuka2 = new Codes(
+  [
+    { code: 2 ** 12, kol: "1", naiyou: "○指" },
+    { code: 2 ** 13, kol: "2", naiyou: "○特指" },
+    { code: 2 ** 14, kol: "3", naiyou: "□指" },
+    { code: 2 ** 12, kol: "4", naiyou: "○指" }
+  ]
+);
+
+export const kouryuuFlag = new Codes(
+  [
+    { code: 2 ** 17, kol: "1", jrdb: /..[1-4]/, naiyou: "交流" }
+  ]
+);
+
+export const seed = new Codes(
+  [
+    { code: 2 ** 29, kol: "1", naiyou: "シード" }
   ]
 );
 
@@ -339,12 +357,6 @@ export const babaSokudo = new Codes(
     { code: 0, kol: "0", naiyou: "普通" },
     { code: 1, kol: "1", naiyou: "速い" },
     { code: 2, kol: "2", naiyou: "遅い" }
-  ]
-);
-
-export const seed = new Codes(
-  [
-    { code: 1, kol: "1", naiyou: "シード" }
   ]
 );
 

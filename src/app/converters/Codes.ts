@@ -45,6 +45,11 @@ export class Codes {
     for (let i = 0; i < this.codes.length; i++) {
       const c = this.codes[i];
       const member = c[key];
+      /* tslint:disable:triple-equals */
+      if (member == null) {
+        continue;
+      }
+      /* tslint:enable:triple-equals */
       const type = typeof member;
       if (type === "function") {
         return member(str);
@@ -77,6 +82,11 @@ export class Codes {
     for (let i = 0; i < this.codes.length; i++) {
       const c = this.codes[i];
       const member = c[key];
+      /* tslint:disable:triple-equals */
+      if (member == null) {
+        continue;
+      }
+      /* tslint:enable:triple-equals */
       const type = typeof member;
       let code: number = null;
       if (type === "function") {

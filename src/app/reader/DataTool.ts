@@ -103,9 +103,11 @@ export class DataTool {
   public getJoukenFuka(...joukenFukaLists: number[][]) {
     let joukenFuka = 0;
     joukenFukaLists.forEach((joukenFukaList) => {
-      joukenFukaList.forEach((item) => {
-        joukenFuka |= item;
-      });
+      if (joukenFukaList) {
+        joukenFukaList.forEach((item) => {
+          joukenFuka |= item;
+        });
+      }
     });
     return joukenFuka;
   }
