@@ -4,13 +4,11 @@ import { EntityManager } from "typeorm";
 import { OrmEntityManager } from "typeorm-typedi-extensions";
 import * as $C from "../../converters/Common";
 import * as $R from "../../converters/Race";
-import { HaitouInfo } from "../../converters/RaceHaitou";
 import { KishuDao } from "../../daos/KishuDao";
 import { RaceDao } from "../../daos/RaceDao";
 import { UmaDao } from "../../daos/UmaDao";
 import { Kishu } from "../../entities/Kishu";
 import { Race } from "../../entities/Race";
-import { RaceHaitou } from "../../entities/RaceHaitou";
 import { RaceHassouJoukyou } from "../../entities/RaceHassouJoukyou";
 import { RaceLapTime } from "../../entities/RaceLapTime";
 import { Record } from "../../entities/Record";
@@ -138,7 +136,7 @@ export class KolRaceTool {
     }
     const raceId = this.getRaceId(buffer);
     const shussouba = new Shussouba();
-    shussouba.Id = raceId * 100 + umaban;
+    shussouba.Id = raceId * (2 ** 6) + umaban;
     shussouba.RaceId = raceId;
     shussouba.Umaban = umaban;
     return shussouba;
@@ -157,7 +155,7 @@ export class KolRaceTool {
       return null;
     }
 
-    const id = race.Id * 100 + umaban;
+    const id = race.Id * (2 ** 6) + umaban;
     const shussouba = await this.entityManager.findOneById(Shussouba, id);
     return { race: race, shussouba: shussouba };
   }
@@ -194,7 +192,7 @@ export class KolRaceTool {
       }
 
       const rhj = new RaceHassouJoukyou();
-      rhj.Id = race.Id * 10 + bangou;
+      rhj.Id = race.Id * (2 ** 3) + bangou;
       rhj.RaceId = race.Id;
       rhj.HassouJoukyou = hassouJoukyou;
       const comment = hassouJoukyou.replace(/(\([0-9]+\))+/, "");
@@ -234,9 +232,9 @@ export class KolRaceTool {
         const umaban = Number.parseInt(temp.replace(/[\(\)]/, ""));
         if (0 < umaban) {
           const shj = new ShussoubaHassouJoukyou();
-          shj.Id = rhj.Id * 100 + umaban;
+          shj.Id = rhj.Id * (2 ** 6) + umaban;
           shj.RaceHassouJoukyouId = rhj.Id;
-          shj.ShussoubaId = race.Id * 100 + umaban;
+          shj.ShussoubaId = race.Id * (2 ** 6) + umaban;
           await this.entityManager.getRepository(ShussoubaHassouJoukyou).save(shj);
         }
       }
@@ -250,37 +248,11 @@ export class KolRaceTool {
       const info = infos[i];
       raceLapTime.LapTime = readDouble(buffer, info.Offset, 3, 0.1);
       if (raceLapTime.LapTime) {
-        raceLapTime.Id = race.Id * 100 + i + 1;
+        raceLapTime.Id = race.Id * (2 ** 5) + i + 1;
         raceLapTime.KaishiKyori = info.KaishiKyori;
         raceLapTime.ShuuryouKyori = info.ShuuryouKyori;
         await this.entityManager.save(raceLapTime);
       }
-    }
-  }
-
-  public async saveRaceHaitou(buffer: Buffer, race: Race, infos: HaitouInfo[]) {
-    for (let i = 0; i < infos.length; i++) {
-      const info = infos[i];
-      const bangou1 = readPositiveInt(buffer, info.bangou1, info.bangou1Len);
-      if (!bangou1) {
-        continue;
-      }
-      const raceHaitou = new RaceHaitou();
-      raceHaitou.Id = race.Id * 100 + info.baken * 10 + info.index;
-      raceHaitou.RaceId = race.Id;
-      raceHaitou.Baken = info.baken;
-      raceHaitou.Bangou1 = bangou1;
-      if (info.bangou2) {
-        raceHaitou.Bangou2 = readPositiveInt(buffer, info.bangou2, info.bangou2Len);
-      }
-      if (info.bangou3) {
-        raceHaitou.Bangou3 = readPositiveInt(buffer, info.bangou3, info.bangou3Len);
-      }
-      raceHaitou.Haitoukin = readPositiveInt(buffer, info.haitou, info.haitouLen);
-      if (info.ninki) {
-        raceHaitou.Ninki = readPositiveInt(buffer, info.ninki, info.ninkiLen);
-      }
-      await this.entityManager.save(raceHaitou);
     }
   }
 }

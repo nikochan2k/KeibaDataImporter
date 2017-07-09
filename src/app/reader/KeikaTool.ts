@@ -38,8 +38,8 @@ export class KeikaTool {
   protected async saveShussoubaKeika(raceKeika: RaceKeika, shussoubaKeika: ShussoubaKeika, umabanStr: string) {
     const umaban = parseInt(umabanStr);
     const shussouba = new Shussouba();
-    shussouba.Id = raceKeika.RaceId * 100 + umaban;
-    shussoubaKeika.Id = raceKeika.Id * 100 + umaban;
+    shussouba.Id = raceKeika.RaceId * (2 ** 6) + umaban;
+    shussoubaKeika.Id = raceKeika.Id * (2 ** 6) + umaban;
     shussoubaKeika.RaceKeikaId = raceKeika.Id;
     shussoubaKeika.ShussoubaId = shussouba.Id;
     await this.entityManager.getRepository(ShussoubaKeika).save(shussoubaKeika);

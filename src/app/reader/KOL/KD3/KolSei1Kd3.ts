@@ -18,6 +18,7 @@ import {
   readTime
 } from "../../Reader";
 import { KolRaceTool } from "../KolRaceTool";
+import { KolTool } from "../KolTool";
 
 @Service()
 export class KolSei1Kd3 extends DataToImport {
@@ -27,6 +28,9 @@ export class KolSei1Kd3 extends DataToImport {
 
   @Inject()
   private kolRaceTool: KolRaceTool;
+
+  @Inject()
+  private kolTool: KolTool;
 
   @Inject()
   private keikaTool: KeikaTool;
@@ -174,7 +178,7 @@ export class KolSei1Kd3 extends DataToImport {
         continue;
       }
       const raceLapTime = new RaceLapTime();
-      raceLapTime.Id = race.Id * 100 + i;
+      raceLapTime.Id = race.Id * (2 ** 5) + i;
       raceLapTime.RaceId = race.Id;
       raceLapTime.KaishiKyori = shuuryouKyori;
       shuuryouKyori = (i === 0 && odd) ? 100 : (shuuryouKyori + 200);
@@ -213,7 +217,7 @@ export class KolSei1Kd3 extends DataToImport {
         continue;
       }
       const raceKeika = new RaceKeika();
-      raceKeika.Id = race.Id * 10 + bangou;
+      raceKeika.Id = race.Id * (2 ** 4) + bangou;
       raceKeika.RaceId = race.Id;
       raceKeika.Midashi1 = $RK.midashi1.toCodeFromKol(buffer, offset, 1);
       raceKeika.Midashi2 = $RK.midashi2.toCodeFromKol(buffer, offset + 1, 2);
@@ -229,8 +233,8 @@ export class KolSei1Kd3 extends DataToImport {
   }
 
   protected async saveRaceHaitou(buffer: Buffer, race: Race) {
-    await this.kolRaceTool.saveRaceHaitou(
-      buffer, race,
+    await this.kolTool.saveRaceHaitou(
+      buffer, race.Id,
       [
         { baken: Baken.Tanshou, index: 1, bangou1: 2100, bangou1Len: 2, haitou: 2102, haitouLen: 6 },
         { baken: Baken.Tanshou, index: 2, bangou1: 2108, bangou1Len: 2, haitou: 2110, haitouLen: 6 },

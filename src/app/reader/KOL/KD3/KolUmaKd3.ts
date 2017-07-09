@@ -125,8 +125,12 @@ export class KolUmaKd3 extends DataToImport {
 
   protected async saveRace(buffer: Buffer) {
     const asIs = await this.kolRaceTool.getRace(buffer);
-    if (asIs && asIs.KolSeisekiSakuseiNengappi) {
-      return asIs;
+    if (asIs) {
+      if (asIs.KolSeisekiSakuseiNengappi) {
+        return asIs;
+      } else if (!asIs.KolShutsubahyouSakuseiNengappi && !asIs.KolSeisekiSakuseiNengappi) {
+        return asIs;
+      }
     }
     let toBe = this.kolRaceTool.createRace(buffer);
     if (!toBe) {
@@ -199,18 +203,22 @@ export class KolUmaKd3 extends DataToImport {
     let id: number;
     let asIs: Shussouba;
     if (1 <= umaban && umaban <= 28) {
-      id = race.Id * 100 + umaban;
+      id = race.Id * (2 ** 6) + umaban;
       asIs = await this.entityManager.findOneById(Shussouba, id);
     } else {
       umaban = 28;
       do {
         umaban++; // 地方競馬で馬番がない場合 29から始まる
-        id = race.Id * 100 + umaban;
+        id = race.Id * (2 ** 6) + umaban;
         asIs = await this.entityManager.findOneById(Shussouba, id);
       } while (asIs && asIs.KyousoubaId !== kyousouba.Id);
     }
-    if (asIs && asIs.KolSeisekiSakuseiNengappi) {
-      return asIs;
+    if (asIs) {
+      if (asIs.KolSeisekiSakuseiNengappi) {
+        return asIs;
+      } else if (!asIs.KolShutsubahyouSakuseiNengappi && !asIs.KolSeisekiSakuseiNengappi) {
+        return asIs;
+      }
     }
     let toBe = new Shussouba();
     toBe.Id = id;

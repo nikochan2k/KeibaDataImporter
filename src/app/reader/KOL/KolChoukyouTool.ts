@@ -65,7 +65,7 @@ export class KolChoukyouTool {
       return;
     }
     const choukyou = new Choukyou();
-    choukyou.Id = shussouba.Id * 10 + bangou;
+    choukyou.Id = shussouba.Id * (2 ** 2) + bangou;
     choukyou.ShussoubaId = shussouba.Id;
     choukyou.Bangou = bangou;
     choukyou.ChoukyouFlag = $CH.choukyouFlag.toCodeFromKol(buffer, offset, 1);
@@ -158,7 +158,7 @@ export class KolChoukyouTool {
         continue;
       }
       const choukyouTime = new ChoukyouTime();
-      choukyouTime.Id = choukyou.Id * 10 + cf.f;
+      choukyouTime.Id = choukyou.Id * (2 ** 4) + cf.f;
       choukyouTime.ChoukyouId = choukyou.Id;
       choukyouTime.F = cf.f;
       const time = parseFloat(comment);

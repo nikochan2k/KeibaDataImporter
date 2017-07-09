@@ -1,15 +1,11 @@
 import { Inject, Service } from "typedi";
-import { Baken, YosouKakutei } from "../../../converters/Common";
+import { YosouKakutei } from "../../../converters/Common";
 import { DataToImport } from "../../DataToImport";
-import { DataTool } from "../../DataTool";
 import { KolRaceTool } from "../KolRaceTool";
 import { KolTool } from "../KolTool";
 
 @Service()
 export class KolKod3Kd3 extends DataToImport {
-
-  @Inject()
-  private tool: DataTool;
 
   @Inject()
   private kolTool: KolTool;
@@ -28,7 +24,6 @@ export class KolKod3Kd3 extends DataToImport {
   }
 
   protected async saveSanrentan(buffer: Buffer, raceId: number) {
-    const oddsKubun = await this.tool.saveOddsKubun(raceId, Baken.Sanrentan, YosouKakutei.Kakutei);
-    await this.kolTool.saveSanrentanOdds(buffer, 161, oddsKubun.Id);
+    await this.kolTool.saveSanrentanOdds(buffer, 161, raceId, YosouKakutei.Kakutei);
   }
 }

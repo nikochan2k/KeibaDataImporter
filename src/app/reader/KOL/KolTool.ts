@@ -1,11 +1,13 @@
 import { Logger } from "log4js";
 import { Inject, Service } from "typedi";
-import { EntityManager } from "typeorm";
-import { OrmEntityManager } from "typeorm-typedi-extensions";
+import { EntityManager, Repository } from "typeorm";
+import { OrmEntityManager, OrmRepository } from "typeorm-typedi-extensions";
+import { Baken, YosouKakutei } from "../../converters/Common";
 import * as $C from "../../converters/Common";
 import * as $KI from "../../converters/Kishu";
 import * as $KY from "../../converters/Kyuusha";
 import * as $U from "../../converters/Uma";
+import { HaitouInfo } from "../../converters/RaceHaitou";
 import { BanushiDao } from "../../daos/BanushiDao";
 import { KishuDao } from "../../daos/KishuDao";
 import { KyuushaDao } from "../../daos/KyuushaDao";
@@ -15,7 +17,7 @@ import { Banushi } from "../../entities/Banushi";
 import { Kishu } from "../../entities/Kishu";
 import { Kyousouba } from "../../entities/Kyousouba";
 import { Kyuusha } from "../../entities/Kyuusha";
-import { Odds } from "../../entities/Odds";
+import { OddsHaitou } from "../../entities/OddsHaitou";
 import { Seisansha } from "../../entities/Seisansha";
 import { Shozoku } from "../../entities/Shozoku";
 import { Shussouba } from "../../entities/Shussouba";
@@ -38,6 +40,9 @@ export class KolTool {
 
   @OrmEntityManager()
   private entityManager: EntityManager;
+
+  @OrmRepository(OddsHaitou)
+  private oddsHaitouRepository: Repository<OddsHaitou>;
 
   @Inject()
   private tool: DataTool;
@@ -162,21 +167,11 @@ export class KolTool {
         continue;
       }
 
-      shussoubaTsuukaJuni.Id = shussouba.Id * 10 + bangou;
+      shussoubaTsuukaJuni.Id = shussouba.Id * (2 ** 3) + bangou;
       shussoubaTsuukaJuni.ShussoubaId = shussouba.Id;
       shussoubaTsuukaJuni.Bangou = bangou;
       await this.entityManager.save(shussoubaTsuukaJuni);
     }
-  }
-
-  protected async deleteOdds(oddsKubunId: number) {
-    await this.entityManager
-      .createQueryBuilder()
-      .delete()
-      .from(Odds)
-      .where("OddsKubunId =:oddsKubunId")
-      .setParameter("oddsKubunId", oddsKubunId)
-      .execute();
   }
 
   protected getOdds(buffer: Buffer, offset: number, length: number) {
@@ -189,24 +184,54 @@ export class KolTool {
     return odds;
   }
 
-  public async saveTanshouOdds(buffer: Buffer, offset: number, oddsKubunId: number) {
-    await this.deleteOdds(oddsKubunId);
+  public getOddsHaitou(raceId: number, baken: Baken, bangou1: number, bangou2?: number, bangou3?: number) {
+    const id = this.getOddsHaitouId(raceId, baken, bangou1, bangou2, bangou3);
+    return this.entityManager
+      .getRepository(OddsHaitou)
+      .findOneById(id);
+  }
+
+  public getOddsHaitouId(raceId: number, baken: Baken, bangou1: number, bangou2?: number, bangou3?: number) {
+    bangou2 = bangou2 || 0;
+    bangou3 = bangou3 || 0;
+    const id = raceId * (2 ** (4 + 5 + 5 + 5)) + baken * (2 ** (5 + 5 + 5))
+      + bangou1 * (2 ** (5 + 5)) + bangou2 * (2 ** 5) + bangou3;
+    return id;
+  }
+
+  public createOddsHaitou(raceId: number, baken: Baken, bangou1: number, bangou2?: number, bangou3?: number) {
+    const oddsHaitou = new OddsHaitou();
+    oddsHaitou.Id = this.getOddsHaitouId(raceId, Baken.Tanshou, bangou1, bangou2, bangou3);
+    oddsHaitou.RaceId = raceId;
+    oddsHaitou.Baken = baken;
+    oddsHaitou.Bangou1 = bangou1;
+    oddsHaitou.Bangou2 = bangou2;
+    oddsHaitou.Bangou3 = bangou3;
+    return oddsHaitou;
+  }
+
+  public async saveTanshouOdds(buffer: Buffer, offset: number, raceId: number, yosouKakutei: YosouKakutei) {
     for (let bangou = 1; bangou <= 18; bangou++) {
       const odds1 = this.getOdds(buffer, offset, 5);
       offset += 5;
       if (!odds1) {
         continue;
       }
-      const odds = new Odds();
-      odds.OddsKubunId = oddsKubunId;
-      odds.Bangou1 = bangou;
-      odds.Odds1 = odds1;
-      await this.entityManager.getRepository(Odds).save(odds);
+      let oddsHaitou = await this.getOddsHaitou(raceId, Baken.Tanshou, bangou);
+      if (oddsHaitou) {
+        if (oddsHaitou.YosouKakutei === YosouKakutei.Kakutei) {
+          continue;
+        }
+      } else {
+        oddsHaitou = this.createOddsHaitou(raceId, Baken.Tanshou, bangou);
+      }
+      oddsHaitou.YosouKakutei = yosouKakutei;
+      oddsHaitou.Odds1 = odds1;
+      await this.oddsHaitouRepository.save(oddsHaitou);
     }
   }
 
-  public async saveWakurenOdds(buffer: Buffer, offset: number, oddsKubunId: number) {
-    await this.deleteOdds(oddsKubunId);
+  public async saveWakurenOdds(buffer: Buffer, offset: number, raceId: number, yosouKakutei: YosouKakutei) {
     for (let bangou1 = 1; bangou1 <= 8; bangou1++) {
       for (let bangou2 = 1; bangou2 <= 8; bangou2++) {
         const odds1 = this.getOdds(buffer, offset, 5);
@@ -214,18 +239,22 @@ export class KolTool {
         if (!odds1) {
           continue;
         }
-        const odds = new Odds();
-        odds.OddsKubunId = oddsKubunId;
-        odds.Bangou1 = bangou1;
-        odds.Bangou2 = bangou2;
-        odds.Odds1 = odds1;
-        await this.entityManager.getRepository(Odds).save(odds);
+        let oddsHaitou = await this.getOddsHaitou(raceId, Baken.Wakuren, bangou1, bangou2);
+        if (oddsHaitou) {
+          if (oddsHaitou.YosouKakutei === YosouKakutei.Kakutei) {
+            continue;
+          }
+        } else {
+          oddsHaitou = this.createOddsHaitou(raceId, Baken.Wakuren, bangou1, bangou2);
+        }
+        oddsHaitou.YosouKakutei = yosouKakutei;
+        oddsHaitou.Odds1 = odds1;
+        await this.oddsHaitouRepository.save(oddsHaitou);
       }
     }
   }
 
-  public async saveUmarenOdds(buffer: Buffer, offset: number, oddsKubunId: number) {
-    await this.deleteOdds(oddsKubunId);
+  public async saveUmarenOdds(buffer: Buffer, offset: number, raceId: number, yosouKakutei: YosouKakutei) {
     for (let bangou1 = 1; bangou1 <= 17; bangou1++) {
       for (let bangou2 = bangou1 + 1; bangou2 <= 18; bangou2++) {
         const odds1 = this.getOdds(buffer, offset, 7);
@@ -233,18 +262,22 @@ export class KolTool {
         if (!odds1) {
           continue;
         }
-        const odds = new Odds();
-        odds.OddsKubunId = oddsKubunId;
-        odds.Bangou1 = bangou1;
-        odds.Bangou2 = bangou2;
-        odds.Odds1 = odds1;
-        await this.entityManager.getRepository(Odds).save(odds);
+        let oddsHaitou = await this.getOddsHaitou(raceId, Baken.Umaren, bangou1, bangou2);
+        if (oddsHaitou) {
+          if (oddsHaitou.YosouKakutei === YosouKakutei.Kakutei) {
+            continue;
+          }
+        } else {
+          oddsHaitou = this.createOddsHaitou(raceId, Baken.Umaren, bangou1, bangou2);
+        }
+        oddsHaitou.YosouKakutei = yosouKakutei;
+        oddsHaitou.Odds1 = odds1;
+        await this.oddsHaitouRepository.save(oddsHaitou);
       }
     }
   }
 
-  public async saveFukushouOdds(buffer: Buffer, offset: number, oddsKubunId: number) {
-    await this.deleteOdds(oddsKubunId);
+  public async saveFukushouOdds(buffer: Buffer, offset: number, raceId: number, yosouKakutei: YosouKakutei) {
     for (let bangou = 1; bangou <= 18; bangou++) {
       const odds1 = this.getOdds(buffer, offset, 3);
       offset += 3;
@@ -253,17 +286,22 @@ export class KolTool {
       if (!odds1 || !odds2) {
         continue;
       }
-      const odds = new Odds();
-      odds.OddsKubunId = oddsKubunId;
-      odds.Bangou1 = bangou;
-      odds.Odds1 = odds1;
-      odds.Odds2 = odds2;
-      await this.entityManager.getRepository(Odds).save(odds);
+      let oddsHaitou = await this.getOddsHaitou(raceId, Baken.Fukushou, bangou);
+      if (oddsHaitou) {
+        if (oddsHaitou.YosouKakutei === YosouKakutei.Kakutei) {
+          continue;
+        }
+      } else {
+        oddsHaitou = this.createOddsHaitou(raceId, Baken.Fukushou, bangou);
+      }
+      oddsHaitou.YosouKakutei = yosouKakutei;
+      oddsHaitou.Odds1 = odds1;
+      oddsHaitou.Odds2 = odds2;
+      await this.oddsHaitouRepository.save(oddsHaitou);
     }
   }
 
-  public async saveWideOdds(buffer: Buffer, offset: number, oddsKubunId: number) {
-    await this.deleteOdds(oddsKubunId);
+  public async saveWideOdds(buffer: Buffer, offset: number, raceId: number, yosouKakutei: YosouKakutei) {
     for (let bangou1 = 1; bangou1 <= 17; bangou1++) {
       for (let bangou2 = bangou1 + 1; bangou2 <= 18; bangou2++) {
         const odds1 = this.getOdds(buffer, offset, 5);
@@ -273,19 +311,23 @@ export class KolTool {
         if (!odds1 || !odds2) {
           continue;
         }
-        const odds = new Odds();
-        odds.OddsKubunId = oddsKubunId;
-        odds.Bangou1 = bangou1;
-        odds.Bangou2 = bangou2;
-        odds.Odds1 = odds1;
-        odds.Odds2 = odds2;
-        await this.entityManager.getRepository(Odds).save(odds);
+        let oddsHaitou = await this.getOddsHaitou(raceId, Baken.Wide, bangou1, bangou2);
+        if (oddsHaitou) {
+          if (oddsHaitou.YosouKakutei === YosouKakutei.Kakutei) {
+            continue;
+          }
+        } else {
+          oddsHaitou = this.createOddsHaitou(raceId, Baken.Wide, bangou1, bangou2);
+        }
+        oddsHaitou.YosouKakutei = yosouKakutei;
+        oddsHaitou.Odds1 = odds1;
+        oddsHaitou.Odds2 = odds2;
+        await this.oddsHaitouRepository.save(oddsHaitou);
       }
     }
   }
 
-  public async saveUmatanOdds(buffer: Buffer, offset: number, oddsKubunId: number) {
-    await this.deleteOdds(oddsKubunId);
+  public async saveUmatanOdds(buffer: Buffer, offset: number, raceId: number, yosouKakutei: YosouKakutei) {
     for (let bangou1 = 1; bangou1 <= 18; bangou1++) {
       for (let bangou2 = 1; bangou2 <= 18; bangou2++) {
         if (bangou1 === bangou2) {
@@ -296,18 +338,22 @@ export class KolTool {
         if (!odds1) {
           continue;
         }
-        const odds = new Odds();
-        odds.OddsKubunId = oddsKubunId;
-        odds.Bangou1 = bangou1;
-        odds.Bangou2 = bangou2;
-        odds.Odds1 = odds1;
-        await this.entityManager.getRepository(Odds).save(odds);
+        let oddsHaitou = await this.getOddsHaitou(raceId, Baken.Umatan, bangou1, bangou2);
+        if (oddsHaitou) {
+          if (oddsHaitou.YosouKakutei === YosouKakutei.Kakutei) {
+            continue;
+          }
+        } else {
+          oddsHaitou = this.createOddsHaitou(raceId, Baken.Umatan, bangou1, bangou2);
+        }
+        oddsHaitou.YosouKakutei = yosouKakutei;
+        oddsHaitou.Odds1 = odds1;
+        await this.oddsHaitouRepository.save(oddsHaitou);
       }
     }
   }
 
-  public async saveSanrenpukuOdds(buffer: Buffer, offset: number, oddsKubunId: number) {
-    await this.deleteOdds(oddsKubunId);
+  public async saveSanrenpukuOdds(buffer: Buffer, offset: number, raceId: number, yosouKakutei: YosouKakutei) {
     for (let bangou1 = 1; bangou1 <= 16; bangou1++) {
       for (let bangou2 = bangou1 + 1; bangou2 <= 17; bangou2++) {
         for (let bangou3 = bangou2 + 1; bangou3 <= 18; bangou3++) {
@@ -316,20 +362,23 @@ export class KolTool {
           if (!odds1) {
             continue;
           }
-          const odds = new Odds();
-          odds.OddsKubunId = oddsKubunId;
-          odds.Bangou1 = bangou1;
-          odds.Bangou2 = bangou2;
-          odds.Bangou3 = bangou3;
-          odds.Odds1 = odds1;
-          await this.entityManager.getRepository(Odds).save(odds);
+          let oddsHaitou = await this.getOddsHaitou(raceId, Baken.Sanrenpuku, bangou1, bangou2, bangou3);
+          if (oddsHaitou) {
+            if (oddsHaitou.YosouKakutei === YosouKakutei.Kakutei) {
+              continue;
+            }
+          } else {
+            oddsHaitou = this.createOddsHaitou(raceId, Baken.Sanrenpuku, bangou1, bangou2, bangou3);
+          }
+          oddsHaitou.YosouKakutei = yosouKakutei;
+          oddsHaitou.Odds1 = odds1;
+          await this.oddsHaitouRepository.save(oddsHaitou);
         }
       }
     }
   }
 
-  public async saveSanrentanOdds(buffer: Buffer, offset: number, oddsKubunId: number) {
-    await this.deleteOdds(oddsKubunId);
+  public async saveSanrentanOdds(buffer: Buffer, offset: number, raceId: number, yosouKakutei: YosouKakutei) {
     for (let bangou1 = 1; bangou1 <= 18; bangou1++) {
       for (let bangou2 = 1; bangou2 <= 18; bangou2++) {
         for (let bangou3 = 1; bangou3 <= 18; bangou3++) {
@@ -341,15 +390,56 @@ export class KolTool {
           if (!odds1) {
             continue;
           }
-          const odds = new Odds();
-          odds.OddsKubunId = oddsKubunId;
-          odds.Bangou1 = bangou1;
-          odds.Bangou2 = bangou2;
-          odds.Bangou3 = bangou3;
-          odds.Odds1 = odds1;
-          await this.entityManager.getRepository(Odds).save(odds);
+          let oddsHaitou = await this.getOddsHaitou(raceId, Baken.Sanrentan, bangou1, bangou2, bangou3);
+          if (oddsHaitou) {
+            if (oddsHaitou.YosouKakutei === YosouKakutei.Kakutei) {
+              continue;
+            }
+          } else {
+            oddsHaitou = this.createOddsHaitou(raceId, Baken.Sanrentan, bangou1, bangou2, bangou3);
+          }
+          oddsHaitou.YosouKakutei = yosouKakutei;
+          oddsHaitou.Odds1 = odds1;
+          await this.oddsHaitouRepository.save(oddsHaitou);
         }
       }
+    }
+  }
+
+  public async saveRaceHaitou(buffer: Buffer, raceId: number, infos: HaitouInfo[]) {
+    for (let i = 0; i < infos.length; i++) {
+      const info = infos[i];
+      const bangou1 = readPositiveInt(buffer, info.bangou1, info.bangou1Len);
+      if (!bangou1) {
+        continue;
+      }
+      let bangou2;
+      if (info.bangou2) {
+        bangou2 = readPositiveInt(buffer, info.bangou2, info.bangou2Len);
+        if (!bangou2 && [Baken.Tanshou, Baken.Fukushou].indexOf(info.baken) === -1) {
+          continue;
+        }
+      }
+      let bangou3;
+      if (info.bangou3) {
+        bangou3 = readPositiveInt(buffer, info.bangou3, info.bangou3Len);
+        if (!bangou3 && [Baken.Sanrenpuku, Baken.Sanrentan].indexOf(info.baken) !== -1) {
+          continue;
+        }
+      }
+      let oddsHaitou = await this.getOddsHaitou(raceId, info.baken, bangou1, bangou2, bangou3);
+      if (oddsHaitou) {
+        if (oddsHaitou.Haitoukin) {
+          continue;
+        }
+      } else {
+        oddsHaitou = this.createOddsHaitou(raceId, info.baken, bangou1, bangou2, bangou3);
+      }
+      oddsHaitou.Haitoukin = readPositiveInt(buffer, info.haitou, info.haitouLen);
+      if (info.ninki) {
+        oddsHaitou.Ninki = readPositiveInt(buffer, info.ninki, info.ninkiLen);
+      }
+      await this.oddsHaitouRepository.save(oddsHaitou);
     }
   }
 }

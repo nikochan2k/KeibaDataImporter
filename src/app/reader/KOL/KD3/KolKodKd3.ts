@@ -1,15 +1,11 @@
 import { Inject, Service } from "typedi";
-import { Baken, YosouKakutei } from "../../../converters/Common";
+import { YosouKakutei } from "../../../converters/Common";
 import { DataToImport } from "../../DataToImport";
-import { DataTool } from "../../DataTool";
 import { KolRaceTool } from "../KolRaceTool";
 import { KolTool } from "../KolTool";
 
 @Service()
 export class KolKodKd3 extends DataToImport {
-
-  @Inject()
-  private tool: DataTool;
 
   @Inject()
   private kolTool: KolTool;
@@ -29,17 +25,14 @@ export class KolKodKd3 extends DataToImport {
   }
 
   protected async saveTanshou(buffer: Buffer, raceId: number) {
-    const oddsKubun = await this.tool.saveOddsKubun(raceId, Baken.Tanshou, YosouKakutei.Kakutei);
-    await this.kolTool.saveTanshouOdds(buffer, 161, oddsKubun.Id);
+    await this.kolTool.saveTanshouOdds(buffer, 161, raceId, YosouKakutei.Kakutei);
   }
 
   protected async saveWakuren(buffer: Buffer, raceId: number) {
-    const oddsKubun = await this.tool.saveOddsKubun(raceId, Baken.Wakuren, YosouKakutei.Kakutei);
-    await this.kolTool.saveTanshouOdds(buffer, 251, oddsKubun.Id);
+    await this.kolTool.saveTanshouOdds(buffer, 251, raceId, YosouKakutei.Kakutei);
   }
 
   protected async saveUmaren(buffer: Buffer, raceId: number) {
-    const oddsKubun = await this.tool.saveOddsKubun(raceId, Baken.Umaren, YosouKakutei.Kakutei);
-    await this.kolTool.saveUmarenOdds(buffer, 431, oddsKubun.Id);
+    await this.kolTool.saveUmarenOdds(buffer, 431, raceId, YosouKakutei.Kakutei);
   }
 }

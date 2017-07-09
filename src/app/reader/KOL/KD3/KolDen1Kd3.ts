@@ -128,7 +128,7 @@ export class KolDen1Kd3 extends DataToImport {
       for (let i = 0; i < 4; i++) {
         const umaban = readInt(buffer, offset + i * 2, 2);
         if (1 <= umaban && umaban <= 28) {
-          const shussoubaId = race.Id * 100 + umaban;
+          const shussoubaId = race.Id * (2 ** 6) + umaban;
           cache.addYosouTenkai(shussoubaId, index + 1);
         }
       }
