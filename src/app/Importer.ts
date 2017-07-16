@@ -12,7 +12,7 @@ import { KolKodKd3 } from "./reader/KOL/KD3/KolKodKd3";
 import { KolKod2Kd3 } from "./reader/KOL/KD3/KolKod2Kd3";
 import { KolKod3Kd3 } from "./reader/KOL/KD3/KolKod3Kd3";
 import { KolUmaKd3 } from "./reader/KOL/KD3/KolUmaKd3";
-import { DataCache } from "./reader/DataCache";
+import { Bridge } from "./reader/Bridge";
 
 export interface Entries {
   [basename: string]: string;
@@ -45,8 +45,9 @@ export class Importer {
   }
 
   public async import(entries: Entries) {
-    const cache = new DataCache();
+    const bridge: Bridge = { basename: null };
     for (const basename in this.readers) {
+      bridge.basename = basename;
       const dataFile = entries[basename];
       if (!dataFile) {
         continue;
@@ -62,7 +63,7 @@ export class Importer {
         if (this.logger.isDebugEnabled) {
           this.logger.debug('"' + basename + '"を取り込んでいます');
         }
-        await dataToImport.readAll(fd, cache);
+        await dataToImport.readAll(fd, bridge);
       } catch (e) {
         this.logger.error(e.stack || e);
       }

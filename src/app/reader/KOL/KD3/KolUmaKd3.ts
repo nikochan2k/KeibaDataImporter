@@ -263,7 +263,7 @@ export class KolUmaKd3 extends DataToImport {
     if (1200 < race.Kyori && toBe.Ten3F && toBe.Agari3F) {
       toBe.Chuukan = toBe.Time - toBe.Ten3F - toBe.Agari3F;
     }
-    toBe.YonCornerIchiDori = $S.yonCornerIchiDori.toCodeFromKol(buffer, 247, 1);
+    toBe.YonCornerIchiDori = $S.ichiDori.toCodeFromKol(buffer, 247, 1);
     if (asIs) {
       const updateSet = this.tool.createUpdateSet(asIs, toBe, true);
       if (updateSet) {

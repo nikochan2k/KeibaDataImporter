@@ -1,7 +1,8 @@
 import { Inject, Service } from "typedi";
 import * as $R from "../../../converters/Race";
 import { Race } from "../../../entities/Race";
-import { DataCache } from "../../DataCache";
+import { Bridge } from "../../Bridge";
+import { KolBridge } from "../KolBridge";
 import { DataToImport } from "../../DataToImport";
 import { Tool } from "../../Tool";
 import {
@@ -27,7 +28,12 @@ export class KolDen1Kd3 extends DataToImport {
     return 848;
   }
 
-  protected async save(buffer: Buffer, cache: DataCache) {
+  protected setup(bridge: Bridge) {
+    const kolBridge = <KolBridge>bridge;
+    kolBridge.yosouTenkaiMap = new Map<number, number>();
+  }
+
+  protected async save(buffer: Buffer, bridge: Bridge) {
     const asIs = await this.kolRaceTool.getRace(buffer);
     if (asIs) {
       const dataSakuseiNengappi = readDate(buffer, 418, 8);
@@ -41,7 +47,7 @@ export class KolDen1Kd3 extends DataToImport {
     if (!race) {
       return;
     }
-    this.setYosouTenkai(buffer, race, cache);
+    this.setYosouTenkai(buffer, race, <KolBridge>bridge);
   }
 
   protected async saveRace(buffer: Buffer, asIs: Race) {
@@ -124,13 +130,13 @@ export class KolDen1Kd3 extends DataToImport {
     return toBe;
   }
 
-  protected setYosouTenkai(buffer: Buffer, race: Race, cache: DataCache) {
+  protected setYosouTenkai(buffer: Buffer, race: Race, bridge: KolBridge) {
     [362, 374, 386, 398].forEach((offset, index) => {
       for (let i = 0; i < 4; i++) {
         const umaban = readInt(buffer, offset + i * 2, 2);
         if (1 <= umaban && umaban <= 28) {
           const shussoubaId = race.Id * (2 ** 6) + umaban;
-          cache.addYosouTenkai(shussoubaId, index + 1);
+          bridge.yosouTenkaiMap.set(shussoubaId, index + 1);
         }
       }
     });

@@ -4,7 +4,6 @@ import * as $R from "../../../converters/Race";
 import * as $RK from "../../../converters/RaceKeika";
 import { Race } from "../../../entities/Race";
 import { RaceKeika } from "../../../entities/RaceKeika";
-import { RaceLapTime } from "../../../entities/RaceLapTime";
 import { DataToImport } from "../../DataToImport";
 import { KeikaTool } from "../../KeikaTool";
 import {
@@ -154,7 +153,7 @@ export class KolSei1Kd3 extends DataToImport {
   protected async saveRaceLapTime(buffer: Buffer, race: Race) {
     const lapTime1 = readDouble(buffer, 402, 3, 0.1);
     if (lapTime1) {
-      await this.saveNormalRaceLapTime(buffer, race);
+      await this.kolRaceTool.saveNormalRaceLapTime(buffer, 402, race);
     } else {
       const heichiShougai = $R.heichiShougai.toCodeFromKol(buffer, 25, 1);
       if (heichiShougai === 1) {
@@ -165,27 +164,6 @@ export class KolSei1Kd3 extends DataToImport {
           await this.saveChihouRaceLapTime(buffer, race);
         }
       }
-    }
-  }
-
-  protected async saveNormalRaceLapTime(buffer: Buffer, race: Race) {
-    const end = Math.ceil(race.Kyori / 200.0);
-    const odd = (race.Kyori % 200 !== 0);
-    let shuuryouKyori = 0;
-    let index = 402;
-    for (let i = 0; i < end; i++ , index += 3) {
-      const lapTime = readDouble(buffer, index, 3, 0.1);
-      if (!lapTime) {
-        continue;
-      }
-      const raceLapTime = new RaceLapTime();
-      raceLapTime.Id = race.Id * (2 ** 5) + i;
-      raceLapTime.RaceId = race.Id;
-      raceLapTime.KaishiKyori = shuuryouKyori;
-      shuuryouKyori = (i === 0 && odd) ? 100 : (shuuryouKyori + 200);
-      raceLapTime.ShuuryouKyori = shuuryouKyori;
-      raceLapTime.LapTime = lapTime;
-      await this.entityManager.save(raceLapTime);
     }
   }
 

@@ -67,7 +67,7 @@ export const chakura2 = new Codes(
   ]
 );
 
-export const yonCornerIchiDori = new Codes(
+export const ichiDori = new Codes(
   [
     { code: 0, kol: "0", jrdb: "1", naiyou: "最内" },
     { code: 1, kol: "1", jrdb: "2", naiyou: "内" },

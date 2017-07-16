@@ -111,6 +111,9 @@ export class Race {
   public Pace?: number;
 
   @Column("smallint", { nullable: true })
+  public PaceUpNokoriFalon?: number;
+
+  @Column("smallint", { nullable: true })
   public Tenki?: number;
 
   @Column("smallint", { nullable: true })
@@ -160,6 +163,9 @@ export class Race {
 
   @Column("text", { nullable: true })
   public SeisaiNaiyou?: string;
+
+  @Column("text", { nullable: true })
+  public RaceComment?: string;
 
   @Column("bigint", { nullable: true })
   public KolShutsubahyouSakuseiNengappi?: number;

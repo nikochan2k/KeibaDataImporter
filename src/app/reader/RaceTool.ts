@@ -3,9 +3,11 @@ import { EntityManager } from "typeorm";
 import { OrmEntityManager } from "typeorm-typedi-extensions";
 import {
   readPositiveInt,
-  readRaw
+  readRaw,
+  readDouble
 } from "./Reader";
 import { Race } from "../entities/Race";
+import { RaceLapTime } from "../entities/RaceLapTime";
 import { Shussouba } from "../entities/Shussouba";
 import { getLogger } from "../LogUtil";
 
@@ -139,6 +141,26 @@ export abstract class RaceTool {
       }
     });
     return joukenFuka;
+  }
+
+  public async saveNormalRaceLapTime(buffer: Buffer, offset: number, race: Race) {
+    const end = Math.ceil(race.Kyori / 200.0);
+    const odd = (race.Kyori % 200 !== 0);
+    let shuuryouKyori = 0;
+    for (let i = 0; i < end; i++ , offset += 3) {
+      const lapTime = readDouble(buffer, offset, 3, 0.1);
+      if (!lapTime) {
+        continue;
+      }
+      const raceLapTime = new RaceLapTime();
+      raceLapTime.Id = race.Id * (2 ** 5) + i;
+      raceLapTime.RaceId = race.Id;
+      raceLapTime.KaishiKyori = shuuryouKyori;
+      shuuryouKyori = (i === 0 && odd) ? (race.Kyori % 200) : (shuuryouKyori + 200);
+      raceLapTime.ShuuryouKyori = shuuryouKyori;
+      raceLapTime.LapTime = lapTime;
+      await this.entityManager.save(raceLapTime);
+    }
   }
 
 }

@@ -2,9 +2,9 @@ import { Inject, Service } from "typedi";
 import * as $S from "../../../converters/Shussouba";
 import { Race } from "../../../entities/Race";
 import { Shussouba } from "../../../entities/Shussouba";
-import { DataCache } from "../../DataCache";
+import { KolBridge } from "../KolBridge";
+import { Bridge } from "../../Bridge";
 import { DataToImport } from "../../DataToImport";
-import { Tool } from "../../Tool";
 import {
   readDate,
   readDouble,
@@ -12,6 +12,7 @@ import {
   readStr,
   readStrWithNoSpace
 } from "../../Reader";
+import { Tool } from "../../Tool";
 import { KolChoukyouTool } from "../KolChoukyouTool";
 import { KolRaceTool } from "../KolRaceTool";
 import { KolTool } from "../KolTool";
@@ -35,7 +36,12 @@ export class KolDen2Kd3 extends DataToImport {
     return 1000;
   }
 
-  protected async save(buffer: Buffer, cache: DataCache) {
+  protected teardown(bridge: Bridge) {
+    const kolBridge = <KolBridge>bridge;
+    delete kolBridge.yosouTenkaiMap;
+  }
+
+  protected async save(buffer: Buffer, bridge: Bridge) {
     const info = await this.kolRaceTool.getShussoubaInfo(buffer, 23);
     if (!info) {
       return;
@@ -49,7 +55,7 @@ export class KolDen2Kd3 extends DataToImport {
       }
     }
 
-    const shussouba = await this.saveShussouba(buffer, info.race, asIs, cache);
+    const shussouba = await this.saveShussouba(buffer, info.race, asIs, <KolBridge>bridge);
     if (!shussouba) {
       return;
     }
@@ -57,7 +63,7 @@ export class KolDen2Kd3 extends DataToImport {
     await this.saveChoukyou(buffer, shussouba, tanshukuKishuMei);
   }
 
-  protected async saveShussouba(buffer: Buffer, race: Race, asIs: Shussouba, cache: DataCache) {
+  protected async saveShussouba(buffer: Buffer, race: Race, asIs: Shussouba, bridge: KolBridge) {
     let toBe = this.kolRaceTool.createShussouba(buffer, 23);
     if (toBe) {
       return null;
@@ -84,7 +90,7 @@ export class KolDen2Kd3 extends DataToImport {
     toBe.Rating = readDouble(buffer, 739, 3, 0.1);
     toBe.KyuuyouRiyuu = readStr(buffer, 783, 60);
     toBe.KyuuyouRiyuuCode = $S.kyuuyouRiyuuCode.toCodeFromKol(buffer, 783, 60);
-    toBe.YosouTenkai = cache.getYosouTenkai(toBe.Id);
+    toBe.YosouTenkai = bridge.yosouTenkaiMap.get(toBe.Id);
 
     if (asIs) {
       const updateSet = this.tool.createUpdateSet(asIs, toBe, true);

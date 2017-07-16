@@ -107,7 +107,7 @@ export class KolSei2Kd3 extends DataToImport {
     if (1200 < race.Kyori && toBe.Ten3F && toBe.Agari3F) {
       toBe.Chuukan = toBe.Time - toBe.Ten3F - toBe.Agari3F;
     }
-    toBe.YonCornerIchiDori = $S.yonCornerIchiDori.toCodeFromKol(buffer, 306, 1);
+    toBe.YonCornerIchiDori = $S.ichiDori.toCodeFromKol(buffer, 306, 1);
     toBe.KolSeisekiSakuseiNengappi = readDate(buffer, 424, 8);
 
     if (asIs) {
