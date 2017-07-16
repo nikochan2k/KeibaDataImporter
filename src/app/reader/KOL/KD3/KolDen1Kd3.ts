@@ -3,7 +3,7 @@ import * as $R from "../../../converters/Race";
 import { Race } from "../../../entities/Race";
 import { DataCache } from "../../DataCache";
 import { DataToImport } from "../../DataToImport";
-import { DataTool } from "../../DataTool";
+import { Tool } from "../../Tool";
 import {
   readDate,
   readInt,
@@ -18,7 +18,7 @@ import { KolRaceTool } from "../KolRaceTool";
 export class KolDen1Kd3 extends DataToImport {
 
   @Inject()
-  private tool: DataTool;
+  private tool: Tool;
 
   @Inject()
   private kolRaceTool: KolRaceTool;
@@ -50,6 +50,7 @@ export class KolDen1Kd3 extends DataToImport {
       return null;
     }
     if (!asIs || !asIs.KolSeisekiSakuseiNengappi) {
+      toBe.Nengappi = readDate(buffer, 12, 8);
       toBe.Kyuujitsu = $R.kyuujitsu.toCodeFromKol(buffer, 20, 1);
       toBe.Youbi = $R.youbi.toCodeFromKol(buffer, 21, 1);
       toBe.ChuuouChihouGaikoku = $R.chuuouChihouGaikoku.toCodeFromKol(buffer, 22, 1);
@@ -71,7 +72,7 @@ export class KolDen1Kd3 extends DataToImport {
       const joukenFuka1 = $R.joukenFuka1.toCodesFromKol(buffer, 94, 2);
       const joukenFuka2 = $R.joukenFuka2.toCodesFromKol(buffer, 96, 2);
       const joukenKei = $R.joukenKei.toCodesFromKol(buffer, 98, 1);
-      toBe.JoukenFuka = this.tool.getJoukenFuka(joukenFuka1, joukenFuka2, joukenKei);
+      toBe.JoukenFuka = this.kolRaceTool.getJoukenFuka(joukenFuka1, joukenFuka2, joukenKei);
       toBe.JoukenNenreiSeigen = $R.joukenNenreiSeigen.toCodeFromKol(buffer, 99, 1);
       if (toBe.JoukenNenreiSeigen === null) {
         toBe.JoukenNenreiSeigen = $R.joukenNenreiSeigen2.toCodeFromKol(buffer, 98, 1);

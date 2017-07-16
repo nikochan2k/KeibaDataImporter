@@ -1,14 +1,19 @@
 import { Logger } from "log4js";
 import { Service } from "typedi";
-import { readInt, readStrWithNoSpace } from "./Reader";
-import { Race } from "../entities/Race";
-import { Shussouba } from "../entities/Shussouba";
+import { EntityManager } from "typeorm";
+import { OrmEntityManager } from "typeorm-typedi-extensions";
+import {
+  readStrWithNoSpace
+} from "./Reader";
 import { getLogger } from "../LogUtil";
 
 @Service()
-export class DataTool {
+export abstract class Tool {
 
-  private logger: Logger;
+  protected logger: Logger;
+
+  @OrmEntityManager()
+  protected entityManager: EntityManager;
 
   constructor() {
     this.logger = getLogger(this);
@@ -73,36 +78,4 @@ export class DataTool {
     meishou = meishou.replace(/H$|ハンデ$/, "ハンデキャップ");
     return meishou;
   }
-
-  public getRaceId(days: number, basho: number, raceBangou: number) {
-    const id = days * (2 ** (7 + 5)) + basho * (2 ** 5) + raceBangou;
-    return id;
-  }
-
-  public normalizeNenrei(race: Race, shussouba: Shussouba) {
-    if (race.Nengappi < 20010000) {
-      shussouba.Nenrei--;
-    }
-  }
-
-  public getChakujun(buffer, offset, length) {
-    const chakujun = readInt(buffer, offset, length);
-    if (1 <= chakujun && chakujun <= 28) {
-      return chakujun;
-    }
-    return null;
-  }
-
-  public getJoukenFuka(...joukenFukaLists: number[][]) {
-    let joukenFuka = 0;
-    joukenFukaLists.forEach((joukenFukaList) => {
-      if (joukenFukaList) {
-        joukenFukaList.forEach((item) => {
-          joukenFuka |= item;
-        });
-      }
-    });
-    return joukenFuka;
-  }
-
 }

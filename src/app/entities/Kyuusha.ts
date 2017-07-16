@@ -10,7 +10,7 @@ import {
 @Index("IxKyuusha2", (k: Kyuusha) => [k.KolKyuushaCode], { unique: true })
 @Index("IxKyuusha3", (k: Kyuusha) => [k.JrdbKyuushaCode], { unique: true })
 export class Kyuusha {
-  @PrimaryGeneratedColumn("int")
+  @PrimaryGeneratedColumn()
   public Id: number;
 
   @Column("int", { nullable: true })

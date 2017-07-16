@@ -3,7 +3,6 @@ import * as $S from "../../../converters/Shussouba";
 import { Race } from "../../../entities/Race";
 import { Shussouba } from "../../../entities/Shussouba";
 import { DataToImport } from "../../DataToImport";
-import { DataTool } from "../../DataTool";
 import {
   readDate,
   readDouble,
@@ -12,6 +11,7 @@ import {
   readStrWithNoSpace,
   readTime
 } from "../../Reader";
+import { Tool } from "../../Tool";
 import { KolChoukyouTool } from "../KolChoukyouTool";
 import { KolRaceTool } from "../KolRaceTool";
 import { KolTool } from "../KolTool";
@@ -23,7 +23,7 @@ export class KolSei2Kd3 extends DataToImport {
   private choukyouTool: KolChoukyouTool;
 
   @Inject()
-  private tool: DataTool;
+  private tool: Tool;
 
   @Inject()
   private kolTool: KolTool;
@@ -85,9 +85,9 @@ export class KolSei2Kd3 extends DataToImport {
     toBe.KolYosou2 = $S.yosou.toCodeFromKol(buffer, 266, 1);
     toBe.Ninki = readPositiveInt(buffer, 267, 2);
     toBe.Odds = readDouble(buffer, 269, 5, 0.1);
-    toBe.KakuteiChakujun = this.tool.getChakujun(buffer, 274, 2);
+    toBe.KakuteiChakujun = this.kolRaceTool.getChakujun(buffer, 274, 2);
     toBe.ChakujunFuka = $S.chakujunFuka.toCodeFromKol(buffer, 276, 2);
-    toBe.NyuusenChakujun = this.tool.getChakujun(buffer, 278, 2);
+    toBe.NyuusenChakujun = this.kolRaceTool.getChakujun(buffer, 278, 2);
     toBe.TorikeshiShubetsu = $S.torikeshiShubetsu.toCodeFromKol(buffer, 280, 1);
     toBe.RecordNinshiki = $S.recordNinshiki.toCodeFromKol(buffer, 281, 1);
     toBe.Time = readTime(buffer, 282, 4);

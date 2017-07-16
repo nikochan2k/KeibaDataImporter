@@ -4,13 +4,12 @@ import * as $R from "../../../converters/Race";
 import * as $S from "../../../converters/Shussouba";
 import * as $U from "../../../converters/Uma";
 import { UmaDao } from "../../../daos/UmaDao";
+import { Kyousouba } from "../../../entities/Kyousouba";
 import { Kyuusha } from "../../../entities/Kyuusha";
 import { Race } from "../../../entities/Race";
 import { Shussouba } from "../../../entities/Shussouba";
 import { Uma } from "../../../entities/Uma";
-import { Kyousouba } from "../../../entities/Kyousouba";
 import { DataToImport } from "../../DataToImport";
-import { DataTool } from "../../DataTool";
 import {
   readDate,
   readDouble,
@@ -20,9 +19,10 @@ import {
   readStrWithNoSpace,
   readTime
 } from "../../Reader";
+import { Tool } from "../../Tool";
 import { KolChoukyouTool } from "../KolChoukyouTool";
-import { KolTool } from "../KolTool";
 import { KolRaceTool } from "../KolRaceTool";
+import { KolTool } from "../KolTool";
 
 
 @Service()
@@ -31,7 +31,7 @@ export class KolUmaKd3 extends DataToImport {
   private static readonly raceOffsets = [1064, 1654, 2244, 2834, 3424];
 
   @Inject()
-  private tool: DataTool;
+  private tool: Tool;
 
   @Inject()
   private kolTool: KolTool;
@@ -136,6 +136,7 @@ export class KolUmaKd3 extends DataToImport {
     if (!toBe) {
       return null;
     }
+    toBe.Nengappi = readDate(buffer, 12, 8);
     toBe.Kyuujitsu = $R.kyuujitsu.toCodeFromKol(buffer, 20, 1);
     toBe.Youbi = $R.youbi.toCodeFromKol(buffer, 21, 1);
     toBe.ChuuouChihouGaikoku = $R.chuuouChihouGaikoku.toCodeFromKol(buffer, 23, 1);
@@ -158,7 +159,7 @@ export class KolUmaKd3 extends DataToImport {
     const joukenFuka2 = $R.joukenFuka2.toCodesFromKol(buffer, 96, 2);
     const joukenKei = $R.joukenKei.toCodesFromKol(buffer, 98, 1);
     const seed = $R.seed.toCodesFromKol(buffer, 130, 1);
-    toBe.JoukenFuka = this.tool.getJoukenFuka(kouryuuFlag, joukenFuka1, joukenFuka2, joukenKei, seed);
+    toBe.JoukenFuka = this.kolRaceTool.getJoukenFuka(kouryuuFlag, joukenFuka1, joukenFuka2, joukenKei, seed);
     toBe.JoukenNenreiSeigen = $R.joukenNenreiSeigen.toCodeFromKol(buffer, 99, 1);
     if (toBe.JoukenNenreiSeigen === null) {
       toBe.JoukenNenreiSeigen = $R.joukenNenreiSeigen2.toCodeFromKol(buffer, 98, 1);
@@ -240,9 +241,9 @@ export class KolUmaKd3 extends DataToImport {
     toBe.KolYosou2 = $S.yosou.toCodeFromKol(buffer, 207, 1);
     toBe.Ninki = readPositiveInt(buffer, 208, 2);
     toBe.Odds = readDouble(buffer, 210, 5, 0.1);
-    toBe.KakuteiChakujun = this.tool.getChakujun(buffer, 215, 2);
+    toBe.KakuteiChakujun = this.kolRaceTool.getChakujun(buffer, 215, 2);
     toBe.ChakujunFuka = $S.chakujunFuka.toCodeFromKol(buffer, 217, 2);
-    toBe.NyuusenChakujun = this.tool.getChakujun(buffer, 219, 2);
+    toBe.NyuusenChakujun = this.kolRaceTool.getChakujun(buffer, 219, 2);
     toBe.TorikeshiShubetsu = $S.torikeshiShubetsu.toCodeFromKol(buffer, 221, 1);
     toBe.RecordNinshiki = $S.recordNinshiki.toCodeFromKol(buffer, 222, 1);
     toBe.Time = readTime(buffer, 223, 4);

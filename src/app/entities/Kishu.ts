@@ -9,7 +9,7 @@ import {
 @Index("IxKishu1", (k: Kishu) => [k.TanshukuKishuMei, k.KishuMei], { unique: true })
 @Index("IxKishu2", (k: Kishu) => [k.KishuMei])
 export class Kishu {
-  @PrimaryGeneratedColumn("int")
+  @PrimaryGeneratedColumn()
   public Id: number;
 
   @Column("varchar", { length: 12 })

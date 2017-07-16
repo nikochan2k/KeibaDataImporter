@@ -2,7 +2,7 @@ import { Inject, Service } from "typedi";
 import { EntityManager, Repository } from "typeorm";
 import { OrmEntityManager, OrmRepository } from "typeorm-typedi-extensions";
 import { Banushi } from "../entities/Banushi";
-import { DataTool } from "../reader/DataTool";
+import { Tool } from "../reader/Tool";
 
 @Service()
 export class BanushiDao {
@@ -14,7 +14,7 @@ export class BanushiDao {
   private repository: Repository<Banushi>;
 
   @Inject()
-  private tool: DataTool;
+  private tool: Tool;
 
   public findOneById(id: number) {
     /* tslint:disable:triple-equals */

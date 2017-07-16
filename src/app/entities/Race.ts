@@ -23,7 +23,7 @@ export class Race {
   @Column("smallint")
   public RaceBangou: number;
 
-  @Column("bigint")
+  @Column("bigint", { nullable: true })
   public Nengappi: number;
 
   @Column("smallint", { nullable: true })

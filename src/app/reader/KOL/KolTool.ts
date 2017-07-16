@@ -24,7 +24,7 @@ import { Shussouba } from "../../entities/Shussouba";
 import { ShussoubaTsuukaJuni } from "../../entities/ShussoubaTsuukaJuni";
 import { Uma } from "../../entities/Uma";
 import { getLogger } from "../../LogUtil";
-import { DataTool } from "../DataTool";
+import { Tool } from "../Tool";
 import {
   readDouble,
   readInt,
@@ -45,7 +45,7 @@ export class KolTool {
   private oddsHaitouRepository: Repository<OddsHaitou>;
 
   @Inject()
-  private tool: DataTool;
+  private tool: Tool;
 
   @Inject()
   private kyuushaDao: KyuushaDao;

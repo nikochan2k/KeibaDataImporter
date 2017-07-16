@@ -8,7 +8,7 @@ import {
 @Entity("Shozoku")
 @Index("IxShozoku", (k: Shozoku) => [k.TouzaiBetsu, k.ShozokuBasho, k.KyuushaId], { unique: true })
 export class Shozoku {
-  @PrimaryGeneratedColumn("int")
+  @PrimaryGeneratedColumn()
   public Id: number;
 
   @Column("smallint", { nullable: true })

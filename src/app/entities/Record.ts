@@ -8,7 +8,7 @@ import {
 @Entity("Record")
 @Index("IxRecord", (r: Record) => [r.Nengappi, r.UmaId])
 export class Record {
-  @PrimaryGeneratedColumn("bigint")
+  @PrimaryGeneratedColumn()
   public Id: number;
 
   @Column("bigint")

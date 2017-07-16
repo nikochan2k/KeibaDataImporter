@@ -91,6 +91,12 @@ export function readPositiveInt(buf: Buffer, offset: number, length: number, mul
   return i <= 0 ? null : i;
 }
 
+export function readHex(buf: Buffer, offset: number, length: number) {
+  const str = readStr(buf, offset, length);
+  const i = parseInt(str, 16);
+  return isNaN(i) ? null : i;
+}
+
 export function readDate(buf: Buffer, offset: number, length: number) {
   const date = readInt(buf, offset, length);
   if (date === null) {

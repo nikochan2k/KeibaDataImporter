@@ -6,7 +6,6 @@ import { Race } from "../../../entities/Race";
 import { RaceKeika } from "../../../entities/RaceKeika";
 import { RaceLapTime } from "../../../entities/RaceLapTime";
 import { DataToImport } from "../../DataToImport";
-import { DataTool } from "../../DataTool";
 import { KeikaTool } from "../../KeikaTool";
 import {
   readDate,
@@ -17,6 +16,7 @@ import {
   readStrWithNoSpace,
   readTime
 } from "../../Reader";
+import { Tool } from "../../Tool";
 import { KolRaceTool } from "../KolRaceTool";
 import { KolTool } from "../KolTool";
 
@@ -24,7 +24,7 @@ import { KolTool } from "../KolTool";
 export class KolSei1Kd3 extends DataToImport {
 
   @Inject()
-  private tool: DataTool;
+  private tool: Tool;
 
   @Inject()
   private kolRaceTool: KolRaceTool;
@@ -64,6 +64,7 @@ export class KolSei1Kd3 extends DataToImport {
     if (!toBe) {
       return null;
     }
+    toBe.Nengappi = readDate(buffer, 12, 8);
     toBe.Kyuujitsu = $R.kyuujitsu.toCodeFromKol(buffer, 20, 1);
     toBe.Youbi = $R.youbi.toCodeFromKol(buffer, 21, 1);
     toBe.ChuuouChihouGaikoku = $R.chuuouChihouGaikoku.toCodeFromKol(buffer, 23, 1);
@@ -87,7 +88,7 @@ export class KolSei1Kd3 extends DataToImport {
     const joukenFuka2 = $R.joukenFuka2.toCodesFromKol(buffer, 97, 2);
     const joukenKei = $R.joukenKei.toCodesFromKol(buffer, 99, 1);
     const seed = $R.seed.toCodesFromKol(buffer, 381, 1);
-    toBe.JoukenFuka = this.tool.getJoukenFuka(kouryuuFlag, joukenFuka1, joukenFuka2, joukenKei, seed);
+    toBe.JoukenFuka = this.kolRaceTool.getJoukenFuka(kouryuuFlag, joukenFuka1, joukenFuka2, joukenKei, seed);
     toBe.JoukenNenreiSeigen = $R.joukenNenreiSeigen.toCodeFromKol(buffer, 100, 1);
     if (toBe.JoukenNenreiSeigen === null) {
       toBe.JoukenNenreiSeigen = $R.joukenNenreiSeigen2.toCodeFromKol(buffer, 99, 1);

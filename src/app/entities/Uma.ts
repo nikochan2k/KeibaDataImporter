@@ -8,7 +8,7 @@ import {
 @Entity("Uma")
 @Index("IxUma", (u: Uma) => [u.Bamei])
 export class Uma {
-  @PrimaryGeneratedColumn("int")
+  @PrimaryGeneratedColumn()
   public Id: number;
 
   @Column("varchar", { length: 54 })

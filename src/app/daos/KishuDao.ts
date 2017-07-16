@@ -4,7 +4,7 @@ import { OrmEntityManager, OrmRepository } from "typeorm-typedi-extensions";
 import { Kijou } from "../entities/Kijou";
 import { Kishu } from "../entities/Kishu";
 import { Shozoku } from "../entities/Shozoku";
-import { DataTool } from "../reader/DataTool";
+import { Tool } from "../reader/Tool";
 
 @Service()
 export class KishuDao {
@@ -22,7 +22,7 @@ export class KishuDao {
   private shozokuRepository: Repository<Shozoku>;
 
   @Inject()
-  private tool: DataTool;
+  private tool: Tool;
 
   protected async getKishu(kishu: Kishu) {
     let result: Kishu;

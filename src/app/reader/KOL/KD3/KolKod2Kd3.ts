@@ -1,5 +1,5 @@
 import { Inject, Service } from "typedi";
-import {  YosouKakutei } from "../../../converters/Common";
+import { YosouKakutei } from "../../../converters/Common";
 import { DataToImport } from "../../DataToImport";
 import { KolRaceTool } from "../KolRaceTool";
 import { KolTool } from "../KolTool";

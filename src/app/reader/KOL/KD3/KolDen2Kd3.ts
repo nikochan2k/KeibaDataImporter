@@ -4,7 +4,7 @@ import { Race } from "../../../entities/Race";
 import { Shussouba } from "../../../entities/Shussouba";
 import { DataCache } from "../../DataCache";
 import { DataToImport } from "../../DataToImport";
-import { DataTool } from "../../DataTool";
+import { Tool } from "../../Tool";
 import {
   readDate,
   readDouble,
@@ -23,7 +23,7 @@ export class KolDen2Kd3 extends DataToImport {
   private choukyouTool: KolChoukyouTool;
 
   @Inject()
-  private tool: DataTool;
+  private tool: Tool;
 
   @Inject()
   private kolTool: KolTool;

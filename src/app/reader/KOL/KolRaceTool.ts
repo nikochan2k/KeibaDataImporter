@@ -1,7 +1,4 @@
-import { Logger } from "log4js";
 import { Inject, Service } from "typedi";
-import { EntityManager } from "typeorm";
-import { OrmEntityManager } from "typeorm-typedi-extensions";
 import * as $C from "../../converters/Common";
 import * as $R from "../../converters/Race";
 import { KishuDao } from "../../daos/KishuDao";
@@ -12,15 +9,12 @@ import { Race } from "../../entities/Race";
 import { RaceHassouJoukyou } from "../../entities/RaceHassouJoukyou";
 import { RaceLapTime } from "../../entities/RaceLapTime";
 import { Record } from "../../entities/Record";
-import { Shussouba } from "../../entities/Shussouba";
 import { ShussoubaHassouJoukyou } from "../../entities/ShussoubaHassouJoukyou";
 import { Uma } from "../../entities/Uma";
-import { getLogger } from "../../LogUtil";
-import { DataTool } from "../DataTool";
+import { RaceTool, RaceInfo } from "../RaceTool";
 import {
   readDate,
   readDouble,
-  readInt,
   readPositiveInt,
   readRaw,
   readStr,
@@ -36,15 +30,7 @@ export interface RaceLapTimeInfo {
 }
 
 @Service()
-export class KolRaceTool {
-
-  private logger: Logger;
-
-  @OrmEntityManager()
-  private entityManager: EntityManager;
-
-  @Inject()
-  private tool: DataTool;
+export class KolRaceTool extends RaceTool {
 
   @Inject()
   private umaDao: UmaDao;
@@ -55,14 +41,28 @@ export class KolRaceTool {
   @Inject()
   private raceDao: RaceDao;
 
-  constructor() {
-    this.logger = getLogger(this);
-  }
-
-  protected getRaceInfo(buffer: Buffer) {
+  protected getRaceInfo(buffer: Buffer): RaceInfo {
     /* tslint:disable:triple-equals */
-    const year = readPositiveInt(buffer, 12, 4);
+    const year = readPositiveInt(buffer, 2, 4);
     if (year == null) {
+      return null;
+    }
+    const basho = $C.basho.toCodeFromKol(buffer, 0, 2);
+    if (basho == null) {
+      this.logger.warn("不正な場所です: " + readRaw(buffer, 0, 2));
+      return null;
+    }
+    const years = year - 1970;
+    const kaiji = readPositiveInt(buffer, 6, 2);
+    const nichiji = readPositiveInt(buffer, 8, 2);
+    const raceBangou = readPositiveInt(buffer, 10, 2);
+    if (raceBangou == null) {
+      this.logger.warn("不正なレース番号です: " + readRaw(buffer, 10, 2));
+      return null;
+    }
+    const date = readDate(buffer, 12, 8);
+    if (date == null) {
+      this.logger.warn("日付が不正です: " + readRaw(buffer, 12, 8));
       return null;
     }
     const month = readPositiveInt(buffer, 16, 2);
@@ -75,89 +75,17 @@ export class KolRaceTool {
       this.logger.warn("日が不正です: " + readRaw(buffer, 18, 2));
       return null;
     }
-    const date = new Date(year, month - 1, day);
-    const time = date.getTime();
-    if (isNaN(time)) {
-      this.logger.warn("不正な日付です");
-      return null;
-    }
-    const days = (time / (24 * 60 * 60 * 1000)) | 0;
-    const basho = $C.basho.toCodeFromKol(buffer, 0, 2);
-    if (basho == null) {
-      this.logger.warn("不正な場所です: " + readRaw(buffer, 0, 2));
-      return null;
-    }
-    const raceBangou = readInt(buffer, 10, 2);
-    if (raceBangou == null) {
-      this.logger.warn("不正なレース番号です: " + readRaw(buffer, 10, 2));
-      return null;
-    }
     /* tslint:enable:triple-equals */
-    return { days: days, basho: basho, raceBangou: raceBangou };
-  }
-
-  public getRaceId(buffer: Buffer) {
-    const info = this.getRaceInfo(buffer);
-    if (!info) {
-      return null;
-    }
-    return this.tool.getRaceId(info.days, info.basho, info.raceBangou);
-  }
-
-  public createRace(buffer: Buffer) {
-    const info = this.getRaceInfo(buffer);
-    if (!info) {
-      return null;
-    }
-    const race = new Race();
-    race.Id = this.tool.getRaceId(info.days, info.basho, info.raceBangou);
-    race.Basho = info.basho;
-    race.Kaiji = readPositiveInt(buffer, 6, 2);
-    race.Nichiji = readPositiveInt(buffer, 8, 2);
-    race.RaceBangou = info.raceBangou;
-    race.Nengappi = readDate(buffer, 12, 8);
-    return race;
-  }
-
-  public getRace(buffer: Buffer) {
-    const info = this.getRaceInfo(buffer);
-    if (!info) {
-      return null;
-    }
-    const id = this.tool.getRaceId(info.days, info.basho, info.raceBangou);
-    return this.entityManager.getRepository(Race).findOneById(id);
-  }
-
-  public createShussouba(buffer: Buffer, umabanOffset: number) {
-    const umaban = readPositiveInt(buffer, umabanOffset, 2);
-    if (!umaban) {
-      this.logger.warn("不正な馬番です: " + readRaw(buffer, umabanOffset, 2));
-      return null;
-    }
-    const raceId = this.getRaceId(buffer);
-    const shussouba = new Shussouba();
-    shussouba.Id = raceId * (2 ** 6) + umaban;
-    shussouba.RaceId = raceId;
-    shussouba.Umaban = umaban;
-    return shussouba;
-  }
-
-  public async getShussoubaInfo(buffer: Buffer, umabanOffset: number) {
-    const umaban = readPositiveInt(buffer, umabanOffset, 2);
-    if (!umaban) {
-      this.logger.warn("不正な馬番です: " + readRaw(buffer, umabanOffset, 2));
-      return null;
-    }
-
-    const race = await this.getRace(buffer);
-    if (!race) {
-      this.logger.warn("レースデータが存在しません: " + race.Id);
-      return null;
-    }
-
-    const id = race.Id * (2 ** 6) + umaban;
-    const shussouba = await this.entityManager.findOneById(Shussouba, id);
-    return { race: race, shussouba: shussouba };
+    return {
+      basho: basho,
+      years: years,
+      kaiji: kaiji,
+      nichiji: nichiji,
+      date: date,
+      month: month,
+      day: day,
+      raceBangou: raceBangou
+    };
   }
 
   public async getRecord(buffer: Buffer, offset: number, bashoOffset: number) {

@@ -4,7 +4,7 @@ import { OrmEntityManager, OrmRepository } from "typeorm-typedi-extensions";
 import * as $U from "../converters/Uma";
 import { Kyousouba } from "../entities/Kyousouba";
 import { Uma } from "../entities/Uma";
-import { DataTool } from "../reader/DataTool";
+import { Tool } from "../reader/Tool";
 
 @Service()
 export class UmaDao {
@@ -19,7 +19,7 @@ export class UmaDao {
   private umaRepository: Repository<Uma>;
 
   @Inject()
-  private tool: DataTool;
+  private tool: Tool;
 
   protected getUma(uma: Uma) {
     return this.umaRepository.findOne({ Bamei: uma.Bamei });

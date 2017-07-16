@@ -2,7 +2,7 @@ import { Service, Inject } from "typedi";
 import { EntityManager, Repository } from "typeorm";
 import { OrmEntityManager, OrmRepository } from "typeorm-typedi-extensions";
 import { Kyuusha } from "../entities/Kyuusha";
-import { DataTool } from "../reader/DataTool";
+import { Tool } from "../reader/Tool";
 
 @Service()
 export class KyuushaDao {
@@ -14,7 +14,7 @@ export class KyuushaDao {
   private repository: Repository<Kyuusha>;
 
   @Inject()
-  private tool: DataTool;
+  private tool: Tool;
 
   protected getKyuusha(kyuusha: Kyuusha) {
     if (kyuusha.KolKyuushaCode) {

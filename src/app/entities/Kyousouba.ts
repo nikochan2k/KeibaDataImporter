@@ -8,7 +8,7 @@ import {
 @Entity("Kyousouba")
 @Index("IxKyousouba", (k: Kyousouba) => [k.UmaId])
 export class Kyousouba {
-  @PrimaryGeneratedColumn("int")
+  @PrimaryGeneratedColumn()
   public Id: number;
 
   @Column("int")
