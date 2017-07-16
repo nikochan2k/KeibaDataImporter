@@ -1,4 +1,5 @@
 import { Inject, Service } from "typedi";
+import * as $C from "../../../converters/Common";
 import * as $S from "../../../converters/Shussouba";
 import { Race } from "../../../entities/Race";
 import { Shussouba } from "../../../entities/Shussouba";
@@ -35,7 +36,7 @@ export class KolSei2Kd3 extends DataToImport {
     return 600;
   }
 
-  protected async save(buffer: Buffer) {
+  public async save(buffer: Buffer) {
     const info = await this.kolRaceTool.getShussoubaInfo(buffer, 23);
     if (!info) {
       return;
@@ -107,7 +108,7 @@ export class KolSei2Kd3 extends DataToImport {
     if (1200 < race.Kyori && toBe.Ten3F && toBe.Agari3F) {
       toBe.Chuukan = toBe.Time - toBe.Ten3F - toBe.Agari3F;
     }
-    toBe.YonCornerIchiDori = $S.ichiDori.toCodeFromKol(buffer, 306, 1);
+    toBe.YonCornerIchiDori = $C.ichi.toCodeFromKol(buffer, 306, 1);
     toBe.KolSeisekiSakuseiNengappi = readDate(buffer, 424, 8);
 
     if (asIs) {

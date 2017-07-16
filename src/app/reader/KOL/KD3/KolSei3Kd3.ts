@@ -16,7 +16,7 @@ export class KolSei3Kd3 extends DataToImport {
     return 1050;
   }
 
-  protected async save(buffer: Buffer) {
+  public async save(buffer: Buffer) {
     const seisaiNaiyou = readStr(buffer, 44, 960);
     if (!seisaiNaiyou) {
       return;

@@ -143,7 +143,7 @@ export abstract class RaceTool {
     return joukenFuka;
   }
 
-  public async saveNormalRaceLapTime(buffer: Buffer, offset: number, race: Race) {
+  public async saveRaceLapTime(buffer: Buffer, offset: number, race: Race) {
     const end = Math.ceil(race.Kyori / 200.0);
     const odd = (race.Kyori % 200 !== 0);
     let shuuryouKyori = 0;

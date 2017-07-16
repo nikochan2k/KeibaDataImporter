@@ -123,3 +123,21 @@ export enum YosouKakutei {
   Yosou,
   Kakutei
 }
+
+export enum Ichi {
+  Saiuchi = 0,
+  Uchi,
+  Naka,
+  Soto,
+  Ohsoto
+}
+
+export const ichi = new Codes(
+  [
+    { code: Ichi.Saiuchi, kol: "0", jrdb: "1", naiyou: "最内" },
+    { code: Ichi.Uchi, kol: "1", jrdb: "2", naiyou: "内" },
+    { code: Ichi.Naka, kol: "2", jrdb: "3", naiyou: "中" },
+    { code: Ichi.Soto, kol: "3", jrdb: "4", naiyou: "外" },
+    { code: Ichi.Ohsoto, kol: "4", jrdb: "5", naiyou: "大外" }
+  ]
+);

@@ -67,16 +67,6 @@ export const chakura2 = new Codes(
   ]
 );
 
-export const ichiDori = new Codes(
-  [
-    { code: 0, kol: "0", jrdb: "1", naiyou: "最内" },
-    { code: 1, kol: "1", jrdb: "2", naiyou: "内" },
-    { code: 2, kol: "2", jrdb: "3", naiyou: "中" },
-    { code: 3, kol: "3", jrdb: "4", naiyou: "外" },
-    { code: 4, kol: "4", jrdb: "5", naiyou: "大外" }
-  ]
-);
-
 export const kyuuyouRiyuuCode = new Codes(
   [
     { code: 1, jrdb: "01", naiyou: "放牧" },

@@ -1,5 +1,6 @@
 import "reflect-metadata";
 import { Inject, Service } from "typedi";
+import * as $C from "../../../converters/Common";
 import * as $R from "../../../converters/Race";
 import * as $S from "../../../converters/Shussouba";
 import * as $U from "../../../converters/Uma";
@@ -69,7 +70,7 @@ export class KolUmaKd3 extends DataToImport {
     return this.umaDao.saveUma(uma);
   }
 
-  protected async save(buffer: Buffer) {
+  public async save(buffer: Buffer) {
     const result = await this.saveKyousouba(buffer);
     const kyousouba = result.Kyousouba;
     const uma = result.Uma;
@@ -263,7 +264,7 @@ export class KolUmaKd3 extends DataToImport {
     if (1200 < race.Kyori && toBe.Ten3F && toBe.Agari3F) {
       toBe.Chuukan = toBe.Time - toBe.Ten3F - toBe.Agari3F;
     }
-    toBe.YonCornerIchiDori = $S.ichiDori.toCodeFromKol(buffer, 247, 1);
+    toBe.YonCornerIchiDori = $C.ichi.toCodeFromKol(buffer, 247, 1);
     if (asIs) {
       const updateSet = this.tool.createUpdateSet(asIs, toBe, true);
       if (updateSet) {

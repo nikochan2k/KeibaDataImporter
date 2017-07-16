@@ -17,9 +17,8 @@ export class KolKod3Kd3 extends DataToImport {
     return 9043;
   }
 
-  protected async save(buffer: Buffer) {
+  public async save(buffer: Buffer) {
     const raceId = await this.kolRaceTool.getRaceId(buffer);
-
     await this.saveSanrentan(buffer, raceId);
   }
 

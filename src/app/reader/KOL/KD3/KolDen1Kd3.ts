@@ -33,7 +33,7 @@ export class KolDen1Kd3 extends DataToImport {
     kolBridge.yosouTenkaiMap = new Map<number, number>();
   }
 
-  protected async save(buffer: Buffer, bridge: Bridge) {
+  public async save(buffer: Buffer, bridge: Bridge) {
     const asIs = await this.kolRaceTool.getRace(buffer);
     if (asIs) {
       const dataSakuseiNengappi = readDate(buffer, 418, 8);

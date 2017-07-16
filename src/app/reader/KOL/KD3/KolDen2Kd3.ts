@@ -41,7 +41,7 @@ export class KolDen2Kd3 extends DataToImport {
     delete kolBridge.yosouTenkaiMap;
   }
 
-  protected async save(buffer: Buffer, bridge: Bridge) {
+  public async save(buffer: Buffer, bridge: Bridge) {
     const info = await this.kolRaceTool.getShussoubaInfo(buffer, 23);
     if (!info) {
       return;

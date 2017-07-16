@@ -169,7 +169,7 @@ export class KolRaceTool extends RaceTool {
     }
   }
 
-  public async saveRaceLapTime(buffer: Buffer, race: Race, infos: RaceLapTimeInfo[]) {
+  public async saveSpecialRaceLapTime(buffer: Buffer, race: Race, infos: RaceLapTimeInfo[]) {
     const raceLapTime = new RaceLapTime();
     raceLapTime.RaceId = race.Id;
     for (let i = 0; i < infos.length; i++) {

@@ -1,73 +1,58 @@
-import { Inject, Service } from "typedi";
-import { DataToImport } from "../DataToImport";
-import { Bridge } from "../Bridge";
+import { Service } from "typedi";
+import { Sra } from "./Sra";
+import * as $C from "../../converters/Common";
+import * as $R from "../../converters/Race";
 import { Race } from "../../entities/Race";
-import { Tool } from "../Tool";
-import {
-  readStr,
-  readPositiveInt
-} from "../Reader";
-import { JrdbRaceTool } from "./JrdbRaceTool";
-import { JrdbTool } from "./JrdbTool";
+import { RaceTrackBias } from "../../entities/RaceTrackBias";
+import { Bridge } from "../Bridge";
+import { DataToImport } from "../DataToImport";
 
 @Service()
-export class KolCom1Kd3 extends DataToImport {
+export class Srb extends DataToImport {
 
-  @Inject()
-  private tool: Tool;
-
-  @Inject()
-  private jrdbTool: JrdbTool;
-
-  @Inject()
-  private jrdbRaceTool: JrdbRaceTool;
+  private sra: Sra;
 
   protected getBufferLength() {
-    return 852;
+    return 408;
   }
 
-  protected async save(buffer: Buffer, bridge: Bridge) {
-    const asIs = await this.jrdbRaceTool.getRace(buffer);
-    const dataSakuseiNengappi = this.jrdbTool.getDateFromFilename(bridge.basename);
-    if (asIs) {
-      if (dataSakuseiNengappi < asIs.JrdbSeisekiSakuseiNengappi) {
-        this.logger.info("既に最新の成績レースデータが格納されています: " + asIs.Id);
-        return;
-      }
-    }
-
-    const race = await this.saveRace(buffer, asIs, dataSakuseiNengappi);
+  public async save(buffer: Buffer, bridge: Bridge) {
+    const race = await this.sra.save(buffer, bridge);
     if (!race) {
       return;
     }
-    await this.jrdbRaceTool.saveNormalRaceLapTime(buffer, 8, race);
+    await this.saveRaceTrackBiases(buffer, race);
   }
 
-  protected async saveRace(buffer: Buffer, asIs: Race, dataSakuseiNengappi: number) {
-    let toBe = this.jrdbRaceTool.createRace(buffer);
-    if (!toBe) {
-      return null;
-    }
-    toBe.JrdbSeisekiSakuseiNengappi = dataSakuseiNengappi;
-    toBe.PaceUpNokoriFalon = readPositiveInt(buffer, 318, 2, 200);
-    toBe.RaceComment = readStr(buffer, 342, 500);
-
-    if (asIs) {
-      const updateSet = this.tool.createUpdateSet(asIs, toBe, true);
-      if (updateSet) {
-        await this.entityManager
-          .createQueryBuilder()
-          .update(Race, updateSet)
-          .where("Id = :id")
-          .setParameter("id", asIs.Id)
-          .execute();
+  protected async saveRaceTrackBiases(buffer: Buffer, race: Race) {
+    let offset = 320;
+    for (let midashi = $R.Midashi.DaiichiCorner; midashi <= $R.Midashi.DaisanCorner; midashi++) {
+      for (let ichi = $C.Ichi.Uchi; ichi <= $C.Ichi.Soto; ichi++ , offset++) {
+        const trackBias = $R.trackBias.toCodeFromJrdb(buffer, offset, 1);
+        if (!trackBias) {
+          continue;
+        }
+        await this.saveRaceTrackBias(race.Id, midashi, ichi, trackBias);
       }
-      toBe = asIs;
-    } else {
-      toBe = await this.entityManager.save(toBe);
     }
+    for (let midashi = $R.Midashi.DaiyonCorner; midashi <= $R.Midashi.Chokusen; midashi++) {
+      for (let ichi = $C.Ichi.Saiuchi; ichi <= $C.Ichi.Ohsoto; ichi++ , offset++) {
+        const trackBias = $R.trackBias.toCodeFromJrdb(buffer, offset, 1);
+        if (!trackBias) {
+          continue;
+        }
+        await this.saveRaceTrackBias(race.Id, midashi, ichi, trackBias);
+      }
+    }
+  }
 
-    return toBe;
+  protected async saveRaceTrackBias(raceId: number, midashi: number, ichi: number, trackBias: number) {
+    const rtb = new RaceTrackBias();
+    rtb.Id = raceId * (2 ** (3 + 3)) + midashi * (2 ** 3) + ichi;
+    rtb.Midashi = midashi;
+    rtb.Ichi = ichi;
+    rtb.TrackBias = trackBias;
+    await this.entityManager.save(rtb);
   }
 
 }

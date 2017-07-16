@@ -382,3 +382,33 @@ export const joukyou = new Codes(
     { code: 99, kol: /.+/, naiyou: "その他" }
   ]
 );
+
+export const trackBias = new Codes(
+  [
+    { code: 1, jrdb: "1", naiyou: "良好" },
+    { code: 2, jrdb: "2", naiyou: "硬い馬場" },
+    { code: 3, jrdb: "3", naiyou: "普通" },
+    { code: 4, jrdb: "4", naiyou: "荒れ馬場" },
+    { code: 5, jrdb: "5", naiyou: "ボロボロの馬場" }
+  ]
+);
+
+export enum Midashi {
+  DaiichiCorner = 1,
+  DainiCorner,
+  MukouJoumen,
+  DaisanCorner,
+  DaiyonCorner,
+  Chokusen
+}
+
+export const midashi = new Codes(
+  [
+    { code: Midashi.DaiichiCorner, jrdb: "1", naiyou: "1角" },
+    { code: Midashi.DainiCorner, jrdb: "2", naiyou: "2角" },
+    { code: Midashi.MukouJoumen, jrdb: "3", naiyou: "向正" },
+    { code: Midashi.DaisanCorner, jrdb: "4", naiyou: "3角" },
+    { code: Midashi.DaiyonCorner, jrdb: "5", naiyou: "4角" },
+    { code: Midashi.Chokusen, jrdb: "6", naiyou: "直線" }
+  ]
+);

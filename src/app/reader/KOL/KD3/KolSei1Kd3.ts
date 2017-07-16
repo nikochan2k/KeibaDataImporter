@@ -38,7 +38,7 @@ export class KolSei1Kd3 extends DataToImport {
     return 3200;
   }
 
-  protected async save(buffer: Buffer) {
+  public async save(buffer: Buffer) {
     const asIs = await this.kolRaceTool.getRace(buffer);
     if (asIs) {
       const dataSakuseiNengappi = readDate(buffer, 2910, 8);
@@ -153,7 +153,7 @@ export class KolSei1Kd3 extends DataToImport {
   protected async saveRaceLapTime(buffer: Buffer, race: Race) {
     const lapTime1 = readDouble(buffer, 402, 3, 0.1);
     if (lapTime1) {
-      await this.kolRaceTool.saveNormalRaceLapTime(buffer, 402, race);
+      await this.kolRaceTool.saveRaceLapTime(buffer, 402, race);
     } else {
       const heichiShougai = $R.heichiShougai.toCodeFromKol(buffer, 25, 1);
       if (heichiShougai === 1) {
@@ -168,7 +168,7 @@ export class KolSei1Kd3 extends DataToImport {
   }
 
   protected async saveShougaiRaceLapTime(buffer: Buffer, race: Race) {
-    await this.kolRaceTool.saveRaceLapTime(buffer, race,
+    await this.kolRaceTool.saveSpecialRaceLapTime(buffer, race,
       [
         { Offset: 382, Length: 5, KaishiKyori: race.Kyori - 1600, ShuuryouKyori: race.Kyori },
         { Offset: 388, Length: 4, KaishiKyori: race.Kyori - 800, ShuuryouKyori: race.Kyori },
@@ -178,7 +178,7 @@ export class KolSei1Kd3 extends DataToImport {
   }
 
   protected async saveChihouRaceLapTime(buffer: Buffer, race: Race) {
-    await this.kolRaceTool.saveRaceLapTime(buffer, race,
+    await this.kolRaceTool.saveSpecialRaceLapTime(buffer, race,
       [
         { Offset: 441, Length: 3, KaishiKyori: 0, ShuuryouKyori: 600 },
         { Offset: 444, Length: 3, KaishiKyori: 0, ShuuryouKyori: 800 },

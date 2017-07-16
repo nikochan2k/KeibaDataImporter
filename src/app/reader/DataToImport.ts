@@ -16,12 +16,12 @@ export abstract class DataToImport {
   @OrmEntityManager()
   protected entityManager: EntityManager;
 
-  protected abstract getBufferLength();
+  protected abstract getBufferLength(): number;
 
-  protected abstract save(buffer: Buffer, bridge?: Bridge);
+  public abstract async save(buffer: Buffer, bridge?: Bridge);
 
   public async readAll(fd: number, bridge: Bridge) {
-    this.setupBridge && this.setupBridge(bridge);
+    this.setup(bridge);
     const length = this.getBufferLength();
     await this.entityManager.transaction(await (async () => {
       let buffer: Buffer;
@@ -29,7 +29,7 @@ export abstract class DataToImport {
         await this.save(buffer, bridge);
       }
     }));
-    this.teardownBridge && this.teardownBridge(bridge);
+    this.teardown(bridge);
   }
 
   protected readLine(fd: number, length: number): Buffer {
@@ -38,8 +38,10 @@ export abstract class DataToImport {
     return size === 0 ? null : buf;
   }
 
-  protected setupBridge?(bridge: Bridge);
+  protected setup(bridge: Bridge) {
+  }
 
-  protected teardownBridge?(bridge: Bridge);
+  protected teardown(bridge: Bridge) {
+  }
 
 }

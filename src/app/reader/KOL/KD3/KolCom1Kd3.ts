@@ -16,7 +16,7 @@ export class KolCom1Kd3 extends DataToImport {
     return 3010;
   }
 
-  protected async save(buffer: Buffer) {
+  public async save(buffer: Buffer) {
     const info = await this.kolRaceTool.getShussoubaInfo(buffer, 70);
     if (!info) {
       return;
