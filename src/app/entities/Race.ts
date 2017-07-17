@@ -42,16 +42,19 @@ export class Race {
   public HeichiShougai: number;
 
   @Column("smallint", { nullable: true })
-  public JuushouKaisuu?: number;
-
-  @Column("varchar", { nullable: true, length: 45 })
-  public TokubetsuMei?: string;
-
-  @Column("smallint", { nullable: true })
   public Grade?: number;
 
-  @Column("varchar", { nullable: true, length: 21 })
+  @Column("varchar", { nullable: true, length: 27 })
+  public RaceMei?: string;
+
+  @Column("varchar", { nullable: true, length: 75 })
+  public TokubetsuMei?: string;
+
+  @Column("varchar", { nullable: true, length: 12 })
   public TanshukuTokubetsuMei?: string;
+
+  @Column("smallint", { nullable: true })
+  public JuushouKaisuu?: number;
 
   @Column("int", { nullable: true })
   public JoukenFuka: number;
@@ -91,6 +94,9 @@ export class Race {
 
   @Column("smallint", { nullable: true })
   public Course?: number;
+
+  @Column("smallint", { nullable: true })
+  public KaisaiKubun?: number;
 
   @Column("smallint", { nullable: true })
   public Kyori: number;
@@ -159,6 +165,12 @@ export class Race {
   public Shoukin5ChakuDouchaku2: number;
 
   @Column("int", { nullable: true })
+  public Shoukin1ChakuSannyuShoukin: number;
+
+  @Column("int", { nullable: true })
+  public Shoukin2ChakuSannyuShoukin: number;
+
+  @Column("int", { nullable: true })
   public FukaShou?: number;
 
   @Column("text", { nullable: true })
@@ -172,12 +184,6 @@ export class Race {
 
   @Column("bigint", { nullable: true })
   public KolSeisekiSakuseiNengappi?: number;
-
-  @Column("bigint", { nullable: true })
-  public JrdbShutsubahyouSakuseiNengappi?: number;
-
-  @Column("bigint", { nullable: true })
-  public JrdbSeisekiSakuseiNengappi?: number;
 
   @Column("float", { nullable: true })
   public SuiteiTimeRyou?: number;

@@ -12,8 +12,10 @@ import { KolKodKd3 } from "./reader/KOL/KD3/KolKodKd3";
 import { KolKod2Kd3 } from "./reader/KOL/KD3/KolKod2Kd3";
 import { KolKod3Kd3 } from "./reader/KOL/KD3/KolKod3Kd3";
 import { KolUmaKd3 } from "./reader/KOL/KD3/KolUmaKd3";
-import { Sra } from "./reader/JRDB/Sra";
-import { Srb } from "./reader/JRDB/Srb";
+import { Bab } from "./reader/JRDB/Race/Bab";
+import { Bac } from "./reader/JRDB/Race/Bac";
+import { Sra } from "./reader/JRDB/Race/Sra";
+import { Srb } from "./reader/JRDB/Race/Srb";
 import { Bridge } from "./reader/Bridge";
 
 export interface Entries {
@@ -46,6 +48,8 @@ export class Importer {
       { pattern: /kol_sei2.kd3/, dataToImport: Container.get(KolSei2Kd3) },
       { pattern: /kol_sei3.kd3/, dataToImport: Container.get(KolSei3Kd3) },
       // JRDB
+      { pattern: /bab\d+\.txt$/i, dataToImport: Container.get(Bab) },
+      { pattern: /bac\d+\.txt$/i, dataToImport: Container.get(Bac) },
       { pattern: /sra\d+\.txt$/i, dataToImport: Container.get(Sra) },
       { pattern: /srb\d+\.txt$/i, dataToImport: Container.get(Srb) },
     ];

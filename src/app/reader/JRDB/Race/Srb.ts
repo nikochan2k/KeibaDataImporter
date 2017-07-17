@@ -1,10 +1,9 @@
 import { Service } from "typedi";
-import * as $C from "../../converters/Common";
-import * as $R from "../../converters/Race";
-import { Race } from "../../entities/Race";
-import { RaceTrackBias } from "../../entities/RaceTrackBias";
-import { Bridge } from "../Bridge";
-import { readPositiveInt, readStr } from "../Reader";
+import * as $C from "../../../converters/Common";
+import * as $R from "../../../converters/Race";
+import { Race } from "../../../entities/Race";
+import { RaceTrackBias } from "../../../entities/RaceTrackBias";
+import { readPositiveInt, readStr } from "../../Reader";
 import { Sr$ } from "./Sr$";
 
 @Service()
@@ -14,10 +13,14 @@ export class Srb extends Sr$ {
     return 852;
   }
 
-  public async save(buffer: Buffer, bridge: Bridge) {
-    const race = await super.save(buffer, bridge);
+  protected setRace(buffer: Buffer, toBe: Race) {
+    toBe.PaceUpNokoriFalon = readPositiveInt(buffer, 318, 2, 200);
+    toBe.RaceComment = readStr(buffer, 342, 500);
+  }
+
+  protected async saveRaceRelated(buffer: Buffer, race: Race) {
+    await super.saveRaceRelated(buffer, race);
     await this.saveRaceTrackBiases(buffer, race);
-    return race;
   }
 
   protected async saveRaceTrackBiases(buffer: Buffer, race: Race) {
@@ -40,11 +43,6 @@ export class Srb extends Sr$ {
         await this.saveRaceTrackBias(race.Id, midashi, ichi, trackBias);
       }
     }
-  }
-
-  protected setRace(buffer: Buffer, toBe: Race) {
-    toBe.PaceUpNokoriFalon = readPositiveInt(buffer, 318, 2, 200);
-    toBe.RaceComment = readStr(buffer, 342, 500);
   }
 
   protected async saveRaceTrackBias(raceId: number, midashi: number, ichi: number, trackBias: number) {

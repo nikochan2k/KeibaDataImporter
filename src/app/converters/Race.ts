@@ -39,10 +39,15 @@ export const ippanTokubetsu = new Codes(
   ]
 );
 
+export enum HeichiShougai {
+  Heichi = 0,
+  Shougai
+}
+
 export const heichiShougai = new Codes(
   [
-    { code: 0, kol: "0", naiyou: "平地" },
-    { code: 1, kol: "1", naiyou: "障害" }
+    { code: HeichiShougai.Heichi, kol: "0", jrdb: /1|2/, naiyou: "平地" },
+    { code: HeichiShougai.Shougai, kol: "1", jrdb: "3", naiyou: "障害" }
   ]
 );
 
@@ -66,7 +71,7 @@ export const grade = new Codes(
 export const jpnFlag = new Codes(
   [
     { code: 10, kol: "1", naiyou: "Jpn" },
-    { code: 0, kol: ".", naiyou: "" },
+    { code: 0, kol: /./, naiyou: "" },
   ]
 );
 
@@ -273,23 +278,23 @@ export const ijouIkaMiman = new Codes(
 
 export const dirtShiba = new Codes(
   [
-    { code: 0, kol: "0", naiyou: "ダート" },
-    { code: 1, kol: "1", naiyou: "芝" }
+    { code: 0, kol: "0", jrdb: "2", naiyou: "ダート" },
+    { code: 1, kol: "1", jrdb: "1", naiyou: "芝" }
   ]
 );
 
 export const migiHidari = new Codes(
   [
-    { code: 0, kol: "0", naiyou: "右" },
-    { code: 1, kol: "1", naiyou: "左" },
-    { code: 2, kol: "2", naiyou: "直線" }
+    { code: 0, kol: "0", jrdb: "1", naiyou: "右" },
+    { code: 1, kol: "1", jrdb: "2", naiyou: "左" },
+    { code: 2, kol: "2", jrdb: "3", naiyou: "直線" }
   ]
 );
 
 export const uchiSoto = new Codes(
   [
-    { code: 0, kol: "0", naiyou: "内" },
-    { code: 1, kol: "1", naiyou: "外" },
+    { code: 0, kol: "0", jrdb: "1", naiyou: "内" },
+    { code: 1, kol: "1", jrdb: "2", naiyou: "外" },
     { code: 2, kol: "2", naiyou: "外→内" },
     { code: 3, kol: "3", naiyou: "タヌキ" },
     { code: 4, kol: "4", naiyou: "大障害" },
@@ -300,12 +305,21 @@ export const uchiSoto = new Codes(
 
 export const course = new Codes(
   [
-    { code: 0, kol: "0", naiyou: "A" },
-    { code: 1, kol: "1", naiyou: "B" },
-    { code: 2, kol: "2", naiyou: "C" },
-    { code: 3, kol: "3", naiyou: "D" },
-    { code: 4, kol: "4", naiyou: "A1" },
-    { code: 5, kol: "5", naiyou: "B1" }
+    { code: 0, kol: "0", jrdb: "1", naiyou: "A" },
+    { code: 1, kol: "1", jrdb: "4", naiyou: "B" },
+    { code: 2, kol: "2", jrdb: "5", naiyou: "C" },
+    { code: 3, kol: "3", jrdb: "6", naiyou: "D" },
+    { code: 4, kol: "4", jrdb: "2", naiyou: "A1" },
+    { code: 5, kol: "5", naiyou: "B1" },
+    { code: 6, jrdb: "3", naiyou: "A2" },
+  ]
+);
+
+export const kaisaiKubun = new Codes(
+  [
+    { code: 1, jrdb: "1", naiyou: "関東" },
+    { code: 2, jrdb: "2", naiyou: "関西" },
+    { code: 3, jrdb: "3", naiyou: "ローカル" }
   ]
 );
 

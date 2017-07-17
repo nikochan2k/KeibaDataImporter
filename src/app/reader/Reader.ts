@@ -62,14 +62,14 @@ export function readStrWithNoSpace(buf: Buffer, offset: number, length: number) 
 }
 
 export function readDouble(buf: Buffer, offset: number, length: number, mul?: number) {
-  mul = (mul ? mul : 1.0);
+  mul = mul || 1.0;
   const str = readStr(buf, offset, length);
   const d = parseFloat(str);
   return isNaN(d) ? null : d * mul;
 }
 
 export function readInt(buf: Buffer, offset: number, length: number, mul?: number) {
-  mul = mul < 1 ? mul | 0 : 1;
+  mul = mul || 1;
   const str = readStr(buf, offset, length);
   const i = parseInt(str);
   return isNaN(i) ? null : i * mul;

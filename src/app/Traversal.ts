@@ -54,7 +54,8 @@ export class Traversal {
     { pattern: /kol_sei2.kd3$/, priority: 8 },
     { pattern: /kol_sei3.kd3$/, priority: 9 },
     // JRDB
-    { pattern: /sr[ab]\d+\.(lzh|txt)$/i, priority: 1 },
+    { pattern: /ba[bc]\d+\.(lzh|txt)$/i, priority: 1 },
+    { pattern: /sr[ab]\d+\.(lzh|txt)$/i, priority: 2 },
   ];
 
   constructor() {

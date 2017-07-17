@@ -64,7 +64,7 @@ export class KolDen1Kd3 extends DataToImport {
       toBe.HeichiShougai = $R.heichiShougai.toCodeFromKol(buffer, 24, 1);
       toBe.JuushouKaisuu = readPositiveInt(buffer, 25, 3);
       toBe.TokubetsuMei = this.tool.normalizeTokubetsuMei(buffer, 28, 30);
-      toBe.TanshukuTokubetsuMei = readStrWithNoSpace(buffer, 58, 14);
+      toBe.RaceMei = readStrWithNoSpace(buffer, 58, 14);
       toBe.Grade = $R.grade.toCodeFromKol(buffer, 72, 1);
       toBe.Grade += $R.jpnFlag.toCodeFromKol(buffer, 73, 1);
       toBe.BetteiBareiHandi = $R.betteiBareiHandi.toCodeFromKol(buffer, 74, 2);
