@@ -53,6 +53,8 @@ export class Traversal {
     { pattern: /kol_sei1.kd3$/, priority: 7 },
     { pattern: /kol_sei2.kd3$/, priority: 8 },
     { pattern: /kol_sei3.kd3$/, priority: 9 },
+    // JRDB
+    { pattern: /sr[ab]\d+\.(lzh|txt)$/i, priority: 1 },
   ];
 
   constructor() {
@@ -115,7 +117,6 @@ export class Traversal {
       } else {
         importFile = { key: priority, path: filepath, basename: basename };
       }
-      console.log(importFile.basename + ": " + importFile.key);
       importFiles.push(importFile);
     }
 
@@ -136,9 +137,9 @@ export class Traversal {
       if (this.logger.isInfoEnabled) {
         this.logger.info('"' + basename + '"を取り込んでいます');
       }
-      if (/\.lzh$/.test(basename)) {
+      if (/\.lzh$/i.test(basename)) {
         await this.uncompressLzhFile(importFile.path);
-      } else if (/\.(txt|kd3)$/.test(basename)) {
+      } else if (/\.(txt|kd3)$/i.test(basename)) {
         const entries: Entries = {};
         entries[basename] = filepath;
         await this.importer.import(entries);

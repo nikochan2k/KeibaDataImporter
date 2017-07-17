@@ -12,6 +12,8 @@ import { KolKodKd3 } from "./reader/KOL/KD3/KolKodKd3";
 import { KolKod2Kd3 } from "./reader/KOL/KD3/KolKod2Kd3";
 import { KolKod3Kd3 } from "./reader/KOL/KD3/KolKod3Kd3";
 import { KolUmaKd3 } from "./reader/KOL/KD3/KolUmaKd3";
+import { Sra } from "./reader/JRDB/Sra";
+import { Srb } from "./reader/JRDB/Srb";
 import { Bridge } from "./reader/Bridge";
 
 export interface Entries {
@@ -33,6 +35,7 @@ export class Importer {
   constructor() {
     this.logger = getLogger(this);
     this.readers = [
+      // KOL3
       { pattern: /kol_uma.kd3/, dataToImport: Container.get(KolUmaKd3) },
       { pattern: /kol_den1.kd3/, dataToImport: Container.get(KolDen1Kd3) },
       { pattern: /kol_den2.kd3/, dataToImport: Container.get(KolDen2Kd3) },
@@ -41,7 +44,10 @@ export class Importer {
       { pattern: /kol_kod3.kd3/, dataToImport: Container.get(KolKod3Kd3) },
       { pattern: /kol_sei1.kd3/, dataToImport: Container.get(KolSei1Kd3) },
       { pattern: /kol_sei2.kd3/, dataToImport: Container.get(KolSei2Kd3) },
-      { pattern: /kol_sei3.kd3/, dataToImport: Container.get(KolSei3Kd3) }
+      { pattern: /kol_sei3.kd3/, dataToImport: Container.get(KolSei3Kd3) },
+      // JRDB
+      { pattern: /sra\d+\.txt$/i, dataToImport: Container.get(Sra) },
+      { pattern: /srb\d+\.txt$/i, dataToImport: Container.get(Srb) },
     ];
   }
 

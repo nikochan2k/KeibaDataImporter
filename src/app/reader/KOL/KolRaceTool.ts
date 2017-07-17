@@ -47,14 +47,14 @@ export class KolRaceTool extends RaceTool {
     if (year == null) {
       return null;
     }
+    const years = year - 1970;
+    const kaiji = readPositiveInt(buffer, 6, 2);
+    const nichiji = readPositiveInt(buffer, 8, 2);
     const basho = $C.basho.toCodeFromKol(buffer, 0, 2);
     if (basho == null) {
       this.logger.warn("不正な場所です: " + readRaw(buffer, 0, 2));
       return null;
     }
-    const years = year - 1970;
-    const kaiji = readPositiveInt(buffer, 6, 2);
-    const nichiji = readPositiveInt(buffer, 8, 2);
     const raceBangou = readPositiveInt(buffer, 10, 2);
     if (raceBangou == null) {
       this.logger.warn("不正なレース番号です: " + readRaw(buffer, 10, 2));

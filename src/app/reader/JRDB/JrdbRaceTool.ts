@@ -19,9 +19,9 @@ export class JrdbRaceTool extends RaceTool {
 
     let year: number;
     if (70 <= yy) {
-      year += 1900;
+      year = yy + 1900;
     } else {
-      year += 2000;
+      year = yy + 2000;
     }
 
     return year;
@@ -33,14 +33,14 @@ export class JrdbRaceTool extends RaceTool {
     if (year == null) {
       return null;
     }
+    const years = year - 1970;
+    const kaiji = readPositiveInt(buffer, 4, 1);
+    const nichiji = readHex(buffer, 5, 1);
     const basho = $C.basho.toCodeFromJrdb(buffer, 0, 2);
     if (basho == null) {
       this.logger.warn("不正な場所です: " + readRaw(buffer, 0, 2));
       return null;
     }
-    const years = year - 1970;
-    const kaiji = readPositiveInt(buffer, 4, 1);
-    const nichiji = readHex(buffer, 5, 1);
     const raceBangou = readPositiveInt(buffer, 6, 2);
     if (raceBangou == null) {
       this.logger.warn("不正なレース番号です: " + readRaw(buffer, 6, 2));

@@ -144,6 +144,10 @@ export abstract class RaceTool {
   }
 
   public async saveRaceLapTime(buffer: Buffer, offset: number, race: Race) {
+    if (!race.Kyori) {
+      this.logger.warn("距離が不明です: " + race.Id);
+      return;
+    }
     const end = Math.ceil(race.Kyori / 200.0);
     const odd = (race.Kyori % 200 !== 0);
     let shuuryouKyori = 0;

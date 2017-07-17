@@ -11,14 +11,14 @@ export class Race {
   @PrimaryColumn("bigint")
   public Id: number;
 
-  @Column("smallint")
-  public Basho: number;
-
   @Column("smallint", { nullable: true })
   public Kaiji?: number;
 
   @Column("smallint", { nullable: true })
   public Nichiji?: number;
+
+  @Column("smallint")
+  public Basho: number;
 
   @Column("smallint")
   public RaceBangou: number;
@@ -29,16 +29,16 @@ export class Race {
   @Column("smallint", { nullable: true })
   public Kyuujitsu?: number;
 
-  @Column("smallint")
+  @Column("smallint", { nullable: true })
   public Youbi: number;
 
   @Column("smallint", { nullable: true })
   public ChuuouChihouGaikoku?: number;
 
-  @Column("smallint")
+  @Column("smallint", { nullable: true })
   public IppanTokubetsu: number;
 
-  @Column("smallint")
+  @Column("smallint", { nullable: true })
   public HeichiShougai: number;
 
   @Column("smallint", { nullable: true })
@@ -53,7 +53,7 @@ export class Race {
   @Column("varchar", { nullable: true, length: 21 })
   public TanshukuTokubetsuMei?: string;
 
-  @Column("int")
+  @Column("int", { nullable: true })
   public JoukenFuka: number;
 
   @Column("smallint", { nullable: true })
@@ -80,10 +80,10 @@ export class Race {
   @Column("smallint", { nullable: true })
   public Kumi2?: number;
 
-  @Column("smallint")
+  @Column("smallint", { nullable: true })
   public DirtShiba: number;
 
-  @Column("smallint")
+  @Column("smallint", { nullable: true })
   public MigiHidari: number;
 
   @Column("smallint", { nullable: true })
@@ -92,7 +92,7 @@ export class Race {
   @Column("smallint", { nullable: true })
   public Course?: number;
 
-  @Column("smallint")
+  @Column("smallint", { nullable: true })
   public Kyori: number;
 
   @Column("smallint", { nullable: true })
