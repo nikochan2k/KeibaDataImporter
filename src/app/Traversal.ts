@@ -14,6 +14,7 @@ import { getLogger } from "./LogUtil";
 interface ImportFile {
   key: number;
   path: string;
+  basename: string;
 }
 
 interface FileInfo {
@@ -30,18 +31,28 @@ export class Traversal {
   private importer: Importer;
 
   private fileInfos: FileInfo[] = [
-    // KOL3
-    { pattern: /dkis/, priority: 1 },
-    { pattern: /ekyu/, priority: 2 },
-    { pattern: /fket/, priority: 3 },
-    { pattern: /gsyu/, priority: 4 },
-    { pattern: /hb/, priority: 5 },
-    { pattern: /hz/, priority: 6 },
-    { pattern: /mb/, priority: 7 },
-    { pattern: /jb/, priority: 8 },
-    { pattern: /kd/, priority: 9 },
-    { pattern: /ib/, priority: 10 },
-    { pattern: /lb/, priority: 11 },
+    // KOL3 lzh
+    { pattern: /dkis\d+\.lzh$/i, priority: 1 },
+    { pattern: /ekyu\d+\.lzh$/i, priority: 2 },
+    { pattern: /fket\d+\.lzh$/i, priority: 3 },
+    { pattern: /gsyu\d+\.lzh$/i, priority: 4 },
+    { pattern: /hb\d+\.lzh$/i, priority: 5 },
+    { pattern: /hz\d+\.lzh$/i, priority: 6 },
+    { pattern: /mb\d+\.lzh$/i, priority: 7 },
+    { pattern: /jb\d+\.lzh$/i, priority: 8 },
+    { pattern: /kd\d+\.lzh$/i, priority: 9 },
+    { pattern: /ib\d+\.lzh$/i, priority: 10 },
+    { pattern: /lb\d+\.lzh$/i, priority: 11 },
+    // KOL3 raw
+    { pattern: /kol_uma.kd3$/, priority: 1 },
+    { pattern: /kol_den1.kd3$/, priority: 2 },
+    { pattern: /kol_den2.kd3$/, priority: 3 },
+    { pattern: /kol_kod.kd3$/, priority: 4 },
+    { pattern: /kol_kod2.kd3$/, priority: 5 },
+    { pattern: /kol_kod3.kd3$/, priority: 6 },
+    { pattern: /kol_sei1.kd3$/, priority: 7 },
+    { pattern: /kol_sei2.kd3$/, priority: 8 },
+    { pattern: /kol_sei3.kd3$/, priority: 9 },
   ];
 
   constructor() {
@@ -69,7 +80,7 @@ export class Traversal {
     }
   }
 
-  protected getFileInfo(type: string) {
+  protected getPriority(type: string) {
     for (let i = 0; i < this.fileInfos.length; i++) {
       const fileInfo = this.fileInfos[i];
       if (fileInfo.pattern.test(type)) {
@@ -86,9 +97,10 @@ export class Traversal {
     for (let i = 0; i < matches.length; i++) {
       const filepath = matches[i];
       const basename = path.basename(filepath);
-      const execed = /(\D+)(\d{2})(\d{2})(\d{2})\.([^.]+)$/i.exec(basename);
+      const priority = this.getPriority(basename);
+      const execed = /(^|\D)(\d{2})(\d{2})(\d{2})\D/i.exec(basename);
+      let importFile: ImportFile;
       if (execed) {
-        const type = execed[1];
         const yy = parseInt(execed[2]);
         let yyyy: number;
         if (70 <= yy) {
@@ -98,22 +110,29 @@ export class Traversal {
         }
         const mm = parseInt(execed[3]);
         const dd = parseInt(execed[4]);
-        const priority = this.getFileInfo(type);
         const key = yyyy * 1000000 + mm * 10000 + dd * 100 + priority;
-        importFiles.push({ key: key, path: filepath });
+        importFile = { key: key, path: filepath, basename: basename };
       } else {
-        importFiles.push({ key: 0, path: filepath });
+        importFile = { key: priority, path: filepath, basename: basename };
       }
+      console.log(importFile.basename + ": " + importFile.key);
+      importFiles.push(importFile);
     }
 
     importFiles.sort((a, b) => {
-      return a.key - b.key;
+      if (a.key !== b.key) {
+        return a.key - b.key;
+      } else if (a.basename < b.basename) {
+        return -1;
+      } else {
+        return 1;
+      }
     });
 
     for (let i = 0; i < importFiles.length; i++) {
       const importFile = importFiles[i];
       const filepath = importFile.path;
-      const basename = path.basename(filepath);
+      const basename = importFile.basename;
       if (this.logger.isInfoEnabled) {
         this.logger.info('"' + basename + '"を取り込んでいます');
       }

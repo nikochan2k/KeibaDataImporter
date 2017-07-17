@@ -14,7 +14,7 @@ export class KolKod3Kd3 extends DataToImport {
   private kolRaceTool: KolRaceTool;
 
   protected getBufferLength() {
-    return 9043;
+    return 49123;
   }
 
   public async save(buffer: Buffer) {

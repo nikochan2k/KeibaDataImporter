@@ -38,7 +38,7 @@ export class Importer {
       { pattern: /kol_den2.kd3/, dataToImport: Container.get(KolDen2Kd3) },
       { pattern: /kol_kod.kd3/, dataToImport: Container.get(KolKodKd3) },
       { pattern: /kol_kod2.kd3/, dataToImport: Container.get(KolKod2Kd3) },
-      { pattern: /kol_kol3.kd3/, dataToImport: Container.get(KolKod3Kd3) },
+      { pattern: /kol_kod3.kd3/, dataToImport: Container.get(KolKod3Kd3) },
       { pattern: /kol_sei1.kd3/, dataToImport: Container.get(KolSei1Kd3) },
       { pattern: /kol_sei2.kd3/, dataToImport: Container.get(KolSei2Kd3) },
       { pattern: /kol_sei3.kd3/, dataToImport: Container.get(KolSei3Kd3) }
