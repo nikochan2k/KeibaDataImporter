@@ -7,13 +7,18 @@ import * as process from "process";
 import "reflect-metadata";
 import * as rimraf from "rimraf";
 import * as tmp from "tmp";
-import { Service, Inject } from "typedi";
+import { Inject, Service } from "typedi";
 import { Entries, Importer } from "./Importer";
 import { getLogger } from "./LogUtil";
 
 interface ImportFile {
   key: number;
   path: string;
+}
+
+interface FileInfo {
+  pattern: RegExp;
+  priority: number;
 }
 
 @Service()
@@ -23,6 +28,21 @@ export class Traversal {
 
   @Inject()
   private importer: Importer;
+
+  private fileInfos: FileInfo[] = [
+    // KOL3
+    { pattern: /dkis/, priority: 1 },
+    { pattern: /ekyu/, priority: 2 },
+    { pattern: /fket/, priority: 3 },
+    { pattern: /gsyu/, priority: 4 },
+    { pattern: /hb/, priority: 5 },
+    { pattern: /hz/, priority: 6 },
+    { pattern: /mb/, priority: 7 },
+    { pattern: /jb/, priority: 8 },
+    { pattern: /kd/, priority: 9 },
+    { pattern: /ib/, priority: 10 },
+    { pattern: /lb/, priority: 11 },
+  ];
 
   constructor() {
     this.logger = getLogger(this);
@@ -49,14 +69,24 @@ export class Traversal {
     }
   }
 
+  protected getFileInfo(type: string) {
+    for (let i = 0; i < this.fileInfos.length; i++) {
+      const fileInfo = this.fileInfos[i];
+      if (fileInfo.pattern.test(type)) {
+        return fileInfo.priority;
+      }
+    }
+    return 0;
+  }
+
   protected async traverseLzhDir(lzhDir: string) {
-    const pattern = path.join(lzhDir, "**/*.lzh");
+    const pattern = path.join(lzhDir, "**/*.*");
     const matches = glob.sync(pattern, { nocase: true });
     const importFiles: ImportFile[] = [];
     for (let i = 0; i < matches.length; i++) {
-      const lzhFile = matches[i];
-      const basename = path.basename(lzhFile);
-      const execed = /(\w{2})(\d{2})(\d{2})(\d{2})\.lzh/i.exec(basename);
+      const filepath = matches[i];
+      const basename = path.basename(filepath);
+      const execed = /(\D+)(\d{2})(\d{2})(\d{2})\.([^.]+)$/i.exec(basename);
       if (execed) {
         const type = execed[1];
         const yy = parseInt(execed[2]);
@@ -68,36 +98,11 @@ export class Traversal {
         }
         const mm = parseInt(execed[3]);
         const dd = parseInt(execed[4]);
-        let no: number;
-        if (/dkis/i.test(type)) {
-          no = 1;
-        } else if (/ekyu/i.test(type)) {
-          no = 2;
-        } else if (/fket/i.test(type)) {
-          no = 3;
-        } else if (/gsyu/i.test(type)) {
-          no = 4;
-        } else if (/hb/i.test(type)) {
-          no = 5;
-        } else if (/hz/i.test(type)) {
-          no = 6;
-        } else if (/mb/i.test(type)) {
-          no = 7;
-        } else if (/jb/i.test(type)) {
-          no = 8;
-        } else if (/kd/i.test(type)) {
-          no = 9;
-        } else if (/ib/i.test(type)) {
-          no = 10;
-        } else if (/lb/i.test(type)) {
-          no = 11;
-        } else {
-          no = 0;
-        }
-        const key = yyyy * 1000000 + mm * 10000 + dd * 100 + no;
-        importFiles.push({ key: key, path: lzhFile });
+        const priority = this.getFileInfo(type);
+        const key = yyyy * 1000000 + mm * 10000 + dd * 100 + priority;
+        importFiles.push({ key: key, path: filepath });
       } else {
-        importFiles.push({ key: 0, path: lzhFile });
+        importFiles.push({ key: 0, path: filepath });
       }
     }
 
@@ -107,11 +112,22 @@ export class Traversal {
 
     for (let i = 0; i < importFiles.length; i++) {
       const importFile = importFiles[i];
+      const filepath = importFile.path;
+      const basename = path.basename(filepath);
       if (this.logger.isInfoEnabled) {
-        const basename = path.basename(importFile.path);
         this.logger.info('"' + basename + '"を取り込んでいます');
       }
-      await this.uncompressLzhFile(importFile.path);
+      if (/\.lzh$/.test(basename)) {
+        await this.uncompressLzhFile(importFile.path);
+      } else if (/\.(txt|kd3)$/.test(basename)) {
+        const entries: Entries = {};
+        entries[basename] = filepath;
+        await this.importer.import(entries);
+      } else {
+        if (this.logger.isInfoEnabled) {
+          this.logger.info('"' + basename + '"は取り込み対象ファイルではありません。');
+        }
+      }
     }
   }
 

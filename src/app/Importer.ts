@@ -18,8 +18,9 @@ export interface Entries {
   [basename: string]: string;
 }
 
-interface Readers {
-  [basename: string]: DataToImport;
+interface Reader {
+  pattern: RegExp;
+  dataToImport: DataToImport;
 }
 
 @Service()
@@ -27,41 +28,50 @@ export class Importer {
 
   private logger: Logger;
 
-  private readers: Readers;
+  private readers: Reader[];
 
   constructor() {
     this.logger = getLogger(this);
-    this.readers = {
-      "kol_uma.kd3": Container.get(KolUmaKd3),
-      "kol_den1.kd3": Container.get(KolDen1Kd3),
-      "kol_den2.kd3": Container.get(KolDen2Kd3),
-      "kol_kod.kd3": Container.get(KolKodKd3),
-      "kol_kod2.kd3": Container.get(KolKod2Kd3),
-      "kol_kol3.kd3": Container.get(KolKod3Kd3),
-      "kol_sei1.kd3": Container.get(KolSei1Kd3),
-      "kol_sei2.kd3": Container.get(KolSei2Kd3),
-      "kol_sei3.kd3": Container.get(KolSei3Kd3),
-    };
+    this.readers = [
+      { pattern: /kol_uma.kd3/, dataToImport: Container.get(KolUmaKd3) },
+      { pattern: /kol_den1.kd3/, dataToImport: Container.get(KolDen1Kd3) },
+      { pattern: /kol_den2.kd3/, dataToImport: Container.get(KolDen2Kd3) },
+      { pattern: /kol_kod.kd3/, dataToImport: Container.get(KolKodKd3) },
+      { pattern: /kol_kod2.kd3/, dataToImport: Container.get(KolKod2Kd3) },
+      { pattern: /kol_kol3.kd3/, dataToImport: Container.get(KolKod3Kd3) },
+      { pattern: /kol_sei1.kd3/, dataToImport: Container.get(KolSei1Kd3) },
+      { pattern: /kol_sei2.kd3/, dataToImport: Container.get(KolSei2Kd3) },
+      { pattern: /kol_sei3.kd3/, dataToImport: Container.get(KolSei3Kd3) }
+    ];
+  }
+
+  protected find(entries: Entries, reader: Reader) {
+    const basenames = Object.keys(entries);
+    for (let i = 0; i <= basenames.length; i++) {
+      const basename = basenames[i];
+      if (reader.pattern.test(basename)) {
+        return { basename: basename, dataToImport: reader.dataToImport };
+      }
+    }
+    return null;
   }
 
   public async import(entries: Entries) {
     const bridge: Bridge = { basename: null };
-    for (const basename in this.readers) {
-      bridge.basename = basename;
-      const dataFile = entries[basename];
-      if (!dataFile) {
+    for (let i = 0; i < this.readers.length; i++) {
+      const reader = this.readers[i];
+      const entry = this.find(entries, reader);
+      if (!entry) {
         continue;
       }
-      const dataToImport = this.readers[basename];
-      if (!dataToImport) {
-        this.logger.debug('"' + basename + '"は取り込み対象ではありません');
-        continue;
-      }
+      bridge.basename = entry.basename;
+      const dataFile = entries[entry.basename];
+      const dataToImport = entry.dataToImport;
       let fd: number;
       try {
         fd = fs.openSync(dataFile, "r");
         if (this.logger.isDebugEnabled) {
-          this.logger.debug('"' + basename + '"を取り込んでいます');
+          this.logger.debug('"' + entry.basename + '"を取り込んでいます');
         }
         await dataToImport.readAll(fd, bridge);
       } catch (e) {
