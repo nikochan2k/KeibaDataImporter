@@ -1,6 +1,7 @@
 import { Service } from "typedi";
 import * as $C from "../../../converters/Common";
 import * as $R from "../../../converters/Race";
+import { Kaisai } from "../../../entities/Kaisai";
 import { Race } from "../../../entities/Race";
 import { RaceTrackBias } from "../../../entities/RaceTrackBias";
 import { readPositiveInt, readStr } from "../../Reader";
@@ -11,6 +12,9 @@ export class Srb extends Sr$ {
 
   protected getBufferLength() {
     return 852;
+  }
+
+  protected setKaisai(buffer: Buffer, toBe: Kaisai) {
   }
 
   protected setRace(buffer: Buffer, toBe: Race) {
@@ -45,7 +49,7 @@ export class Srb extends Sr$ {
     }
   }
 
-  protected async saveRaceTrackBias(raceId: number, midashi: number, ichi: number, trackBias: number) {
+  protected async saveRaceTrackBias(raceId: number, midashi: $R.Midashi, ichi: $C.Ichi, trackBias: number) {
     const rtb = new RaceTrackBias();
     rtb.Id = raceId * (2 ** (3 + 3)) + midashi * (2 ** 3) + ichi;
     rtb.RaceId = raceId;

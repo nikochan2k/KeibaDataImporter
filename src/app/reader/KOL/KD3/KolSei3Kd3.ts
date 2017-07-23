@@ -21,9 +21,11 @@ export class KolSei3Kd3 extends DataToImport {
     if (!seisaiNaiyou) {
       return;
     }
-    const race = await this.kolRaceTool.getRace(buffer);
+    const kaisaiId = this.kolRaceTool.getKaisaiId(buffer);
+    const race = await this.kolRaceTool.getRace(buffer, kaisaiId);
     if (!race) {
-      this.logger.warn("レース成績データが存在しません: " + this.kolRaceTool.getRaceId(buffer));
+      const raceId = this.kolRaceTool.getRaceId(buffer, kaisaiId);
+      this.logger.warn("レース成績データが存在しません: " + raceId);
       return;
     }
     if (!race.SeisaiNaiyou) {

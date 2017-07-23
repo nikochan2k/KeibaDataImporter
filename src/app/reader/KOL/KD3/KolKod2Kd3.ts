@@ -19,7 +19,9 @@ export class KolKod2Kd3 extends DataToImport {
 
   public async save(buffer: Buffer) {
     const raceId = await this.kolRaceTool.getRaceId(buffer);
-
+    if (!raceId) {
+      return;
+    }
     await this.saveFukushou(buffer, raceId);
     await this.saveWide(buffer, raceId);
     await this.saveUmatan(buffer, raceId);

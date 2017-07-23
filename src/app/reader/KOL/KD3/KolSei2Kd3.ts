@@ -1,7 +1,6 @@
 import { Inject, Service } from "typedi";
 import * as $C from "../../../converters/Common";
 import * as $S from "../../../converters/Shussouba";
-import { Race } from "../../../entities/Race";
 import { Shussouba } from "../../../entities/Shussouba";
 import { DataToImport } from "../../DataToImport";
 import {
@@ -16,6 +15,7 @@ import { Tool } from "../../Tool";
 import { KolChoukyouTool } from "../KolChoukyouTool";
 import { KolRaceTool } from "../KolRaceTool";
 import { KolTool } from "../KolTool";
+import { ShussoubaInfo } from "../../RaceTool";
 
 @Service()
 export class KolSei2Kd3 extends DataToImport {
@@ -41,27 +41,27 @@ export class KolSei2Kd3 extends DataToImport {
     if (!info) {
       return;
     }
-    const asIs = info.shussouba;
-    if (asIs) {
+    const kaisai = info.kaisai;
+    if (kaisai) {
       const dataSakuseiNengappi = readDate(buffer, 424, 8);
-      if (dataSakuseiNengappi <= asIs.KolSeisekiSakuseiNengappi) {
-        this.logger.info("既に最新の出走馬成績データが格納されています: " + asIs.Id);
+      if (dataSakuseiNengappi <= kaisai.KolSeisekiSakuseiNengappi) {
+        this.logger.info("既に最新の出走馬成績データが格納されています: " + kaisai.Id);
         return;
       }
     }
 
-    const shussouba = await this.saveShussouba(buffer, info.race, asIs);
+    const shussouba = await this.saveShussouba(buffer, info);
     if (!shussouba) {
       return;
     }
     await this.kolTool.saveShussoubaTsuukaJuni(buffer, 298, shussouba);
-    if (!shussouba.KolShutsubahyouSakuseiNengappi) {
+    if (!kaisai.KolShutsubahyouSakuseiNengappi) {
       const tanshukuKishuMei = readStrWithNoSpace(buffer, 199, 8);
       await this.choukyouTool.saveChoukyou(buffer, 307, shussouba, tanshukuKishuMei, 1);
     }
   }
 
-  protected async saveShussouba(buffer: Buffer, race: Race, asIs: Shussouba) {
+  protected async saveShussouba(buffer: Buffer, info: ShussoubaInfo) {
     let toBe = this.kolRaceTool.createShussouba(buffer, 23);
     if (toBe) {
       return null;
@@ -76,7 +76,7 @@ export class KolSei2Kd3 extends DataToImport {
     toBe.Bataijuu = readPositiveInt(buffer, 153, 3);
     toBe.Zougen = readInt(buffer, 156, 3);
     toBe.KolRecordShisuu = readInt(buffer, 159, 3);
-    const kijouId = (await this.kolTool.saveKijou(buffer, 162, race.Nengappi)).Id;
+    const kijouId = (await this.kolTool.saveKijou(buffer, 162, info.race.Nengappi)).Id;
     if (toBe.KijouId && toBe.KijouId !== kijouId) {
       toBe.KyuuKijouId = toBe.KijouId;
     }
@@ -95,7 +95,7 @@ export class KolSei2Kd3 extends DataToImport {
     toBe.Chakusa1 = readInt(buffer, 286, 2);
     toBe.Chakusa2 = $S.chakura2.toCodeFromKol(buffer, 288, 1);
     toBe.TimeSa = this.kolTool.getTimeSa(buffer, 289);
-    if (1200 <= race.Kyori) {
+    if (1200 <= info.race.Kyori) {
       toBe.Ten3F = readDouble(buffer, 292, 3, 0.1);
       if (toBe.Time && toBe.Ten3F) {
         toBe.Ten3FIkou = toBe.Time - toBe.Ten3F;
@@ -105,12 +105,12 @@ export class KolSei2Kd3 extends DataToImport {
     if (toBe.Time && toBe.Agari3F) {
       toBe.Agari3FIzen = toBe.Time - toBe.Agari3F;
     }
-    if (1200 < race.Kyori && toBe.Ten3F && toBe.Agari3F) {
+    if (1200 < info.race.Kyori && toBe.Ten3F && toBe.Agari3F) {
       toBe.Chuukan = toBe.Time - toBe.Ten3F - toBe.Agari3F;
     }
     toBe.YonCornerIchiDori = $C.ichi.toCodeFromKol(buffer, 306, 1);
-    toBe.KolSeisekiSakuseiNengappi = readDate(buffer, 424, 8);
 
+    const asIs = info.shussouba;
     if (asIs) {
       const updateSet = this.tool.createUpdateSet(asIs, toBe, true);
       if (updateSet) {

@@ -11,7 +11,7 @@ import { RaceLapTime } from "../../entities/RaceLapTime";
 import { Record } from "../../entities/Record";
 import { ShussoubaHassouJoukyou } from "../../entities/ShussoubaHassouJoukyou";
 import { Uma } from "../../entities/Uma";
-import { RaceTool, RaceInfo } from "../RaceTool";
+import { KaisaiInfo, RaceTool } from "../RaceTool";
 import {
   readDate,
   readDouble,
@@ -41,27 +41,21 @@ export class KolRaceTool extends RaceTool {
   @Inject()
   private raceDao: RaceDao;
 
-  protected getRaceInfo(buffer: Buffer): RaceInfo {
+  protected getKaisaiInfo(buffer: Buffer): KaisaiInfo {
     /* tslint:disable:triple-equals */
     const year = readPositiveInt(buffer, 2, 4);
     if (year == null) {
       return null;
     }
-    const years = year - 1970;
-    const kaiji = readPositiveInt(buffer, 6, 2);
-    const nichiji = readPositiveInt(buffer, 8, 2);
     const basho = $C.basho.toCodeFromKol(buffer, 0, 2);
     if (basho == null) {
       this.logger.warn("不正な場所です: " + readRaw(buffer, 0, 2));
       return null;
     }
-    const raceBangou = readPositiveInt(buffer, 10, 2);
-    if (raceBangou == null) {
-      this.logger.warn("不正なレース番号です: " + readRaw(buffer, 10, 2));
-      return null;
-    }
-    const date = readDate(buffer, 12, 8);
-    if (date == null) {
+    const kaiji = readPositiveInt(buffer, 6, 2);
+    const nichiji = readPositiveInt(buffer, 8, 2);
+    const nengappi = readDate(buffer, 12, 8);
+    if (nengappi == null) {
       this.logger.warn("日付が不正です: " + readRaw(buffer, 12, 8));
       return null;
     }
@@ -78,14 +72,22 @@ export class KolRaceTool extends RaceTool {
     /* tslint:enable:triple-equals */
     return {
       basho: basho,
-      years: years,
       kaiji: kaiji,
       nichiji: nichiji,
-      date: date,
+      nengappi: nengappi,
+      year: year,
       month: month,
-      day: day,
-      raceBangou: raceBangou
+      day: day
     };
+  }
+
+  protected getRaceBangou(buffer: Buffer) {
+    const raceBangou = readPositiveInt(buffer, 10, 2);
+    if (raceBangou === null) {
+      this.logger.warn("不正なレース番号です: " + readRaw(buffer, 10, 2));
+      return null;
+    }
+    return raceBangou;
   }
 
   public async getRecord(buffer: Buffer, offset: number, bashoOffset: number) {

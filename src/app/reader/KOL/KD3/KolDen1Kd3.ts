@@ -1,6 +1,8 @@
 import { Inject, Service } from "typedi";
+import * as $K from "../../../converters/Kaisai";
 import * as $R from "../../../converters/Race";
 import { Race } from "../../../entities/Race";
+import { Kaisai } from "../../../entities/Kaisai";
 import { Bridge } from "../../Bridge";
 import { KolBridge } from "../KolBridge";
 import { DataToImport } from "../../DataToImport";
@@ -34,7 +36,7 @@ export class KolDen1Kd3 extends DataToImport {
   }
 
   public async save(buffer: Buffer, bridge: Bridge) {
-    const asIs = await this.kolRaceTool.getRace(buffer);
+    const asIs = await this.kolRaceTool.getKaisai(buffer);
     if (asIs) {
       const dataSakuseiNengappi = readDate(buffer, 418, 8);
       if (dataSakuseiNengappi <= asIs.KolShutsubahyouSakuseiNengappi) {
@@ -43,23 +45,56 @@ export class KolDen1Kd3 extends DataToImport {
       }
     }
 
-    const race = await this.saveRace(buffer, asIs);
-    if (!race) {
+    const kaisai = await this.saveKaisai(buffer, asIs);
+    if (!kaisai) {
       return;
     }
+
+    const race = await this.saveRace(buffer, kaisai);
+    if (race) {
+      return null;
+    }
+
     this.setYosouTenkai(buffer, race, <KolBridge>bridge);
   }
 
-  protected async saveRace(buffer: Buffer, asIs: Race) {
+  protected async saveKaisai(buffer: Buffer, asIs: Kaisai) {
+    let toBe = this.kolRaceTool.createKaisai(buffer);
+    if (!toBe) {
+      return null;
+    }
+    toBe.Kyuujitsu = $K.kyuujitsu.toCodeFromKol(buffer, 20, 1);
+    toBe.Youbi = $K.youbi.toCodeFromKol(buffer, 21, 1);
+    toBe.ChuuouChihouGaikoku = $K.chuuouChihouGaikoku.toCodeFromKol(buffer, 22, 1);
+    toBe.KolShutsubahyouSakuseiNengappi = readDate(buffer, 418, 8);
+
+    if (asIs) {
+      const updateSet = this.tool.createUpdateSet(asIs, toBe, false);
+      if (updateSet) {
+        await this.entityManager
+          .createQueryBuilder()
+          .update(Kaisai, updateSet)
+          .where("Id = :id")
+          .setParameter("id", asIs.Id)
+          .execute();
+      }
+      toBe = asIs;
+    } else {
+      toBe = await this.entityManager.save(toBe);
+    }
+
+    return toBe;
+  }
+
+  protected async saveRace(buffer: Buffer, kaisai: Kaisai) {
     let toBe = this.kolRaceTool.createRace(buffer);
     if (!toBe) {
       return null;
     }
-    if (!asIs || !asIs.KolSeisekiSakuseiNengappi) {
+
+    const asIs = await this.kolRaceTool.getRace(buffer, kaisai.Id);
+    if (!asIs || !kaisai.KolSeisekiSakuseiNengappi) {
       toBe.Nengappi = readDate(buffer, 12, 8);
-      toBe.Kyuujitsu = $R.kyuujitsu.toCodeFromKol(buffer, 20, 1);
-      toBe.Youbi = $R.youbi.toCodeFromKol(buffer, 21, 1);
-      toBe.ChuuouChihouGaikoku = $R.chuuouChihouGaikoku.toCodeFromKol(buffer, 22, 1);
       toBe.IppanTokubetsu = $R.ippanTokubetsu.toCodeFromKol(buffer, 23, 1);
       toBe.HeichiShougai = $R.heichiShougai.toCodeFromKol(buffer, 24, 1);
       toBe.JuushouKaisuu = readPositiveInt(buffer, 25, 3);
@@ -110,7 +145,6 @@ export class KolDen1Kd3 extends DataToImport {
     toBe.SuiteiTimeRyou = readTime(buffer, 341, 4);
     toBe.SuiteiTimeOmoFuryou = readTime(buffer, 345, 4);
     toBe.YosouPace = $R.pace.toCodeFromKol(buffer, 349, 1);
-    toBe.KolShutsubahyouSakuseiNengappi = readDate(buffer, 418, 8);
 
     if (asIs) {
       const updateSet = this.tool.createUpdateSet(asIs, toBe, false);

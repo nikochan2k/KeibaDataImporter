@@ -1,9 +1,15 @@
 import { RaceData } from "./RaceData";
+import * as $K from "../../../converters/Kaisai";
 import * as $R from "../../../converters/Race";
+import { Kaisai } from "../../../entities/Kaisai";
 import { Race } from "../../../entities/Race";
 import { readPositiveInt, readStr } from "../../Reader";
 
 export abstract class Ba$ extends RaceData {
+
+  protected setKaisai(buffer: Buffer, toBe: Kaisai) {
+    toBe.KaisaiKubun = $K.kaisaiKubun.toCodeFromJrdb(buffer, 97, 1);
+  }
 
   protected setRace(buffer: Buffer, toBe: Race) {
     const hh = readStr(buffer, 16, 2);
@@ -31,7 +37,6 @@ export abstract class Ba$ extends RaceData {
     }
     toBe.Tousuu = readPositiveInt(buffer, 94, 2);
     toBe.Course = $R.course.toCodeFromJrdb(buffer, 96, 1);
-    toBe.KaisaiKubun = $R.kaisaiKubun.toCodeFromJrdb(buffer, 97, 1);
     toBe.TanshukuTokubetsuMei = readStr(buffer, 98, 8);
     toBe.RaceMei = readStr(buffer, 106, 18);
     toBe.Shoukin1Chaku = readPositiveInt(buffer, 125, 5, 10000);

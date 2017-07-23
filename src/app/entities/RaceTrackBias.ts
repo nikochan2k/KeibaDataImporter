@@ -4,6 +4,8 @@ import {
   Index,
   PrimaryColumn
 } from "typeorm";
+import { Ichi } from "../converters/Common";
+import { Midashi } from "../converters/Race";
 
 @Entity("RaceTrackBias")
 @Index("IxRaceTrackBias", (rk: RaceTrackBias) => [rk.RaceId])
@@ -15,10 +17,10 @@ export class RaceTrackBias {
   public RaceId: number;
 
   @Column("smallint")
-  public Midashi: number;
+  public Midashi: Midashi;
 
   @Column("smallint")
-  public Ichi: number;
+  public Ichi: Ichi;
 
   @Column("smallint")
   public TrackBias: number;

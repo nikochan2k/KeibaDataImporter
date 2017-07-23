@@ -144,16 +144,4 @@ export class Shussouba {
 
   @Column("text", { nullable: true })
   public JisouhenoMemo: string;
-
-  @Column("bigint", { nullable: true })
-  public KolShutsubahyouSakuseiNengappi?: number;
-
-  @Column("bigint", { nullable: true })
-  public KolSeisekiSakuseiNengappi?: number;
-
-  @Column("bigint", { nullable: true })
-  public JrdbShutsubahyouSakuseiNengappi?: number;
-
-  @Column("bigint", { nullable: true })
-  public JrdbSeisekiSakuseiNengappi?: number;
 }

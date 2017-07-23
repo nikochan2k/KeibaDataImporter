@@ -1,10 +1,12 @@
 import "reflect-metadata";
 import { Inject, Service } from "typedi";
 import * as $C from "../../../converters/Common";
+import * as $K from "../../../converters/Kaisai";
 import * as $R from "../../../converters/Race";
 import * as $S from "../../../converters/Shussouba";
 import * as $U from "../../../converters/Uma";
 import { UmaDao } from "../../../daos/UmaDao";
+import { Kaisai } from "../../../entities/Kaisai";
 import { Kyousouba } from "../../../entities/Kyousouba";
 import { Kyuusha } from "../../../entities/Kyuusha";
 import { Race } from "../../../entities/Race";
@@ -77,15 +79,22 @@ export class KolUmaKd3 extends DataToImport {
     for (let i = 0; i < KolUmaKd3.raceOffsets.length; i++) {
       const offset = KolUmaKd3.raceOffsets[i];
       const raceBuffer = buffer.slice(offset, offset + 151);
-      const race = await this.saveRace(raceBuffer);
-      if (race) {
-        const shussoubaBuffer = buffer.slice(offset + 151, offset + 590);
-        const shussouba = await this.saveShussouba(shussoubaBuffer, race, kyousouba, uma);
-        if (shussouba) {
-          await this.kolTool.saveShussoubaTsuukaJuni(shussoubaBuffer, 239, shussouba);
-          const tanshukuKishuMei = readStrWithNoSpace(shussoubaBuffer, 140, 8);
-          await this.choukyouTool.saveChoukyou(shussoubaBuffer, 248, shussouba, tanshukuKishuMei, 1);
-        }
+
+      const kaisai = await this.saveKaisai(raceBuffer);
+      if (!kaisai) {
+        continue;
+      }
+
+      const race = await this.saveRace(raceBuffer, kaisai);
+      if (!race) {
+        continue;
+      }
+      const shussoubaBuffer = buffer.slice(offset + 151, offset + 590);
+      const shussouba = await this.saveShussouba(shussoubaBuffer, kaisai, race, kyousouba, uma);
+      if (shussouba) {
+        await this.kolTool.saveShussoubaTsuukaJuni(shussoubaBuffer, 239, shussouba);
+        const tanshukuKishuMei = readStrWithNoSpace(shussoubaBuffer, 140, 8);
+        await this.choukyouTool.saveChoukyou(shussoubaBuffer, 248, shussouba, tanshukuKishuMei, 1);
       }
     }
   }
@@ -124,23 +133,50 @@ export class KolUmaKd3 extends DataToImport {
     return { Kyousouba: kyousouba, Uma: uma };
   }
 
-  protected async saveRace(buffer: Buffer) {
-    const asIs = await this.kolRaceTool.getRace(buffer);
+  protected async saveKaisai(buffer: Buffer) {
+    let toBe = this.kolRaceTool.createKaisai(buffer);
+    if (!toBe) {
+      return null;
+    }
+    toBe.Kyuujitsu = $K.kyuujitsu.toCodeFromKol(buffer, 20, 1);
+    toBe.Youbi = $K.youbi.toCodeFromKol(buffer, 21, 1);
+    toBe.ChuuouChihouGaikoku = $K.chuuouChihouGaikoku.toCodeFromKol(buffer, 23, 1);
+    toBe.GaikokuKeibajouMei = readStr(buffer, 131, 20);
+
+    const asIs = await this.kolRaceTool.getKaisai(buffer);
     if (asIs) {
-      if (asIs.KolSeisekiSakuseiNengappi) {
+      const updateSet = this.tool.createUpdateSet(asIs, toBe, false);
+      if (updateSet) {
+        await this.entityManager
+          .createQueryBuilder()
+          .update(Kaisai, updateSet)
+          .where("Id = :id")
+          .setParameter("id", asIs.Id)
+          .execute();
+      }
+      toBe = asIs;
+    } else {
+      toBe = await this.entityManager.save(toBe);
+    }
+
+    return toBe;
+  }
+
+  protected async saveRace(buffer: Buffer, kaisai: Kaisai) {
+    const asIs = await this.kolRaceTool.getRace(buffer, kaisai.Id);
+    if (asIs) {
+      if (kaisai.KolSeisekiSakuseiNengappi) {
         return asIs;
-      } else if (!asIs.KolShutsubahyouSakuseiNengappi && !asIs.KolSeisekiSakuseiNengappi) {
+      } else if (!kaisai.KolShutsubahyouSakuseiNengappi && !kaisai.KolSeisekiSakuseiNengappi) {
         return asIs;
       }
     }
+
     let toBe = this.kolRaceTool.createRace(buffer);
     if (!toBe) {
       return null;
     }
     toBe.Nengappi = readDate(buffer, 12, 8);
-    toBe.Kyuujitsu = $R.kyuujitsu.toCodeFromKol(buffer, 20, 1);
-    toBe.Youbi = $R.youbi.toCodeFromKol(buffer, 21, 1);
-    toBe.ChuuouChihouGaikoku = $R.chuuouChihouGaikoku.toCodeFromKol(buffer, 23, 1);
     toBe.IppanTokubetsu = $R.ippanTokubetsu.toCodeFromKol(buffer, 24, 1);
     toBe.HeichiShougai = $R.heichiShougai.toCodeFromKol(buffer, 25, 1);
     toBe.JuushouKaisuu = readPositiveInt(buffer, 26, 3);
@@ -166,7 +202,7 @@ export class KolUmaKd3 extends DataToImport {
       toBe.JoukenNenreiSeigen = $R.joukenNenreiSeigen2.toCodeFromKol(buffer, 98, 1);
     }
     toBe.Jouken1 = $R.jouken.toCodeFromKol(buffer, 100, 5);
-    if (toBe.ChuuouChihouGaikoku !== 0) {
+    if (kaisai.ChuuouChihouGaikoku !== 0) {
       toBe.Kumi1 = readPositiveInt(buffer, 105, 2);
       toBe.IjouIkaMiman = $R.ijouIkaMiman.toCodeFromKol(buffer, 107, 1);
       toBe.Jouken2 = $R.jouken.toCodeFromKol(buffer, 108, 5);
@@ -182,7 +218,6 @@ export class KolUmaKd3 extends DataToImport {
     toBe.Pace = $R.pace.toCodeFromKol(buffer, 127, 1);
     toBe.Tenki = $R.tenki.toCodeFromKol(buffer, 128, 1);
     toBe.Baba = $R.baba.toCodeFromKol(buffer, 129, 1);
-    toBe.GaikokuKeibajouMei = readStr(buffer, 131, 20);
     if (asIs) {
       const updateSet = this.tool.createUpdateSet(asIs, toBe, true);
       if (updateSet) {
@@ -200,7 +235,7 @@ export class KolUmaKd3 extends DataToImport {
     return toBe;
   }
 
-  protected async saveShussouba(buffer: Buffer, race: Race, kyousouba: Kyousouba, uma: Uma) {
+  protected async saveShussouba(buffer: Buffer, kaisai: Kaisai, race: Race, kyousouba: Kyousouba, uma: Uma) {
     let umaban = readPositiveInt(buffer, 1, 2);
     let id: number;
     let asIs: Shussouba;
@@ -216,9 +251,9 @@ export class KolUmaKd3 extends DataToImport {
       } while (asIs && asIs.KyousoubaId !== kyousouba.Id);
     }
     if (asIs) {
-      if (asIs.KolSeisekiSakuseiNengappi) {
+      if (kaisai.KolSeisekiSakuseiNengappi) {
         return asIs;
-      } else if (!asIs.KolShutsubahyouSakuseiNengappi && !asIs.KolSeisekiSakuseiNengappi) {
+      } else if (!kaisai.KolShutsubahyouSakuseiNengappi && !kaisai.KolSeisekiSakuseiNengappi) {
         return asIs;
       }
     }

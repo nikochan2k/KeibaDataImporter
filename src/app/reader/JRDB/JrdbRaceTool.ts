@@ -1,6 +1,6 @@
 import { Service } from "typedi";
 import * as $C from "../../converters/Common";
-import { RaceTool, RaceInfo } from "../RaceTool";
+import { KaisaiInfo, RaceTool } from "../RaceTool";
 import {
   readHex,
   readInt,
@@ -27,33 +27,31 @@ export class JrdbRaceTool extends RaceTool {
     return year;
   }
 
-  protected getRaceInfo(buffer: Buffer): RaceInfo {
+  protected getKaisaiInfo(buffer: Buffer): KaisaiInfo {
     /* tslint:disable:triple-equals */
     const year = this.getYear(buffer);
     if (year == null) {
       return null;
     }
-    const years = year - 1970;
-    const kaiji = readPositiveInt(buffer, 4, 1);
-    const nichiji = readHex(buffer, 5, 1);
     const basho = $C.basho.toCodeFromJrdb(buffer, 0, 2);
     if (basho == null) {
       this.logger.warn("不正な場所です: " + readRaw(buffer, 0, 2));
       return null;
     }
-    const raceBangou = readPositiveInt(buffer, 6, 2);
-    if (raceBangou == null) {
-      this.logger.warn("不正なレース番号です: " + readRaw(buffer, 6, 2));
-      return null;
-    }
+    const kaiji = readPositiveInt(buffer, 4, 1);
+    const nichiji = readHex(buffer, 5, 1);
     /* tslint:enable:triple-equals */
     return {
       basho: basho,
-      years: years,
       kaiji: kaiji,
       nichiji: nichiji,
-      raceBangou: raceBangou
+      year: year
     };
+  }
+
+  protected getRaceBangou(buffer: Buffer) {
+    const raceBangou = readPositiveInt(buffer, 8, 2);
+    return raceBangou;
   }
 
 }

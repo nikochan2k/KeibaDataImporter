@@ -6,34 +6,19 @@ import {
 } from "typeorm";
 
 @Entity("Race")
-@Index("IxRace", (r: Race) => [r.Nengappi, r.Basho, r.RaceBangou])
+@Index("IxRace", (r: Race) => [r.KaisaiId, r.RaceBangou])
 export class Race {
   @PrimaryColumn("bigint")
   public Id: number;
 
-  @Column("smallint", { nullable: true })
-  public Kaiji?: number;
-
-  @Column("smallint", { nullable: true })
-  public Nichiji?: number;
-
-  @Column("smallint")
-  public Basho: number;
+  @Column("int")
+  public KaisaiId: number;
 
   @Column("smallint")
   public RaceBangou: number;
 
   @Column("bigint", { nullable: true })
   public Nengappi: number;
-
-  @Column("smallint", { nullable: true })
-  public Kyuujitsu?: number;
-
-  @Column("smallint", { nullable: true })
-  public Youbi: number;
-
-  @Column("smallint", { nullable: true })
-  public ChuuouChihouGaikoku?: number;
 
   @Column("smallint", { nullable: true })
   public IppanTokubetsu: number;
@@ -96,9 +81,6 @@ export class Race {
   public Course?: number;
 
   @Column("smallint", { nullable: true })
-  public KaisaiKubun?: number;
-
-  @Column("smallint", { nullable: true })
   public Kyori: number;
 
   @Column("smallint", { nullable: true })
@@ -126,10 +108,7 @@ export class Race {
   public Baba?: number;
 
   @Column("smallint", { nullable: true })
-  public BabaShousai?: number; // 0:普通 1:速い 2:遅い
-
-  @Column("varchar", { nullable: true, length: 30 })
-  public GaikokuKeibajouMei: string;
+  public BabaSokudo?: number; // 0:普通 1:速い 2:遅い
 
   @Column("float", { nullable: true })
   public ShougaiHeikin1F?: number;
@@ -178,12 +157,6 @@ export class Race {
 
   @Column("text", { nullable: true })
   public RaceComment?: string;
-
-  @Column("bigint", { nullable: true })
-  public KolShutsubahyouSakuseiNengappi?: number;
-
-  @Column("bigint", { nullable: true })
-  public KolSeisekiSakuseiNengappi?: number;
 
   @Column("float", { nullable: true })
   public SuiteiTimeRyou?: number;

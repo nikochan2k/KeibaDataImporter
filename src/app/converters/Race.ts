@@ -1,35 +1,5 @@
 import { Codes } from "./Codes";
 
-export const kyuujitsu = new Codes(
-  [
-    { code: 1, kol: "1", naiyou: "祝日" },
-    { code: 2, kol: "2", naiyou: "振替休日" },
-    { code: 3, kol: "3", naiyou: "国民の休日" }
-  ]
-);
-
-export const youbi = new Codes(
-  [
-    { code: 1, kol: "1", naiyou: "土" },
-    { code: 2, kol: "2", naiyou: "日" },
-    { code: 3, kol: "3", naiyou: "月" },
-    { code: 4, kol: "4", naiyou: "火" },
-    { code: 5, kol: "5", naiyou: "水" },
-    { code: 6, kol: "6", naiyou: "木" },
-    { code: 7, kol: "7", naiyou: "金" }
-  ]
-);
-
-export const chuuouChihouGaikoku = new Codes(
-  [
-    { code: 0, kol: "0", naiyou: "中央" },
-    { code: 1, kol: "1", naiyou: "南関東" },
-    { code: 2, kol: "2", naiyou: "公営" },
-    { code: 3, kol: "3", naiyou: "道営" },
-    { code: 4, kol: "4", naiyou: "外国" }
-  ]
-);
-
 export const ippanTokubetsu = new Codes(
   [
     { code: 3, kol: "3", jrdb: /1|2|3|4/, naiyou: "重賞" },
@@ -276,10 +246,15 @@ export const ijouIkaMiman = new Codes(
   ]
 );
 
+export enum DirtShiba {
+  Dirt = 0,
+  Shiba
+}
+
 export const dirtShiba = new Codes(
   [
-    { code: 0, kol: "0", jrdb: "2", naiyou: "ダート" },
-    { code: 1, kol: "1", jrdb: "1", naiyou: "芝" }
+    { code: DirtShiba.Dirt, kol: "0", jrdb: "2", naiyou: "ダート" },
+    { code: DirtShiba.Shiba, kol: "1", jrdb: "1", naiyou: "芝" }
   ]
 );
 
@@ -312,14 +287,6 @@ export const course = new Codes(
     { code: 4, kol: "4", jrdb: "2", naiyou: "A1" },
     { code: 5, kol: "5", naiyou: "B1" },
     { code: 6, jrdb: "3", naiyou: "A2" },
-  ]
-);
-
-export const kaisaiKubun = new Codes(
-  [
-    { code: 1, jrdb: "1", naiyou: "関東" },
-    { code: 2, jrdb: "2", naiyou: "関西" },
-    { code: 3, jrdb: "3", naiyou: "ローカル" }
   ]
 );
 
