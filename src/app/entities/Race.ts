@@ -169,4 +169,10 @@ export class Race {
 
   @Column("varchar", { nullable: true, length: 18 })
   public Yosoushamei2: string;
+
+  @Column("bigint", { nullable: true })
+  public KolShutsubahyouSakuseiNengappi?: number;
+
+  @Column("bigint", { nullable: true })
+  public KolSeisekiSakuseiNengappi?: number;
 }

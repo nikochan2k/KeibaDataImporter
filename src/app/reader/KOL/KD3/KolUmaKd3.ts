@@ -90,7 +90,7 @@ export class KolUmaKd3 extends DataToImport {
         continue;
       }
       const shussoubaBuffer = buffer.slice(offset + 151, offset + 590);
-      const shussouba = await this.saveShussouba(shussoubaBuffer, kaisai, race, kyousouba, uma);
+      const shussouba = await this.saveShussouba(shussoubaBuffer, race, kyousouba, uma);
       if (shussouba) {
         await this.kolTool.saveShussoubaTsuukaJuni(shussoubaBuffer, 239, shussouba);
         const tanshukuKishuMei = readStrWithNoSpace(shussoubaBuffer, 140, 8);
@@ -165,9 +165,9 @@ export class KolUmaKd3 extends DataToImport {
   protected async saveRace(buffer: Buffer, kaisai: Kaisai) {
     const asIs = await this.kolRaceTool.getRace(buffer, kaisai.Id);
     if (asIs) {
-      if (kaisai.KolSeisekiSakuseiNengappi) {
+      if (asIs.KolSeisekiSakuseiNengappi) {
         return asIs;
-      } else if (!kaisai.KolShutsubahyouSakuseiNengappi && !kaisai.KolSeisekiSakuseiNengappi) {
+      } else if (!asIs.KolShutsubahyouSakuseiNengappi && !asIs.KolSeisekiSakuseiNengappi) {
         return asIs;
       }
     }
@@ -235,7 +235,7 @@ export class KolUmaKd3 extends DataToImport {
     return toBe;
   }
 
-  protected async saveShussouba(buffer: Buffer, kaisai: Kaisai, race: Race, kyousouba: Kyousouba, uma: Uma) {
+  protected async saveShussouba(buffer: Buffer, race: Race, kyousouba: Kyousouba, uma: Uma) {
     let umaban = readPositiveInt(buffer, 1, 2);
     let id: number;
     let asIs: Shussouba;
@@ -251,9 +251,9 @@ export class KolUmaKd3 extends DataToImport {
       } while (asIs && asIs.KyousoubaId !== kyousouba.Id);
     }
     if (asIs) {
-      if (kaisai.KolSeisekiSakuseiNengappi) {
+      if (asIs.KolSeisekiSakuseiNengappi) {
         return asIs;
-      } else if (!kaisai.KolShutsubahyouSakuseiNengappi && !kaisai.KolSeisekiSakuseiNengappi) {
+      } else if (!asIs.KolShutsubahyouSakuseiNengappi && !asIs.KolSeisekiSakuseiNengappi) {
         return asIs;
       }
     }

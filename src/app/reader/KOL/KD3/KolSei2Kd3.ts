@@ -41,11 +41,11 @@ export class KolSei2Kd3 extends DataToImport {
     if (!info) {
       return;
     }
-    const kaisai = info.kaisai;
-    if (kaisai) {
+    const asIs = info.shussouba;
+    if (asIs) {
       const dataSakuseiNengappi = readDate(buffer, 424, 8);
-      if (dataSakuseiNengappi <= kaisai.KolSeisekiSakuseiNengappi) {
-        this.logger.info("既に最新の出走馬成績データが格納されています: " + kaisai.Id);
+      if (dataSakuseiNengappi <= asIs.KolSeisekiSakuseiNengappi) {
+        this.logger.info("既に最新の出走馬成績データが格納されています: " + asIs.Id);
         return;
       }
     }
@@ -55,7 +55,7 @@ export class KolSei2Kd3 extends DataToImport {
       return;
     }
     await this.kolTool.saveShussoubaTsuukaJuni(buffer, 298, shussouba);
-    if (!kaisai.KolShutsubahyouSakuseiNengappi) {
+    if (!asIs.KolShutsubahyouSakuseiNengappi) {
       const tanshukuKishuMei = readStrWithNoSpace(buffer, 199, 8);
       await this.choukyouTool.saveChoukyou(buffer, 307, shussouba, tanshukuKishuMei, 1);
     }

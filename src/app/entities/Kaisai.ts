@@ -41,11 +41,4 @@ export class Kaisai {
 
   @Column("varchar", { nullable: true, length: 30 })
   public GaikokuKeibajouMei: string;
-
-  @Column("bigint", { nullable: true })
-  public KolShutsubahyouSakuseiNengappi?: number;
-
-  @Column("bigint", { nullable: true })
-  public KolSeisekiSakuseiNengappi?: number;
-
 }

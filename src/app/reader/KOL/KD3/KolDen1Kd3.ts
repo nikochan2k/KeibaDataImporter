@@ -36,7 +36,12 @@ export class KolDen1Kd3 extends DataToImport {
   }
 
   public async save(buffer: Buffer, bridge: Bridge) {
-    const asIs = await this.kolRaceTool.getKaisai(buffer);
+    const kaisai = await this.saveKaisai(buffer);
+    if (!kaisai) {
+      return;
+    }
+
+    const asIs = await this.kolRaceTool.getRace(buffer);
     if (asIs) {
       const dataSakuseiNengappi = readDate(buffer, 418, 8);
       if (dataSakuseiNengappi <= asIs.KolShutsubahyouSakuseiNengappi) {
@@ -45,20 +50,20 @@ export class KolDen1Kd3 extends DataToImport {
       }
     }
 
-    const kaisai = await this.saveKaisai(buffer, asIs);
-    if (!kaisai) {
-      return;
-    }
-
-    const race = await this.saveRace(buffer, kaisai);
-    if (race) {
+    const race = await this.saveRace(buffer, kaisai, asIs);
+    if (!race) {
       return null;
     }
 
     this.setYosouTenkai(buffer, race, <KolBridge>bridge);
   }
 
-  protected async saveKaisai(buffer: Buffer, asIs: Kaisai) {
+  protected async saveKaisai(buffer: Buffer) {
+    const asIs = await this.kolRaceTool.getKaisai(buffer);
+    if (asIs) {
+      return asIs;
+    }
+
     let toBe = this.kolRaceTool.createKaisai(buffer);
     if (!toBe) {
       return null;
@@ -66,34 +71,17 @@ export class KolDen1Kd3 extends DataToImport {
     toBe.Kyuujitsu = $K.kyuujitsu.toCodeFromKol(buffer, 20, 1);
     toBe.Youbi = $K.youbi.toCodeFromKol(buffer, 21, 1);
     toBe.ChuuouChihouGaikoku = $K.chuuouChihouGaikoku.toCodeFromKol(buffer, 22, 1);
-    toBe.KolShutsubahyouSakuseiNengappi = readDate(buffer, 418, 8);
-
-    if (asIs) {
-      const updateSet = this.tool.createUpdateSet(asIs, toBe, false);
-      if (updateSet) {
-        await this.entityManager
-          .createQueryBuilder()
-          .update(Kaisai, updateSet)
-          .where("Id = :id")
-          .setParameter("id", asIs.Id)
-          .execute();
-      }
-      toBe = asIs;
-    } else {
-      toBe = await this.entityManager.save(toBe);
-    }
-
+    toBe = await this.entityManager.save(toBe);
     return toBe;
   }
 
-  protected async saveRace(buffer: Buffer, kaisai: Kaisai) {
+  protected async saveRace(buffer: Buffer, kaisai: Kaisai, asIs: Race) {
     let toBe = this.kolRaceTool.createRace(buffer);
     if (!toBe) {
-      return null;
+      return asIs;
     }
 
-    const asIs = await this.kolRaceTool.getRace(buffer, kaisai.Id);
-    if (!asIs || !kaisai.KolSeisekiSakuseiNengappi) {
+    if (!asIs || !asIs.KolSeisekiSakuseiNengappi) {
       toBe.Nengappi = readDate(buffer, 12, 8);
       toBe.IppanTokubetsu = $R.ippanTokubetsu.toCodeFromKol(buffer, 23, 1);
       toBe.HeichiShougai = $R.heichiShougai.toCodeFromKol(buffer, 24, 1);
