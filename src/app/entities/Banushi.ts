@@ -8,7 +8,7 @@ import {
 @Entity("Banushi")
 @Index("IxBanushi", (b: Banushi) => [b.BanushiMei], { unique: true })
 export class Banushi {
-  @PrimaryGeneratedColumn("int")
+  @PrimaryGeneratedColumn()
   public Id: number;
 
   @Column("varchar", { length: 60 })

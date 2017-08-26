@@ -2,7 +2,7 @@ import "reflect-metadata";
 import { createConnection, useContainer } from "typeorm";
 import { Container } from "typedi";
 import { Traversal } from "./Traversal";
-import { logging, getLogger } from "./LogUtil";
+import { getLogger } from "./LogUtil";
 
 const logger = getLogger("main");
 
@@ -18,10 +18,10 @@ createConnection({
   entities: [
     __dirname + "/entities/*.js"
   ],
-  logging: logging
+  logging: ["error", "warn"]
 }).then(async (con) => {
   await con.query("PRAGMA journal_mode = WAL");
-  await con.syncSchema(false);
+  await con.synchronize(false);
   const traversal = Container.get(Traversal);
   await traversal.traverse(dirName);
 }).catch((reason) => {

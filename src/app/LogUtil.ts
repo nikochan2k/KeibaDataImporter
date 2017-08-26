@@ -1,14 +1,5 @@
 import * as log4js from "log4js";
 
-const LOG_LEVEL = log4js.levels.DEBUG;
-
-export const logging = {
-  logFailedQueryError: true,
-  logOnlyFailedQueries: true,
-  logQueries: false,
-  logSchemaCreation: false
-};
-
 export function getLogger(obj: any) {
   let categoryName: string;
   if (typeof obj === "string") {
@@ -20,6 +11,6 @@ export function getLogger(obj: any) {
     categoryName = categoryName.replace(/\\[object\\s+|\\]/g, "");
   }
   const logger = log4js.getLogger(categoryName);
-  logger.setLevel(LOG_LEVEL);
+  logger.level = "debug";
   return logger;
 }
