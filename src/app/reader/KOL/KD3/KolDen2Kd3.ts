@@ -1,8 +1,10 @@
 import { Inject, Service } from "typedi";
+import * as $C from "../../../converters/Common";
 import * as $S from "../../../converters/Shussouba";
 import { Shussouba } from "../../../entities/Shussouba";
 import { Bridge } from "../../Bridge";
 import { DataToImport } from "../../DataToImport";
+import { ShussoubaInfo } from "../../RaceTool";
 import {
   readDate,
   readDouble,
@@ -15,7 +17,6 @@ import { KolBridge } from "../KolBridge";
 import { KolChoukyouTool } from "../KolChoukyouTool";
 import { KolRaceTool } from "../KolRaceTool";
 import { KolTool } from "../KolTool";
-import { ShussoubaInfo } from "../../RaceTool";
 
 @Service()
 export class KolDen2Kd3 extends DataToImport {
@@ -77,7 +78,11 @@ export class KolDen2Kd3 extends DataToImport {
       toBe.Nenrei = readPositiveInt(buffer, 65, 2);
       toBe.Blinker = $S.blinker.toCodeFromKol(buffer, 147, 1);
       toBe.Kinryou = readDouble(buffer, 148, 3, 0.1);
-      toBe.KijouId = (await this.kolTool.saveKijou(buffer, 151, info.race.Nengappi)).Id;
+      toBe.KishuId = (await this.kolTool.saveKishu(buffer, 151, info.race.Nengappi)).Id;
+      toBe.KishuTouzaiBetsu = $C.touzaiBetsu.toCodeFromKol(buffer, 196, 1);
+      toBe.KishuShozokuBasho = $C.basho.toCodeFromKol(buffer, 197, 2);
+      toBe.KishuShozokuKyuushaId = await this.kolTool.saveShozokuKyuusha(buffer, 199);
+      toBe.MinaraiKubun = $S.minaraiKubun.toCodeFromKol(buffer, 204, 1);
       toBe.Norikawari = $S.norikawari.toCodeFromKol(buffer, 205, 1);
     }
 

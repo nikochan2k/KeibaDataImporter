@@ -4,7 +4,6 @@ import { EntityManager, Repository } from "typeorm";
 import { OrmEntityManager, OrmRepository } from "typeorm-typedi-extensions";
 import { Baken, YosouKakutei } from "../../converters/Common";
 import * as $C from "../../converters/Common";
-import * as $KI from "../../converters/Kishu";
 import * as $KY from "../../converters/Kyuusha";
 import * as $U from "../../converters/Uma";
 import { HaitouInfo } from "../../converters/RaceHaitou";
@@ -19,7 +18,6 @@ import { Kyousouba } from "../../entities/Kyousouba";
 import { Kyuusha } from "../../entities/Kyuusha";
 import { OddsHaitou } from "../../entities/OddsHaitou";
 import { Seisansha } from "../../entities/Seisansha";
-import { Shozoku } from "../../entities/Shozoku";
 import { Shussouba } from "../../entities/Shussouba";
 import { ShussoubaTsuukaJuni } from "../../entities/ShussoubaTsuukaJuni";
 import { Uma } from "../../entities/Uma";
@@ -66,25 +64,14 @@ export class KolTool {
     this.logger = getLogger(this);
   }
 
-  public async saveKijou(buffer: Buffer, offset: number, date: number) {
+  public async saveKishu(buffer: Buffer, offset: number, date: number) {
     const kishu = new Kishu();
     kishu.FromDate = date;
     kishu.ToDate = date;
     kishu.KolKishuCode = readInt(buffer, offset, 5);
     kishu.KishuMei = readStrWithNoSpace(buffer, offset + 5, 32);
     kishu.TanshukuKishuMei = readStrWithNoSpace(buffer, offset + 37, 8);
-    const shozoku = new Shozoku();
-    shozoku.TouzaiBetsu = $C.touzaiBetsu.toCodeFromKol(buffer, offset + 45, 1);
-    shozoku.ShozokuBasho = $C.basho.toCodeFromKol(buffer, offset + 46, 2);
-    const kyuushaCode = readPositiveInt(buffer, offset + 48, 5);
-    if (kyuushaCode) {
-      let kyuusha = new Kyuusha();
-      kyuusha.KolKyuushaCode = kyuushaCode;
-      kyuusha = await this.kyuushaDao.saveKyuusha(kyuusha);
-      shozoku.KyuushaId = kyuusha.Id;
-    }
-    const minaraiKubun = $KI.minaraiKubun.toCodeFromKol(buffer, offset + 53, 1);
-    return this.kishuDao.saveKijou(kishu, shozoku, minaraiKubun);
+    return this.kishuDao.saveKishu(kishu);
   }
 
   public saveBanushi(buffer: Buffer, offset: number) {
@@ -129,12 +116,24 @@ export class KolTool {
     return this.seisanshaDao.saveSeisansha(seisansha);
   }
 
+  public async saveShozokuKyuusha(buffer: Buffer, offset: number) {
+    const kolKyuushaCode = readPositiveInt(buffer, offset, 5);
+    if (!kolKyuushaCode) {
+      return null;
+    }
+    let kyuusha = new Kyuusha();
+    kyuusha.KolKyuushaCode = readPositiveInt(buffer, offset, 5);
+    kyuusha = await this.kyuushaDao.saveKyuusha(kyuusha);
+    return kyuusha.Id;
+  }
+
   public saveKyuusha(buffer: Buffer, offset: number) {
     const kyuusha = new Kyuusha();
     kyuusha.KolKyuushaCode = readPositiveInt(buffer, offset, 5);
     kyuusha.KyuushaMei = readStrWithNoSpace(buffer, offset + 5, 32);
     kyuusha.TanshukuKyuushaMei = readStrWithNoSpace(buffer, offset + 37, 8);
     kyuusha.ShozokuBasho = $C.basho.toCodeFromKol(buffer, offset + 45, 2);
+    kyuusha.TouzaiBetsu = $KY.touzaiBetsu.toCodeFromKol(buffer, offset + 47, 1);
     kyuusha.RitsuHokuNanBetsu = $KY.ritsuHokuNanBetsu.toCodeFromKol(buffer, offset + 47, 1);
     return this.kyuushaDao.saveKyuusha(kyuusha);
   }

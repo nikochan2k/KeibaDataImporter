@@ -37,3 +37,32 @@ export const kaisaiKubun = new Codes(
     { code: 3, jrdb: "3", naiyou: "ローカル" }
   ]
 );
+
+export const babaJoutai = new Codes(
+  [
+    { code: 1, jrdb: "1", naiyou: "絶好" },
+    { code: 2, jrdb: "2", naiyou: "良" },
+    { code: 3, jrdb: "3", naiyou: "稍荒" },
+    { code: 4, jrdb: "4", naiyou: "荒" },
+  ]
+);
+
+export const shibaShurui = new Codes(
+  [
+    { code: 1, jrdb: "1", naiyou: "野芝" },
+    { code: 2, jrdb: "2", naiyou: "洋芝" },
+    { code: 3, jrdb: "3", naiyou: "混生" },
+  ]
+);
+
+export const tenatsu = new Codes(
+  [
+    { code: 1, jrdb: "1", naiyou: "転圧" },
+  ]
+);
+
+export const touketsuBoushizai = new Codes(
+  [
+    { code: 1, jrdb: "1", naiyou: "凍結防止剤散布" },
+  ]
+);

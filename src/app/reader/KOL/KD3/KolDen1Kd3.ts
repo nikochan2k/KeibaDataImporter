@@ -1,12 +1,10 @@
 import { Inject, Service } from "typedi";
 import * as $K from "../../../converters/Kaisai";
 import * as $R from "../../../converters/Race";
-import { Race } from "../../../entities/Race";
 import { Kaisai } from "../../../entities/Kaisai";
+import { Race } from "../../../entities/Race";
 import { Bridge } from "../../Bridge";
-import { KolBridge } from "../KolBridge";
 import { DataToImport } from "../../DataToImport";
-import { Tool } from "../../Tool";
 import {
   readDate,
   readInt,
@@ -14,7 +12,9 @@ import {
   readStr,
   readStrWithNoSpace,
   readTime
-} from "../../Reader";
+  } from "../../Reader";
+import { Tool } from "../../Tool";
+import { KolBridge } from "../KolBridge";
 import { KolRaceTool } from "../KolRaceTool";
 
 @Service()

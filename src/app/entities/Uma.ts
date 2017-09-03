@@ -58,4 +58,7 @@ export class Uma {
 
   @Column("smallint", { nullable: true })
   public ShibouNen?: number;
+
+  @Column("varchar", { length: 8, nullable: true })
+  public KettouTourokuBangou?: string;
 }

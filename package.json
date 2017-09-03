@@ -22,15 +22,15 @@
     "@types/iconv-lite": "0.0.1",
     "@types/log4js": "0.0.33",
     "@types/mocha": "^2.2.42",
-    "@types/node": "^8.0.25",
+    "@types/node": "^8.0.26",
     "@types/rimraf": "2.0.2",
     "@types/sinon": "^2.3.3",
     "@types/tmp": "0.0.33",
     "mocha": "^3.5.0",
     "rimraf": "^2.6.1",
     "sinon": "^3.2.1",
-    "source-map-support": "^0.4.16",
-    "typescript": "^2.4.2"
+    "source-map-support": "^0.4.17",
+    "typescript": "^2.5.2"
   },
   "dependencies": {
     "glob": "^7.1.2",
