@@ -3,6 +3,7 @@ import * as $C from "../../../converters/Common";
 import * as $S from "../../../converters/Shussouba";
 import { Shussouba } from "../../../entities/Shussouba";
 import { DataToImport } from "../../DataToImport";
+import { ShussoubaInfo } from "../../RaceTool";
 import {
   readDate,
   readDouble,
@@ -10,12 +11,11 @@ import {
   readPositiveInt,
   readStrWithNoSpace,
   readTime
-} from "../../Reader";
+  } from "../../Reader";
 import { Tool } from "../../Tool";
 import { KolChoukyouTool } from "../KolChoukyouTool";
 import { KolRaceTool } from "../KolRaceTool";
 import { KolTool } from "../KolTool";
-import { ShussoubaInfo } from "../../RaceTool";
 
 @Service()
 export class KolSei2Kd3 extends DataToImport {

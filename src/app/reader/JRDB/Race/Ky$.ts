@@ -1,13 +1,14 @@
 import { Inject } from "typedi";
+import { ShussoubaData } from "./ShussoubaData";
 import * as $C from "../../../converters/Common";
 import * as $R from "../../../converters/Race";
 import * as $S from "../../../converters/Shussouba";
 import { Shussouba } from "../../../entities/Shussouba";
-import { ShussoubaData } from "./ShussoubaData";
+import { ShussoubaJrdb } from "../../../entities/ShussoubaJrdb";
+import { ShussoubaInfo } from "../../RaceTool";
 import { readDouble, readInt, readPositiveInt } from "../../Reader";
 import { Tool } from "../../Tool";
 import { JrdbRaceTool } from "../JrdbRaceTool";
-import { ShussoubaInfo } from "../../RaceTool";
 
 export abstract class Ky$ extends ShussoubaData {
 
@@ -18,6 +19,22 @@ export abstract class Ky$ extends ShussoubaData {
   protected jrdbRaceTool: JrdbRaceTool;
 
   protected async setShussouba(buffer: Buffer, toBe: Shussouba, info: ShussoubaInfo) {
+    toBe.Odds = readDouble(buffer, 95, 5);
+    toBe.Ninki = readPositiveInt(buffer, 100, 2);
+    toBe.FukushouOdds = readDouble(buffer, 102, 5);
+    toBe.FukushouNinki = readPositiveInt(buffer, 107, 2);
+    toBe.Blinker = $S.blinker.toCodeFromJrdb(buffer, 170, 1);
+    toBe.KishuId = (await this.jrdbTool.saveKishu(buffer, info.race.Nengappi)).Id;
+    toBe.Kinryou = readDouble(buffer, 183, 3, 0.1);
+    toBe.MinaraiKubun = $S.minaraiKubun.toCodeFromJrdb(buffer, 186, 1);
+    toBe.KyousoubaId = (await this.jrdbTool.saveKyousouba(buffer)).Id;
+    toBe.Wakuban = readPositiveInt(buffer, 323, 1);
+    toBe.Bataijuu = readPositiveInt(buffer, 396, 3);
+    toBe.Zougen = readInt(buffer, 399, 3);
+    toBe.TorikeshiShubetsu = $S.torikeshiShubetsu.toCodeFromJrdb(buffer, 402, 1);
+  }
+
+  protected async setShussoubaJrdb(buffer: Buffer, toBe: ShussoubaJrdb) {
     toBe.Idm = readDouble(buffer, 54, 5);
     toBe.KishuShisuu = readDouble(buffer, 59, 5);
     toBe.JouhouShisuu = readDouble(buffer, 64, 5);
@@ -26,10 +43,6 @@ export abstract class Ky$ extends ShussoubaData {
     toBe.KyoriTekisei = $S.kyoriTekisei.toCodeFromJrdb(buffer, 90, 1);
     toBe.Joushoudo = $S.joushoudo.toCodeFromJrdb(buffer, 91, 1);
     toBe.Rotation = readInt(buffer, 92, 3);
-    toBe.Odds = readDouble(buffer, 95, 5);
-    toBe.Ninki = readPositiveInt(buffer, 100, 2);
-    toBe.FukushouOdds = readDouble(buffer, 102, 5);
-    toBe.FukushouNinki = readPositiveInt(buffer, 107, 2);
     toBe.TokuteiJouhouHonmei = readInt(buffer, 109, 3);
     toBe.TokuteiJouhouTaikou = readInt(buffer, 112, 3);
     toBe.TokuteiJouhouTanana = readInt(buffer, 115, 3);
@@ -50,19 +63,13 @@ export abstract class Ky$ extends ShussoubaData {
     toBe.HidumeCode = $S.hidumeCode.toCodeFromJrdb(buffer, 163, 2);
     toBe.OmoTekisei = $S.tekisei.toCodeFromJrdb(buffer, 165, 1);
     toBe.ClassCode = $S.classCode.toCodeFromJrdb(buffer, 166, 2);
-    toBe.Blinker = $S.blinker.toCodeFromJrdb(buffer, 170, 1);
-    toBe.KishuId = (await this.jrdbTool.saveKishu(buffer, info.race.Nengappi)).Id;
-    toBe.Kinryou = readDouble(buffer, 183, 3, 0.1);
-    toBe.MinaraiKubun = $S.minaraiKubun.toCodeFromJrdb(buffer, 186, 1);
-    toBe.KyousoubaId = (await this.jrdbTool.saveKyousouba(buffer)).Id;
-    toBe.Wakuban = readPositiveInt(buffer, 323, 1);
-    toBe.JrdbSougouShirushi = $S.yosou.toCodeFromJrdb(buffer, 326, 1);
-    toBe.JrdbIdmShirushi = $S.yosou.toCodeFromJrdb(buffer, 327, 1);
-    toBe.JrdbJouhouShirushi = $S.yosou.toCodeFromJrdb(buffer, 328, 1);
-    toBe.JrdbKishuShirushi = $S.yosou.toCodeFromJrdb(buffer, 329, 1);
-    toBe.JrdbKyuushaShirushi = $S.yosou.toCodeFromJrdb(buffer, 330, 1);
-    toBe.JrdbChoukyouShirushi = $S.yosou.toCodeFromJrdb(buffer, 331, 1);
-    toBe.JrdbGekisouShirushi = $S.yosou.toCodeFromJrdb(buffer, 332, 1);
+    toBe.SougouShirushi = $S.yosou.toCodeFromJrdb(buffer, 326, 1);
+    toBe.IdmShirushi = $S.yosou.toCodeFromJrdb(buffer, 327, 1);
+    toBe.JouhouShirushi = $S.yosou.toCodeFromJrdb(buffer, 328, 1);
+    toBe.KishuShirushi = $S.yosou.toCodeFromJrdb(buffer, 329, 1);
+    toBe.KyuushaShirushi = $S.yosou.toCodeFromJrdb(buffer, 330, 1);
+    toBe.ChoukyouShirushi = $S.yosou.toCodeFromJrdb(buffer, 331, 1);
+    toBe.GekisouShirushi = $S.yosou.toCodeFromJrdb(buffer, 332, 1);
     toBe.ShibaTekisei = $S.tekisei.toCodeFromJrdb(buffer, 333, 1);
     toBe.DirtTekisei = $S.tekisei.toCodeFromJrdb(buffer, 334, 1);
     toBe.KakutokuShoukin = readInt(buffer, 346, 6, 10000);
@@ -82,11 +89,8 @@ export abstract class Ky$ extends ShussoubaData {
     toBe.GoalJuni = readPositiveInt(buffer, 389, 2);
     toBe.GoalSa = readDouble(buffer, 391, 2, 0.1);
     toBe.GoalUchiSoto = $S.courseDori.toCodeFromJrdb(buffer, 393, 1);
-    toBe.TenkaiCode = $S.tenkaiKigou.toCodeFromJrdb(buffer, 394, 1);
+    toBe.TenkaiKigou = $S.tenkaiKigou.toCodeFromJrdb(buffer, 394, 1);
     toBe.KyoriTekisei2 = $S.kyoriTekisei.toCodeFromJrdb(buffer, 395, 1);
-    toBe.Bataijuu = readPositiveInt(buffer, 396, 3);
-    toBe.Zougen = readInt(buffer, 399, 3);
-    toBe.TorikeshiShubetsu = $S.torikeshiShubetsu.toCodeFromJrdb(buffer, 402, 1);
     toBe.GekisouJuni = readPositiveInt(buffer, 448, 2);
     toBe.LsShisuuJuni = readPositiveInt(buffer, 450, 2);
     toBe.TenShisuuJuni = readPositiveInt(buffer, 452, 2);

@@ -1,5 +1,6 @@
 import { Inject } from "typedi";
 import { Shussouba } from "../../../entities/Shussouba";
+import { ShussoubaJrdb } from "../../../entities/ShussoubaJrdb";
 import { DataToImport } from "../../DataToImport";
 import { ShussoubaInfo } from "../../RaceTool";
 import { Tool } from "../../Tool";
@@ -56,4 +57,28 @@ export abstract class ShussoubaData extends DataToImport {
 
   protected abstract setShussouba(buffer: Buffer, shussouba: Shussouba, info: ShussoubaInfo);
 
+  protected async saveShussoubaJrdb(buffer: Buffer, shussouba: Shussouba) {
+    let toBe = new ShussoubaJrdb();
+    toBe.Id = shussouba.Id;
+    this.setShussoubaJrdb(buffer, toBe);
+
+    const asIs = await this.entityManager.findOneById(ShussoubaJrdb, shussouba.Id);
+    if (asIs) {
+      const updateSet = this.tool.createUpdateSet(asIs, toBe, true);
+      if (updateSet) {
+        await this.entityManager
+          .createQueryBuilder()
+          .update(ShussoubaJrdb, updateSet)
+          .where("Id = :id")
+          .setParameter("id", asIs.Id)
+          .execute();
+      }
+      toBe = asIs;
+    } else {
+      toBe = await this.entityManager.save(toBe);
+    }
+    return toBe;
+  }
+
+  protected abstract setShussoubaJrdb(buffer: Buffer, shussoubaJrdb: ShussoubaJrdb);
 }
