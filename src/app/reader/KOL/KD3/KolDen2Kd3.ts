@@ -92,6 +92,7 @@ export class KolDen2Kd3 extends DataToImport {
     toBe.ChoukyouHonsuuCourse = readPositiveInt(buffer, 718, 3);
     toBe.ChoukyouHonsuuHanro = readPositiveInt(buffer, 721, 3);
     toBe.ChoukyouHonsuuPool = readPositiveInt(buffer, 724, 3);
+    toBe.KolShutsubahyouSakuseiNengappi = readDate(buffer, 727, 8);
     toBe.Rating = readDouble(buffer, 739, 3, 0.1);
     toBe.KyuuyouRiyuu = readStr(buffer, 783, 60);
     toBe.KyuuyouRiyuuCode = $S.kyuuyouRiyuuCode.toCodeFromKol(buffer, 783, 60);

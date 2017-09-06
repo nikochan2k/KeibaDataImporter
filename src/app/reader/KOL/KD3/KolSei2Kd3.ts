@@ -11,7 +11,7 @@ import {
   readPositiveInt,
   readStrWithNoSpace,
   readTime
-  } from "../../Reader";
+} from "../../Reader";
 import { Tool } from "../../Tool";
 import { KolChoukyouTool } from "../KolChoukyouTool";
 import { KolRaceTool } from "../KolRaceTool";
@@ -109,6 +109,7 @@ export class KolSei2Kd3 extends DataToImport {
       toBe.Chuukan = toBe.Time - toBe.Ten3F - toBe.Agari3F;
     }
     toBe.YonCornerIchiDori = $C.ichi.toCodeFromKol(buffer, 306, 1);
+    toBe.KolSeisekiSakuseiNengappi = readDate(buffer, 424, 8);
 
     const asIs = info.shussouba;
     if (asIs) {
