@@ -321,4 +321,49 @@ export class ShussoubaJrdb {
   @Column("smallint", { nullable: true })
   public MankenShirushi: number;
 
+
+  @Column("tinyint", { nullable: true })
+  public KoukyuuFlag?: number;
+
+  @Column("tinyint", { nullable: true })
+  public GekisouType?: number;
+
+
+  @Column("tinyint", { nullable: true })
+  public ShibaDirtShougaiFlag?: number;
+
+  @Column("tinyint", { nullable: true })
+  public KyoriFlag?: number;
+
+  @Column("tinyint", { nullable: true })
+  public ClassFlag?: number;
+
+  @Column("tinyint", { nullable: true })
+  public TenkyuuFlag?: number;
+
+  @Column("tinyint", { nullable: true })
+  public KyoseiFlag?: number;
+
+  @Column("tinyint", { nullable: true })
+  public NorikawariFlag?: number;
+
+
+  @Column("tinyint", { nullable: true })
+  public NyuukyuuNansoume?: number;
+
+  @Column("int", { nullable: true })
+  public NyuukyuuNengappi?: number;
+
+  @Column("smallint", { nullable: true })
+  public NyuukyuuNannichimae?: number;
+
+
+  @Column("varchar", { nullable: true })
+  public Houbokusaki?: string;
+
+  @Column("tinyint", { nullable: true })
+  public HoubokusakiRank?: number;
+
+  @Column("tinyint", { nullable: true })
+  public KyuushaRank?: number;
 }
