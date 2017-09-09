@@ -17,7 +17,10 @@ export class Uma {
   @Column("varchar", { length: 60, nullable: true })
   public KyuuBamei: string;
 
-  @Column("bigint", { nullable: true })
+  @Column("smallint", { nullable: true })
+  public Seinen?: number;
+
+  @Column("int", { nullable: true })
   public Seinengappi?: number;
 
   @Column("smallint", { nullable: true })
@@ -28,6 +31,9 @@ export class Uma {
 
   @Column("smallint", { nullable: true })
   public Sanchi?: number;
+
+  @Column("varchar", { length: 12, nullable: true })
+  public SanchiMei?: string;
 
   @Column("smallint", { nullable: true })
   public Seibetsu?: number;
@@ -61,4 +67,10 @@ export class Uma {
 
   @Column("varchar", { length: 8, nullable: true })
   public KettouTourokuBangou?: string;
+
+  @Column("tinyint", { nullable: true })
+  public ChichiKeitouCode?: number;
+
+  @Column("tinyint", { nullable: true })
+  public HahaChichiKeitouCode?: number;
 }

@@ -104,6 +104,7 @@ export class KolUmaKd3 extends DataToImport {
     let uma = new Uma();
     uma.Bamei = readStr(buffer, 7, 30);
     uma.KyuuBamei = readStr(buffer, 37, 40);
+    uma.Seinen = readPositiveInt(buffer, 77, 4);
     uma.Seinengappi = readDate(buffer, 77, 8);
     uma.Keiro = $U.keiro.toCodeFromKol(buffer, 85, 2);
     uma.Kesshu = $U.kesshu.toCodeFromKol(buffer, 87, 2);
