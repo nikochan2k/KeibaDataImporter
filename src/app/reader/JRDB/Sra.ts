@@ -1,7 +1,7 @@
 import { Service } from "typedi";
 import { Sr$ } from "./Sr$";
-import { Kaisai } from "../../../entities/Kaisai";
-import { Race } from "../../../entities/Race";
+import { Kaisai } from "../../entities/Kaisai";
+import { Race } from "../../entities/Race";
 
 @Service()
 export class Sra extends Sr$ {

@@ -1,5 +1,5 @@
 import { RaceData } from "./RaceData";
-import { Race } from "../../../entities/Race";
+import { Race } from "../../entities/Race";
 
 export abstract class Sr$ extends RaceData {
 

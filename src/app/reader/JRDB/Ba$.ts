@@ -1,9 +1,9 @@
 import { RaceData } from "./RaceData";
-import * as $K from "../../../converters/Kaisai";
-import * as $R from "../../../converters/Race";
-import { Kaisai } from "../../../entities/Kaisai";
-import { Race } from "../../../entities/Race";
-import { readPositiveInt, readStr } from "../../Reader";
+import * as $K from "../../converters/Kaisai";
+import * as $R from "../../converters/Race";
+import { Kaisai } from "../../entities/Kaisai";
+import { Race } from "../../entities/Race";
+import { readPositiveInt, readStr } from "../Reader";
 
 export abstract class Ba$ extends RaceData {
 

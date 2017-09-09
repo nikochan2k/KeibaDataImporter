@@ -1,10 +1,10 @@
 import { Service } from "typedi";
-import * as $C from "../../../converters/Common";
-import * as $R from "../../../converters/Race";
-import { Kaisai } from "../../../entities/Kaisai";
-import { Race } from "../../../entities/Race";
-import { RaceTrackBias } from "../../../entities/RaceTrackBias";
-import { readPositiveInt, readStr } from "../../Reader";
+import * as $C from "../../converters/Common";
+import * as $R from "../../converters/Race";
+import { Kaisai } from "../../entities/Kaisai";
+import { Race } from "../../entities/Race";
+import { RaceTrackBias } from "../../entities/RaceTrackBias";
+import { readPositiveInt, readStr } from "../Reader";
 import { Sr$ } from "./Sr$";
 
 @Service()

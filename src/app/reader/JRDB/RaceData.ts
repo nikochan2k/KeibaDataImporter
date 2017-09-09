@@ -1,11 +1,11 @@
 import { Inject } from "typedi";
-import { Kaisai } from "../../../entities/Kaisai";
-import { Race } from "../../../entities/Race";
-import { Bridge } from "../../Bridge";
-import { DataToImport } from "../../DataToImport";
-import { Tool } from "../../Tool";
-import { JrdbRaceTool } from "../JrdbRaceTool";
-import { JrdbTool } from "../JrdbTool";
+import { Kaisai } from "../../entities/Kaisai";
+import { Race } from "../../entities/Race";
+import { Bridge } from "../Bridge";
+import { DataToImport } from "../DataToImport";
+import { Tool } from "../Tool";
+import { JrdbRaceTool } from "./JrdbRaceTool";
+import { JrdbTool } from "./JrdbTool";
 
 export abstract class RaceData extends DataToImport {
 

@@ -21,8 +21,8 @@
     "@types/glob": "^5.0.32",
     "@types/iconv-lite": "0.0.1",
     "@types/log4js": "0.0.33",
-    "@types/mocha": "^2.2.42",
-    "@types/node": "^8.0.26",
+    "@types/mocha": "^2.2.43",
+    "@types/node": "^8.0.28",
     "@types/rimraf": "2.0.2",
     "@types/sinon": "^2.3.3",
     "@types/tmp": "0.0.33",
@@ -42,7 +42,7 @@
     "tmp": "0.0.33",
     "tslib": "^1.7.1",
     "typedi": "^0.5.2",
-    "typeorm": "0.1.0-alpha.35",
+    "typeorm": "0.1.0-alpha.38",
     "typeorm-typedi-extensions": "0.0.12"
   }
 }

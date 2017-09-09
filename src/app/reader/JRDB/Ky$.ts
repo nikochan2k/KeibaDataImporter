@@ -1,15 +1,15 @@
 import { Inject } from "typedi";
 import { ShussoubaData } from "./ShussoubaData";
-import * as $C from "../../../converters/Common";
-import * as $R from "../../../converters/Race";
-import * as $S from "../../../converters/Shussouba";
-import * as $SJ from "../../../converters/ShussoubaJrdb";
-import { Shussouba } from "../../../entities/Shussouba";
-import { ShussoubaJrdb } from "../../../entities/ShussoubaJrdb";
-import { ShussoubaInfo } from "../../RaceTool";
-import { readDouble, readInt, readPositiveInt } from "../../Reader";
-import { Tool } from "../../Tool";
-import { JrdbRaceTool } from "../JrdbRaceTool";
+import * as $C from "../../converters/Common";
+import * as $R from "../../converters/Race";
+import * as $S from "../../converters/Shussouba";
+import * as $SJ from "../../converters/ShussoubaJrdb";
+import { Shussouba } from "../../entities/Shussouba";
+import { ShussoubaJrdb } from "../../entities/ShussoubaJrdb";
+import { ShussoubaInfo } from "../RaceTool";
+import { readDouble, readInt, readPositiveInt } from "../Reader";
+import { Tool } from "../Tool";
+import { JrdbRaceTool } from "./JrdbRaceTool";
 
 export abstract class Ky$ extends ShussoubaData {
 

@@ -1,12 +1,12 @@
 import { Inject } from "typedi";
-import * as $K from "../../../converters/Kaisai";
-import * as $R from "../../../converters/Race";
-import { Kaisai } from "../../../entities/Kaisai";
-import { Bridge } from "../../Bridge";
-import { DataToImport } from "../../DataToImport";
-import { readDouble } from "../../Reader";
-import { Tool } from "../../Tool";
-import { JrdbRaceTool } from "../JrdbRaceTool";
+import * as $K from "../../converters/Kaisai";
+import * as $R from "../../converters/Race";
+import { Kaisai } from "../../entities/Kaisai";
+import { Bridge } from "../Bridge";
+import { DataToImport } from "../DataToImport";
+import { readDouble } from "../Reader";
+import { Tool } from "../Tool";
+import { JrdbRaceTool } from "./JrdbRaceTool";
 
 export abstract class Ka$ extends DataToImport {
 

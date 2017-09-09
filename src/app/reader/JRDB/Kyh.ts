@@ -1,9 +1,9 @@
-import { Shussouba } from "../../../entities/Shussouba";
-import { ShussoubaJrdb } from "../../../entities/ShussoubaJrdb";
-import { ShussoubaInfo } from "../../RaceTool";
+import { Shussouba } from "../../entities/Shussouba";
+import { ShussoubaJrdb } from "../../entities/ShussoubaJrdb";
+import { ShussoubaInfo } from "../RaceTool";
 import { Ky$ } from "./Ky$";
-import * as $S from "../../../converters/Shussouba";
-import * as $SJ from "../../../converters/ShussoubaJrdb";
+import * as $S from "../../converters/Shussouba";
+import * as $SJ from "../../converters/ShussoubaJrdb";
 
 export class Kyh extends Ky$ {
 

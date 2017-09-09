@@ -1,17 +1,17 @@
 import { Inject } from "typedi";
-import * as $C from "../../../converters/Common";
-import * as $U from "../../../converters/Uma";
-import { BanushiDao } from "../../../daos/BanushiDao";
-import { SeisanshaDao } from "../../../daos/SeisanshaDao";
-import { UmaDao } from "../../../daos/UmaDao";
-import { Banushi } from "../../../entities/Banushi";
-import { Kyousouba } from "../../../entities/Kyousouba";
-import { Seisansha } from "../../../entities/Seisansha";
-import { Uma } from "../../../entities/Uma";
-import { Bridge } from "../../Bridge";
-import { DataToImport } from "../../DataToImport";
-import { readInt, readStr } from "../../Reader";
-import { Tool } from "../../Tool";
+import * as $C from "../../converters/Common";
+import * as $U from "../../converters/Uma";
+import { BanushiDao } from "../../daos/BanushiDao";
+import { SeisanshaDao } from "../../daos/SeisanshaDao";
+import { UmaDao } from "../../daos/UmaDao";
+import { Banushi } from "../../entities/Banushi";
+import { Kyousouba } from "../../entities/Kyousouba";
+import { Seisansha } from "../../entities/Seisansha";
+import { Uma } from "../../entities/Uma";
+import { Bridge } from "../Bridge";
+import { DataToImport } from "../DataToImport";
+import { readInt, readStr } from "../Reader";
+import { Tool } from "../Tool";
 
 export class Ukc extends DataToImport {
 

@@ -1,11 +1,11 @@
 import { Inject } from "typedi";
-import { Shussouba } from "../../../entities/Shussouba";
-import { ShussoubaJrdb } from "../../../entities/ShussoubaJrdb";
-import { DataToImport } from "../../DataToImport";
-import { ShussoubaInfo } from "../../RaceTool";
-import { Tool } from "../../Tool";
-import { JrdbRaceTool } from "../JrdbRaceTool";
-import { JrdbTool } from "../JrdbTool";
+import { Shussouba } from "../../entities/Shussouba";
+import { ShussoubaJrdb } from "../../entities/ShussoubaJrdb";
+import { DataToImport } from "../DataToImport";
+import { ShussoubaInfo } from "../RaceTool";
+import { Tool } from "../Tool";
+import { JrdbRaceTool } from "./JrdbRaceTool";
+import { JrdbTool } from "./JrdbTool";
 
 export abstract class ShussoubaData extends DataToImport {
 

@@ -12,10 +12,10 @@ import { KolKodKd3 } from "./reader/KOL/KD3/KolKodKd3";
 import { KolKod2Kd3 } from "./reader/KOL/KD3/KolKod2Kd3";
 import { KolKod3Kd3 } from "./reader/KOL/KD3/KolKod3Kd3";
 import { KolUmaKd3 } from "./reader/KOL/KD3/KolUmaKd3";
-import { Bab } from "./reader/JRDB/Race/Bab";
-import { Bac } from "./reader/JRDB/Race/Bac";
-import { Sra } from "./reader/JRDB/Race/Sra";
-import { Srb } from "./reader/JRDB/Race/Srb";
+import { Bab } from "./reader/JRDB/Bab";
+import { Bac } from "./reader/JRDB/Bac";
+import { Sra } from "./reader/JRDB/Sra";
+import { Srb } from "./reader/JRDB/Srb";
 import { Bridge } from "./reader/Bridge";
 
 export interface Entries {

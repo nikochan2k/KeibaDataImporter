@@ -1,7 +1,7 @@
 import { Service } from "typedi";
-import * as $K from "../../../converters/Kaisai";
-import { Kaisai } from "../../../entities/Kaisai";
-import { readDouble, readInt } from "../../Reader";
+import * as $K from "../../converters/Kaisai";
+import { Kaisai } from "../../entities/Kaisai";
+import { readDouble, readInt } from "../Reader";
 import { Ka$ } from "./Ka$";
 
 @Service()

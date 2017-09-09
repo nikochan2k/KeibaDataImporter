@@ -1,8 +1,8 @@
 
-import { ShussoubaJrdb } from "../../../entities/ShussoubaJrdb";
+import { ShussoubaJrdb } from "../../entities/ShussoubaJrdb";
 import { Kyh } from "./Kyh";
-import * as $SJ from "../../../converters/ShussoubaJrdb";
-import { readInt, readStr } from "../../Reader";
+import * as $SJ from "../../converters/ShussoubaJrdb";
+import { readInt, readStr } from "../Reader";
 
 export class Kyi extends Kyh {
 
