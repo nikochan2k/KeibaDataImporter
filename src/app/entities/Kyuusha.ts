@@ -40,6 +40,9 @@ export class Kyuusha {
   @Column("smallint", { nullable: true })
   public ShozokuBasho?: number;
 
+  @Column("varchar", { length: 6, nullable: true })
+  public ShozokuBashoMei?: string;
+
   @Column("smallint", { nullable: true })
   public RitsuHokuNanBetsu?: number;
 }

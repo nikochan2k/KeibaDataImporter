@@ -37,21 +37,92 @@ export class Importer {
   constructor() {
     this.logger = getLogger(this);
     this.readers = [
-      // KOL3
+      // KD3厩舎データ
+      // kol_kyu.kd3
+      // JRDB調教師データ
+      // Cza
+      // Csa
+      // KD3騎手データ
+      // kol_kis.kd3
+      // JRDB騎手データ
+      // Kza
+      // Ksa
+      // KD3種牡馬データ
+      // kol_syu.kd
+      // KD3競走馬データ
       { pattern: /kol_uma.kd3/, dataToImport: Container.get(KolUmaKd3) },
+      // JRDB馬基本データ
+      // Ukc
+      // KD3 3代血統図
+      // kol_ket.kd3
+      // KD3 5代血統図
+      // kol_ket5.kd
+      // KD3出走馬レースデータ
       { pattern: /kol_den1.kd3/, dataToImport: Container.get(KolDen1Kd3) },
-      { pattern: /kol_den2.kd3/, dataToImport: Container.get(KolDen2Kd3) },
-      { pattern: /kol_kod.kd3/, dataToImport: Container.get(KolKodKd3) },
-      { pattern: /kol_kod2.kd3/, dataToImport: Container.get(KolKod2Kd3) },
-      { pattern: /kol_kod3.kd3/, dataToImport: Container.get(KolKod3Kd3) },
-      { pattern: /kol_sei1.kd3/, dataToImport: Container.get(KolSei1Kd3) },
-      { pattern: /kol_sei2.kd3/, dataToImport: Container.get(KolSei2Kd3) },
-      { pattern: /kol_sei3.kd3/, dataToImport: Container.get(KolSei3Kd3) },
-      // JRDB
+      // JRDB開催データ
+      // Kaa
+      // Kab
+      // JRDB番組データ
       { pattern: /bab\d+\.txt$/i, dataToImport: Container.get(Bab) },
       { pattern: /bac\d+\.txt$/i, dataToImport: Container.get(Bac) },
+      // JRDB前走データ
+      // zec
+      // JRDB前走拡張データ
+      // zkb
+      // KOL出馬表出走馬データ
+      { pattern: /kol_den2.kd3/, dataToImport: Container.get(KolDen2Kd3) },
+      // JRDB競走馬データ
+      // kyg
+      // kyh
+      // kyi
+      // JRDB競走馬拡張データ
+      // kka
+      // JRDB情報データ
+      // joa
+      // JRDB調教分析データ
+      // cya
+      // cyb
+      // JRDB調教本追切データ
+      // cha
+      // JRDB直前情報データ
+      // tyb
+      // KOL予想オッズ（単勝・枠連・馬連）
+      // kol_ods.kd3
+      // KOL予想オッズ２（馬単・３連複）
+      // kol_ods2.kd3
+      // JRDB基準オッズデータ
+      // oz
+      // JRDBワイド基準オッズデータ
+      // ow
+      // JRDB馬単基準オッズデータ
+      // ou
+      // 3連複基準オッズデータ
+      // ot
+      // 3連単基準オッズデータ
+      // ov
+      // KD3競走成績レースデータ
+      { pattern: /kol_sei1.kd3/, dataToImport: Container.get(KolSei1Kd3) },
+      // JRDB成績レースデータ
       { pattern: /sra\d+\.txt$/i, dataToImport: Container.get(Sra) },
       { pattern: /srb\d+\.txt$/i, dataToImport: Container.get(Srb) },
+      // KD3競走成績出走馬データ
+      { pattern: /kol_sei2.kd3/, dataToImport: Container.get(KolSei2Kd3) },
+      // JRDB成績データ
+      // sec
+      // sed
+      // KD3制裁その他データ
+      { pattern: /kol_sei3.kd3/, dataToImport: Container.get(KolSei3Kd3) },
+      // JRDB成績拡張データ
+      // skb
+      // JRDB払戻情報データ
+      // hja
+      // hjc
+      // KD3確定オッズ（単勝・枠連・馬連）
+      { pattern: /kol_kod.kd3/, dataToImport: Container.get(KolKodKd3) },
+      // KD3確定オッズ（複勝・ワイド・馬単・３連複）
+      { pattern: /kol_kod2.kd3/, dataToImport: Container.get(KolKod2Kd3) },
+      // KD3確定オッズ３（３連単）
+      { pattern: /kol_kod3.kd3/, dataToImport: Container.get(KolKod3Kd3) },
     ];
   }
 
