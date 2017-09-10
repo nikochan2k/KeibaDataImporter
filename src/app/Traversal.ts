@@ -31,31 +31,104 @@ export class Traversal {
   private importer: Importer;
 
   private fileInfos: FileInfo[] = [
-    // KOL3 lzh
-    { pattern: /dkis\d+\.lzh$/i, priority: 1 },
-    { pattern: /ekyu\d+\.lzh$/i, priority: 2 },
-    { pattern: /fket\d+\.lzh$/i, priority: 3 },
-    { pattern: /gsyu\d+\.lzh$/i, priority: 4 },
-    { pattern: /hb\d+\.lzh$/i, priority: 5 },
-    { pattern: /hz\d+\.lzh$/i, priority: 6 },
-    { pattern: /mb\d+\.lzh$/i, priority: 7 },
-    { pattern: /jb\d+\.lzh$/i, priority: 8 },
-    { pattern: /kd\d+\.lzh$/i, priority: 9 },
-    { pattern: /ib\d+\.lzh$/i, priority: 10 },
-    { pattern: /lb\d+\.lzh$/i, priority: 11 },
-    // KOL3 raw
-    { pattern: /kol_uma.kd3$/, priority: 1 },
-    { pattern: /kol_den1.kd3$/, priority: 2 },
-    { pattern: /kol_den2.kd3$/, priority: 3 },
-    { pattern: /kol_kod.kd3$/, priority: 4 },
-    { pattern: /kol_kod2.kd3$/, priority: 5 },
-    { pattern: /kol_kod3.kd3$/, priority: 6 },
-    { pattern: /kol_sei1.kd3$/, priority: 7 },
-    { pattern: /kol_sei2.kd3$/, priority: 8 },
-    { pattern: /kol_sei3.kd3$/, priority: 9 },
-    // JRDB
-    { pattern: /ba[bc]\d+\.(lzh|txt)$/i, priority: 1 },
-    { pattern: /sr[ab]\d+\.(lzh|txt)$/i, priority: 2 },
+    // KD3厩舎データ
+    { pattern: /ekyu\d+\.lzh$/i, priority: 1 },
+    { pattern: /kol_kyu.kd3$/, priority: 2 },
+    // JRDB調教師データ
+    { pattern: /c[zs]a\d+\.(lzh|txt)$/i, priority: 3 },
+    // KD3 騎手
+    { pattern: /dkis\d+\.lzh$/i, priority: 4 },
+    // KD3騎手データ
+    { pattern: /kol_kis.kd3$/, priority: 5 },
+    // JRDB騎手データ
+    { pattern: /k[zs]a\d+\.(lzh|txt)$/i, priority: 6 },
+    // KD3種牡馬データ
+    { pattern: /gsyu\d+\.lzh$/i, priority: 7 },
+    { pattern: /kol_syu.kd3$/, priority: 8 },
+    // KD3 出馬表＋馬（１日）
+    { pattern: /hb\d+\.lzh$/i, priority: 9 },
+    // KD3 日曜重賞付出馬表＋馬（１日）
+    { pattern: /hz\d+\.lzh$/i, priority: 10 },
+    // KD3競走馬データ
+    { pattern: /kol_uma.kd3$/, priority: 11 },
+    // JRDB馬基本データ
+    { pattern: /ukc\d+\.txt$/i, priority: 12 },
+    // KD3 3代血統図
+    { pattern: /fket\d+\.lzh$/i, priority: 13 },
+    { pattern: /kol_ket.kd3$/, priority: 14 },
+    // KD3 5代血統図
+    { pattern: /fket5\d+\.lzh$/i, priority: 15 },
+    { pattern: /kol_ket5.kd3$/, priority: 16 },
+    // KD3出走馬レースデータ
+    { pattern: /kol_den1.kd3$/, priority: 17 },
+    // JRDB開催データ
+    { pattern: /ka[ab]\d+\.(lzh|txt)$/i, priority: 18 },
+    // JRDB番組データ
+    { pattern: /ba[bc]\d+\.(lzh|txt)$/i, priority: 19 },
+    // JRDB前走データ
+    { pattern: /zec\d+\.(lzh|txt)$/i, priority: 20 },
+    // JRDB前走拡張データ
+    { pattern: /zkb\d+\.(lzh|txt)$/i, priority: 21 },
+    // KOL出馬表出走馬データ
+    { pattern: /kol_den2.kd3$/, priority: 22 },
+    // KD3 コメントデータ（出馬用）
+    { pattern: /mb\d+\.lzh$/i, priority: 23 },
+    // JRDB競走馬データ
+    { pattern: /ky[ghi]\d+\.(lzh|txt)$/i, priority: 24 },
+    // JRDB競走馬拡張データ
+    { pattern: /kka\d+\.(lzh|txt)$/i, priority: 25 },
+    // JRDB情報データ
+    { pattern: /joa\d+\.(lzh|txt)$/i, priority: 26 },
+    // JRDB調教分析データ
+    { pattern: /cy[ab]\d+\.(lzh|txt)$/i, priority: 27 },
+    // JRDB調教本追切データ
+    { pattern: /cha\d+\.(lzh|txt)$/i, priority: 28 },
+    // JRDB直前情報データ
+    { pattern: /tyb\d+\.(lzh|txt)$/i, priority: 29 },
+    // KD3 予想（前売り）オッズ（１日）
+    { pattern: /jb\d+\.lzh$/i, priority: 30 },
+    // KOL予想オッズ（単勝・枠連・馬連）
+    { pattern: /kol_ods.kd3$/, priority: 31 },
+    // KOL予想オッズ２（馬単・３連複）
+    { pattern: /kol_ods2.kd3$/, priority: 32 },
+    // JRDB基準オッズデータ
+    { pattern: /oz\d+\.(lzh|txt)$/i, priority: 33 },
+    // JRDBワイド基準オッズデータ
+    { pattern: /ow\d+\.(lzh|txt)$/i, priority: 34 },
+    // JRDB馬単基準オッズデータ
+    { pattern: /ou\d+\.(lzh|txt)$/i, priority: 35 },
+    // 3連複基準オッズデータ
+    { pattern: /ot\d+\.(lzh|txt)$/i, priority: 36 },
+    // 3連単基準オッズデータ
+    { pattern: /ov\d+\.(lzh|txt)$/i, priority: 37 },
+    // KD3 成績＋馬（１日）
+    { pattern: /ib\d+\.lzh$/i, priority: 38 },
+    // KD3競走成績レースデータ
+    { pattern: /kol_sei1.kd3$/, priority: 39 },
+    // JRDB成績レースデータ
+    { pattern: /sr[ab]\d+\.(lzh|txt)$/i, priority: 40 },
+    // KD3競走成績出走馬データ
+    { pattern: /kol_sei2.kd3$/, priority: 41 },
+    // JRDB成績データ
+    { pattern: /se[cd]\d+\.(lzh|txt)$/i, priority: 42 },
+    // KD3制裁その他データ
+    { pattern: /kol_sei3.kd3$/, priority: 43 },
+    // JRDB成績拡張データ
+    { pattern: /skb\d+\.(lzh|txt)$/i, priority: 44 },
+    // JRDB払戻情報データ
+    { pattern: /hj[ac]\d+\.(lzh|txt)$/i, priority: 45 },
+    // KD3 コメントデータ（成績用）
+    { pattern: /lb\d+\.lzh$/i, priority: 46 },
+    // KD3騎手厩舎コメント／次走へのメモ
+    { pattern: /kol_com1.kd3$/, priority: 47 },
+    // KD3 確定オッズ（１日）
+    { pattern: /kd\d+\.lzh$/i, priority: 48 },
+    // KD3確定オッズ（単勝・枠連・馬連）
+    { pattern: /kol_kod.kd3$/, priority: 49 },
+    // KD3確定オッズ（複勝・ワイド・馬単・３連複）
+    { pattern: /kol_kod2.kd3$/, priority: 50 },
+    // KD3確定オッズ３（３連単）
+    { pattern: /kol_kod3.kd3$/, priority: 51 },
   ];
 
   constructor() {
