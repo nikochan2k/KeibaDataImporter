@@ -273,12 +273,6 @@ export const sanch = new Codes(
   ]
 );
 
-export const masshouFlag = new Codes(
-  [
-    { code: 1, kol: "1", jrdb: "1", naiyou: "抹消" }
-  ]
-);
-
 export const keitou = new Codes(
   [
     { code: 1101, jrdb: "1101", naiyou: "ノーザンダンサー系" },

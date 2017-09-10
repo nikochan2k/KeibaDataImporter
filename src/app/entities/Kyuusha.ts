@@ -45,4 +45,10 @@ export class Kyuusha {
 
   @Column("smallint", { nullable: true })
   public RitsuHokuNanBetsu?: number;
+
+  @Column("tinyint", { nullable: true })
+  public TourokuMasshouFlag?: number;
+
+  @Column("int", { nullable: true })
+  public TourokuMasshouNengappi?: number;
 }

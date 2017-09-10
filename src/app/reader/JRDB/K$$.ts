@@ -1,6 +1,7 @@
 import { Inject } from "typedi";
 import { Repository } from "typeorm";
 import { OrmRepository } from "typeorm-typedi-extensions";
+import * as $C from "../../converters/Common";
 import { KishuDao } from "../../daos/KishuDao";
 import { Kishu } from "../../entities/Kishu";
 import { KishuComment } from "../../entities/KishuComment";
@@ -19,6 +20,8 @@ export abstract class K$$ extends DataToImport {
   public async save(buffer: Buffer, bridge: Bridge) {
     const toBe = new Kishu();
     toBe.JrdbKishuCode = readInt(buffer, 0, 5);
+    toBe.TourokuMasshouFlag = $C.masshouFlag.toCodeFromJrdb(buffer, 5, 1);
+    toBe.TourokuMasshouNengappi = readPositiveInt(buffer, 6, 8);
     toBe.KishuMei = readStr(buffer, 14, 12);
     toBe.Furigana = readStr(buffer, 26, 30);
     toBe.TanshukuKishuMei = readStr(buffer, 56, 6);

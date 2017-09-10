@@ -38,4 +38,10 @@ export class Kishu {
 
   @Column("smallint", { nullable: true })
   public HatsuMenkyoNen?: number;
+
+  @Column("tinyint", { nullable: true })
+  public TourokuMasshouFlag?: number;
+
+  @Column("int", { nullable: true })
+  public TourokuMasshouNengappi?: number;
 }

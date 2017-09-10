@@ -116,7 +116,7 @@ export class KolUmaKd3 extends DataToImport {
     uma.HahaUmaId = hahaUma && hahaUma.Id;
     const seisansha = await this.kolTool.saveSeisansha(buffer, 423);
     uma.SeisanshaId = seisansha && seisansha.Id;
-    uma.MasshouFlag = $U.masshouFlag.toCodeFromKol(buffer, 544, 1);
+    uma.MasshouFlag = $C.masshouFlag.toCodeFromKol(buffer, 544, 1);
     uma.MasshouNengappi = readDate(buffer, 545, 8);
     uma.Jiyuu = readStr(buffer, 553, 6);
     uma.Ikisaki = readStr(buffer, 559, 10);

@@ -107,6 +107,13 @@ export const touzaiBetsu = new Codes(
   ]
 );
 
+export const masshouFlag = new Codes(
+  [
+    { code: 1, kol: "1", jrdb: "1", naiyou: "抹消" },
+    { code: 2, kol: "2", naiyou: "引退" }
+  ]
+);
+
 export enum Baken {
   Tanshou,
   Fukushou,

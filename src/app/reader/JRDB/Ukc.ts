@@ -49,7 +49,7 @@ export class Ukc extends DataToImport {
     uma.SeisanshaId = seisansha && seisansha.Id;
     uma.Sanchi = $U.sanch.toCodeFromJrdb(buffer, 259, 8);
     uma.SanchiMei = readStr(buffer, 259, 8);
-    uma.MasshouFlag = $U.masshouFlag.toCodeFromJrdb(buffer, 267, 1);
+    uma.MasshouFlag = $C.masshouFlag.toCodeFromJrdb(buffer, 267, 1);
     uma.ChichiKeitouCode = $U.keitou.toCodeFromJravan(buffer, 276, 4);
     uma.HahaChichiKeitouCode = $U.keitou.toCodeFromJravan(buffer, 280, 4);
     uma = await this.umaDao.saveUma(uma);
