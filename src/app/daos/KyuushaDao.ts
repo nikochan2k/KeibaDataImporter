@@ -16,20 +16,21 @@ export class KyuushaDao {
   @Inject()
   private tool: Tool;
 
-  protected getKyuusha(kyuusha: Kyuusha) {
+  protected async getKyuusha(kyuusha: Kyuusha) {
+    let result: Kyuusha;
     if (kyuusha.KolKyuushaCode) {
-      return this.repository.findOne({ KolKyuushaCode: kyuusha.KolKyuushaCode });
+      result = await this.repository.findOne({ KolKyuushaCode: kyuusha.KolKyuushaCode });
     }
-    if (kyuusha.JrdbKyuushaCode) {
-      return this.repository.findOne({ JrdbKyuushaCode: kyuusha.JrdbKyuushaCode });
+    if (!result && kyuusha.JrdbKyuushaCode) {
+      result = await this.repository.findOne({ JrdbKyuushaCode: kyuusha.JrdbKyuushaCode });
     }
-    return null;
+    if (!result && kyuusha.KyuushaMei) {
+      result = await this.repository.findOne({ KyuushaMei: kyuusha.KyuushaMei });
+    }
+    return result;
   }
 
   public async saveKyuusha(toBe: Kyuusha) {
-    if (!toBe.KolKyuushaCode && !toBe.JrdbKyuushaCode) {
-      return null;
-    }
     const asIs = await this.getKyuusha(toBe);
     if (asIs) {
       const updateSet = this.tool.createUpdateSet(asIs, toBe, false);

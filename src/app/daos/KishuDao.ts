@@ -18,7 +18,13 @@ export class KishuDao {
 
   protected async getKishu(kishu: Kishu) {
     let result: Kishu;
-    if (kishu.KishuMei) {
+    if (kishu.KolKishuCode) {
+      result = await this.kishuRepository.findOne({ KolKishuCode: kishu.KolKishuCode });
+    }
+    if (!result && kishu.JrdbKishuCode) {
+      result = await this.kishuRepository.findOne({ JrdbKishuCode: kishu.JrdbKishuCode });
+    }
+    if (!result && kishu.KishuMei) {
       result = await this.kishuRepository.findOne({ KishuMei: kishu.KishuMei });
     }
     if (result) {
