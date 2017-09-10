@@ -1,9 +1,10 @@
-
+import { Service } from "typedi";
 import { ShussoubaJrdb } from "../../entities/ShussoubaJrdb";
 import { Kyh } from "./Kyh";
 import * as $SJ from "../../converters/ShussoubaJrdb";
 import { readInt, readStr } from "../Reader";
 
+@Service()
 export class Kyi extends Kyh {
 
   protected getBufferLength(): number {

@@ -1,4 +1,4 @@
-import { Inject } from "typedi";
+import { Inject, Service } from "typedi";
 import * as $C from "../../converters/Common";
 import * as $U from "../../converters/Uma";
 import { BanushiDao } from "../../daos/BanushiDao";
@@ -13,6 +13,7 @@ import { DataToImport } from "../DataToImport";
 import { readInt, readStr } from "../Reader";
 import { Tool } from "../Tool";
 
+@Service()
 export class Ukc extends DataToImport {
 
   @Inject()

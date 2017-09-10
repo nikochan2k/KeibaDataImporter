@@ -1,3 +1,4 @@
+import { Service } from "typedi";
 import { Shussouba } from "../../entities/Shussouba";
 import { ShussoubaJrdb } from "../../entities/ShussoubaJrdb";
 import { ShussoubaInfo } from "../RaceTool";
@@ -5,6 +6,7 @@ import { Ky$ } from "./Ky$";
 import * as $S from "../../converters/Shussouba";
 import * as $SJ from "../../converters/ShussoubaJrdb";
 
+@Service()
 export class Kyh extends Ky$ {
 
   protected getBufferLength(): number {
