@@ -31,10 +31,10 @@ export abstract class C$$ extends DataToImport {
     toBe.Seinengappi = readPositiveInt(buffer, 67, 8);
     toBe.HatsuMenkyoNen = readPositiveInt(buffer, 75, 4);
     const kyuusha = await this.kyuushaDao.saveKyuusha(toBe);
-    await this.saveChoukyoushiComment(buffer, kyuusha);
+    await this.saveKyuushaComment(buffer, kyuusha);
   }
 
-  public async saveChoukyoushiComment(buffer: Buffer, kyuusha: Kyuusha) {
+  public async saveKyuushaComment(buffer: Buffer, kyuusha: Kyuusha) {
     const commentNyuuryokuNengappi = readInt(buffer, 119, 8);
     const asIs = await this.repository
       .createQueryBuilder("kc")
