@@ -360,3 +360,17 @@ export const kyuushaRank = new Codes(
     { code: 9, jrdb: "9", naiyou: "F級未満", tanshuku: "F級未満" },
   ]
 );
+
+export const lsHyouka = new Codes(
+  [
+    { code: 1, jrdb: "A", naiyou: "A" },
+    { code: 2, jrdb: "B", naiyou: "B" },
+    { code: 3, jrdb: "C", naiyou: "C" },
+  ]
+);
+
+export const em = new Codes(
+  [
+    { code: 1, jrdb: "1", naiyou: "消し" },
+  ]
+);

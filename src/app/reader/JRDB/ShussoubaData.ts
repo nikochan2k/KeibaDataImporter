@@ -28,6 +28,8 @@ export abstract class ShussoubaData extends DataToImport {
     if (!shussouba) {
       return;
     }
+
+    await this.saveShussoubaJrdb(buffer, shussouba);
   }
 
   protected async saveShussouba(buffer: Buffer, info: ShussoubaInfo) {

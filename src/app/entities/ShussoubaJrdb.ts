@@ -309,10 +309,10 @@ export class ShussoubaJrdb {
   @Column("smallint", { nullable: true })
   public Tokki3: number;
 
-  @Column("float", { nullable: true })
+  @Column("real", { nullable: true })
   public StartShisuu: number;
 
-  @Column("float", { nullable: true })
+  @Column("real", { nullable: true })
   public DeokureRitsu: number;
 
   @Column("smallint", { nullable: true })
@@ -358,7 +358,7 @@ export class ShussoubaJrdb {
   public NyuukyuuNannichimae?: number;
 
 
-  @Column("varchar", { nullable: true })
+  @Column("varchar", { length: 75, nullable: true })
   public Houbokusaki?: string;
 
   @Column("tinyint", { nullable: true })
@@ -366,4 +366,33 @@ export class ShussoubaJrdb {
 
   @Column("tinyint", { nullable: true })
   public KyuushaRank?: number;
+
+  @Column("real", { nullable: true })
+  public CidChoukyouSoten: number;
+
+  @Column("real", { nullable: true })
+  public CidKyuushaSoten: number;
+
+  @Column("real", { nullable: true })
+  public CidSoten: number;
+
+  @Column("smallint", { nullable: true })
+  public Cid: number;
+
+
+  @Column("real", { nullable: true })
+  public LsShisuu: number;
+
+  @Column("tinyint", { nullable: true })
+  public LsHyouka: number;
+
+  @Column("tinyint", { nullable: true })
+  public Em: number;
+
+  @Column("tinyint", { nullable: true })
+  public KyuushaBbShirushi: number;
+
+  @Column("tinyint", { nullable: true })
+  public KishuBbShirushi: number;
+
 }

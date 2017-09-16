@@ -2,29 +2,30 @@ import * as fs from "fs";
 import { Logger } from "log4js";
 import { Container, Service } from "typedi";
 import { getLogger } from "./LogUtil";
+import { Bridge } from "./reader/Bridge";
 import { DataToImport } from "./reader/DataToImport";
-import { KolDen1Kd3 } from "./reader/KOL/KD3/KolDen1Kd3";
-import { KolDen2Kd3 } from "./reader/KOL/KD3/KolDen2Kd3";
-import { KolSei1Kd3 } from "./reader/KOL/KD3/KolSei1Kd3";
-import { KolSei2Kd3 } from "./reader/KOL/KD3/KolSei2Kd3";
-import { KolSei3Kd3 } from "./reader/KOL/KD3/KolSei3Kd3";
-import { KolKodKd3 } from "./reader/KOL/KD3/KolKodKd3";
-import { KolKod2Kd3 } from "./reader/KOL/KD3/KolKod2Kd3";
-import { KolKod3Kd3 } from "./reader/KOL/KD3/KolKod3Kd3";
-import { KolUmaKd3 } from "./reader/KOL/KD3/KolUmaKd3";
 import { Bab } from "./reader/JRDB/Bab";
 import { Bac } from "./reader/JRDB/Bac";
-import { C$a } from "./reader/JRDB/C$a";
+import { Joa } from "./reader/JRDB/Joa";
 import { Kaa } from "./reader/JRDB/Kaa";
 import { Kab } from "./reader/JRDB/Kab";
 import { Kyg } from "./reader/JRDB/Kyg";
 import { Kyh } from "./reader/JRDB/Kyh";
 import { Kyi } from "./reader/JRDB/Kyi";
-import { K$a } from "./reader/JRDB/K$a";
 import { Sra } from "./reader/JRDB/Sra";
 import { Srb } from "./reader/JRDB/Srb";
 import { Ukc } from "./reader/JRDB/Ukc";
-import { Bridge } from "./reader/Bridge";
+import { KolDen1Kd3 } from "./reader/KOL/KD3/KolDen1Kd3";
+import { KolDen2Kd3 } from "./reader/KOL/KD3/KolDen2Kd3";
+import { KolKod2Kd3 } from "./reader/KOL/KD3/KolKod2Kd3";
+import { KolKod3Kd3 } from "./reader/KOL/KD3/KolKod3Kd3";
+import { KolKodKd3 } from "./reader/KOL/KD3/KolKodKd3";
+import { KolSei1Kd3 } from "./reader/KOL/KD3/KolSei1Kd3";
+import { KolSei2Kd3 } from "./reader/KOL/KD3/KolSei2Kd3";
+import { KolSei3Kd3 } from "./reader/KOL/KD3/KolSei3Kd3";
+import { KolUmaKd3 } from "./reader/KOL/KD3/KolUmaKd3";
+import { C$a } from "./reader/JRDB/C$a";
+import { K$a } from "./reader/JRDB/K$a";
 
 export interface Entries {
   [basename: string]: string;
@@ -85,10 +86,8 @@ export class Importer {
       { pattern: /kyg\d+\.txt$/i, dataToImport: Container.get(Kyg) },
       { pattern: /kyh\d+\.txt$/i, dataToImport: Container.get(Kyh) },
       { pattern: /kyi\d+\.txt$/i, dataToImport: Container.get(Kyi) },
-      // JRDB競走馬拡張データ
-      // kka
       // JRDB情報データ
-      // joa
+      { pattern: /joa\d+\.txt$/i, dataToImport: Container.get(Joa) },
       // JRDB調教分析データ
       // cya
       // cyb
