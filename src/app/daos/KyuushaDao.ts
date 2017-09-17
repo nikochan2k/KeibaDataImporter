@@ -1,6 +1,7 @@
 import { Service, Inject } from "typedi";
 import { EntityManager, Repository } from "typeorm";
 import { OrmEntityManager, OrmRepository } from "typeorm-typedi-extensions";
+import { Meishou } from "../entities/Meishou";
 import { Kyuusha } from "../entities/Kyuusha";
 import { KyuushaMeishou } from "../entities/KyuushaMeishou";
 import { MeishouDao } from "./MeishouDao";
@@ -34,8 +35,25 @@ export class KyuushaDao {
     return result;
   }
 
+  protected async getKyuushaWith(namae: string) {
+    const qb = this.entityManager
+      .createQueryBuilder()
+      .select("k.*")
+      .from(Kyuusha, "k")
+      .innerJoin(KyuushaMeishou, "km", "k.Id = km.KyuushaId")
+      .innerJoin(Meishou, "m", "m.Id = km.MeishouId")
+      .where("m.Namae = :namae")
+      .setParameter("namae", namae);
+    return qb.getOne();
+  }
+
   public async saveKyuusha(toBe: Kyuusha, namae?: string, tanshuku?: string) {
-    const asIs = await this.getKyuusha(toBe);
+    let asIs: Kyuusha;
+    if (toBe.KolKyuushaCode || toBe.JrdbKyuushaCode) {
+      asIs = await this.getKyuusha(toBe);
+    } else {
+      asIs = await this.getKyuushaWith(namae);
+    }
     if (asIs) {
       const updateSet = this.tool.createUpdateSet(asIs, toBe, false);
       if (updateSet) {
