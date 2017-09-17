@@ -7,6 +7,14 @@ export const choukyouFlag = new Codes(
   ]
 );
 
+export enum Noriyaku {
+  Joshu = 1,
+  Choukyoushi = 2,
+  HonbanKishu = 3,
+  ChoukyouKishu = 4,
+  Minarai = 5
+}
+
 export const noriyaku = new Codes(
   [
     { code: 1, kol: /助手/, jrdb: "1", naiyou: "助手" },

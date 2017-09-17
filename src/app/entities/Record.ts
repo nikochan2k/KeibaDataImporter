@@ -23,8 +23,8 @@ export class Record {
   @Column("float")
   public Kinryou: number;
 
-  @Column("int")
-  public KishuId: number;
+  @Column("bigint")
+  public TanshukuKishuMeiId: number;
 
   @Column("smallint")
   public Basho: number;

@@ -8,22 +8,9 @@ import {
 @Entity("Kishu")
 @Index("IxKishu1", (k: Kishu) => [k.KolKishuCode], { unique: true })
 @Index("IxKishu2", (k: Kishu) => [k.JrdbKishuCode], { unique: true })
-@Index("IxKishu3", (k: Kishu) => [k.KishuMei])
 export class Kishu {
   @PrimaryGeneratedColumn()
   public Id: number;
-
-  @Column("varchar", { length: 12 })
-  public TanshukuKishuMei: string;
-
-  @Column("bigint")
-  public FromDate: number;
-
-  @Column("bigint")
-  public ToDate: number;
-
-  @Column("varchar", { length: 48, nullable: true })
-  public KishuMei?: string;
 
   @Column("int", { nullable: true })
   public KolKishuCode?: number;

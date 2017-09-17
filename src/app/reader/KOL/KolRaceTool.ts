@@ -1,10 +1,9 @@
 import { Inject, Service } from "typedi";
 import * as $C from "../../converters/Common";
 import * as $R from "../../converters/Race";
-import { KishuDao } from "../../daos/KishuDao";
+import { MeishouDao } from "../../daos/MeishouDao";
 import { RaceDao } from "../../daos/RaceDao";
 import { UmaDao } from "../../daos/UmaDao";
-import { Kishu } from "../../entities/Kishu";
 import { Race } from "../../entities/Race";
 import { RaceHassouJoukyou } from "../../entities/RaceHassouJoukyou";
 import { RaceLapTime } from "../../entities/RaceLapTime";
@@ -36,7 +35,7 @@ export class KolRaceTool extends RaceTool {
   private umaDao: UmaDao;
 
   @Inject()
-  private kishuDao: KishuDao;
+  private meishouDao: MeishouDao;
 
   @Inject()
   private raceDao: RaceDao;
@@ -104,12 +103,9 @@ export class KolRaceTool extends RaceTool {
     uma.Bamei = bamei;
     record.UmaId = (await this.umaDao.saveUma(uma)).Id;
     record.Kinryou = readDouble(buffer, offset + 42, 3, 0.1);
-    const kishu = new Kishu();
-    kishu.TanshukuKishuMei = readStrWithNoSpace(buffer, offset + 45, 8);
-    kishu.FromDate = nengappi;
-    kishu.ToDate = nengappi;
-    kishu.TanshukuKishuMei = readStrWithNoSpace(buffer, offset + 45, 8);
-    record.KishuId = (await this.kishuDao.saveKishu(kishu)).Id;
+    const tanshukuKishuMei = readStrWithNoSpace(buffer, offset + 45, 8);
+    const meishou = await this.meishouDao.save(tanshukuKishuMei);
+    record.TanshukuKishuMeiId = meishou.Id;
     record.Basho = $C.basho.toCodeFromKol(buffer, bashoOffset, 2);
     return this.raceDao.saveRecord(record);
   }

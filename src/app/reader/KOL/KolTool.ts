@@ -66,12 +66,10 @@ export class KolTool {
 
   public async saveKishu(buffer: Buffer, offset: number, date: number) {
     const kishu = new Kishu();
-    kishu.FromDate = date;
-    kishu.ToDate = date;
     kishu.KolKishuCode = readInt(buffer, offset, 5);
-    kishu.KishuMei = readStrWithNoSpace(buffer, offset + 5, 32);
-    kishu.TanshukuKishuMei = readStrWithNoSpace(buffer, offset + 37, 8);
-    return this.kishuDao.saveKishu(kishu);
+    const kishuMei = readStrWithNoSpace(buffer, offset + 5, 32);
+    const tanshukuKishuMei = readStrWithNoSpace(buffer, offset + 37, 8);
+    return this.kishuDao.saveKishu(kishu, kishuMei, tanshukuKishuMei);
   }
 
   public saveBanushi(buffer: Buffer, offset: number) {
@@ -110,9 +108,6 @@ export class KolTool {
     const seisansha = new Seisansha();
     seisansha.SeisanshaMei = seisanshaMei;
     seisansha.TanshukuSeisanshaMei = this.tool.normalizeTanshukuHoujinMei(buffer, offset + 40, 20);
-    if (!seisansha.TanshukuSeisanshaMei) {
-      seisansha.TanshukuSeisanshaMei = seisanshaMei;
-    }
     return this.seisanshaDao.saveSeisansha(seisansha);
   }
 
@@ -122,20 +117,23 @@ export class KolTool {
       return null;
     }
     let kyuusha = new Kyuusha();
-    kyuusha.KolKyuushaCode = readPositiveInt(buffer, offset, 5);
+    kyuusha.KolKyuushaCode = kolKyuushaCode;
     kyuusha = await this.kyuushaDao.saveKyuusha(kyuusha);
     return kyuusha.Id;
   }
 
   public saveKyuusha(buffer: Buffer, offset: number) {
+    const kyuushaMei = readStrWithNoSpace(buffer, offset + 5, 32);
+    if (!kyuushaMei) {
+      return null;
+    }
     const kyuusha = new Kyuusha();
     kyuusha.KolKyuushaCode = readPositiveInt(buffer, offset, 5);
-    kyuusha.KyuushaMei = readStrWithNoSpace(buffer, offset + 5, 32);
-    kyuusha.TanshukuKyuushaMei = readStrWithNoSpace(buffer, offset + 37, 8);
+    const tanshukuKyuushaMei = readStrWithNoSpace(buffer, offset + 37, 8);
     kyuusha.ShozokuBasho = $C.basho.toCodeFromKol(buffer, offset + 45, 2);
     kyuusha.TouzaiBetsu = $KY.touzaiBetsu.toCodeFromKol(buffer, offset + 47, 1);
     kyuusha.RitsuHokuNanBetsu = $KY.ritsuHokuNanBetsu.toCodeFromKol(buffer, offset + 47, 1);
-    return this.kyuushaDao.saveKyuusha(kyuusha);
+    return this.kyuushaDao.saveKyuusha(kyuusha, kyuushaMei, tanshukuKyuushaMei);
   }
 
   public getTimeSa(buffer: Buffer, offset: number) {

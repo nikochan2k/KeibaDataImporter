@@ -1,7 +1,5 @@
 import { Inject } from "typedi";
 import { ShussoubaData } from "./ShussoubaData";
-import * as $C from "../../converters/Common";
-import * as $R from "../../converters/Race";
 import * as $S from "../../converters/Shussouba";
 import * as $SJ from "../../converters/ShussoubaJrdb";
 import { Shussouba } from "../../entities/Shussouba";

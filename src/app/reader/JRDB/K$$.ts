@@ -22,12 +22,12 @@ export abstract class K$$ extends DataToImport {
     toBe.JrdbKishuCode = readInt(buffer, 0, 5);
     toBe.TourokuMasshouFlag = $C.masshouFlag.toCodeFromJrdb(buffer, 5, 1);
     toBe.TourokuMasshouNengappi = readPositiveInt(buffer, 6, 8);
-    toBe.KishuMei = readStr(buffer, 14, 12);
+    const kishuMei = readStr(buffer, 14, 12);
     toBe.Furigana = readStr(buffer, 26, 30);
-    toBe.TanshukuKishuMei = readStr(buffer, 56, 6);
+    const tanshukuKishuMei = readStr(buffer, 56, 6);
     toBe.Seinengappi = readPositiveInt(buffer, 67, 8);
     toBe.HatsuMenkyoNen = readPositiveInt(buffer, 75, 4);
-    const kyuusha = await this.kishuDao.saveKishu(toBe);
+    const kyuusha = await this.kishuDao.saveKishu(toBe, kishuMei, tanshukuKishuMei);
     await this.saveKishuComment(buffer, kyuusha);
   }
 

@@ -38,19 +38,17 @@ export class JrdbTool {
 
   public async saveKishu(buffer: Buffer, date: number) {
     const kishu = new Kishu();
-    kishu.FromDate = date;
-    kishu.ToDate = date;
-    kishu.KishuMei = readStrWithNoSpace(buffer, 171, 12);
+    const kishuMei = readStrWithNoSpace(buffer, 171, 12);
     kishu.JrdbKishuCode = readInt(buffer, 335, 5);
-    return this.kishuDao.saveKishu(kishu);
+    return this.kishuDao.saveKishu(kishu, kishuMei);
   }
 
   public saveKyuusha(buffer: Buffer) {
     const kyuusha = new Kyuusha();
     kyuusha.JrdbKyuushaCode = readPositiveInt(buffer, 340, 5);
-    kyuusha.KyuushaMei = readStrWithNoSpace(buffer, 187, 12);
+    const kyuushaMei = readStrWithNoSpace(buffer, 187, 12);
     kyuusha.TouzaiBetsu = $KY.touzaiBetsu.toCodeFromJrdb(buffer, 199, 4);
-    return this.kyuushaDao.saveKyuusha(kyuusha);
+    return this.kyuushaDao.saveKyuusha(kyuusha, kyuushaMei);
   }
 
   public saveBanushi(buffer: Buffer) {

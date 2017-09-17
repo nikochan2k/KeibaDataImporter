@@ -1,7 +1,9 @@
 import { Inject, Service } from "typedi";
 import { EntityManager, Repository } from "typeorm";
 import { OrmEntityManager, OrmRepository } from "typeorm-typedi-extensions";
+import { MeishouDao } from "./MeishouDao";
 import { Kishu } from "../entities/Kishu";
+import { KishuMeishou } from "../entities/KishuMeishou";
 import { Tool } from "../reader/Tool";
 
 @Service()
@@ -13,6 +15,12 @@ export class KishuDao {
   @OrmRepository(Kishu)
   private kishuRepository: Repository<Kishu>;
 
+  @OrmRepository(KishuMeishou)
+  private kishuMeishouRepository: Repository<KishuMeishou>;
+
+  @Inject()
+  private meishouDao: MeishouDao;
+
   @Inject()
   private tool: Tool;
 
@@ -20,65 +28,17 @@ export class KishuDao {
     let result: Kishu;
     if (kishu.KolKishuCode) {
       result = await this.kishuRepository.findOne({ KolKishuCode: kishu.KolKishuCode });
-    }
-    if (!result && kishu.JrdbKishuCode) {
+    } else if (kishu.JrdbKishuCode) {
       result = await this.kishuRepository.findOne({ JrdbKishuCode: kishu.JrdbKishuCode });
-    }
-    if (!result && kishu.KishuMei) {
-      result = await this.kishuRepository.findOne({ KishuMei: kishu.KishuMei });
-    }
-    if (result) {
-      return result;
-    }
-
-    const list = await this.kishuRepository.find({ TanshukuKishuMei: kishu.TanshukuKishuMei });
-    const length = list.length;
-    if (length === 0) {
-      return null;
-    }
-    if (length === 1) {
-      return list[0];
-    }
-
-    let diff = Number.MAX_VALUE;
-    for (let i = 0; i < length; i++) {
-      const item = list[i];
-      if (kishu.FromDate < item.FromDate) {
-        const fromDiff = item.FromDate - kishu.FromDate;
-        if (fromDiff < diff) {
-          diff = fromDiff;
-          result = item;
-        }
-      } else if (item.ToDate < kishu.ToDate) {
-        const toDiff = kishu.ToDate - item.ToDate;
-        if (toDiff < diff) {
-          diff = toDiff;
-          result = item;
-        }
-      } else {
-        return item;
-      }
     }
     return result;
   }
 
-  public async saveKishu(toBe: Kishu) {
-    if (3 < toBe.TanshukuKishuMei.length) {
-      toBe.TanshukuKishuMei = toBe.TanshukuKishuMei.substring(0, 3);
-    }
+  public async saveKishu(toBe: Kishu, namae?: string, tanshuku?: string) {
     const asIs = await this.getKishu(toBe);
     if (asIs) {
-      let updateSet = this.tool.createUpdateSet(asIs, toBe, false);
-      if (!updateSet) {
-        updateSet = {};
-      }
-      if (toBe.FromDate < asIs.FromDate) {
-        updateSet.FromDate = asIs.FromDate = toBe.FromDate;
-      }
-      if (asIs.ToDate < toBe.ToDate) {
-        updateSet.ToDate = asIs.ToDate = toBe.ToDate;
-      }
-      if (0 < Object.keys(updateSet).length) {
+      const updateSet = this.tool.createUpdateSet(asIs, toBe, false);
+      if (updateSet) {
         await this.entityManager
           .createQueryBuilder()
           .update(Kishu, updateSet)
@@ -90,7 +50,28 @@ export class KishuDao {
     } else {
       toBe = await this.kishuRepository.save(toBe);
     }
+    if (namae) {
+      await this.saveKishuMeishou(toBe, namae);
+    }
+    if (tanshuku) {
+      await this.saveKishuMeishou(toBe, tanshuku);
+      if (3 < tanshuku.length) {
+        tanshuku = tanshuku.substring(0, 3);
+        await this.saveKishuMeishou(toBe, tanshuku);
+      }
+    }
     return toBe;
+  }
+
+  protected async saveKishuMeishou(kishu: Kishu, namae: string) {
+    const meishou = await this.meishouDao.save(namae);
+    let kishuMeishou = await this.kishuMeishouRepository.findOne({ KishuId: kishu.Id, MeishouId: meishou.Id });
+    if (!kishuMeishou) {
+      kishuMeishou = new KishuMeishou();
+      kishuMeishou.KishuId = kishu.Id;
+      kishuMeishou.MeishouId = meishou.Id;
+      await this.kishuMeishouRepository.save(kishuMeishou);
+    }
   }
 
 }

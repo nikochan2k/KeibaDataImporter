@@ -6,9 +6,8 @@ import {
 } from "typeorm";
 
 @Entity("Kyuusha")
-@Index("IxKyuusha1", (k: Kyuusha) => [k.KyuushaMei])
-@Index("IxKyuusha2", (k: Kyuusha) => [k.KolKyuushaCode], { unique: true })
-@Index("IxKyuusha3", (k: Kyuusha) => [k.JrdbKyuushaCode], { unique: true })
+@Index("IxKyuusha1", (k: Kyuusha) => [k.KolKyuushaCode], { unique: true })
+@Index("IxKyuusha2", (k: Kyuusha) => [k.JrdbKyuushaCode], { unique: true })
 export class Kyuusha {
   @PrimaryGeneratedColumn()
   public Id: number;
@@ -18,12 +17,6 @@ export class Kyuusha {
 
   @Column("int", { nullable: true })
   public JrdbKyuushaCode?: number;
-
-  @Column("varchar", { length: 48, nullable: true })
-  public KyuushaMei?: string;
-
-  @Column("varchar", { length: 12, nullable: true })
-  public TanshukuKyuushaMei?: string;
 
   @Column("varchar", { length: 72, nullable: true })
   public Furigana?: string;

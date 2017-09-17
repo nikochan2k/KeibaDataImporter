@@ -23,8 +23,8 @@ export class Choukyou {
   @Column("smallint", { nullable: true })
   public Noriyaku?: number;
 
-  @Column("smallint", { nullable: true })
-  public KishuId: number;
+  @Column("bigint", { nullable: true })
+  public TanshukuKishuMeiId: number;
 
   @Column("bigint", { nullable: true })
   public Nengappi?: number;

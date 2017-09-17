@@ -3,11 +3,10 @@ import { Inject, Service } from "typedi";
 import { EntityManager } from "typeorm";
 import { OrmEntityManager } from "typeorm-typedi-extensions";
 import * as $CH from "../../converters/Choukyou";
-import { KishuDao } from "../../daos/KishuDao";
+import { MeishouDao } from "../../daos/MeishouDao";
 import { UmaDao } from "../../daos/UmaDao";
 import { Choukyou } from "../../entities/Choukyou";
 import { ChoukyouTime } from "../../entities/ChoukyouTime";
-import { Kishu } from "../../entities/Kishu";
 import { Shussouba } from "../../entities/Shussouba";
 import { Uma } from "../../entities/Uma";
 import { getLogger } from "../../LogUtil";
@@ -52,7 +51,7 @@ export class KolChoukyouTool {
   private umaDao: UmaDao;
 
   @Inject()
-  private kishuDao: KishuDao;
+  private meishouDao: MeishouDao;
 
   constructor() {
     this.logger = getLogger(this);
@@ -64,6 +63,7 @@ export class KolChoukyouTool {
     if (!kijousha) {
       return;
     }
+
     const choukyou = new Choukyou();
     choukyou.Id = shussouba.Id * (2 ** 2) + bangou;
     choukyou.ShussoubaId = shussouba.Id;
@@ -73,15 +73,12 @@ export class KolChoukyouTool {
     const nengappi = readDate(buffer, offset + 9, 8);
     choukyou.Nengappi = nengappi;
     if (!choukyou.Noriyaku) {
-      const kishu = new Kishu();
-      kishu.TanshukuKishuMei = kijousha;
-      kishu.FromDate = nengappi;
-      kishu.ToDate = nengappi;
-      choukyou.KishuId = (await this.kishuDao.saveKishu(kishu)).Id;
       if (tanshukuKishuMei === kijousha) {
-        choukyou.Noriyaku = 3; // 本番騎手
+        choukyou.Noriyaku = $CH.Noriyaku.HonbanKishu; // 本番騎手
       } else {
-        choukyou.Noriyaku = 4; // 調教騎手
+        choukyou.Noriyaku = $CH.Noriyaku.ChoukyouKishu; // 調教騎手
+        const meishou = await this.meishouDao.save(kijousha);
+        choukyou.TanshukuKishuMeiId = meishou.Id;
       }
     }
     const bashoCourse = readStrWithNoSpace(buffer, offset + 17, 8);
