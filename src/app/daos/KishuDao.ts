@@ -4,7 +4,6 @@ import { OrmEntityManager, OrmRepository } from "typeorm-typedi-extensions";
 import { MeishouDao } from "./MeishouDao";
 import { Kishu } from "../entities/Kishu";
 import { KishuMeishou } from "../entities/KishuMeishou";
-import { Meishou } from "../entities/Meishou";
 import { Tool } from "../reader/Tool";
 
 @Service()
@@ -35,16 +34,34 @@ export class KishuDao {
     return result;
   }
 
-  public async getKishuWith(namae: string) {
-    const qb = this.entityManager
-      .createQueryBuilder()
-      .select("k.*")
-      .from(Kishu, "k")
-      .innerJoin(KishuMeishou, "km", "k.Id = km.KishuId")
-      .innerJoin(Meishou, "m", "m.Id = km.MeishouId")
-      .where("m.Namae = :namae")
-      .setParameter("namae", namae);
-    return qb.getOne();
+  public async getKishuWith(meishouId: string, umaId: number) {
+    const kishuList = <Kishu[]>await this.entityManager.query(`SELECT
+  k.*
+FROM
+  Kishu k
+  INNER JOIN KishuMeishou km ON k.Id = km.KishuId
+WHERE
+  km.MeishouId = ?
+ORDER BY
+  (
+    SELECT
+      COUNT(*)
+    FROM
+      Shussouba s
+      INNER JOIN Kyousouba ky ON ky.Id = s.KyousoubaId
+    WHERE
+      k.Id = s.KishuId
+    AND
+      ky.UmaId = ?
+  ) DESC
+LIMIT
+  1`, [meishouId, umaId]);
+
+    if (kishuList.length === 0) {
+      return null;
+    }
+
+    return kishuList[0];
   }
 
   public async saveKishu(toBe: Kishu, namae?: string, tanshuku?: string) {
