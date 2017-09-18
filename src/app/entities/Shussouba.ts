@@ -64,9 +64,6 @@ export class Shussouba {
   @Column("smallint", { nullable: true })
   public MinaraiKubun: number;
 
-  @Column("int", { nullable: true })
-  public KyuuKijouId?: number;
-
   @Column("smallint", { nullable: true })
   public Norikawari?: number;
 
