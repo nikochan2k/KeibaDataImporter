@@ -36,15 +36,15 @@ export class KyuushaDao {
   }
 
   protected async getKyuushaWith(namae: string) {
-    const qb = this.entityManager
+    return this.entityManager
       .createQueryBuilder()
       .select("k.*")
       .from(Kyuusha, "k")
       .innerJoin(KyuushaMeishou, "km", "k.Id = km.KyuushaId")
       .innerJoin(Meishou, "m", "m.Id = km.MeishouId")
       .where("m.Namae = :namae")
-      .setParameter("namae", namae);
-    return qb.getOne();
+      .setParameter("namae", namae)
+      .getOne();
   }
 
   public async saveKyuusha(toBe: Kyuusha, namae?: string, tanshuku?: string) {

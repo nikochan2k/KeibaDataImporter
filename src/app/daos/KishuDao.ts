@@ -4,6 +4,7 @@ import { OrmEntityManager, OrmRepository } from "typeorm-typedi-extensions";
 import { MeishouDao } from "./MeishouDao";
 import { Kishu } from "../entities/Kishu";
 import { KishuMeishou } from "../entities/KishuMeishou";
+import { Meishou } from "../entities/Meishou";
 import { Tool } from "../reader/Tool";
 
 @Service()
@@ -32,6 +33,18 @@ export class KishuDao {
       result = await this.kishuRepository.findOne({ JrdbKishuCode: kishu.JrdbKishuCode });
     }
     return result;
+  }
+
+  public async getKishuWith(namae: string) {
+    const qb = this.entityManager
+      .createQueryBuilder()
+      .select("k.*")
+      .from(Kishu, "k")
+      .innerJoin(KishuMeishou, "km", "k.Id = km.KishuId")
+      .innerJoin(Meishou, "m", "m.Id = km.MeishouId")
+      .where("m.Namae = :namae")
+      .setParameter("namae", namae);
+    return qb.getOne();
   }
 
   public async saveKishu(toBe: Kishu, namae?: string, tanshuku?: string) {
