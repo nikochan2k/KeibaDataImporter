@@ -1,6 +1,7 @@
 import { Inject, Service } from "typedi";
 import * as $C from "../../../converters/Common";
 import * as $S from "../../../converters/Shussouba";
+import { Choukyou } from "../../../entities/Choukyou";
 import { Shussouba } from "../../../entities/Shussouba";
 import { Bridge } from "../../Bridge";
 import { DataToImport } from "../../DataToImport";
@@ -60,6 +61,7 @@ export class KolDen2Kd3 extends DataToImport {
     if (!shussouba) {
       return;
     }
+
     const tanshukuKishuMei = readStrWithNoSpace(buffer, 188, 8);
     await this.saveChoukyou(buffer, shussouba, tanshukuKishuMei);
   }
@@ -88,10 +90,6 @@ export class KolDen2Kd3 extends DataToImport {
 
     toBe.KolYosou1 = $S.yosou.toCodeFromKol(buffer, 254, 1);
     toBe.KolYosou2 = $S.yosou.toCodeFromKol(buffer, 255, 1);
-    toBe.ChoukyouTanpyou = readStr(buffer, 694, 24);
-    toBe.ChoukyouHonsuuCourse = readPositiveInt(buffer, 718, 3);
-    toBe.ChoukyouHonsuuHanro = readPositiveInt(buffer, 721, 3);
-    toBe.ChoukyouHonsuuPool = readPositiveInt(buffer, 724, 3);
     toBe.KolShutsubahyouSakuseiNengappi = readDate(buffer, 727, 8);
     toBe.Rating = readDouble(buffer, 739, 3, 0.1);
     toBe.KyuuyouRiyuu = readStr(buffer, 783, 60);
@@ -116,13 +114,21 @@ export class KolDen2Kd3 extends DataToImport {
   }
 
   protected async saveChoukyou(buffer: Buffer, shussouba: Shussouba, tanshukuKishuMei: string) {
+    const choukyou = new Choukyou();
+    choukyou.Id = shussouba.Id;
+    choukyou.ChoukyouTanpyou = readStr(buffer, 694, 24);
+    choukyou.ChoukyouHonsuuCourse = readPositiveInt(buffer, 718, 3);
+    choukyou.ChoukyouHonsuuHanro = readPositiveInt(buffer, 721, 3);
+    choukyou.ChoukyouHonsuuPool = readPositiveInt(buffer, 724, 3);
+    await this.entityManager.save(choukyou);
+
     const choukyouAwaseFlag = readPositiveInt(buffer, 607, 1);
     const choukyouAwase = readStr(buffer, 608, 86);
-    await this.choukyouTool.saveChoukyou(buffer, 256, shussouba, tanshukuKishuMei, 1,
+    await this.choukyouTool.saveChoukyouRireki(buffer, 256, shussouba, tanshukuKishuMei, 1,
       choukyouAwaseFlag === 1 ? choukyouAwase : null);
-    await this.choukyouTool.saveChoukyou(buffer, 373, shussouba, tanshukuKishuMei, 2,
+    await this.choukyouTool.saveChoukyouRireki(buffer, 373, shussouba, tanshukuKishuMei, 2,
       choukyouAwaseFlag === 2 ? choukyouAwase : null);
-    await this.choukyouTool.saveChoukyou(buffer, 490, shussouba, tanshukuKishuMei, 3,
+    await this.choukyouTool.saveChoukyouRireki(buffer, 490, shussouba, tanshukuKishuMei, 3,
       choukyouAwaseFlag === 3 ? choukyouAwase : null);
   }
 

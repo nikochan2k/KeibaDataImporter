@@ -6,8 +6,8 @@ import * as $CH from "../../converters/Choukyou";
 import { MeishouDao } from "../../daos/MeishouDao";
 import { UmaDao } from "../../daos/UmaDao";
 import { Choukyou } from "../../entities/Choukyou";
+import { ChoukyouRireki } from "../../entities/ChoukyouRireki";
 import { ChoukyouTime } from "../../entities/ChoukyouTime";
-import { Shussouba } from "../../entities/Shussouba";
 import { Uma } from "../../entities/Uma";
 import { getLogger } from "../../LogUtil";
 import {
@@ -15,7 +15,7 @@ import {
   readPositiveInt,
   readStr,
   readStrWithNoSpace
-} from "../Reader";
+  } from "../Reader";
 
 export interface FurlongOffset {
   f: number;
@@ -57,53 +57,53 @@ export class KolChoukyouTool {
     this.logger = getLogger(this);
   }
 
-  public async saveChoukyou(buffer: Buffer, offset: number, shussouba: Shussouba, tanshukuKishuMei: string, bangou: number, awase?: string
+  public async saveChoukyouRireki(buffer: Buffer, offset: number, choukyou: Choukyou, tanshukuKishuMei: string, bangou: number, awase?: string
   ) {
     const kijousha = readStrWithNoSpace(buffer, offset + 1, 8);
     if (!kijousha) {
       return;
     }
 
-    const choukyou = new Choukyou();
-    choukyou.Id = shussouba.Id * (2 ** 2) + bangou;
-    choukyou.ShussoubaId = shussouba.Id;
-    choukyou.Bangou = bangou;
-    choukyou.ChoukyouFlag = $CH.choukyouFlag.toCodeFromKol(buffer, offset, 1);
-    choukyou.Noriyaku = $CH.noriyaku.toCodeFromKol(kijousha);
+    const choukyouRireki = new ChoukyouRireki();
+    choukyouRireki.Id = choukyou.Id * (2 ** 2) + bangou;
+    choukyouRireki.ChoukyouId = choukyou.Id;
+    choukyouRireki.Bangou = bangou;
+    choukyouRireki.ChoukyouFlag = $CH.choukyouFlag.toCodeFromKol(buffer, offset, 1);
+    choukyouRireki.Noriyaku = $CH.noriyaku.toCodeFromKol(kijousha);
     const nengappi = readDate(buffer, offset + 9, 8);
-    choukyou.Nengappi = nengappi;
-    if (!choukyou.Noriyaku) {
+    choukyouRireki.Nengappi = nengappi;
+    if (!choukyouRireki.Noriyaku) {
       if (tanshukuKishuMei === kijousha) {
-        choukyou.Noriyaku = $CH.Noriyaku.HonbanKishu; // 本番騎手
+        choukyouRireki.Noriyaku = $CH.Noriyaku.HonbanKishu; // 本番騎手
       } else {
-        choukyou.Noriyaku = $CH.Noriyaku.ChoukyouKishu; // 調教騎手
+        choukyouRireki.Noriyaku = $CH.Noriyaku.ChoukyouKishu; // 調教騎手
         const meishou = await this.meishouDao.save(kijousha);
-        choukyou.TanshukuKishuMeiId = meishou.Id;
+        choukyouRireki.TanshukuKishuMeiId = meishou.Id;
       }
     }
     const bashoCourse = readStrWithNoSpace(buffer, offset + 17, 8);
-    choukyou.Basho = $CH.basho.toCodeFromKol(bashoCourse);
-    choukyou.Type = $CH.type.toCodeFromKol(bashoCourse);
-    choukyou.Course = $CH.course.toCodeFromKol(bashoCourse);
-    if (choukyou.Basho === $CH.ChoukyouBasho.Sonota || choukyou.Type === $CH.ChoukyouType.Sonota) {
-      choukyou.BashoCourse = bashoCourse;
+    choukyouRireki.Basho = $CH.basho.toCodeFromKol(bashoCourse);
+    choukyouRireki.Type = $CH.type.toCodeFromKol(bashoCourse);
+    choukyouRireki.Course = $CH.course.toCodeFromKol(bashoCourse);
+    if (choukyouRireki.Basho === $CH.ChoukyouBasho.Sonota || choukyouRireki.Type === $CH.ChoukyouType.Sonota) {
+      choukyouRireki.BashoCourse = bashoCourse;
     }
-    if (choukyou.Type === $CH.ChoukyouType.Hanro || choukyou.Type === $CH.ChoukyouType.Pool) {
+    if (choukyouRireki.Type === $CH.ChoukyouType.Hanro || choukyouRireki.Type === $CH.ChoukyouType.Pool) {
       const array = /[0-9]+/.exec(readStr(buffer, offset + 39, 6));
       if (array !== null && 0 < array.length) {
-        choukyou.Kaisuu = parseInt(array[0]);
+        choukyouRireki.Kaisuu = parseInt(array[0]);
       }
     }
-    choukyou.Baba = $CH.baba.toCodeFromKol(buffer, offset + 25, 2); // 307
-    choukyou.IchiDori = readPositiveInt(buffer, offset + 69, 1);
+    choukyouRireki.Baba = $CH.baba.toCodeFromKol(buffer, offset + 25, 2); // 307
+    choukyouRireki.IchiDori = readPositiveInt(buffer, offset + 69, 1);
     const oikiri = readStrWithNoSpace(buffer, offset + 70, 6);
-    choukyou.Oikiri = $CH.oikiri.toCodeFromKol(oikiri);
-    choukyou.Ashiiro = $CH.ashiiro.toCodeFromKol(oikiri);
-    if (!choukyou.Oikiri && !choukyou.Ashiiro) {
-      choukyou.OikiriSonota = oikiri;
+    choukyouRireki.Oikiri = $CH.oikiri.toCodeFromKol(oikiri);
+    choukyouRireki.Ashiiro = $CH.ashiiro.toCodeFromKol(oikiri);
+    if (!choukyouRireki.Oikiri && !choukyouRireki.Ashiiro) {
+      choukyouRireki.OikiriSonota = oikiri;
     }
-    choukyou.Yajirushi = $CH.yajirushi.toCodeFromKol(buffer, offset + 76, 1);
-    choukyou.Reigai = readStr(buffer, offset + 77, 40);
+    choukyouRireki.Yajirushi = $CH.yajirushi.toCodeFromKol(buffer, offset + 76, 1);
+    choukyouRireki.Reigai = readStr(buffer, offset + 77, 40);
     if (awase) {
       let reigai = false;
       let execed = /^[\u30A1-\u30FC]+/.exec(awase);
@@ -111,60 +111,60 @@ export class KolChoukyouTool {
         const awaseUma = execed[0];
         const uma = new Uma();
         uma.Bamei = awaseUma;
-        choukyou.AwaseUmaId = (await this.umaDao.saveUma(uma)).Id;
+        choukyouRireki.AwaseUmaId = (await this.umaDao.saveUma(uma)).Id;
       } else {
         reigai = true;
       }
-      choukyou.AwaseKekka = $CH.awaseKekka.toCodeFromKol(awase);
-      if (!choukyou.AwaseKekka) {
+      choukyouRireki.AwaseKekka = $CH.awaseKekka.toCodeFromKol(awase);
+      if (!choukyouRireki.AwaseKekka) {
         reigai = true;
       }
       execed = /[0-9]+(\.[0-9]+)/.exec(awase);
       let timeSa: number;
       if (execed && 0 < execed.length) {
         timeSa = parseFloat(execed[0]);
-        if (choukyou.AwaseKekka === $CH.AwaseKekka.Okure) {
+        if (choukyouRireki.AwaseKekka === $CH.AwaseKekka.Okure) {
           timeSa *= -1;
         }
       } else {
         timeSa = 0.0;
       }
-      choukyou.TimeSa = timeSa;
-      choukyou.Chakusa = $CH.chakusa.toCodeFromKol(awase);
-      if (choukyou.AwaseKekka !== $CH.AwaseKekka.Dounyuu && timeSa === 0.0 && !choukyou.Chakusa) {
+      choukyouRireki.TimeSa = timeSa;
+      choukyouRireki.Chakusa = $CH.chakusa.toCodeFromKol(awase);
+      if (choukyouRireki.AwaseKekka !== $CH.AwaseKekka.Dounyuu && timeSa === 0.0 && !choukyouRireki.Chakusa) {
         reigai = true;
       }
       if (reigai) {
-        choukyou.AwaseReigai = awase;
+        choukyouRireki.AwaseReigai = awase;
       }
     }
-    await this.entityManager.save(choukyou);
+    await this.entityManager.save(choukyouRireki);
 
-    if (choukyou.Type === $CH.ChoukyouType.Hanro) {
-      await this.saveChoukyouTime(buffer, choukyou, offset, KolChoukyouTool.hanroFurlongOffsets);
-    } else if ($CH.ChoukyouType.Shiba <= choukyou.Type || choukyou.Type <= $CH.ChoukyouType.Shougai) {
-      await this.saveChoukyouTime(buffer, choukyou, offset, KolChoukyouTool.courseFurlongOffsets);
+    if (choukyouRireki.Type === $CH.ChoukyouType.Hanro) {
+      await this.saveChoukyouRirekiTime(buffer, choukyouRireki, offset, KolChoukyouTool.hanroFurlongOffsets);
+    } else if ($CH.ChoukyouType.Shiba <= choukyouRireki.Type || choukyouRireki.Type <= $CH.ChoukyouType.Shougai) {
+      await this.saveChoukyouRirekiTime(buffer, choukyouRireki, offset, KolChoukyouTool.courseFurlongOffsets);
     }
   }
 
-  protected async saveChoukyouTime(buffer: Buffer, choukyou: Choukyou, offset: number, cfList: FurlongOffset[]) {
+  protected async saveChoukyouRirekiTime(buffer: Buffer, choukyouRireki: ChoukyouRireki, offset: number, cfList: FurlongOffset[]) {
     for (let i = 0; i < cfList.length; i++) {
       const cf = cfList[i];
       const comment = readStr(buffer, offset + cf.offset, 6);
       if (!comment || comment === "-") {
         continue;
       }
-      const choukyouTime = new ChoukyouTime();
-      choukyouTime.Id = choukyou.Id * (2 ** 4) + cf.f;
-      choukyouTime.ChoukyouId = choukyou.Id;
-      choukyouTime.F = cf.f;
+      const choukyouRirekiTime = new ChoukyouTime();
+      choukyouRirekiTime.Id = choukyouRireki.Id * (2 ** 4) + cf.f;
+      choukyouRirekiTime.ChoukyouRirekiId = choukyouRireki.Id;
+      choukyouRirekiTime.F = cf.f;
       const time = parseFloat(comment);
       if (isNaN(time)) {
-        choukyouTime.Comment = comment;
+        choukyouRirekiTime.Comment = comment;
       } else {
-        choukyouTime.Time = time;
+        choukyouRirekiTime.Time = time;
       }
-      await this.entityManager.save(choukyouTime);
+      await this.entityManager.save(choukyouRirekiTime);
     }
   }
 

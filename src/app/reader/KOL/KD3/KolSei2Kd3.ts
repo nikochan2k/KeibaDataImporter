@@ -1,6 +1,7 @@
 import { Inject, Service } from "typedi";
 import * as $C from "../../../converters/Common";
 import * as $S from "../../../converters/Shussouba";
+import { Choukyou } from "../../../entities/Choukyou";
 import { Shussouba } from "../../../entities/Shussouba";
 import { DataToImport } from "../../DataToImport";
 import { ShussoubaInfo } from "../../RaceTool";
@@ -11,7 +12,7 @@ import {
   readPositiveInt,
   readStrWithNoSpace,
   readTime
-} from "../../Reader";
+  } from "../../Reader";
 import { Tool } from "../../Tool";
 import { KolChoukyouTool } from "../KolChoukyouTool";
 import { KolRaceTool } from "../KolRaceTool";
@@ -57,7 +58,10 @@ export class KolSei2Kd3 extends DataToImport {
     await this.kolTool.saveShussoubaTsuukaJuni(buffer, 298, shussouba);
     if (!asIs.KolShutsubahyouSakuseiNengappi) {
       const tanshukuKishuMei = readStrWithNoSpace(buffer, 199, 8);
-      await this.choukyouTool.saveChoukyou(buffer, 307, shussouba, tanshukuKishuMei, 1);
+      const choukyou = new Choukyou();
+      choukyou.Id = shussouba.Id;
+      await this.entityManager.save(choukyou);
+      await this.choukyouTool.saveChoukyouRireki(buffer, 307, choukyou, tanshukuKishuMei, 1);
     }
   }
 

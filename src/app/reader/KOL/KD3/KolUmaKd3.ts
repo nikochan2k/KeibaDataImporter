@@ -9,6 +9,7 @@ import { UmaDao } from "../../../daos/UmaDao";
 import { Kaisai } from "../../../entities/Kaisai";
 import { Kyousouba } from "../../../entities/Kyousouba";
 import { Kyuusha } from "../../../entities/Kyuusha";
+import { Choukyou } from "../../../entities/Choukyou";
 import { Race } from "../../../entities/Race";
 import { Shussouba } from "../../../entities/Shussouba";
 import { Uma } from "../../../entities/Uma";
@@ -94,7 +95,10 @@ export class KolUmaKd3 extends DataToImport {
       if (shussouba) {
         await this.kolTool.saveShussoubaTsuukaJuni(shussoubaBuffer, 239, shussouba);
         const tanshukuKishuMei = readStrWithNoSpace(shussoubaBuffer, 140, 8);
-        await this.choukyouTool.saveChoukyou(shussoubaBuffer, 248, shussouba, tanshukuKishuMei, 1);
+        const choukyou = new Choukyou();
+        choukyou.Id = shussouba.Id;
+        await this.entityManager.save(choukyou);
+        await this.choukyouTool.saveChoukyouRireki(shussoubaBuffer, 248, choukyou, tanshukuKishuMei, 1);
       }
     }
   }

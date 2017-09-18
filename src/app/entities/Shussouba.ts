@@ -133,18 +133,6 @@ export class Shussouba {
   @Column("smallint", { nullable: true })
   public KyuuyouRiyuuCode?: number;
 
-  @Column("varchar", { length: 7, nullable: true })
-  public ChoukyouTanpyou?: string;
-
-  @Column("smallint", { nullable: true })
-  public ChoukyouHonsuuCourse?: number;
-
-  @Column("smallint", { nullable: true })
-  public ChoukyouHonsuuHanro?: number;
-
-  @Column("smallint", { nullable: true })
-  public ChoukyouHonsuuPool?: number;
-
   @Column("varchar", { length: 90, nullable: true })
   public KyuuyouRiyuu?: string;
 
