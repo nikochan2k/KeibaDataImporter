@@ -128,14 +128,6 @@ export const classCode = new Codes(
   ]
 );
 
-export const tekisei = new Codes(
-  [
-    { code: 1, jrdb: "1", naiyou: "◎" },
-    { code: 2, jrdb: "2", naiyou: "○" },
-    { code: 3, jrdb: "3", naiyou: "△" },
-  ]
-);
-
 export const joukenGroup = new Codes(
   [
     { code: 0, jrdb: "0", naiyou: "未勝利クラス" },

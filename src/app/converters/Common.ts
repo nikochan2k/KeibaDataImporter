@@ -148,6 +148,14 @@ export const ichi = new Codes(
   ]
 );
 
+export const hyouka = new Codes(
+  [
+    { code: 1, jrdb: "1", naiyou: "◎" },
+    { code: 2, jrdb: "2", naiyou: "○" },
+    { code: 3, jrdb: "3", naiyou: "△" },
+  ]
+);
+
 export const tokki = new Codes(
   [
     { code: 33, jrdb: "033", naiyou: "口向き悪い", tanshuku: "口向悪い" },

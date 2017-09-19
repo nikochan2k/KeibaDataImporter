@@ -10,12 +10,13 @@ import { ChoukyouRireki } from "../../entities/ChoukyouRireki";
 import { ChoukyouTime } from "../../entities/ChoukyouTime";
 import { Uma } from "../../entities/Uma";
 import { getLogger } from "../../LogUtil";
+import { ChoukyouDao } from "../../daos/ChoukyouDao";
 import {
   readDate,
   readPositiveInt,
   readStr,
   readStrWithNoSpace
-  } from "../Reader";
+} from "../Reader";
 
 export interface FurlongOffset {
   f: number;
@@ -53,8 +54,15 @@ export class KolChoukyouTool {
   @Inject()
   private meishouDao: MeishouDao;
 
+  @Inject()
+  private choukyouDao: ChoukyouDao;
+
   constructor() {
     this.logger = getLogger(this);
+  }
+
+  public async saveChoukyou(choukyou: Choukyou) {
+    this.choukyouDao.save(choukyou);
   }
 
   public async saveChoukyouRireki(buffer: Buffer, offset: number, choukyou: Choukyou, tanshukuKishuMei: string, bangou: number, awase?: string

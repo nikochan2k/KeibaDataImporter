@@ -67,7 +67,7 @@ export abstract class RaceTool {
 
   public getKaisai(buffer: Buffer) {
     const id = this.getKaisaiId(buffer);
-    return this.entityManager.getRepository(Kaisai).findOneById(id);
+    return this.entityManager.findOneById(Kaisai, id);
   }
 
   public createKaisai(buffer: Buffer) {
@@ -111,7 +111,7 @@ export abstract class RaceTool {
     if (!id) {
       return null;
     }
-    return this.entityManager.getRepository(Race).findOneById(id);
+    return this.entityManager.findOneById(Race, id);
   }
 
   public createRace(buffer: Buffer, kaisaiId?: number) {
@@ -132,6 +132,35 @@ export abstract class RaceTool {
     return race;
   }
 
+  protected getShussoubaIdFrom(raceId: number, umaban: number) {
+    const id = raceId * (2 ** 6) + umaban;
+    return id;
+  }
+
+  public getShussoubaId(buffer: Buffer, umabanOffset: number, raceId?: number) {
+    if (!raceId) {
+      raceId = this.getRaceId(buffer);
+      if (!raceId) {
+        return null;
+      }
+    }
+    const umaban = readPositiveInt(buffer, umabanOffset, 2);
+    if (!umaban) {
+      this.logger.warn("不正な馬番です: " + readRaw(buffer, umabanOffset, 2));
+      return null;
+    }
+
+    return this.getShussoubaIdFrom(raceId, umaban);
+  }
+
+  public getShussouba(buffer: Buffer, raceId?: number) {
+    const id = this.getShussoubaId(buffer, raceId);
+    if (!id) {
+      return null;
+    }
+    return this.entityManager.findOneById(Shussouba, id);
+  }
+
   public createShussouba(buffer: Buffer, umabanOffset: number) {
     const raceId = this.getRaceId(buffer);
     if (raceId === null) {
@@ -143,7 +172,7 @@ export abstract class RaceTool {
       return null;
     }
     const shussouba = new Shussouba();
-    shussouba.Id = raceId * (2 ** 6) + umaban;
+    shussouba.Id = this.getShussoubaIdFrom(raceId, umaban);
     shussouba.RaceId = raceId;
     shussouba.Umaban = umaban;
     return shussouba;
@@ -174,7 +203,6 @@ export abstract class RaceTool {
     const shussouba = await this.entityManager.findOneById(Shussouba, id);
     return { kaisai: kaisai, race: race, shussouba: shussouba };
   }
-
 
   public normalizeNenrei(race: Race, shussouba: Shussouba) {
     if (race.Nengappi < 20010000) {

@@ -120,7 +120,7 @@ export class KolDen2Kd3 extends DataToImport {
     choukyou.ChoukyouHonsuuCourse = readPositiveInt(buffer, 718, 3);
     choukyou.ChoukyouHonsuuHanro = readPositiveInt(buffer, 721, 3);
     choukyou.ChoukyouHonsuuPool = readPositiveInt(buffer, 724, 3);
-    await this.entityManager.save(choukyou);
+    await this.choukyouTool.saveChoukyou(choukyou);
 
     const choukyouAwaseFlag = readPositiveInt(buffer, 607, 1);
     const choukyouAwase = readStr(buffer, 608, 86);

@@ -60,7 +60,7 @@ export class KolSei2Kd3 extends DataToImport {
       const tanshukuKishuMei = readStrWithNoSpace(buffer, 199, 8);
       const choukyou = new Choukyou();
       choukyou.Id = shussouba.Id;
-      await this.entityManager.save(choukyou);
+      await this.choukyouTool.saveChoukyou(choukyou);
       await this.choukyouTool.saveChoukyouRireki(buffer, 307, choukyou, tanshukuKishuMei, 1);
     }
   }

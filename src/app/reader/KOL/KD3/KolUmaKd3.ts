@@ -97,7 +97,7 @@ export class KolUmaKd3 extends DataToImport {
         const tanshukuKishuMei = readStrWithNoSpace(shussoubaBuffer, 140, 8);
         const choukyou = new Choukyou();
         choukyou.Id = shussouba.Id;
-        await this.entityManager.save(choukyou);
+        await this.choukyouTool.saveChoukyou(choukyou);
         await this.choukyouTool.saveChoukyouRireki(shussoubaBuffer, 248, choukyou, tanshukuKishuMei, 1);
       }
     }

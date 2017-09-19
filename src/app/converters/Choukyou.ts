@@ -230,3 +230,93 @@ export const chakusa = new Codes(
     { code: 3, kol: /クビ/, naiyou: "クビ" }
   ]
 );
+
+export const choukyouType = new Codes(
+  [
+    { code: 1, jrdb: "01", naiyou: "スパルタ" },
+    { code: 2, jrdb: "02", naiyou: "標準多め" },
+    { code: 3, jrdb: "03", naiyou: "乗込" },
+    { code: 4, jrdb: "04", naiyou: "一杯平均" },
+    { code: 5, jrdb: "05", naiyou: "標準" },
+    { code: 6, jrdb: "06", naiyou: "馬ナリ平均" },
+    { code: 7, jrdb: "07", naiyou: "急仕上げ" },
+    { code: 8, jrdb: "08", naiyou: "標準少め" },
+    { code: 9, jrdb: "09", naiyou: "軽目" },
+    { code: 10, jrdb: "10", naiyou: "連闘" },
+    { code: 11, jrdb: "11", naiyou: "調教なし" },
+  ]
+);
+
+export const choukyouryou = new Codes(
+  [
+    { code: 0, jrdb: /10|11/, naiyou: "なし" },
+    { code: 1, jrdb: /07|08|09/, naiyou: "少ない" },
+    { code: 2, jrdb: /04|05|06/, naiyou: "普通" },
+    { code: 3, jrdb: /01|02|03/, naiyou: "多い" },
+  ]
+);
+
+export const choukyouTsuyosa = new Codes(
+  [
+    { code: 0, jrdb: /10|11/, naiyou: "なし" },
+    { code: 1, jrdb: /03|06|09/, naiyou: "軽い" },
+    { code: 2, jrdb: /02|05|08/, naiyou: "普通" },
+    { code: 3, jrdb: /01|04|07/, naiyou: "強い" },
+  ]
+);
+
+export const choukyouCourseShubetsu = new Codes(
+  [
+    { code: 0, jrdb: "0", naiyou: "他(調教なし、不明)" },
+    { code: 1, jrdb: "1", naiyou: "坂路調教" },
+    { code: 2, jrdb: "2", naiyou: "コース調教" },
+    { code: 3, jrdb: "3", naiyou: "併用(坂路、コース併用)" },
+    { code: 4, jrdb: "4", naiyou: "障害(障害練習)" },
+    { code: 5, jrdb: "5", naiyou: "障害他(障害練習＋α)" },
+  ]
+);
+
+export const choukyouCourseShurui = new Codes(
+  [
+    { code: 0, jrdb: "00", naiyou: "無し" },
+    { code: 1, jrdb: "01", naiyou: "有り" },
+  ]
+);
+
+export const choukyouKyori = new Codes(
+  [
+    { code: 0, jrdb: "0", naiyou: "他(調教なし、不明)", tanshuku: "他" },
+    { code: 1, jrdb: "1", naiyou: "長め" },
+    { code: 2, jrdb: "2", naiyou: "標準" },
+    { code: 3, jrdb: "3", naiyou: "短め" },
+    { code: 4, jrdb: "4", naiyou: "2本" },
+  ]
+);
+
+export const choukyouJuuten = new Codes(
+  [
+    { code: 0, jrdb: "0", naiyou: "他(調教なし、不明)", tanshuku: "他" },
+    { code: 1, jrdb: "1", naiyou: "テン重点", tanshuku: "テン" },
+    { code: 2, jrdb: "2", naiyou: "中間重点", tanshuku: "中間" },
+    { code: 3, jrdb: "3", naiyou: "終い重点", tanshuku: "終い" },
+    { code: 4, jrdb: "4", naiyou: "平均的", tanshuku: "平均" },
+  ]
+);
+
+export const choukyouryouHyouka = new Codes(
+  [
+    { code: 1, jrdb: "A", naiyou: "多い" },
+    { code: 2, jrdb: "B", naiyou: "普通" },
+    { code: 3, jrdb: "C", naiyou: "少ない" },
+    { code: 4, jrdb: "D", naiyou: "非常に少ない" },
+  ]
+);
+
+export const shiageShisuuHenka = new Codes(
+  [
+    { code: 1, jrdb: "1", naiyou: "攻め強化大", tanshuku: "++" },
+    { code: 2, jrdb: "2", naiyou: "攻め強化", tanshuku: "+" },
+    { code: 3, jrdb: "3", naiyou: "平行線", tanshuku: "" },
+    { code: 4, jrdb: "4", naiyou: "攻め弱化", tanshuku: "-" },
+  ]
+);
