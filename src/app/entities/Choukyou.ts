@@ -9,6 +9,7 @@ export class Choukyou {
   @PrimaryColumn("bigint")
   public Id: number;
 
+  /* KD3 出馬表出走馬データ */
 
   @Column("varchar", { length: 7, nullable: true })
   public ChoukyouTanpyou?: string;
@@ -22,6 +23,7 @@ export class Choukyou {
   @Column("smallint", { nullable: true })
   public ChoukyouHonsuuPool?: number;
 
+  /* JRDB 調教分析データ */
 
   @Column("tinyint", { nullable: true })
   public ChoukyouType?: number;
@@ -82,4 +84,64 @@ export class Choukyou {
 
   @Column("tinyint", { nullable: true })
   public ChoukyouHyouka?: number;
+
+  /* JRDB 調教本追切データ */
+
+  @Column("int", { nullable: true })
+  public ChoukyouNengappi?: number;
+
+  @Column("tinyint", { nullable: true })
+  public Kaisuu?: number;
+
+  @Column("tinyint", { nullable: true })
+  public Basho?: number;
+
+  @Column("tinyint", { nullable: true })
+  public Type?: number;
+
+  @Column("tinyint", { nullable: true })
+  public Oikiri?: number;
+
+  @Column("tinyint", { nullable: true })
+  public OiJoutai?: number;
+
+  @Column("tinyint", { nullable: true })
+  public Noriyaku?: number;
+
+  @Column("tinyint", { nullable: true })
+  public ChoukyouF?: number;
+
+  // 時計分析データ
+
+  @Column("smallint", { nullable: true })
+  public TenF?: number;
+
+  @Column("smallint", { nullable: true })
+  public ChuukanF?: number;
+
+  @Column("smallint", { nullable: true })
+  public ShimaiF?: number;
+
+  @Column("smallint", { nullable: true })
+  public TenFShisuu?: number;
+
+  @Column("smallint", { nullable: true })
+  public ChuukanFShisuu?: number;
+
+  @Column("smallint", { nullable: true })
+  public ShimaiFShisuu?: number;
+
+  // 併せ馬相手データ
+
+  @Column("tinyint", { nullable: true })
+  public Awasekekka?: number;
+
+  @Column("tinyint", { nullable: true })
+  public AwaseumaOikiriShurui?: number;
+
+  @Column("tinyint", { nullable: true })
+  public AwaseumaNenrei?: number;
+
+  @Column("tinyint", { nullable: true })
+  public AwaseumaClass?: number;
 }

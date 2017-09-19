@@ -320,3 +320,36 @@ export const shiageShisuuHenka = new Codes(
     { code: 4, jrdb: "4", naiyou: "攻め弱化", tanshuku: "-" },
   ]
 );
+
+
+export const oiJoutai = new Codes(
+  [
+    { code: 1, jrdb: "1", naiyou: "流す" },
+    { code: 2, jrdb: "2", naiyou: "余力あり"},
+    { code: 3, jrdb: "3", naiyou: "終い抑え" },
+    { code: 4, jrdb: "4", naiyou: "一杯"},
+    { code: 5, jrdb: "5", naiyou: "バテる"},
+    { code: 6, jrdb: "6", naiyou: "伸びる" },
+    { code: 7, jrdb: "7", naiyou: "テンのみ" },
+    { code: 8, jrdb: "8", naiyou: "鋭く伸び" },
+    { code: 9, jrdb: "9", naiyou: "強目" },
+    { code: 10, jrdb: "10", naiyou: "終い重点"},
+    { code: 11, jrdb: "11", naiyou: "8分追い" },
+    { code: 12, jrdb: "12", naiyou: "追って伸" },
+    { code: 13, jrdb: "13", naiyou: "向正面" },
+    { code: 14, jrdb: "14", naiyou: "ゲート" },
+    { code: 15, jrdb: "15", naiyou: "障害練習" },
+    { code: 16, jrdb: "16", naiyou: "中間軽め" },
+    { code: 17, jrdb: "17", naiyou: "キリ" },
+    { code: 21, jrdb: "21", naiyou: "引っ張る" },
+    { code: 22, jrdb: "22", naiyou: "掛かる"},
+    { code: 23, jrdb: "23", naiyou: "掛リバテ" },
+    { code: 24, jrdb: "24", naiyou: "テン掛る"},
+    { code: 25, jrdb: "25", naiyou: "掛り一杯"},
+    { code: 26, jrdb: "26", naiyou: "ササル" },
+    { code: 27, jrdb: "27", naiyou: "ヨレル" },
+    { code: 28, jrdb: "28", naiyou: "バカつく" },
+    { code: 29, jrdb: "29", naiyou: "手間取る" },
+    { code: 99, jrdb: "99", naiyou: "その他" },
+  ]
+);
