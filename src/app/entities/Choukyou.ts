@@ -54,6 +54,9 @@ export class Choukyou {
   public ChoukyouCourseShougai?: number;
 
   @Column("tinyint", { nullable: true })
+  public ChoukyouCoursePoly?: number;
+
+  @Column("tinyint", { nullable: true })
   public ChoukyouKyori?: number;
 
   @Column("tinyint", { nullable: true })
