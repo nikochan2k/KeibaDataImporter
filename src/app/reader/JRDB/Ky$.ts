@@ -4,9 +4,9 @@ import { ShussoubaData } from "./ShussoubaData";
 import * as $C from "../../converters/Common";
 import * as $R from "../../converters/Race";
 import * as $S from "../../converters/Shussouba";
-import * as $SJ from "../../converters/ShussoubaJrdb";
+import * as $SJ from "../../converters/ShussoubaYosou";
 import { Shussouba } from "../../entities/Shussouba";
-import { ShussoubaJrdb } from "../../entities/ShussoubaJrdb";
+import { ShussoubaYosou } from "../../entities/ShussoubaYosou";
 import { ShussoubaInfo } from "../RaceTool";
 import { readDouble, readInt, readPositiveInt } from "../Reader";
 import { Tool } from "../Tool";
@@ -35,7 +35,7 @@ export abstract class Ky$ extends ShussoubaData {
     toBe.TorikeshiShubetsu = $S.torikeshiShubetsu.toCodeFromJrdb(buffer, 402, 1);
   }
 
-  protected async setShussoubaJrdb(buffer: Buffer, toBe: ShussoubaJrdb) {
+  protected async setShussoubaYosou(buffer: Buffer, toBe: ShussoubaYosou) {
     toBe.Idm = readDouble(buffer, 54, 5);
     toBe.KishuShisuu = readDouble(buffer, 59, 5);
     toBe.JouhouShisuu = readDouble(buffer, 64, 5);

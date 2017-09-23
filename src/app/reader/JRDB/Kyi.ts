@@ -1,7 +1,7 @@
 import { Service } from "typedi";
-import { ShussoubaJrdb } from "../../entities/ShussoubaJrdb";
+import { ShussoubaYosou } from "../../entities/ShussoubaYosou";
 import { Kyh } from "./Kyh";
-import * as $SJ from "../../converters/ShussoubaJrdb";
+import * as $SJ from "../../converters/ShussoubaYosou";
 import { readInt, readStr } from "../Reader";
 
 @Service()
@@ -11,8 +11,8 @@ export class Kyi extends Kyh {
     return 1024;
   }
 
-  protected async setShussoubaJrdb(buffer: Buffer, toBe: ShussoubaJrdb) {
-    await super.setShussoubaJrdb(buffer, toBe);
+  protected async setShussoubaYosou(buffer: Buffer, toBe: ShussoubaYosou) {
+    await super.setShussoubaYosou(buffer, toBe);
     toBe.ShibaDirtShougaiFlag = $SJ.shibaDirtShougaiFlag.toCodeFromJrdb(buffer, 543, 1);
     toBe.KyoriFlag = $SJ.kyoriFlag.toCodeFromJrdb(buffer, 544, 2);
     toBe.ClassFlag = $SJ.shibaDirtShougaiFlag.toCodeFromJrdb(buffer, 545, 1);

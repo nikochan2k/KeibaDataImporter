@@ -1,9 +1,9 @@
 import { Inject } from "typedi";
 import { ShussoubaData } from "./ShussoubaData";
 import * as $S from "../../converters/Shussouba";
-import * as $SJ from "../../converters/ShussoubaJrdb";
+import * as $SJ from "../../converters/ShussoubaYosou";
 import { Shussouba } from "../../entities/Shussouba";
-import { ShussoubaJrdb } from "../../entities/ShussoubaJrdb";
+import { ShussoubaYosou } from "../../entities/ShussoubaYosou";
 import { ShussoubaInfo } from "../RaceTool";
 import { readDouble, readInt } from "../Reader";
 import { Tool } from "../Tool";
@@ -24,7 +24,7 @@ export abstract class Joa extends ShussoubaData {
   protected setShussouba(buffer: Buffer, shussouba: Shussouba, info: ShussoubaInfo) {
   }
 
-  protected async setShussoubaJrdb(buffer: Buffer, toBe: ShussoubaJrdb) {
+  protected async setShussoubaYosou(buffer: Buffer, toBe: ShussoubaYosou) {
     toBe.CidChoukyouSoten = readDouble(buffer, 64, 5);
     toBe.CidKyuushaSoten = readDouble(buffer, 69, 5);
     toBe.Cid = readInt(buffer, 79, 3);

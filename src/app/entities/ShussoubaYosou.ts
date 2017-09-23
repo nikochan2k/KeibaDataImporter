@@ -4,8 +4,8 @@ import {
   PrimaryColumn
 } from "typeorm";
 
-@Entity("ShussoubaJrdb")
-export class ShussoubaJrdb {
+@Entity("ShussoubaYosou")
+export class ShussoubaYosou {
   @PrimaryColumn("bigint")
   public Id: number;
 

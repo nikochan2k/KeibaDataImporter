@@ -3,7 +3,7 @@ import { JrdbRaceTool } from "./JrdbRaceTool";
 import { JrdbTool } from "./JrdbTool";
 import { Race } from "../../entities/Race";
 import { Shussouba } from "../../entities/Shussouba";
-import { ShussoubaJrdb } from "../../entities/ShussoubaJrdb";
+import { ShussoubaYosou } from "../../entities/ShussoubaYosou";
 import { DataToImport } from "../DataToImport";
 import { ShussoubaInfo } from "../RaceTool";
 import { Tool } from "../Tool";
@@ -32,7 +32,7 @@ export abstract class ShussoubaData extends DataToImport {
       return;
     }
 
-    await this.saveShussoubaJrdb(buffer, shussouba);
+    await this.saveShussoubaYosou(buffer, shussouba);
   }
 
   protected async saveRace(buffer: Buffer, asIs: Race) {
@@ -65,18 +65,18 @@ export abstract class ShussoubaData extends DataToImport {
 
   protected abstract setShussouba(buffer: Buffer, shussouba: Shussouba, info: ShussoubaInfo);
 
-  protected async saveShussoubaJrdb(buffer: Buffer, shussouba: Shussouba) {
-    let toBe = new ShussoubaJrdb();
+  protected async saveShussoubaYosou(buffer: Buffer, shussouba: Shussouba) {
+    let toBe = new ShussoubaYosou();
     toBe.Id = shussouba.Id;
-    this.setShussoubaJrdb(buffer, toBe);
+    this.setShussoubaYosou(buffer, toBe);
 
-    const asIs = await this.entityManager.findOneById(ShussoubaJrdb, shussouba.Id);
+    const asIs = await this.entityManager.findOneById(ShussoubaYosou, shussouba.Id);
     if (asIs) {
       const updateSet = this.tool.createUpdateSet(asIs, toBe, true);
       if (updateSet) {
         await this.entityManager
           .createQueryBuilder()
-          .update(ShussoubaJrdb, updateSet)
+          .update(ShussoubaYosou, updateSet)
           .where("Id = :id")
           .setParameter("id", asIs.Id)
           .execute();
@@ -88,5 +88,5 @@ export abstract class ShussoubaData extends DataToImport {
     return toBe;
   }
 
-  protected abstract setShussoubaJrdb(buffer: Buffer, shussoubaJrdb: ShussoubaJrdb);
+  protected abstract setShussoubaYosou(buffer: Buffer, ShussoubaYosou: ShussoubaYosou);
 }
