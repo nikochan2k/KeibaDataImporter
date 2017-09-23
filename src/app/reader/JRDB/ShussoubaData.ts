@@ -1,11 +1,12 @@
 import { Inject } from "typedi";
+import { JrdbRaceTool } from "./JrdbRaceTool";
+import { JrdbTool } from "./JrdbTool";
+import { Race } from "../../entities/Race";
 import { Shussouba } from "../../entities/Shussouba";
 import { ShussoubaJrdb } from "../../entities/ShussoubaJrdb";
 import { DataToImport } from "../DataToImport";
 import { ShussoubaInfo } from "../RaceTool";
 import { Tool } from "../Tool";
-import { JrdbRaceTool } from "./JrdbRaceTool";
-import { JrdbTool } from "./JrdbTool";
 
 export abstract class ShussoubaData extends DataToImport {
 
@@ -24,12 +25,17 @@ export abstract class ShussoubaData extends DataToImport {
       return;
     }
 
+    await this.saveRace(buffer, info.race);
+
     const shussouba = await this.saveShussouba(buffer, info);
     if (!shussouba) {
       return;
     }
 
     await this.saveShussoubaJrdb(buffer, shussouba);
+  }
+
+  protected async saveRace(buffer: Buffer, asIs: Race) {
   }
 
   protected async saveShussouba(buffer: Buffer, info: ShussoubaInfo) {

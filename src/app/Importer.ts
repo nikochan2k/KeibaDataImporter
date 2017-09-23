@@ -6,6 +6,7 @@ import { Bridge } from "./reader/Bridge";
 import { DataToImport } from "./reader/DataToImport";
 import { Bab } from "./reader/JRDB/Bab";
 import { Bac } from "./reader/JRDB/Bac";
+import { Cha } from "./reader/JRDB/Cha";
 import { Cya } from "./reader/JRDB/Cya";
 import { Cyb } from "./reader/JRDB/Cyb";
 import { Joa } from "./reader/JRDB/Joa";
@@ -94,7 +95,7 @@ export class Importer {
       { pattern: /cya\d+\.txt$/i, dataToImport: Container.get(Cya) },
       { pattern: /cyb\d+\.txt$/i, dataToImport: Container.get(Cyb) },
       // JRDB 調教本追切データ
-      // cha
+      { pattern: /cha\d+\.txt$/i, dataToImport: Container.get(Cha) },
       // JRDB 直前情報データ
       // tyb
       // KD3 予想オッズ（単勝・枠連・馬連）

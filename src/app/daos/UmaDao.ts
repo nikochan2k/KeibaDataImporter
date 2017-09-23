@@ -29,11 +29,15 @@ export class UmaDao {
     const qb = this.kyousoubaRepository
       .createQueryBuilder("k")
       .where("k.UmaId = umaId")
-      .setParameter("umaId", kyousouba.UmaId)
-      .andWhere("k.Seibetsu = :seibetsu")
-      .setParameter("seibetsu", kyousouba.Seibetsu)
-      .andWhere("k.UmaKigou = :umaKigou")
-      .setParameter("umaKigou", kyousouba.UmaKigou);
+      .setParameter("umaId", kyousouba.UmaId);
+    if (kyousouba.Seibetsu) {
+      qb.andWhere("k.Seibetsu = :seibetsu")
+        .setParameter("seibetsu", kyousouba.Seibetsu);
+    }
+    if (kyousouba.UmaKigou) {
+      qb.andWhere("k.UmaKigou = :umaKigou")
+        .setParameter("umaKigou", kyousouba.UmaKigou);
+    }
     if (kyousouba.BanushiId) {
       qb.andWhere("k.BanushiId = :banushiId")
         .setParameter("banushiId", kyousouba.BanushiId);

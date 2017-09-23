@@ -34,7 +34,7 @@ export class KishuDao {
     return result;
   }
 
-  public async getKishuWith(meishouId: string, umaId: number) {
+  public async getKishuWith(meishouId: number, umaId: number) {
     const kishuList = <Kishu[]>await this.entityManager.query(`SELECT
   k.*
 FROM

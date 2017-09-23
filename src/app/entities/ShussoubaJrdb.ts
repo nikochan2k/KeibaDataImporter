@@ -10,16 +10,16 @@ export class ShussoubaJrdb {
   public Id: number;
 
 
-  @Column("float", { nullable: true })
+  @Column("real", { nullable: true })
   public Idm?: number;
 
-  @Column("float", { nullable: true })
+  @Column("real", { nullable: true })
   public KishuShisuu?: number;
 
-  @Column("float", { nullable: true })
+  @Column("real", { nullable: true })
   public JouhouShisuu?: number;
 
-  @Column("float", { nullable: true })
+  @Column("real", { nullable: true })
   public SougouShisuu?: number;
 
 
@@ -69,10 +69,10 @@ export class ShussoubaJrdb {
   @Column("smallint", { nullable: true })
   public NinkiShisuu?: number;
 
-  @Column("float", { nullable: true })
+  @Column("real", { nullable: true })
   public ChoukyouShisuu?: number;
 
-  @Column("float", { nullable: true })
+  @Column("real", { nullable: true })
   public KyuushaShisuu?: number;
 
 
@@ -82,7 +82,7 @@ export class ShussoubaJrdb {
   @Column("smallint", { nullable: true })
   public KyuushaHyouka?: number;
 
-  @Column("float", { nullable: true })
+  @Column("real", { nullable: true })
   public KishuKitaiRentairitsu: number;
 
   @Column("smallint", { nullable: true })
@@ -143,16 +143,16 @@ export class ShussoubaJrdb {
 
   // 展開予想
 
-  @Column("float", { nullable: true })
+  @Column("real", { nullable: true })
   public TenShisuu: number;
 
-  @Column("float", { nullable: true })
+  @Column("real", { nullable: true })
   public PaceShisuu: number;
 
-  @Column("float", { nullable: true })
+  @Column("real", { nullable: true })
   public AgariShisuu: number;
 
-  @Column("float", { nullable: true })
+  @Column("real", { nullable: true })
   public IchiShisuu: number;
 
   @Column("smallint", { nullable: true })
@@ -161,7 +161,7 @@ export class ShussoubaJrdb {
   @Column("smallint", { nullable: true })
   public DouchuuJuni: number;
 
-  @Column("float", { nullable: true })
+  @Column("real", { nullable: true })
   public DouchuuSa: number;
 
   @Column("smallint", { nullable: true })
@@ -170,7 +170,7 @@ export class ShussoubaJrdb {
   @Column("smallint", { nullable: true })
   public Agari3FJuni: number;
 
-  @Column("float", { nullable: true })
+  @Column("real", { nullable: true })
   public Agari3FSa: number;
 
   @Column("smallint", { nullable: true })
@@ -179,7 +179,7 @@ export class ShussoubaJrdb {
   @Column("smallint", { nullable: true })
   public GoalJuni: number;
 
-  @Column("float", { nullable: true })
+  @Column("real", { nullable: true })
   public GoalSa: number;
 
   @Column("smallint", { nullable: true })
@@ -212,10 +212,10 @@ export class ShussoubaJrdb {
   public IchiShisuuJuni: number;
 
 
-  @Column("float", { nullable: true })
+  @Column("real", { nullable: true })
   public KishuKitaiTanshouRitsu: number;
 
-  @Column("float", { nullable: true })
+  @Column("real", { nullable: true })
   public KishuKitai3ChakunaiRitsu: number;
 
   @Column("smallint", { nullable: true })

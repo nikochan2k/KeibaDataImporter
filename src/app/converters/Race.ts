@@ -57,10 +57,10 @@ export const betteiBareiHandi = new Codes(
 
 export const betteiBareiHandi2 = new Codes(
   [
-    { code: 0, kol: /別定/, naiyou: "別定" },
-    { code: 1, kol: /馬齢/, naiyou: "馬齢" },
-    { code: 2, kol: /ハンデ/, naiyou: "ハンデ" },
-    { code: 3, kol: /定量/, naiyou: "定量" },
+    { code: 0, kol: /別定/, jrdb: "2", naiyou: "別定" },
+    { code: 1, kol: /馬齢/, jrdb: "3", naiyou: "馬齢" },
+    { code: 2, kol: /ハンデ/, jrdb: "1", naiyou: "ハンデ" },
+    { code: 3, kol: /定量/, jrdb: "4", naiyou: "定量" },
     { code: 4, kol: /規定/, naiyou: "規定" }
   ]
 );
@@ -200,8 +200,8 @@ export const jouken = new Codes(
     { code: -14, kol: "-0014", naiyou: "未勝" },
     { code: -15, kol: "-0015", naiyou: "新馬" },
     { code: -16, kol: "-0016", naiyou: "オープン" },
-    { code: -42, kol: "-0042", naiyou: "３才" },
-    { code: -43, kol: "-0043", naiyou: "４才" },
+    { code: -42, kol: "-0042", naiyou: "3才" },
+    { code: -43, kol: "-0043", naiyou: "4才" },
     { code: -44, kol: "-0044", naiyou: "能検" },
     { code: -50, kol: "-0050", naiyou: "未受" },
     { code: -51, kol: "-0051", naiyou: "GⅠ" },
