@@ -3,6 +3,7 @@ import * as $C from "../../../converters/Common";
 import * as $S from "../../../converters/Shussouba";
 import { Choukyou } from "../../../entities/Choukyou";
 import { Shussouba } from "../../../entities/Shussouba";
+import { ShussoubaYosou } from "../../../entities/ShussoubaYosou";
 import { Bridge } from "../../Bridge";
 import { DataToImport } from "../../DataToImport";
 import { ShussoubaInfo } from "../../RaceTool";
@@ -57,16 +58,18 @@ export class KolDen2Kd3 extends DataToImport {
       }
     }
 
-    const shussouba = await this.saveShussouba(buffer, info, <KolBridge>bridge);
+    const shussouba = await this.saveShussouba(buffer, info);
     if (!shussouba) {
       return;
     }
+
+    await this.saveShussoubaYosou(buffer, shussouba, <KolBridge>bridge);
 
     const tanshukuKishuMei = readStrWithNoSpace(buffer, 188, 8);
     await this.saveChoukyou(buffer, shussouba, tanshukuKishuMei);
   }
 
-  protected async saveShussouba(buffer: Buffer, info: ShussoubaInfo, bridge: KolBridge) {
+  protected async saveShussouba(buffer: Buffer, info: ShussoubaInfo) {
     let toBe = this.kolRaceTool.createShussouba(buffer, 23);
     if (!toBe) {
       return null;
@@ -88,12 +91,35 @@ export class KolDen2Kd3 extends DataToImport {
       toBe.Norikawari = $S.norikawari.toCodeFromKol(buffer, 205, 1);
     }
 
-    toBe.KolYosou1 = $S.yosou.toCodeFromKol(buffer, 254, 1);
-    toBe.KolYosou2 = $S.yosou.toCodeFromKol(buffer, 255, 1);
     toBe.KolShutsubahyouSakuseiNengappi = readDate(buffer, 727, 8);
-    toBe.Rating = readDouble(buffer, 739, 3, 0.1);
     toBe.KyuuyouRiyuu = readStr(buffer, 783, 60);
     toBe.KyuuyouRiyuuCode = $S.kyuuyouRiyuuCode.toCodeFromKol(buffer, 783, 60);
+
+    if (asIs) {
+      const updateSet = this.tool.createUpdateSet(asIs, toBe, true);
+      if (updateSet) {
+        await this.entityManager
+          .createQueryBuilder()
+          .update(Shussouba, updateSet)
+          .where("Id = :id")
+          .setParameter("id", asIs.Id)
+          .execute();
+      }
+      toBe = asIs;
+    } else {
+      toBe = await this.entityManager.save(toBe);
+    }
+    return toBe;
+  }
+
+  protected async saveShussoubaYosou(buffer: Buffer, shussouba: Shussouba, bridge: KolBridge) {
+    const asIs = await this.entityManager.findOneById(ShussoubaYosou, shussouba.Id);
+
+    let toBe = new ShussoubaYosou();
+    toBe.Id = shussouba.Id;
+    toBe.KolYosou1 = $S.yosou.toCodeFromKol(buffer, 254, 1);
+    toBe.KolYosou2 = $S.yosou.toCodeFromKol(buffer, 255, 1);
+    toBe.Rating = readDouble(buffer, 739, 3, 0.1);
     toBe.YosouTenkai = bridge.yosouTenkaiMap.get(toBe.Id);
 
     if (asIs) {

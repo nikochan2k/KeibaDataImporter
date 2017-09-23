@@ -10,6 +10,19 @@ export class ShussoubaYosou {
   public Id: number;
 
 
+  @Column("smallint", { nullable: true })
+  public KolYosou1?: number;
+
+  @Column("smallint", { nullable: true })
+  public KolYosou2?: number;
+
+  @Column("float", { nullable: true })
+  public Rating?: number;
+
+  @Column("smallint", { nullable: true })
+  public YosouTenkai?: number;
+
+
   @Column("real", { nullable: true })
   public Idm?: number;
 

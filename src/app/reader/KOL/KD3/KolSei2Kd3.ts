@@ -3,6 +3,7 @@ import * as $C from "../../../converters/Common";
 import * as $S from "../../../converters/Shussouba";
 import { Choukyou } from "../../../entities/Choukyou";
 import { Shussouba } from "../../../entities/Shussouba";
+import { ShussoubaYosou } from "../../../entities/ShussoubaYosou";
 import { DataToImport } from "../../DataToImport";
 import { ShussoubaInfo } from "../../RaceTool";
 import {
@@ -12,7 +13,7 @@ import {
   readPositiveInt,
   readStrWithNoSpace,
   readTime
-  } from "../../Reader";
+} from "../../Reader";
 import { Tool } from "../../Tool";
 import { KolChoukyouTool } from "../KolChoukyouTool";
 import { KolRaceTool } from "../KolRaceTool";
@@ -55,6 +56,9 @@ export class KolSei2Kd3 extends DataToImport {
     if (!shussouba) {
       return;
     }
+
+    await this.saveShussoubaYosou(buffer, shussouba);
+
     await this.kolTool.saveShussoubaTsuukaJuni(buffer, 298, shussouba);
     if (!asIs.KolShutsubahyouSakuseiNengappi) {
       const tanshukuKishuMei = readStrWithNoSpace(buffer, 199, 8);
@@ -86,8 +90,6 @@ export class KolSei2Kd3 extends DataToImport {
     toBe.KishuShozokuKyuushaId = await this.kolTool.saveShozokuKyuusha(buffer, 210);
     toBe.MinaraiKubun = $S.minaraiKubun.toCodeFromKol(buffer, 215, 1);
     toBe.Norikawari = $S.norikawari.toCodeFromKol(buffer, 216, 1);
-    toBe.KolYosou1 = $S.yosou.toCodeFromKol(buffer, 265, 1);
-    toBe.KolYosou2 = $S.yosou.toCodeFromKol(buffer, 266, 1);
     toBe.Ninki = readPositiveInt(buffer, 267, 2);
     toBe.Odds = readDouble(buffer, 269, 5, 0.1);
     toBe.KakuteiChakujun = this.kolRaceTool.getChakujun(buffer, 274, 2);
@@ -116,6 +118,31 @@ export class KolSei2Kd3 extends DataToImport {
     toBe.KolSeisekiSakuseiNengappi = readDate(buffer, 424, 8);
 
     const asIs = info.shussouba;
+    if (asIs) {
+      const updateSet = this.tool.createUpdateSet(asIs, toBe, true);
+      if (updateSet) {
+        await this.entityManager
+          .createQueryBuilder()
+          .update(Shussouba, updateSet)
+          .where("Id = :id")
+          .setParameter("id", asIs.Id)
+          .execute();
+      }
+      toBe = asIs;
+    } else {
+      toBe = await this.entityManager.save(toBe);
+    }
+    return toBe;
+  }
+
+  protected async saveShussoubaYosou(buffer: Buffer, shussouba: Shussouba) {
+    const asIs = await this.entityManager.findOneById(ShussoubaYosou, shussouba.Id);
+
+    let toBe = new ShussoubaYosou();
+    toBe.Id = shussouba.Id;
+    toBe.KolYosou1 = $S.yosou.toCodeFromKol(buffer, 265, 1);
+    toBe.KolYosou2 = $S.yosou.toCodeFromKol(buffer, 266, 1);
+
     if (asIs) {
       const updateSet = this.tool.createUpdateSet(asIs, toBe, true);
       if (updateSet) {
