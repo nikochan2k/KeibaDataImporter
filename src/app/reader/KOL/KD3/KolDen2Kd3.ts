@@ -95,48 +95,20 @@ export class KolDen2Kd3 extends DataToImport {
     toBe.KyuuyouRiyuu = readStr(buffer, 783, 60);
     toBe.KyuuyouRiyuuCode = $S.kyuuyouRiyuuCode.toCodeFromKol(buffer, 783, 60);
 
-    if (asIs) {
-      const updateSet = this.tool.createUpdateSet(asIs, toBe, true);
-      if (updateSet) {
-        await this.entityManager
-          .createQueryBuilder()
-          .update(Shussouba, updateSet)
-          .where("Id = :id")
-          .setParameter("id", asIs.Id)
-          .execute();
-      }
-      toBe = asIs;
-    } else {
-      toBe = await this.entityManager.save(toBe);
-    }
-    return toBe;
+    return await this.tool.update(Shussouba, asIs, toBe);
   }
 
   protected async saveShussoubaYosou(buffer: Buffer, shussouba: Shussouba, bridge: KolBridge) {
-    const asIs = await this.entityManager.findOneById(ShussoubaYosou, shussouba.Id);
-
-    let toBe = new ShussoubaYosou();
+    const toBe = new ShussoubaYosou();
     toBe.Id = shussouba.Id;
     toBe.KolYosou1 = $S.yosou.toCodeFromKol(buffer, 254, 1);
     toBe.KolYosou2 = $S.yosou.toCodeFromKol(buffer, 255, 1);
     toBe.Rating = readDouble(buffer, 739, 3, 0.1);
     toBe.YosouTenkai = bridge.yosouTenkaiMap.get(toBe.Id);
 
-    if (asIs) {
-      const updateSet = this.tool.createUpdateSet(asIs, toBe, true);
-      if (updateSet) {
-        await this.entityManager
-          .createQueryBuilder()
-          .update(Shussouba, updateSet)
-          .where("Id = :id")
-          .setParameter("id", asIs.Id)
-          .execute();
-      }
-      toBe = asIs;
-    } else {
-      toBe = await this.entityManager.save(toBe);
-    }
-    return toBe;
+    const asIs = await this.entityManager.findOneById(ShussoubaYosou, shussouba.Id);
+
+    return await this.tool.update(ShussoubaYosou, asIs, toBe);
   }
 
   protected async saveChoukyou(buffer: Buffer, shussouba: Shussouba, tanshukuKishuMei: string) {

@@ -141,7 +141,7 @@ export class KolUmaKd3 extends DataToImport {
   }
 
   protected async saveKaisai(buffer: Buffer) {
-    let toBe = this.kolRaceTool.createKaisai(buffer);
+    const toBe = this.kolRaceTool.createKaisai(buffer);
     if (!toBe) {
       return null;
     }
@@ -151,22 +151,8 @@ export class KolUmaKd3 extends DataToImport {
     toBe.GaikokuKeibajouMei = readStr(buffer, 131, 20);
 
     const asIs = await this.kolRaceTool.getKaisai(buffer);
-    if (asIs) {
-      const updateSet = this.tool.createUpdateSet(asIs, toBe, false);
-      if (updateSet) {
-        await this.entityManager
-          .createQueryBuilder()
-          .update(Kaisai, updateSet)
-          .where("Id = :id")
-          .setParameter("id", asIs.Id)
-          .execute();
-      }
-      toBe = asIs;
-    } else {
-      toBe = await this.entityManager.save(toBe);
-    }
 
-    return toBe;
+    return await this.tool.update(Kaisai, asIs, toBe);
   }
 
   protected async saveRace(buffer: Buffer, kaisai: Kaisai) {
@@ -179,7 +165,7 @@ export class KolUmaKd3 extends DataToImport {
       }
     }
 
-    let toBe = this.kolRaceTool.createRace(buffer);
+    const toBe = this.kolRaceTool.createRace(buffer);
     if (!toBe) {
       return null;
     }
@@ -225,21 +211,8 @@ export class KolUmaKd3 extends DataToImport {
     toBe.Pace = $R.pace.toCodeFromKol(buffer, 127, 1);
     toBe.Tenki = $R.tenki.toCodeFromKol(buffer, 128, 1);
     toBe.Baba = $R.baba.toCodeFromKol(buffer, 129, 1);
-    if (asIs) {
-      const updateSet = this.tool.createUpdateSet(asIs, toBe, true);
-      if (updateSet) {
-        await this.entityManager
-          .createQueryBuilder()
-          .update(Race, updateSet)
-          .where("Id = :id")
-          .setParameter("id", asIs.Id)
-          .execute();
-      }
-      toBe = asIs;
-    } else {
-      toBe = await this.entityManager.save(toBe);
-    }
-    return toBe;
+
+    return await this.tool.update(Race, asIs, toBe);
   }
 
   protected async saveShussouba(buffer: Buffer, race: Race, kyousouba: Kyousouba, uma: Uma) {
@@ -264,7 +237,8 @@ export class KolUmaKd3 extends DataToImport {
         return asIs;
       }
     }
-    let toBe = new Shussouba();
+
+    const toBe = new Shussouba();
     toBe.Id = id;
     toBe.RaceId = race.Id;
     toBe.Wakuban = readPositiveInt(buffer, 0, 1);
@@ -309,46 +283,19 @@ export class KolUmaKd3 extends DataToImport {
       toBe.Chuukan = toBe.Time - toBe.Ten3F - toBe.Agari3F;
     }
     toBe.YonCornerIchiDori = $C.ichi.toCodeFromKol(buffer, 247, 1);
-    if (asIs) {
-      const updateSet = this.tool.createUpdateSet(asIs, toBe, true);
-      if (updateSet) {
-        await this.entityManager
-          .createQueryBuilder()
-          .update(Shussouba, updateSet)
-          .where("Id = :id")
-          .setParameter("id", asIs.Id)
-          .execute();
-      }
-      toBe = asIs;
-    } else {
-      toBe = await this.entityManager.save(toBe);
-    }
-    return toBe;
+
+    return await this.tool.update(Shussouba, asIs, toBe);
   }
 
   protected async saveShussoubaYosou(buffer: Buffer, shussouba: Shussouba) {
-    const asIs = await this.entityManager.findOneById(ShussoubaYosou, shussouba.Id);
-
-    let toBe = new ShussoubaYosou();
+    const toBe = new ShussoubaYosou();
     toBe.Id = shussouba.Id;
     toBe.KolYosou1 = $S.yosou.toCodeFromKol(buffer, 206, 1);
     toBe.KolYosou2 = $S.yosou.toCodeFromKol(buffer, 207, 1);
 
-    if (asIs) {
-      const updateSet = this.tool.createUpdateSet(asIs, toBe, true);
-      if (updateSet) {
-        await this.entityManager
-          .createQueryBuilder()
-          .update(Shussouba, updateSet)
-          .where("Id = :id")
-          .setParameter("id", asIs.Id)
-          .execute();
-      }
-      toBe = asIs;
-    } else {
-      toBe = await this.entityManager.save(toBe);
-    }
-    return toBe;
+    const asIs = await this.entityManager.findOneById(ShussoubaYosou, shussouba.Id);
+
+    return await this.tool.update(ShussoubaYosou, asIs, toBe);
   }
 
   public async saveKyousoubaOfRace(buffer: Buffer, k: Kyousouba, u: Uma, kyuusha: Kyuusha) {

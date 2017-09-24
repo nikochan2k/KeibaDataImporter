@@ -1,6 +1,6 @@
 import { Logger } from "log4js";
 import { Service } from "typedi";
-import { EntityManager } from "typeorm";
+import { EntityManager, ObjectType } from "typeorm";
 import { OrmEntityManager } from "typeorm-typedi-extensions";
 import {
   readStrWithNoSpace
@@ -19,29 +19,46 @@ export abstract class Tool {
     this.logger = getLogger(this);
   }
 
-  public createUpdateSet(asIs: any, toBe: any, overwrite: boolean) {
-    const updateSet: any = {};
+  public async update<T>(entity: ObjectType<T>, asIs: T, toBe: T, forceKeys?: string[]) {
+    if (asIs) {
+      const updateSet = this.createUpdateSet(asIs, toBe, forceKeys);
+      if (Object.keys(updateSet).length) {
+        await this.entityManager
+          .createQueryBuilder()
+          .update(entity, updateSet)
+          .where("Id = :id")
+          .setParameter("id", (<any>asIs).Id)
+          .execute();
+      }
+      toBe = asIs;
+    } else {
+      toBe = await this.entityManager.save(toBe);
+    }
+    return toBe;
+  }
+
+  protected createUpdateSet<T>(asIs: T, toBe: T, forceKeys?: string[]) {
+    const updateSet = <T>{};
     const keys = Object.keys(toBe);
-    let created = false;
     for (let i = 0; i < keys.length; i++) {
       const key = keys[i];
       const toBeValue = toBe[key];
+      if (forceKeys && 0 <= forceKeys.indexOf(key)) {
+        updateSet[key] = toBeValue;
+        asIs[key] = toBeValue;
+        continue;
+      }
       /* tslint:disable:triple-equals */
       if (toBeValue == null) {
         continue;
       }
-      const asIsValue = asIs[key];
-      if (asIsValue == null || overwrite && asIsValue !== toBeValue) {
+      /* tslint:disable:triple-equals */
+      if (asIs[key] !== toBeValue) {
         updateSet[key] = toBeValue;
         asIs[key] = toBeValue;
-        created = true;
       }
-      /* tslint:disable:triple-equals */
     }
-    if (created) {
-      return updateSet;
-    }
-    return null;
+    return updateSet;
   }
 
   public normalizeHoujinMei(buffer, offset, length) {

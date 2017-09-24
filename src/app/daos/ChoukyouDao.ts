@@ -27,21 +27,7 @@ export class ChoukyouDao {
 
   public async save(toBe: Choukyou) {
     const asIs = await this.findOneById(toBe.Id);
-    if (asIs) {
-      const updateSet = this.tool.createUpdateSet(asIs, toBe, false);
-      if (updateSet) {
-        await this.entityManager
-          .createQueryBuilder()
-          .update(Choukyou, updateSet)
-          .where("Id = :id")
-          .setParameter("id", asIs.Id)
-          .execute();
-      }
-      toBe = asIs;
-    } else {
-      toBe = await this.repository.save(toBe);
-    }
-    return toBe;
+    return await this.tool.update(Choukyou, asIs, toBe);
   }
 
 }

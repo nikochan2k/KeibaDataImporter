@@ -153,22 +153,7 @@ export class KolSei1Kd3 extends DataToImport {
       toBe.ShougaiHeikin1F = readDouble(buffer, 398, 4, 0.1);
     }
 
-    if (asIs) {
-      const updateSet = this.tool.createUpdateSet(asIs, toBe, true);
-      if (updateSet) {
-        await this.entityManager
-          .createQueryBuilder()
-          .update(Race, updateSet)
-          .where("Id = :id")
-          .setParameter("id", asIs.Id)
-          .execute();
-      }
-      toBe = asIs;
-    } else {
-      toBe = await this.entityManager.save(toBe);
-    }
-
-    return toBe;
+    return await this.tool.update(Race, asIs, toBe);
   }
 
   protected async saveRaceLapTime(buffer: Buffer, kaisai: Kaisai, race: Race) {

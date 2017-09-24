@@ -66,20 +66,7 @@ LIMIT
 
   public async saveKishu(toBe: Kishu, namae?: string, tanshuku?: string) {
     const asIs = await this.getKishu(toBe);
-    if (asIs) {
-      const updateSet = this.tool.createUpdateSet(asIs, toBe, false);
-      if (updateSet) {
-        await this.entityManager
-          .createQueryBuilder()
-          .update(Kishu, updateSet)
-          .where("Id = :id")
-          .setParameter("id", asIs.Id)
-          .execute();
-      }
-      toBe = asIs;
-    } else {
-      toBe = await this.kishuRepository.save(toBe);
-    }
+    toBe = await this.tool.update(Kishu, asIs, toBe);
     if (namae) {
       await this.saveKishuMeishou(toBe, namae);
     }

@@ -28,55 +28,28 @@ export abstract class RaceData extends DataToImport {
   }
 
   protected async saveKaisai(buffer: Buffer) {
-    let toBe = this.jrdbRaceTool.createKaisai(buffer);
+    const toBe = this.jrdbRaceTool.createKaisai(buffer);
     if (!toBe) {
       return null;
     }
     this.setKaisai(buffer, toBe);
 
     const asIs = await this.jrdbRaceTool.getKaisai(buffer);
-    if (asIs) {
-      const updateSet = this.tool.createUpdateSet(asIs, toBe, true);
-      if (updateSet) {
-        await this.entityManager
-          .createQueryBuilder()
-          .update(Kaisai, updateSet)
-          .where("Id = :id")
-          .setParameter("id", asIs.Id)
-          .execute();
-      }
-      toBe = asIs;
-    } else {
-      toBe = await this.entityManager.save(toBe);
-    }
-    return toBe;
+
+    return await this.tool.update(Kaisai, asIs, toBe);
   }
 
   protected abstract setKaisai(buffer: Buffer, toBe: Kaisai);
 
   protected async saveRace(buffer: Buffer, kaisai: Kaisai) {
-    let toBe = this.jrdbRaceTool.createRace(buffer, kaisai.Id);
+    const toBe = this.jrdbRaceTool.createRace(buffer, kaisai.Id);
     if (!toBe) {
       return null;
     }
     this.setRace(buffer, toBe);
 
     const asIs = await this.jrdbRaceTool.getRace(buffer);
-    if (asIs) {
-      const updateSet = this.tool.createUpdateSet(asIs, toBe, true);
-      if (updateSet) {
-        await this.entityManager
-          .createQueryBuilder()
-          .update(Race, updateSet)
-          .where("Id = :id")
-          .setParameter("id", asIs.Id)
-          .execute();
-      }
-      toBe = asIs;
-    } else {
-      toBe = await this.entityManager.save(toBe);
-    }
-    return toBe;
+    return await this.tool.update(Race, asIs, toBe);
   }
 
   protected abstract setRace(buffer: Buffer, toBe: Race);

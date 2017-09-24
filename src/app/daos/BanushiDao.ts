@@ -27,21 +27,7 @@ export class BanushiDao {
 
   public async save(toBe: Banushi) {
     const asIs = await this.repository.findOne({ BanushiMei: toBe.BanushiMei });
-    if (asIs) {
-      const updateSet = this.tool.createUpdateSet(asIs, toBe, false);
-      if (updateSet) {
-        await this.entityManager
-          .createQueryBuilder()
-          .update(Banushi, updateSet)
-          .where("Id = :id")
-          .setParameter("id", asIs.Id)
-          .execute();
-      }
-      toBe = asIs;
-    } else {
-      toBe = await this.repository.save(toBe);
-    }
-    return toBe;
+    return await this.tool.update(Banushi, asIs, toBe);
   }
 
 }

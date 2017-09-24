@@ -17,27 +17,14 @@ export abstract class Ka$ extends DataToImport {
   protected jrdbRaceTool: JrdbRaceTool;
 
   public async save(buffer: Buffer, bridge: Bridge) {
-    let toBe = this.jrdbRaceTool.createKaisai(buffer);
+    const toBe = this.jrdbRaceTool.createKaisai(buffer);
     if (!toBe) {
       return;
     }
     this.setKaisai(buffer, toBe);
 
     const asIs = await this.jrdbRaceTool.getKaisai(buffer);
-    if (asIs) {
-      const updateSet = this.tool.createUpdateSet(asIs, toBe, true);
-      if (updateSet) {
-        await this.entityManager
-          .createQueryBuilder()
-          .update(Kaisai, updateSet)
-          .where("Id = :id")
-          .setParameter("id", asIs.Id)
-          .execute();
-      }
-      toBe = asIs;
-    } else {
-      toBe = await this.entityManager.save(toBe);
-    }
+    await this.tool.update(Kaisai, asIs, toBe);
   }
 
   protected setKaisai(buffer: Buffer, toBe: Kaisai) {

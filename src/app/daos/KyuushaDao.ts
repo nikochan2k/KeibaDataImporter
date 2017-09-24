@@ -54,20 +54,7 @@ export class KyuushaDao {
     } else {
       asIs = await this.getKyuushaWith(namae);
     }
-    if (asIs) {
-      const updateSet = this.tool.createUpdateSet(asIs, toBe, false);
-      if (updateSet) {
-        await this.entityManager
-          .createQueryBuilder()
-          .update(Kyuusha, updateSet)
-          .where("Id = :id")
-          .setParameter("id", asIs.Id)
-          .execute();
-      }
-      toBe = asIs;
-    } else {
-      toBe = await this.kyuushaRepository.save(toBe);
-    }
+    toBe = await this.tool.update(Kyuusha, asIs, toBe);
     if (namae) {
       await this.saveKyuushaMeishou(toBe, namae);
     }

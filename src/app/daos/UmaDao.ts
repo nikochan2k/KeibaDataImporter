@@ -64,21 +64,7 @@ export class UmaDao {
       toBe.Seibetsu = $U.Seibetsu.Boba;
     }
     const asIs = await this.getUma(toBe);
-    if (asIs) {
-      const updateSet = this.tool.createUpdateSet(asIs, toBe, false);
-      if (updateSet) {
-        await this.entityManager
-          .createQueryBuilder()
-          .update(Uma, updateSet)
-          .where("Id = :id")
-          .setParameter("id", asIs.Id)
-          .execute();
-      }
-      toBe = asIs;
-    } else {
-      toBe = await this.umaRepository.save(toBe);
-    }
-    return toBe;
+    return await this.tool.update(Uma, asIs, toBe);
   }
 
   public async saveKyousouba(toBe: Kyousouba) {

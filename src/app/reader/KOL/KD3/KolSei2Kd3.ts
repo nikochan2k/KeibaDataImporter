@@ -118,46 +118,18 @@ export class KolSei2Kd3 extends DataToImport {
     toBe.KolSeisekiSakuseiNengappi = readDate(buffer, 424, 8);
 
     const asIs = info.shussouba;
-    if (asIs) {
-      const updateSet = this.tool.createUpdateSet(asIs, toBe, true);
-      if (updateSet) {
-        await this.entityManager
-          .createQueryBuilder()
-          .update(Shussouba, updateSet)
-          .where("Id = :id")
-          .setParameter("id", asIs.Id)
-          .execute();
-      }
-      toBe = asIs;
-    } else {
-      toBe = await this.entityManager.save(toBe);
-    }
-    return toBe;
+    return await this.tool.update(Shussouba, asIs, toBe);
   }
 
   protected async saveShussoubaYosou(buffer: Buffer, shussouba: Shussouba) {
-    const asIs = await this.entityManager.findOneById(ShussoubaYosou, shussouba.Id);
-
-    let toBe = new ShussoubaYosou();
+    const toBe = new ShussoubaYosou();
     toBe.Id = shussouba.Id;
     toBe.KolYosou1 = $S.yosou.toCodeFromKol(buffer, 265, 1);
     toBe.KolYosou2 = $S.yosou.toCodeFromKol(buffer, 266, 1);
 
-    if (asIs) {
-      const updateSet = this.tool.createUpdateSet(asIs, toBe, true);
-      if (updateSet) {
-        await this.entityManager
-          .createQueryBuilder()
-          .update(Shussouba, updateSet)
-          .where("Id = :id")
-          .setParameter("id", asIs.Id)
-          .execute();
-      }
-      toBe = asIs;
-    } else {
-      toBe = await this.entityManager.save(toBe);
-    }
-    return toBe;
+    const asIs = await this.entityManager.findOneById(ShussoubaYosou, shussouba.Id);
+
+    return await this.tool.update(ShussoubaYosou, asIs, toBe);
   }
 
 }
