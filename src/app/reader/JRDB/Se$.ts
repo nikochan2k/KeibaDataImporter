@@ -64,16 +64,25 @@ export abstract class Se$ extends ShussoubaData {
     toBe.BabaSokudo = $R.babaSokudo.toCodeFromJrdb(buffer, 70, 1);
     toBe.JoukenNenreiSeigen = $R.joukenNenreiSeigen.toCodeFromJrdb(buffer, 71, 2);
     toBe.Jouken1 = $R.jouken.toCodeFromJrdb(buffer, 73, 2);
-    const joukenFuka = this.raceTool.getJoukenFuka($R.joukenFuka2.toCodesFromJrdb(buffer, 75, 3));
-    if (toBe.JoukenFuka) {
-      toBe.JoukenFuka |= joukenFuka;
-    } else {
-      toBe.JoukenFuka = joukenFuka;
-    }
+
+    toBe.JoukenSarakei = 1;
+    const kigou = readStr(buffer, 75, 3);
+    toBe.JoukenBoba = $R.joukenBoba.toCodeFromJrdb(kigou);
+    toBe.JoukenHinba = $R.joukenHinba.toCodeFromJrdb(kigou);
+    toBe.JoukenSenba = $R.joukenSenba.toCodeFromJrdb(kigou);
+    toBe.JoukenMaruKon = $R.joukenMaruKon.toCodeFromJrdb(kigou);
+    toBe.JoukenMaruChichi = $R.joukenMaruChichi.toCodeFromJrdb(kigou);
+    toBe.JoukenMaruIchi = $R.joukenMaruIchi.toCodeFromJrdb(kigou);
+    toBe.JoukenMaruChuu = $R.joukenMaruChuu.toCodeFromJrdb(kigou);
+    toBe.JoukenMaruKokusai = $R.joukenMaruKokusai.toCodeFromJrdb(kigou);
+    toBe.JoukenMaruShi = $R.joukenMaruShi.toCodeFromJrdb(kigou);
+    toBe.JoukenMaruTokuShi = $R.joukenMaruTokuShi.toCodeFromJrdb(kigou);
+    toBe.JoukenKakuShi = $R.joukenKakuShi.toCodeFromJrdb(kigou);
+    toBe.JoukenKouryuu = $R.joukenKouryuu.toCodeFromJrdb(kigou);
+    toBe.JoukenWakate = $R.joukenWakate.toCodeFromJrdb(kigou);
+    toBe.JoukenKyuushuusan = $R.joukenKyuushuusan.toCodeFromJrdb(kigou);
+
     toBe.BetteiBareiHandi = $R.betteiBareiHandi.toCodeFromJrdb(buffer, 78, 1);
-    if (!toBe.Grade || toBe.Grade <= 3) {
-      toBe.Grade = $R.grade.toCodeFromJrdb(buffer, 79, 1);
-    }
     toBe.TokubetsuMei = readStr(buffer, 80, 50);
     toBe.Tousuu = readPositiveInt(buffer, 130, 2);
     toBe.TanshukuTokubetsuMei = readStr(buffer, 132, 8);

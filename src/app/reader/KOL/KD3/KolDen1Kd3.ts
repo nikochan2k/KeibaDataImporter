@@ -9,10 +9,11 @@ import {
   readDate,
   readInt,
   readPositiveInt,
+  readRaw,
   readStr,
   readStrWithNoSpace,
   readTime
-  } from "../../Reader";
+} from "../../Reader";
 import { Tool } from "../../Tool";
 import { KolBridge } from "../KolBridge";
 import { KolRaceTool } from "../KolRaceTool";
@@ -76,7 +77,7 @@ export class KolDen1Kd3 extends DataToImport {
   }
 
   protected async saveRace(buffer: Buffer, kaisai: Kaisai, asIs: Race) {
-    let toBe = this.kolRaceTool.createRace(buffer);
+    const toBe = this.kolRaceTool.createRace(buffer);
     if (!toBe) {
       return asIs;
     }
@@ -89,23 +90,46 @@ export class KolDen1Kd3 extends DataToImport {
       toBe.TokubetsuMei = this.tool.normalizeTokubetsuMei(buffer, 28, 30);
       toBe.RaceMei = readStrWithNoSpace(buffer, 58, 14);
       toBe.Grade = $R.grade.toCodeFromKol(buffer, 72, 1);
-      toBe.Grade += $R.jpnFlag.toCodeFromKol(buffer, 73, 1);
-      toBe.BetteiBareiHandi = $R.betteiBareiHandi.toCodeFromKol(buffer, 74, 2);
-      const betteiBareiHandiShousai = readStr(buffer, 76, 18);
-      if (toBe.BetteiBareiHandi === null) {
-        toBe.BetteiBareiHandi = $R.betteiBareiHandi2.toCodeFromKol(betteiBareiHandiShousai);
+      toBe.JpnFlag = $R.jpnFlag.toCodeFromKol(buffer, 73, 1);
+      const betteiBareiHandiReigai = readStr(buffer, 76, 18);
+      toBe.BetteiBareiHandi = $R.betteiBareiHandi.toCodeFromKol(buffer, 74, 2) || $R.betteiBareiHandi.toCodeFromKol(betteiBareiHandiReigai);
+      if (!toBe.BetteiBareiHandi) {
+        toBe.BetteiBareiHandiReigai = betteiBareiHandiReigai;
       }
-      if (toBe.BetteiBareiHandi === null) {
-        toBe.BetteiBareiHandiReigai = betteiBareiHandiShousai;
-      }
-      const joukenFuka1 = $R.joukenFuka1.toCodesFromKol(buffer, 94, 2);
-      const joukenFuka2 = $R.joukenFuka2.toCodesFromKol(buffer, 96, 2);
-      const joukenKei = $R.joukenKei.toCodesFromKol(buffer, 98, 1);
-      toBe.JoukenFuka = this.kolRaceTool.getJoukenFuka(joukenFuka1, joukenFuka2, joukenKei);
-      toBe.JoukenNenreiSeigen = $R.joukenNenreiSeigen.toCodeFromKol(buffer, 99, 1);
-      if (toBe.JoukenNenreiSeigen === null) {
-        toBe.JoukenNenreiSeigen = $R.joukenNenreiSeigen2.toCodeFromKol(buffer, 98, 1);
-      }
+
+      const joukenFuka = readRaw(buffer, 94, 2);
+      toBe.JoukenBoba = $R.joukenBoba.toCodeFromKol(joukenFuka);
+      toBe.JoukenHinba = $R.joukenHinba.toCodeFromKol(joukenFuka);
+      toBe.JoukenSenba = $R.joukenSenba.toCodeFromKol(joukenFuka);
+      toBe.JoukenMaruKon = $R.joukenMaruKon.toCodeFromKol(joukenFuka);
+      toBe.JoukenMaruChichi = $R.joukenMaruChichi.toCodeFromKol(joukenFuka);
+      toBe.JoukenMaruIchi = $R.joukenMaruIchi.toCodeFromKol(joukenFuka);
+      toBe.JoukenMaruChuu = $R.joukenMaruChuu.toCodeFromKol(joukenFuka);
+      toBe.JoukenKakuChuu = $R.joukenKakuChuu.toCodeFromKol(joukenFuka);
+      toBe.JoukenMaruKokusai = $R.joukenMaruKokusai.toCodeFromKol(joukenFuka);
+      toBe.JoukenMaruShou = $R.joukenMaruShou.toCodeFromKol(joukenFuka);
+      const joukenFuka2 = readRaw(buffer, 96, 2);
+      toBe.JoukenMaruShi = $R.joukenMaruShi.toCodeFromKol(joukenFuka) || $R.joukenMaruShi.toCodeFromKol(joukenFuka2);
+      toBe.JoukenMaruTokuShi = $R.joukenMaruTokuShi.toCodeFromKol(joukenFuka) || $R.joukenMaruTokuShi.toCodeFromKol(joukenFuka2);
+      toBe.JoukenKakuShi = $R.joukenKakuShi.toCodeFromKol(joukenFuka) || $R.joukenKakuShi.toCodeFromKol(joukenFuka2);
+      toBe.JoukenShounyuu = $R.joukenShounyuu.toCodeFromKol(joukenFuka);
+      toBe.JoukenNaikokusan = $R.joukenNaikokusan.toCodeFromKol(joukenFuka);
+      toBe.JoukenKouryuu = $R.joukenKouryuu.toCodeFromKol(joukenFuka);
+      toBe.JoukenKyuushuusan = $R.joukenKyuushuusan.toCodeFromKol(joukenFuka);
+      toBe.JoukenChibasan = $R.joukenChibasan.toCodeFromKol(joukenFuka);
+      toBe.JoukenKansaiHaifuba = $R.joukenKansaiHaifuba.toCodeFromKol(joukenFuka);
+      toBe.JoukenKantouHaifuba = $R.joukenKantouHaifuba.toCodeFromKol(joukenFuka);
+      toBe.JoukenJraNintei = $R.joukenJraNintei.toCodeFromKol(joukenFuka);
+      toBe.JoukenJraShitei = $R.joukenJraShitei.toCodeFromKol(joukenFuka);
+      toBe.JoukenAshige = $R.joukenAshige.toCodeFromKol(joukenFuka);
+      toBe.JoukenKurige = $R.joukenKurige.toCodeFromKol(joukenFuka);
+      toBe.JoukenAshigeShiroge = $R.joukenAshigeShiroge.toCodeFromKol(joukenFuka);
+      toBe.JoukenKurokage = $R.joukenKurokage.toCodeFromKol(joukenFuka);
+      const joukenCut = readRaw(buffer, 98, 1);
+      toBe.JoukenSarakei = $R.joukenSaraKei.toCodeFromKol(joukenCut);
+      toBe.JoukenAraKei = $R.joukenAraKei.toCodeFromKol(joukenCut);
+      toBe.JoukenNenreiSeigen = $R.joukenNenreiSeigen.toCodeFromKol(buffer, 99, 1) || $R.joukenNenreiSeigenFromJoukenCut.toCodeFromKol(joukenCut);
+
       toBe.Jouken1 = $R.jouken.toCodeFromKol(buffer, 100, 5);
       toBe.DirtShiba = $R.dirtShiba.toCodeFromKol(buffer, 105, 1);
       toBe.MigiHidari = $R.migiHidari.toCodeFromKol(buffer, 106, 1);

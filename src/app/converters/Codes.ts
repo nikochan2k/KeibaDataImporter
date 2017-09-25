@@ -42,6 +42,11 @@ export class Codes {
   }
 
   protected toCodeFrom(key: string, str: string) {
+    /* tslint:disable:triple-equals */
+    if (str == null) {
+      return str;
+    }
+    /* tslint:enable:triple-equals */
     for (let i = 0; i < this.codes.length; i++) {
       const c = this.codes[i];
       const member = c[key];
@@ -60,47 +65,6 @@ export class Codes {
       }
     }
     return null;
-  }
-
-  public toCodesFromKol(buffer: Buffer | string, offset?: number, length?: number) {
-    const str = this.getStr(buffer, offset, length);
-    return this.toCodesFrom("kol", str);
-  }
-
-  public toCodesFromJrdb(buffer: Buffer | string, offset?: number, length?: number) {
-    const str = this.getStr(buffer, offset, length);
-    return this.toCodesFrom("jrdb", str);
-  }
-
-  public toCodesFromJravan(buffer: Buffer | string, offset?: number, length?: number) {
-    const str = this.getStr(buffer, offset, length);
-    return this.toCodesFrom("jravan", str);
-  }
-
-  protected toCodesFrom(key: string, str: string) {
-    const codes: number[] = [];
-    for (let i = 0; i < this.codes.length; i++) {
-      const c = this.codes[i];
-      const member = c[key];
-      /* tslint:disable:triple-equals */
-      if (member == null) {
-        continue;
-      }
-      /* tslint:enable:triple-equals */
-      const type = typeof member;
-      let code: number = null;
-      if (type === "function") {
-        code = member(str);
-      } else if (type === "object" && member.test(str)) { // RegExp
-        code = c.code;
-      } else if (member === str) {
-        code = c.code;
-      }
-      if (code !== null) {
-        codes.push(code);
-      }
-    }
-    return codes;
   }
 
   public toNaiyou(code: number) {

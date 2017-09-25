@@ -22,13 +22,26 @@ export abstract class Ba$ extends RaceData {
     toBe.UchiSoto = $R.uchiSoto.toCodeFromJrdb(buffer, 26, 1);
     toBe.JoukenNenreiSeigen = $R.joukenNenreiSeigen.toCodeFromJrdb(buffer, 27, 2);
     toBe.Jouken1 = $R.jouken.toCodeFromJrdb(buffer, 29, 2);
-    const kigou = $R.joukenFuka1.toCodesFromJrdb(buffer, 31, 3);
-    toBe.JoukenFuka = this.jrdbRaceTool.getJoukenFuka(kigou);
+
+    toBe.JoukenSarakei = 1;
+    const kigou = readStr(buffer, 31, 3);
+    toBe.JoukenBoba = $R.joukenBoba.toCodeFromJrdb(kigou);
+    toBe.JoukenHinba = $R.joukenHinba.toCodeFromJrdb(kigou);
+    toBe.JoukenSenba = $R.joukenSenba.toCodeFromJrdb(kigou);
+    toBe.JoukenMaruKon = $R.joukenMaruKon.toCodeFromJrdb(kigou);
+    toBe.JoukenMaruChichi = $R.joukenMaruChichi.toCodeFromJrdb(kigou);
+    toBe.JoukenMaruIchi = $R.joukenMaruIchi.toCodeFromJrdb(kigou);
+    toBe.JoukenMaruChuu = $R.joukenMaruChuu.toCodeFromJrdb(kigou);
+    toBe.JoukenMaruKokusai = $R.joukenMaruKokusai.toCodeFromJrdb(kigou);
+    toBe.JoukenMaruShi = $R.joukenMaruShi.toCodeFromJrdb(kigou);
+    toBe.JoukenMaruTokuShi = $R.joukenMaruTokuShi.toCodeFromJrdb(kigou);
+    toBe.JoukenKakuShi = $R.joukenKakuShi.toCodeFromJrdb(kigou);
+    toBe.JoukenKouryuu = $R.joukenKouryuu.toCodeFromJrdb(kigou);
+    toBe.JoukenWakate = $R.joukenWakate.toCodeFromJrdb(kigou);
+    toBe.JoukenKyuushuusan = $R.joukenKyuushuusan.toCodeFromJrdb(kigou);
+
     toBe.BetteiBareiHandi = $R.betteiBareiHandi.toCodeFromJrdb(buffer, 34, 1);
     toBe.Grade = $R.grade.toCodeFromJrdb(buffer, 35, 1);
-    if (toBe.HeichiShougai === $R.HeichiShougai.Shougai) {
-      toBe.Grade += 3;
-    }
     toBe.TokubetsuMei = readStr(buffer, 36, 50);
     const kaisuu = readStr(buffer, 86, 8);
     const execed = /\d+/.exec(kaisuu);
@@ -39,6 +52,7 @@ export abstract class Ba$ extends RaceData {
     toBe.Course = $R.course.toCodeFromJrdb(buffer, 96, 1);
     toBe.TanshukuTokubetsuMei = readStr(buffer, 98, 8);
     toBe.RaceMei = readStr(buffer, 106, 18);
+
     toBe.Shoukin1Chaku = readPositiveInt(buffer, 125, 5, 10000);
     toBe.Shoukin2Chaku = readPositiveInt(buffer, 130, 5, 10000);
     toBe.Shoukin3Chaku = readPositiveInt(buffer, 135, 5, 10000);

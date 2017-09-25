@@ -26,8 +26,11 @@ export class Race {
   @Column("smallint", { nullable: true })
   public HeichiShougai: number;
 
-  @Column("smallint", { nullable: true })
+  @Column("tinyint", { nullable: true })
   public Grade?: number;
+
+  @Column("tinyint", { nullable: true })
+  public JpnFlag?: number;
 
   @Column("varchar", { nullable: true, length: 27 })
   public RaceMei?: string;
@@ -41,8 +44,95 @@ export class Race {
   @Column("smallint", { nullable: true })
   public JuushouKaisuu?: number;
 
-  @Column("int", { nullable: true })
-  public JoukenFuka: number;
+  @Column("tinyint", { nullable: true })
+  public JoukenSarakei: number;
+
+  @Column("tinyint", { nullable: true })
+  public JoukenAraKei: number;
+
+  @Column("tinyint", { nullable: true })
+  public JoukenBoba: number;
+
+  @Column("tinyint", { nullable: true })
+  public JoukenHinba: number;
+
+  @Column("tinyint", { nullable: true })
+  public JoukenSenba: number;
+
+  @Column("tinyint", { nullable: true })
+  public JoukenMaruKon: number;
+
+  @Column("tinyint", { nullable: true })
+  public JoukenMaruChichi: number;
+
+  @Column("tinyint", { nullable: true })
+  public JoukenMaruIchi: number;
+
+  @Column("tinyint", { nullable: true })
+  public JoukenMaruChuu: number;
+
+  @Column("tinyint", { nullable: true })
+  public JoukenKakuChuu: number;
+
+  @Column("tinyint", { nullable: true })
+  public JoukenMaruKokusai: number;
+
+  @Column("tinyint", { nullable: true })
+  public JoukenMaruShou: number;
+
+  @Column("tinyint", { nullable: true })
+  public JoukenMaruShi: number;
+
+  @Column("tinyint", { nullable: true })
+  public JoukenMaruTokuShi: number;
+
+  @Column("tinyint", { nullable: true })
+  public JoukenKakuShi: number;
+
+  @Column("tinyint", { nullable: true })
+  public JoukenShounyuu: number;
+
+  @Column("tinyint", { nullable: true })
+  public JoukenNaikokusan: number;
+
+  @Column("tinyint", { nullable: true })
+  public JoukenKouryuu: number;
+
+  @Column("tinyint", { nullable: true })
+  public JoukenWakate: number;
+
+  @Column("tinyint", { nullable: true })
+  public JoukenKyuushuusan: number;
+
+  @Column("tinyint", { nullable: true })
+  public JoukenChibasan: number;
+
+  @Column("tinyint", { nullable: true })
+  public JoukenKansaiHaifuba: number;
+
+  @Column("tinyint", { nullable: true })
+  public JoukenKantouHaifuba: number;
+
+  @Column("tinyint", { nullable: true })
+  public JoukenJraNintei: number;
+
+  @Column("tinyint", { nullable: true })
+  public JoukenJraShitei: number;
+
+  @Column("tinyint", { nullable: true })
+  public JoukenAshige: number;
+
+  @Column("tinyint", { nullable: true })
+  public JoukenKurige: number;
+
+  @Column("tinyint", { nullable: true })
+  public JoukenAshigeShiroge: number;
+
+  @Column("tinyint", { nullable: true })
+  public JoukenKurokage: number;
+
+  @Column("tinyint", { nullable: true })
+  public JoukenSeed: number;
 
   @Column("smallint", { nullable: true })
   public BetteiBareiHandi?: number;
