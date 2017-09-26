@@ -188,6 +188,9 @@ export class Race {
   @Column("smallint", { nullable: true })
   public Pace?: number;
 
+  @Column("real", { nullable: true })
+  public PaceShisuu?: number;
+
   @Column("smallint", { nullable: true })
   public PaceUpNokoriFalon?: number;
 

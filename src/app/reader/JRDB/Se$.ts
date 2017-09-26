@@ -11,11 +11,12 @@ import { Kyousouba } from "../../entities/Kyousouba";
 import { Kyuusha } from "../../entities/Kyuusha";
 import { Race } from "../../entities/Race";
 import { Shussouba } from "../../entities/Shussouba";
-import { ShussoubaYosou } from "../../entities/ShussoubaYosou";
+import { ShussoubaHyouka } from "../../entities/ShussoubaHyouka";
 import { Uma } from "../../entities/Uma";
 import { ShussoubaInfo } from "../RaceTool";
 import { RaceTool } from "../RaceTool";
 import {
+  readInt,
   readDouble,
   readPositiveInt,
   readStr,
@@ -86,6 +87,8 @@ export abstract class Se$ extends ShussoubaData {
     toBe.TokubetsuMei = readStr(buffer, 80, 50);
     toBe.Tousuu = readPositiveInt(buffer, 130, 2);
     toBe.TanshukuTokubetsuMei = readStr(buffer, 132, 8);
+    toBe.Pace = $R.pace.toCodeFromJrdb(buffer, 221, 1);
+    toBe.PaceShisuu = readDouble(buffer, 238, 5);
   }
 
   protected async setShussouba(buffer: Buffer, toBe: Shussouba, info: ShussoubaInfo) {
@@ -93,12 +96,26 @@ export abstract class Se$ extends ShussoubaData {
     toBe.ChakujunFuka = $S.chakujunFuka.toCodeFromJrdb(buffer, 142, 1);
     toBe.Time = readDouble(buffer, 143, 4, 0.1);
     toBe.Kinryou = readDouble(buffer, 147, 3, 0.1);
-    toBe.Odds = readDouble(buffer, 174, 6, 0.1);
+    toBe.Odds = readDouble(buffer, 174, 6);
     toBe.Ninki = readPositiveInt(buffer, 180, 2);
-    await this.setKyousouba(buffer, toBe);
+    const kyousouba = await this.saveKyousouba(buffer, toBe);
+    toBe.KyousoubaId = kyousouba.Id;
+    if (1200 <= info.race.Kyori) {
+      toBe.Ten3F = readDouble(buffer, 258, 3, 0.1);
+      if (toBe.Time && toBe.Ten3F) {
+        toBe.Ten3FIkou = toBe.Time - toBe.Ten3F;
+      }
+    }
+    toBe.Agari3F = readDouble(buffer, 261, 3, 0.1);
+    if (toBe.Time && toBe.Agari3F) {
+      toBe.Agari3FIzen = toBe.Time - toBe.Agari3F;
+    }
+    if (1200 < info.race.Kyori && toBe.Ten3F && toBe.Agari3F) {
+      toBe.Douchuu = toBe.Time - toBe.Ten3F - toBe.Agari3F;
+    }
   }
 
-  protected async setKyousouba(buffer: Buffer, toBe: Shussouba) {
+  protected async saveKyousouba(buffer: Buffer, toBe: Shussouba) {
     let uma = new Uma();
     uma.Bamei = readStr(buffer, 26, 36);
     uma = await this.umaDao.saveUma(uma);
@@ -112,11 +129,30 @@ export abstract class Se$ extends ShussoubaData {
     kyuusha = await this.kyuushaDao.saveKyuusha(kyuusha, kyuushaMei);
     kyousouba.KyuushaId = kyuusha.Id;
     kyousouba = await this.umaDao.saveKyousouba(kyousouba);
-    toBe.KyousoubaId = kyousouba.Id;
+    return kyousouba;
   }
 
-  protected async setShussoubaYosou(buffer: Buffer, toBe: ShussoubaYosou) {
-    toBe.Idm = readDouble(buffer, 182, 3);
-
+  protected async saveShussoubaHyouka(buffer: Buffer) {
+    const toBe = new ShussoubaHyouka();
+    toBe.Idm = readInt(buffer, 182, 3);
+    toBe.IdmSoten = readInt(buffer, 185, 3);
+    toBe.IdmBabasa = readInt(buffer, 188, 3);
+    toBe.IdmPace = readInt(buffer, 191, 3);
+    toBe.IdmDeokure = readInt(buffer, 194, 3);
+    toBe.IdmIchidori = readInt(buffer, 197, 3);
+    toBe.IdmFuri = readInt(buffer, 200, 3);
+    toBe.IdmTen3FFuri = readInt(buffer, 203, 3);
+    toBe.IdmDouchuuFuri = readInt(buffer, 206, 3);
+    toBe.IdmAgari3FFuri = readInt(buffer, 209, 3);
+    toBe.IdmRace = readInt(buffer, 212, 3);
+    toBe.CourseDori = $S.ichi.toCodeFromJrdb(buffer, 215, 1);
+    toBe.JoushoudoCode = $S.joushoudo.toCodeFromJrdb(buffer, 216, 1);
+    toBe.ClassCode = $S.classCode.toCodeFromJrdb(buffer, 217, 2);
+    toBe.BataiCode = $S.bataiCode.toCodeFromJrdb(buffer, 219, 1);
+    toBe.KehaiCode = $S.bataiCode.toCodeFromJrdb(buffer, 220, 1);
+    toBe.Pace = $R.pace.toCodeFromJrdb(buffer, 222, 1);
+    toBe.Ten3FShisuu = readDouble(buffer, 223, 5);
+    toBe.Agari3FShisuu = readDouble(buffer, 228, 5);
+    toBe.PaceShisuu = readDouble(buffer, 233, 5);
   }
 }

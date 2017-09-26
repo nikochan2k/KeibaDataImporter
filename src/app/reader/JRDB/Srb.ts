@@ -1,6 +1,6 @@
 import { Service } from "typedi";
-import * as $C from "../../converters/Common";
 import * as $R from "../../converters/Race";
+import * as $S from "../../converters/Shussouba";
 import { Kaisai } from "../../entities/Kaisai";
 import { Race } from "../../entities/Race";
 import { RaceTrackBias } from "../../entities/RaceTrackBias";
@@ -30,7 +30,7 @@ export class Srb extends Sr$ {
   protected async saveRaceTrackBiases(buffer: Buffer, race: Race) {
     let offset = 320;
     for (let midashi = $R.Midashi.DaiichiCorner; midashi <= $R.Midashi.DaisanCorner; midashi++) {
-      for (let ichi = $C.Ichi.Uchi; ichi <= $C.Ichi.Soto; ichi++ , offset++) {
+      for (let ichi = $S.Ichi.Uchi; ichi <= $S.Ichi.Soto; ichi++ , offset++) {
         const trackBias = $R.trackBias.toCodeFromJrdb(buffer, offset, 1);
         if (trackBias === null) {
           continue;
@@ -39,7 +39,7 @@ export class Srb extends Sr$ {
       }
     }
     for (let midashi = $R.Midashi.DaiyonCorner; midashi <= $R.Midashi.Chokusen; midashi++) {
-      for (let ichi = $C.Ichi.Saiuchi; ichi <= $C.Ichi.Ohsoto; ichi++ , offset++) {
+      for (let ichi = $S.Ichi.Saiuchi; ichi <= $S.Ichi.Ohsoto; ichi++ , offset++) {
         const trackBias = $R.trackBias.toCodeFromJrdb(buffer, offset, 1);
         if (trackBias === null) {
           continue;
@@ -49,7 +49,7 @@ export class Srb extends Sr$ {
     }
   }
 
-  protected async saveRaceTrackBias(raceId: number, midashi: $R.Midashi, ichi: $C.Ichi, trackBias: number) {
+  protected async saveRaceTrackBias(raceId: number, midashi: $R.Midashi, ichi: $S.Ichi, trackBias: number) {
     const rtb = new RaceTrackBias();
     rtb.Id = raceId * (2 ** (3 + 3)) + midashi * (2 ** 3) + ichi;
     rtb.RaceId = raceId;

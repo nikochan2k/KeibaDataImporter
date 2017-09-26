@@ -70,7 +70,7 @@ export class KolSei2Kd3 extends DataToImport {
   }
 
   protected async saveShussouba(buffer: Buffer, info: ShussoubaInfo) {
-    let toBe = this.kolRaceTool.createShussouba(buffer, 23);
+    const toBe = this.kolRaceTool.createShussouba(buffer, 23);
     if (toBe) {
       return null;
     }
@@ -112,9 +112,9 @@ export class KolSei2Kd3 extends DataToImport {
       toBe.Agari3FIzen = toBe.Time - toBe.Agari3F;
     }
     if (1200 < info.race.Kyori && toBe.Ten3F && toBe.Agari3F) {
-      toBe.Chuukan = toBe.Time - toBe.Ten3F - toBe.Agari3F;
+      toBe.Douchuu = toBe.Time - toBe.Ten3F - toBe.Agari3F;
     }
-    toBe.YonCornerIchiDori = $C.ichi.toCodeFromKol(buffer, 306, 1);
+    toBe.YonCornerIchiDori = $S.ichi.toCodeFromKol(buffer, 306, 1);
     toBe.KolSeisekiSakuseiNengappi = readDate(buffer, 424, 8);
 
     const asIs = info.shussouba;

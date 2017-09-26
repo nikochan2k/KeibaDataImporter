@@ -4,7 +4,7 @@ import {
   Index,
   PrimaryColumn
 } from "typeorm";
-import { Ichi } from "../converters/Common";
+import { Ichi } from "../converters/Shussouba";
 import { Midashi } from "../converters/Race";
 
 @Entity("RaceTrackBias")

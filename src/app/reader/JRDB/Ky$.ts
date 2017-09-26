@@ -1,7 +1,6 @@
 import { Inject } from "typedi";
 import { JrdbRaceTool } from "./JrdbRaceTool";
 import { ShussoubaData } from "./ShussoubaData";
-import * as $C from "../../converters/Common";
 import * as $R from "../../converters/Race";
 import * as $S from "../../converters/Shussouba";
 import * as $SJ from "../../converters/ShussoubaYosou";
@@ -42,7 +41,7 @@ export abstract class Ky$ extends ShussoubaData {
     toBe.SougouShisuu = readDouble(buffer, 84, 5);
     toBe.Kyakushitsu = $SJ.kyakushitsu.toCodeFromJrdb(buffer, 89, 1);
     toBe.KyoriTekisei = $SJ.kyoriTekisei.toCodeFromJrdb(buffer, 90, 1);
-    toBe.Joushoudo = $SJ.joushoudo.toCodeFromJrdb(buffer, 91, 1);
+    toBe.Joushoudo = $S.joushoudo.toCodeFromJrdb(buffer, 91, 1);
     toBe.Rotation = readInt(buffer, 92, 3);
     toBe.TokuteiJouhouHonmei = readInt(buffer, 109, 3);
     toBe.TokuteiJouhouTaikou = readInt(buffer, 112, 3);
@@ -62,8 +61,8 @@ export abstract class Ky$ extends ShussoubaData {
     toBe.KishuKitaiRentairitsu = readDouble(buffer, 156, 4);
     toBe.GekisouShisuu = readInt(buffer, 160, 3);
     toBe.HidumeCode = $SJ.hidumeCode.toCodeFromJrdb(buffer, 163, 2);
-    toBe.OmoTekisei = $C.hyouka.toCodeFromJrdb(buffer, 165, 1);
-    toBe.ClassCode = $SJ.classCode.toCodeFromJrdb(buffer, 166, 2);
+    toBe.OmoTekisei = $S.hyouka.toCodeFromJrdb(buffer, 165, 1);
+    toBe.ClassCode = $S.classCode.toCodeFromJrdb(buffer, 166, 2);
     toBe.SougouShirushi = $S.yosou.toCodeFromJrdb(buffer, 326, 1);
     toBe.IdmShirushi = $S.yosou.toCodeFromJrdb(buffer, 327, 1);
     toBe.JouhouShirushi = $S.yosou.toCodeFromJrdb(buffer, 328, 1);
@@ -71,8 +70,8 @@ export abstract class Ky$ extends ShussoubaData {
     toBe.KyuushaShirushi = $S.yosou.toCodeFromJrdb(buffer, 330, 1);
     toBe.ChoukyouShirushi = $S.yosou.toCodeFromJrdb(buffer, 331, 1);
     toBe.GekisouShirushi = $S.yosou.toCodeFromJrdb(buffer, 332, 1);
-    toBe.ShibaTekisei = $C.hyouka.toCodeFromJrdb(buffer, 333, 1);
-    toBe.DirtTekisei = $C.hyouka.toCodeFromJrdb(buffer, 334, 1);
+    toBe.ShibaTekisei = $S.hyouka.toCodeFromJrdb(buffer, 333, 1);
+    toBe.DirtTekisei = $S.hyouka.toCodeFromJrdb(buffer, 334, 1);
     toBe.KakutokuShoukin = readInt(buffer, 346, 6, 10000);
     toBe.ShuutokuShoukin = readInt(buffer, 352, 5, 10000);
     toBe.JoukenClass = $SJ.joukenGroup.toCodeFromJrdb(buffer, 357, 1);
@@ -124,12 +123,12 @@ export abstract class Ky$ extends ShussoubaData {
     toBe.TaikeiUshiroTsunagari = $SJ.taikeiNagasa.toCodeFromJrdb(buffer, 492, 1);
     toBe.TaikeiO = $SJ.taikeiO.toCodeFromJrdb(buffer, 493, 1);
     toBe.TaikeiFuri = $SJ.taikeiFuri.toCodeFromJrdb(buffer, 494, 1);
-    toBe.TaikeiSougou1 = $C.tokki.toCodeFromJrdb(buffer, 501, 3);
-    toBe.TaikeiSougou2 = $C.tokki.toCodeFromJrdb(buffer, 504, 3);
-    toBe.TaikeiSougou3 = $C.tokki.toCodeFromJrdb(buffer, 507, 3);
-    toBe.Tokki1 = $C.tokki.toCodeFromJrdb(buffer, 510, 3);
-    toBe.Tokki2 = $C.tokki.toCodeFromJrdb(buffer, 513, 3);
-    toBe.Tokki3 = $C.tokki.toCodeFromJrdb(buffer, 516, 3);
+    toBe.TaikeiSougou1 = $S.tokki.toCodeFromJrdb(buffer, 501, 3);
+    toBe.TaikeiSougou2 = $S.tokki.toCodeFromJrdb(buffer, 504, 3);
+    toBe.TaikeiSougou3 = $S.tokki.toCodeFromJrdb(buffer, 507, 3);
+    toBe.Tokki1 = $S.tokki.toCodeFromJrdb(buffer, 510, 3);
+    toBe.Tokki2 = $S.tokki.toCodeFromJrdb(buffer, 513, 3);
+    toBe.Tokki3 = $S.tokki.toCodeFromJrdb(buffer, 516, 3);
     toBe.StartShisuu = readDouble(buffer, 519, 4);
     toBe.DeokureRitsu = readDouble(buffer, 523, 4);
     toBe.MankenShisuu = readInt(buffer, 534, 3);

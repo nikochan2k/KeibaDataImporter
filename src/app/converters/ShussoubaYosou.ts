@@ -21,16 +21,6 @@ export const kyoriTekisei = new Codes(
   ]
 );
 
-export const joushoudo = new Codes(
-  [
-    { code: 1, jrdb: "1", naiyou: "AA" },
-    { code: 2, jrdb: "2", naiyou: "A" },
-    { code: 3, jrdb: "3", naiyou: "B" },
-    { code: 4, jrdb: "4", naiyou: "C" },
-    { code: 5, jrdb: "5", naiyou: "?" }
-  ]
-);
-
 export const choukyouYajirushi = new Codes(
   [
     { code: 1, jrdb: "1", naiyou: "デキ抜群" },
@@ -72,59 +62,6 @@ export const hidumeCode = new Codes(
     { code: 22, jrdb: "22", naiyou: "中標ベ" },
     { code: 23, jrdb: "23", naiyou: "小標ベ" },
     { code: 24, jrdb: "24", naiyou: "細標ベ" },
-  ]
-);
-
-export const classCode = new Codes(
-  [
-    { code: 1, jrdb: "01", naiyou: "芝G1" },
-    { code: 2, jrdb: "02", naiyou: "芝G2" },
-    { code: 3, jrdb: "03", naiyou: "芝G3" },
-    { code: 4, jrdb: "04", naiyou: "芝OP A" },
-    { code: 5, jrdb: "05", naiyou: "芝OP B" },
-    { code: 6, jrdb: "06", naiyou: "芝OP C" },
-    { code: 7, jrdb: "07", naiyou: "芝1600万A" },
-    { code: 8, jrdb: "08", naiyou: "芝1600万B" },
-    { code: 9, jrdb: "09", naiyou: "芝1600万C" },
-    { code: 10, jrdb: "10", naiyou: "芝1000万A" },
-    { code: 11, jrdb: "11", naiyou: "芝1000万B" },
-    { code: 12, jrdb: "12", naiyou: "芝1000万C" },
-    { code: 13, jrdb: "13", naiyou: "芝500万A" },
-    { code: 14, jrdb: "14", naiyou: "芝500万B" },
-    { code: 15, jrdb: "15", naiyou: "芝500万C" },
-    { code: 16, jrdb: "16", naiyou: "芝未A" },
-    { code: 17, jrdb: "17", naiyou: "芝未B" },
-    { code: 18, jrdb: "18", naiyou: "芝未C" },
-    { code: 21, jrdb: "21", naiyou: "ダG1" },
-    { code: 22, jrdb: "22", naiyou: "ダG2" },
-    { code: 23, jrdb: "23", naiyou: "ダG3" },
-    { code: 24, jrdb: "24", naiyou: "ダOP A" },
-    { code: 25, jrdb: "25", naiyou: "ダOP B" },
-    { code: 26, jrdb: "26", naiyou: "ダOP C" },
-    { code: 27, jrdb: "27", naiyou: "ダ1600万A" },
-    { code: 28, jrdb: "28", naiyou: "ダ1600万B" },
-    { code: 29, jrdb: "29", naiyou: "ダ1600万C" },
-    { code: 30, jrdb: "30", naiyou: "ダ1000万A" },
-    { code: 31, jrdb: "31", naiyou: "ダ1000万B" },
-    { code: 32, jrdb: "32", naiyou: "ダ1000万C" },
-    { code: 33, jrdb: "33", naiyou: "ダ500万A" },
-    { code: 34, jrdb: "34", naiyou: "ダ500万B" },
-    { code: 35, jrdb: "35", naiyou: "ダ500万C" },
-    { code: 36, jrdb: "36", naiyou: "ダ未A" },
-    { code: 37, jrdb: "37", naiyou: "ダ未B" },
-    { code: 38, jrdb: "38", naiyou: "ダ未C" },
-    { code: 51, jrdb: "51", naiyou: "障G1" },
-    { code: 52, jrdb: "52", naiyou: "障G2" },
-    { code: 53, jrdb: "53", naiyou: "障G3" },
-    { code: 54, jrdb: "54", naiyou: "障OP A" },
-    { code: 55, jrdb: "55", naiyou: "障OP B" },
-    { code: 56, jrdb: "56", naiyou: "障OP C" },
-    { code: 57, jrdb: "57", naiyou: "障500万A" },
-    { code: 58, jrdb: "58", naiyou: "障500万B" },
-    { code: 59, jrdb: "59", naiyou: "障500万C" },
-    { code: 60, jrdb: "60", naiyou: "障未A" },
-    { code: 61, jrdb: "61", naiyou: "障未B" },
-    { code: 62, jrdb: "62", naiyou: "障未C" },
   ]
 );
 

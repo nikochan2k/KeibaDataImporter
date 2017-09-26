@@ -1,6 +1,6 @@
 import { Service } from "typedi";
 import * as $CH from "../../converters/Choukyou";
-import * as $C from "../../converters/Common";
+import * as $S from "../../converters/Shussouba";
 import { Choukyou } from "../../entities/Choukyou";
 import { readInt, readStr } from "../Reader";
 import { Cy$ } from "./Cy$";
@@ -22,7 +22,7 @@ export class Cya extends Cy$ {
     choukyou.ShiageShisuuHenka = $CH.shiageShisuuHenka.toCodeFromJrdb(buffer, 34, 1);
     choukyou.ChoukyouComment = readStr(buffer, 35, 40);
     choukyou.CommentNengappi = readInt(buffer, 75, 8);
-    choukyou.ChoukyouHyouka = $C.hyouka.toCodeFromJrdb(buffer, 83, 1);
+    choukyou.ChoukyouHyouka = $S.hyouka.toCodeFromJrdb(buffer, 83, 1);
   }
 
 }

@@ -37,7 +37,7 @@ export class Shussouba {
   @Column("smallint", { nullable: true })
   public Blinker?: number;
 
-  @Column("float", { nullable: true })
+  @Column("real", { nullable: true })
   public Kinryou?: number;
 
   @Column("smallint", { nullable: true })
@@ -70,13 +70,13 @@ export class Shussouba {
   @Column("smallint", { nullable: true })
   public Ninki?: number;
 
-  @Column("float", { nullable: true })
+  @Column("real", { nullable: true })
   public Odds?: number;
 
   @Column("smallint", { nullable: true })
   public FukushouNinki?: number;
 
-  @Column("float", { nullable: true })
+  @Column("real", { nullable: true })
   public FukushouOdds?: number;
 
   @Column("smallint", { nullable: true })
@@ -94,7 +94,7 @@ export class Shussouba {
   @Column("smallint", { nullable: true })
   public RecordNinshiki?: number;
 
-  @Column("float", { nullable: true })
+  @Column("real", { nullable: true })
   public Time?: number;
 
   @Column("smallint", { nullable: true })
@@ -103,22 +103,22 @@ export class Shussouba {
   @Column("smallint", { nullable: true })
   public Chakusa2?: number;
 
-  @Column("float", { nullable: true })
+  @Column("real", { nullable: true })
   public TimeSa?: number;
 
-  @Column("float", { nullable: true })
+  @Column("real", { nullable: true })
   public Ten3F?: number;
 
-  @Column("float", { nullable: true })
+  @Column("real", { nullable: true })
   public Ten3FIkou?: number;
 
-  @Column("float", { nullable: true })
-  public Chuukan?: number;
+  @Column("real", { nullable: true })
+  public Douchuu?: number;
 
-  @Column("float", { nullable: true })
+  @Column("real", { nullable: true })
   public Agari3FIzen?: number;
 
-  @Column("float", { nullable: true })
+  @Column("real", { nullable: true })
   public Agari3F?: number;
 
   @Column("smallint", { nullable: true })
