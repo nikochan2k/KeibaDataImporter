@@ -2,9 +2,7 @@ import { Logger } from "log4js";
 import { Service } from "typedi";
 import { EntityManager, ObjectType } from "typeorm";
 import { OrmEntityManager } from "typeorm-typedi-extensions";
-import {
-  readStrWithNoSpace
-} from "./Reader";
+import { readStrWithNoSpace } from "./Reader";
 import { getLogger } from "../LogUtil";
 
 @Service()

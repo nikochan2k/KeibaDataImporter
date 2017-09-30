@@ -68,18 +68,6 @@ export class Shussouba {
   public Norikawari?: number;
 
   @Column("smallint", { nullable: true })
-  public Ninki?: number;
-
-  @Column("real", { nullable: true })
-  public Odds?: number;
-
-  @Column("smallint", { nullable: true })
-  public FukushouNinki?: number;
-
-  @Column("real", { nullable: true })
-  public FukushouOdds?: number;
-
-  @Column("smallint", { nullable: true })
   public KakuteiChakujun?: number;
 
   @Column("smallint", { nullable: true })

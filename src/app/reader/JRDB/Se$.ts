@@ -1,6 +1,7 @@
 import { Inject } from "typedi";
 import { JrdbRaceTool } from "./JrdbRaceTool";
 import { ShussoubaData } from "./ShussoubaData";
+import * as $C from "../../converters/Common";
 import * as $R from "../../converters/Race";
 import * as $S from "../../converters/Shussouba";
 import { KishuDao } from "../../daos/KishuDao";
@@ -14,7 +15,6 @@ import { Shussouba } from "../../entities/Shussouba";
 import { ShussoubaHyouka } from "../../entities/ShussoubaHyouka";
 import { Uma } from "../../entities/Uma";
 import { ShussoubaInfo } from "../RaceTool";
-import { RaceTool } from "../RaceTool";
 import {
   readDouble,
   readInt,
@@ -28,9 +28,6 @@ export abstract class Se$ extends ShussoubaData {
 
   @Inject()
   protected tool: Tool;
-
-  @Inject()
-  protected raceTool: RaceTool;
 
   @Inject()
   protected jrdbRaceTool: JrdbRaceTool;
@@ -96,8 +93,6 @@ export abstract class Se$ extends ShussoubaData {
     toBe.ChakujunFuka = $S.chakujunFuka.toCodeFromJrdb(buffer, 142, 1);
     toBe.Time = readDouble(buffer, 143, 4, 0.1);
     toBe.Kinryou = readDouble(buffer, 147, 3, 0.1);
-    toBe.Odds = readDouble(buffer, 174, 6);
-    toBe.Ninki = readPositiveInt(buffer, 180, 2);
     const kyousouba = await this.saveKyousouba(buffer, toBe);
     toBe.KyousoubaId = kyousouba.Id;
     if (1200 <= info.race.Kyori) {
@@ -133,13 +128,21 @@ export abstract class Se$ extends ShussoubaData {
   }
 
   protected async saveShussoubaRelated(buffer: Buffer, shussouba: Shussouba) {
-    const asIs = await this.entityManager.findOneById(ShussoubaHyouka, shussouba.Id);
+    await this.saveShussoubaHyouka(buffer, shussouba);
+    await this.saveOddsHaitou(buffer, shussouba);
+  }
 
+  protected async saveShussoubaHyouka(buffer: Buffer, shussouba: Shussouba) {
     const toBe = new ShussoubaHyouka();
     toBe.Id = shussouba.Id;
     this.setShussoubaHyouka(buffer, toBe);
 
-    await this.tool.update(ShussoubaHyouka, asIs, toBe);
+    const asIs = await this.entityManager.findOneById(ShussoubaHyouka, shussouba.Id);
+    if (asIs) {
+      await this.tool.update(ShussoubaHyouka, asIs, toBe);
+    } else {
+      await this.entityManager.save(toBe);
+    }
   }
 
   protected setShussoubaHyouka(buffer: Buffer, toBe: ShussoubaHyouka) {
@@ -163,5 +166,9 @@ export abstract class Se$ extends ShussoubaData {
     toBe.Ten3FShisuu = readDouble(buffer, 223, 5);
     toBe.Agari3FShisuu = readDouble(buffer, 228, 5);
     toBe.PaceShisuu = readDouble(buffer, 233, 5);
+  }
+
+  protected async saveOddsHaitou(buffer: Buffer, shussouba: Shussouba) {
+    await this.jrdbRaceTool.saveOddsNinki(buffer, shussouba, $C.Kakutei.Zenjitsu, $C.Baken.Tanshou, 174, 6, 180);
   }
 }

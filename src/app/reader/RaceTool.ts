@@ -1,12 +1,12 @@
 import { Logger } from "log4js";
+import { Inject } from "typedi";
 import { EntityManager } from "typeorm";
 import { OrmEntityManager } from "typeorm-typedi-extensions";
-import {
-  readPositiveInt,
-  readRaw,
-  readDouble
-} from "./Reader";
+import { readDouble, readPositiveInt, readRaw } from "./Reader";
+import { Tool } from "./Tool";
+import { Baken } from "../converters/Common";
 import { Kaisai } from "../entities/Kaisai";
+import { OddsHaitou } from "../entities/OddsHaitou";
 import { Race } from "../entities/Race";
 import { RaceLapTime } from "../entities/RaceLapTime";
 import { Shussouba } from "../entities/Shussouba";
@@ -28,6 +28,21 @@ export interface ShussoubaInfo {
   shussouba: Shussouba;
 }
 
+export interface HaitouInfo {
+  baken: Baken;
+  index: number;
+  bangou1: number;
+  bangou1Len: number;
+  bangou2?: number;
+  bangou2Len?: number;
+  bangou3?: number;
+  bangou3Len?: number;
+  haitou: number;
+  haitouLen: number;
+  ninki?: number;
+  ninkiLen?: number;
+}
+
 export abstract class RaceTool {
 
   protected logger: Logger;
@@ -35,12 +50,23 @@ export abstract class RaceTool {
   @OrmEntityManager()
   protected entityManager: EntityManager;
 
+  @Inject()
+  protected tool: Tool;
+
   constructor() {
     this.logger = getLogger(this);
   }
 
   protected abstract getKaisaiInfo(buffer: Buffer): KaisaiInfo;
 
+  /**
+   * 開催IDを返します。
+   * 開催IDは年(7ビット)、回次(5ビット)、日次(5ビット)、場所(7ビット)の計24ビットです。
+   * @protected
+   * @param {KaisaiInfo} info 開催情報
+   * @returns 開催ID
+   * @memberof RaceTool
+   */
   protected getKaisaiIdFrom(info: KaisaiInfo) {
     let kaiji = info.kaiji || 0;
     let nichiji = info.nichiji || 0;
@@ -87,11 +113,28 @@ export abstract class RaceTool {
 
   protected abstract getRaceBangou(buffer: Buffer): number;
 
+  /**
+   * レースIDを返します。
+   * レースIDは開催ID(24ビット)、レース番号(6ビット)の計30ビットです
+   * @protected
+   * @param {number} kaisaiId 開催ID
+   * @param {number} raceBangou レース番号
+   * @returns レースID
+   * @memberof RaceTool
+   */
   protected getRaceIdFrom(kaisaiId: number, raceBangou: number) {
     const id = kaisaiId * (2 ** 6) + raceBangou;
     return id;
   }
 
+  /**
+   * レースIDを返します。
+   * レースIDは開催ID(24ビット)、レース番号(6ビット)の計30ビットです
+   * @param {Buffer} buffer バッファ
+   * @param {number} [kaisaiId] 開催ID
+   * @returns レースID
+   * @memberof RaceTool
+   */
   public getRaceId(buffer: Buffer, kaisaiId?: number) {
     if (!kaisaiId) {
       kaisaiId = this.getKaisaiId(buffer);
@@ -132,11 +175,29 @@ export abstract class RaceTool {
     return race;
   }
 
+  /**
+   * 出走馬IDを取得します。
+   * 出走馬IDはレースID(30ビット)、馬番(6ビット)の計36ビットです。
+   * @protected
+   * @param {number} raceId レースID
+   * @param {number} umaban 馬番
+   * @returns 出走馬ID
+   * @memberof RaceTool
+   */
   protected getShussoubaIdFrom(raceId: number, umaban: number) {
     const id = raceId * (2 ** 6) + umaban;
     return id;
   }
 
+  /**
+   * 出走馬IDを取得します。
+   * 出走馬IDはレースID(30ビット)、
+   * @param {Buffer} buffer バッファ
+   * @param {number} umabanOffset 馬番のオフセット
+   * @param {number} [raceId] レースID
+   * @returns 出走馬ID
+   * @memberof RaceTool
+   */
   public getShussoubaId(buffer: Buffer, umabanOffset: number, raceId?: number) {
     if (!raceId) {
       raceId = this.getRaceId(buffer);
@@ -218,18 +279,6 @@ export abstract class RaceTool {
     return null;
   }
 
-  public getJoukenFuka(...joukenFukaLists: number[][]) {
-    let joukenFuka = 0;
-    joukenFukaLists.forEach((joukenFukaList) => {
-      if (joukenFukaList) {
-        joukenFukaList.forEach((item) => {
-          joukenFuka |= item;
-        });
-      }
-    });
-    return joukenFuka;
-  }
-
   public async saveRaceLapTime(buffer: Buffer, offset: number, race: Race) {
     if (!race.Kyori) {
       this.logger.warn("距離が不明です: " + race.Id);
@@ -252,6 +301,48 @@ export abstract class RaceTool {
       raceLapTime.LapTime = lapTime;
       await this.entityManager.save(raceLapTime);
     }
+  }
+
+  public getOddsHaitouById(id: number) {
+    return this.entityManager
+      .getRepository(OddsHaitou)
+      .findOneById(id);
+  }
+
+  /**
+   * オッズ配当IDを取得します。
+   * オッズ配当IDはレースID(30ビット)、確定(2ビット)、馬券(4ビット)、馬番1(5ビット)、馬番2(5ビット)、馬番3(5ビット)の計51ビットです。
+   * @param {number} raceId レースID
+   * @param {Baken} baken 馬券
+   * @param {number} bangou1 馬番1
+   * @param {number} [bangou2] 馬番2
+   * @param {number} [bangou3] 馬番3
+   * @returns オッズ配当ID
+   * @memberof KolTool
+   */
+  public getOddsHaitouId(toBe: Partial<OddsHaitou>) {
+    const bangou2 = toBe.Bangou2 || 0;
+    const bangou3 = toBe.Bangou3 || 0;
+    const id = toBe.RaceId * (2 ** (2 + 4 + 5 + 5 + 5))
+      + toBe.Kakutei * (2 ** (4 + 5 + 5 + 5))
+      + toBe.Baken * (2 ** (5 + 5 + 5))
+      + toBe.Bangou1 * (2 ** (5 + 5))
+      + bangou2 * (2 ** 5)
+      + bangou3;
+    return id;
+  }
+
+  public async saveOddsHaitou(partial: Partial<OddsHaitou>) {
+    let toBe = new OddsHaitou();
+    Object.assign(toBe, partial);
+    toBe.Id = this.getOddsHaitouId(partial);
+    const asIs = await this.getOddsHaitouById(toBe.Id);
+    if (asIs) {
+      toBe = await this.tool.update(OddsHaitou, asIs, toBe);
+    } else {
+      toBe = await this.entityManager.save(toBe);
+    }
+    return toBe;
   }
 
 }

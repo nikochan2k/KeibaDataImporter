@@ -1,14 +1,10 @@
 import { Inject, Service } from "typedi";
-import { YosouKakutei } from "../../../converters/Common";
+import { Kakutei } from "../../../converters/Common";
 import { DataToImport } from "../../DataToImport";
 import { KolRaceTool } from "../KolRaceTool";
-import { KolTool } from "../KolTool";
 
 @Service()
 export class KolKodKd3 extends DataToImport {
-
-  @Inject()
-  private kolTool: KolTool;
 
   @Inject()
   private kolRaceTool: KolRaceTool;
@@ -28,14 +24,14 @@ export class KolKodKd3 extends DataToImport {
   }
 
   protected async saveTanshou(buffer: Buffer, raceId: number) {
-    await this.kolTool.saveTanshouOdds(buffer, 161, raceId, YosouKakutei.Kakutei);
+    await this.kolRaceTool.saveTanshouOdds(buffer, 161, raceId, Kakutei.Kakutei);
   }
 
   protected async saveWakuren(buffer: Buffer, raceId: number) {
-    await this.kolTool.saveTanshouOdds(buffer, 251, raceId, YosouKakutei.Kakutei);
+    await this.kolRaceTool.saveTanshouOdds(buffer, 251, raceId, Kakutei.Kakutei);
   }
 
   protected async saveUmaren(buffer: Buffer, raceId: number) {
-    await this.kolTool.saveUmarenOdds(buffer, 431, raceId, YosouKakutei.Kakutei);
+    await this.kolRaceTool.saveUmarenOdds(buffer, 431, raceId, Kakutei.Kakutei);
   }
 }

@@ -59,6 +59,8 @@ export class KolSei2Kd3 extends DataToImport {
 
     await this.saveShussoubaYosou(buffer, shussouba);
 
+    await this.kolRaceTool.saveNinkiOdds(buffer, info.shussouba, 267, 269);
+
     await this.kolTool.saveShussoubaTsuukaJuni(buffer, 298, shussouba);
     if (!asIs.KolShutsubahyouSakuseiNengappi) {
       const tanshukuKishuMei = readStrWithNoSpace(buffer, 199, 8);
@@ -90,8 +92,6 @@ export class KolSei2Kd3 extends DataToImport {
     toBe.KishuShozokuKyuushaId = await this.kolTool.saveShozokuKyuusha(buffer, 210);
     toBe.MinaraiKubun = $S.minaraiKubun.toCodeFromKol(buffer, 215, 1);
     toBe.Norikawari = $S.norikawari.toCodeFromKol(buffer, 216, 1);
-    toBe.Ninki = readPositiveInt(buffer, 267, 2);
-    toBe.Odds = readDouble(buffer, 269, 5, 0.1);
     toBe.KakuteiChakujun = this.kolRaceTool.getChakujun(buffer, 274, 2);
     toBe.ChakujunFuka = $S.chakujunFuka.toCodeFromKol(buffer, 276, 2);
     toBe.NyuusenChakujun = this.kolRaceTool.getChakujun(buffer, 278, 2);

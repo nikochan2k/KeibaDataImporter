@@ -1,6 +1,7 @@
 import { Inject } from "typedi";
 import { JrdbRaceTool } from "./JrdbRaceTool";
 import { ShussoubaData } from "./ShussoubaData";
+import * as $C from "../../converters/Common";
 import * as $KY from "../../converters/Kyuusha";
 import * as $R from "../../converters/Race";
 import * as $S from "../../converters/Shussouba";
@@ -90,10 +91,6 @@ export abstract class Ky$ extends ShussoubaData {
   }
 
   protected async setShussouba(buffer: Buffer, toBe: Shussouba, info: ShussoubaInfo) {
-    toBe.Odds = readDouble(buffer, 95, 5);
-    toBe.Ninki = readPositiveInt(buffer, 100, 2);
-    toBe.FukushouOdds = readDouble(buffer, 102, 5);
-    toBe.FukushouNinki = readPositiveInt(buffer, 107, 2);
     toBe.Blinker = $S.blinker.toCodeFromJrdb(buffer, 170, 1);
     toBe.KishuId = (await this.saveKishu(buffer, info.race.Nengappi)).Id;
     toBe.Kinryou = readDouble(buffer, 183, 3, 0.1);
@@ -106,16 +103,24 @@ export abstract class Ky$ extends ShussoubaData {
   }
 
   protected async saveShussoubaRelated(buffer: Buffer, shussouba: Shussouba) {
-    const asIs = await this.entityManager.findOneById(ShussoubaYosou, shussouba.Id);
-
-    const toBe = new ShussoubaYosou();
-    toBe.IchiShisuu = shussouba.Id;
-    await this.setShussoubaYosou(buffer, toBe);
-
-    return await this.tool.update(ShussoubaYosou, asIs, toBe);
+    await this.saveShussoubaYosou(buffer, shussouba);
+    await this.saveOddsHaitou(buffer, shussouba);
   }
 
-  protected async setShussoubaYosou(buffer: Buffer, toBe: ShussoubaYosou) {
+  protected async saveShussoubaYosou(buffer: Buffer, shussouba: Shussouba) {
+    const toBe = new ShussoubaYosou();
+    toBe.Id = shussouba.Id;
+    this.setShussoubaYosou(buffer, toBe);
+
+    const asIs = await this.entityManager.findOneById(ShussoubaYosou, shussouba.Id);
+    if (asIs) {
+      await this.tool.update(ShussoubaYosou, asIs, toBe);
+    } else {
+      await this.entityManager.save(toBe);
+    }
+  }
+
+  protected setShussoubaYosou(buffer: Buffer, toBe: ShussoubaYosou) {
     toBe.Idm = readDouble(buffer, 54, 5);
     toBe.KishuShisuu = readDouble(buffer, 59, 5);
     toBe.JouhouShisuu = readDouble(buffer, 64, 5);
@@ -214,5 +219,10 @@ export abstract class Ky$ extends ShussoubaData {
     toBe.DeokureRitsu = readDouble(buffer, 523, 4);
     toBe.MankenShisuu = readInt(buffer, 534, 3);
     toBe.MankenShirushi = $S.yosou.toCodeFromJrdb(buffer, 537, 1);
+  }
+
+  protected async saveOddsHaitou(buffer: Buffer, shussouba: Shussouba) {
+    await this.jrdbRaceTool.saveOddsNinki(buffer, shussouba, $C.Kakutei.Yosou, $C.Baken.Tanshou, 95, 5, 100);
+    await this.jrdbRaceTool.saveOddsNinki(buffer, shussouba, $C.Kakutei.Yosou, $C.Baken.Fukushou, 102, 5, 107);
   }
 }

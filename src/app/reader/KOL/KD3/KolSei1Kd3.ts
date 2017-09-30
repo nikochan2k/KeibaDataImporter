@@ -1,5 +1,5 @@
 import { Inject, Service } from "typedi";
-import { Baken } from "../../../converters/Common";
+import { Baken, Kakutei } from "../../../converters/Common";
 import * as $K from "../../../converters/Kaisai";
 import * as $R from "../../../converters/Race";
 import * as $RK from "../../../converters/RaceKeika";
@@ -20,7 +20,6 @@ import {
 } from "../../Reader";
 import { Tool } from "../../Tool";
 import { KolRaceTool } from "../KolRaceTool";
-import { KolTool } from "../KolTool";
 
 @Service()
 export class KolSei1Kd3 extends DataToImport {
@@ -30,9 +29,6 @@ export class KolSei1Kd3 extends DataToImport {
 
   @Inject()
   private kolRaceTool: KolRaceTool;
-
-  @Inject()
-  private kolTool: KolTool;
 
   @Inject()
   private keikaTool: KeikaTool;
@@ -244,8 +240,8 @@ export class KolSei1Kd3 extends DataToImport {
   }
 
   protected async saveRaceHaitou(buffer: Buffer, race: Race) {
-    await this.kolTool.saveRaceHaitou(
-      buffer, race.Id,
+    await this.kolRaceTool.saveRaceHaitou(
+      buffer, race.Id, Kakutei.Kakutei,
       [
         { baken: Baken.Tanshou, index: 1, bangou1: 2100, bangou1Len: 2, haitou: 2102, haitouLen: 6 },
         { baken: Baken.Tanshou, index: 2, bangou1: 2108, bangou1Len: 2, haitou: 2110, haitouLen: 6 },

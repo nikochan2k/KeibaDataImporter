@@ -96,6 +96,7 @@ export class KolUmaKd3 extends DataToImport {
       const shussouba = await this.saveShussouba(shussoubaBuffer, race, kyousouba, uma);
       if (shussouba) {
         await this.saveShussoubaYosou(shussoubaBuffer, shussouba);
+        await this.kolRaceTool.saveNinkiOdds(shussoubaBuffer, shussouba, 208, 210);
         await this.kolTool.saveShussoubaTsuukaJuni(shussoubaBuffer, 239, shussouba);
         const tanshukuKishuMei = readStrWithNoSpace(shussoubaBuffer, 140, 8);
         const choukyou = new Choukyou();
@@ -282,8 +283,6 @@ export class KolUmaKd3 extends DataToImport {
     toBe.KishuShozokuKyuushaId = await this.kolTool.saveShozokuKyuusha(buffer, 151);
     toBe.MinaraiKubun = $S.minaraiKubun.toCodeFromKol(buffer, 156, 1);
     toBe.Norikawari = $S.norikawari.toCodeFromKol(buffer, 157, 1);
-    toBe.Ninki = readPositiveInt(buffer, 208, 2);
-    toBe.Odds = readDouble(buffer, 210, 5, 0.1);
     toBe.KakuteiChakujun = this.kolRaceTool.getChakujun(buffer, 215, 2);
     toBe.ChakujunFuka = $S.chakujunFuka.toCodeFromKol(buffer, 217, 2);
     toBe.NyuusenChakujun = this.kolRaceTool.getChakujun(buffer, 219, 2);
