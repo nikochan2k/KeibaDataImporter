@@ -70,7 +70,7 @@ export class KolDen2Kd3 extends DataToImport {
   }
 
   protected async saveShussouba(buffer: Buffer, info: ShussoubaInfo) {
-    let toBe = this.kolRaceTool.createShussouba(buffer, 23);
+    const toBe = this.kolRaceTool.createShussouba(buffer, 23);
     if (!toBe) {
       return null;
     }

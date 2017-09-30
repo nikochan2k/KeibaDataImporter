@@ -3,7 +3,6 @@ import { JrdbRaceTool } from "./JrdbRaceTool";
 import { JrdbTool } from "./JrdbTool";
 import { Race } from "../../entities/Race";
 import { Shussouba } from "../../entities/Shussouba";
-import { ShussoubaYosou } from "../../entities/ShussoubaYosou";
 import { DataToImport } from "../DataToImport";
 import { ShussoubaInfo } from "../RaceTool";
 import { Tool } from "../Tool";
@@ -32,7 +31,7 @@ export abstract class ShussoubaData extends DataToImport {
       return;
     }
 
-    await this.saveShussoubaYosou(buffer, shussouba);
+    await this.saveShussoubaRelated(buffer, shussouba);
   }
 
   protected async saveRace(buffer: Buffer, asIs: Race) {
@@ -51,14 +50,5 @@ export abstract class ShussoubaData extends DataToImport {
 
   protected abstract setShussouba(buffer: Buffer, shussouba: Shussouba, info: ShussoubaInfo);
 
-  protected async saveShussoubaYosou(buffer: Buffer, shussouba: Shussouba) {
-    const toBe = new ShussoubaYosou();
-    toBe.Id = shussouba.Id;
-    this.setShussoubaYosou(buffer, toBe);
-
-    const asIs = await this.entityManager.findOneById(ShussoubaYosou, shussouba.Id);
-    return await this.tool.update(ShussoubaYosou, asIs, toBe);
-  }
-
-  protected abstract setShussoubaYosou(buffer: Buffer, ShussoubaYosou: ShussoubaYosou);
+  protected abstract async saveShussoubaRelated(buffer: Buffer, shussouba: Shussouba);
 }

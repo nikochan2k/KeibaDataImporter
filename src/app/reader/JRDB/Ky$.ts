@@ -1,22 +1,93 @@
 import { Inject } from "typedi";
 import { JrdbRaceTool } from "./JrdbRaceTool";
 import { ShussoubaData } from "./ShussoubaData";
+import * as $KY from "../../converters/Kyuusha";
 import * as $R from "../../converters/Race";
 import * as $S from "../../converters/Shussouba";
 import * as $SJ from "../../converters/ShussoubaYosou";
+import * as $U from "../../converters/Uma";
+import { BanushiDao } from "../../daos/BanushiDao";
+import { KishuDao } from "../../daos/KishuDao";
+import { KyuushaDao } from "../../daos/KyuushaDao";
+import { UmaDao } from "../../daos/UmaDao";
+import { Banushi } from "../../entities/Banushi";
+import { Kishu } from "../../entities/Kishu";
+import { Kyousouba } from "../../entities/Kyousouba";
+import { Kyuusha } from "../../entities/Kyuusha";
 import { Shussouba } from "../../entities/Shussouba";
 import { ShussoubaYosou } from "../../entities/ShussoubaYosou";
+import { Uma } from "../../entities/Uma";
 import { ShussoubaInfo } from "../RaceTool";
-import { readDouble, readInt, readPositiveInt } from "../Reader";
-import { Tool } from "../Tool";
+import {
+  readDouble,
+  readInt,
+  readPositiveInt,
+  readStr,
+  readStrWithNoSpace
+} from "../Reader";
 
 export abstract class Ky$ extends ShussoubaData {
 
   @Inject()
-  protected tool: Tool;
+  protected jrdbRaceTool: JrdbRaceTool;
 
   @Inject()
-  protected jrdbRaceTool: JrdbRaceTool;
+  private kyuushaDao: KyuushaDao;
+
+  @Inject()
+  private umaDao: UmaDao;
+
+  @Inject()
+  private banushiDao: BanushiDao;
+
+  @Inject()
+  private kishuDao: KishuDao;
+
+
+  protected async saveKishu(buffer: Buffer, date: number) {
+    const kishu = new Kishu();
+    const kishuMei = readStrWithNoSpace(buffer, 171, 12);
+    kishu.JrdbKishuCode = readInt(buffer, 335, 5);
+    return this.kishuDao.saveKishu(kishu, kishuMei);
+  }
+
+  protected saveKyuusha(buffer: Buffer) {
+    const kyuusha = new Kyuusha();
+    kyuusha.JrdbKyuushaCode = readPositiveInt(buffer, 340, 5);
+    const kyuushaMei = readStrWithNoSpace(buffer, 187, 12);
+    kyuusha.TouzaiBetsu = $KY.touzaiBetsu.toCodeFromJrdb(buffer, 199, 4);
+    return this.kyuushaDao.saveKyuusha(kyuusha, kyuushaMei);
+  }
+
+  protected saveBanushi(buffer: Buffer) {
+    const banushiMei = this.tool.normalizeHoujinMei(buffer, 404, 40);
+    if (!banushiMei) {
+      return null;
+    }
+    const banushi = new Banushi();
+    banushi.BanushiMei = banushiMei;
+    banushi.BanushiKaiCode = readInt(buffer, 444, 2);
+    return this.banushiDao.save(banushi);
+  }
+
+  protected async saveKyousouba(buffer: Buffer) {
+    const seibetsu = $U.seibetsu.toCodeFromJrdb(buffer, 403, 1);
+    let uma = new Uma();
+    uma.KettouTourokuBangou = readStr(buffer, 10, 8);
+    uma.Bamei = readStr(buffer, 18, 36);
+    uma.Seibetsu = seibetsu;
+    uma = await this.umaDao.saveUma(uma);
+    let kyousouba = new Kyousouba();
+    kyousouba.UmaId = uma.Id;
+    kyousouba.Seibetsu = seibetsu;
+    kyousouba.UmaKigou = $U.umaKigou.toCodeFromJrdb(buffer, 446, 2);
+    const banushi = await this.saveBanushi(buffer);
+    kyousouba.BanushiId = banushi && banushi.Id;
+    const kyuusha = await this.saveKyuusha(buffer);
+    kyousouba.KyuushaId = kyuusha && kyuusha.Id;
+    kyousouba = await this.umaDao.saveKyousouba(kyousouba);
+    return kyousouba;
+  }
 
   protected async setShussouba(buffer: Buffer, toBe: Shussouba, info: ShussoubaInfo) {
     toBe.Odds = readDouble(buffer, 95, 5);
@@ -24,14 +95,24 @@ export abstract class Ky$ extends ShussoubaData {
     toBe.FukushouOdds = readDouble(buffer, 102, 5);
     toBe.FukushouNinki = readPositiveInt(buffer, 107, 2);
     toBe.Blinker = $S.blinker.toCodeFromJrdb(buffer, 170, 1);
-    toBe.KishuId = (await this.jrdbTool.saveKishu(buffer, info.race.Nengappi)).Id;
+    toBe.KishuId = (await this.saveKishu(buffer, info.race.Nengappi)).Id;
     toBe.Kinryou = readDouble(buffer, 183, 3, 0.1);
     toBe.MinaraiKubun = $S.minaraiKubun.toCodeFromJrdb(buffer, 186, 1);
-    toBe.KyousoubaId = (await this.jrdbTool.saveKyousouba(buffer)).Id;
+    toBe.KyousoubaId = (await this.saveKyousouba(buffer)).Id;
     toBe.Wakuban = readPositiveInt(buffer, 323, 1);
     toBe.Bataijuu = readPositiveInt(buffer, 396, 3);
     toBe.Zougen = readInt(buffer, 399, 3);
     toBe.TorikeshiShubetsu = $S.torikeshiShubetsu.toCodeFromJrdb(buffer, 402, 1);
+  }
+
+  protected async saveShussoubaRelated(buffer: Buffer, shussouba: Shussouba) {
+    const asIs = await this.entityManager.findOneById(ShussoubaYosou, shussouba.Id);
+
+    const toBe = new ShussoubaYosou();
+    toBe.IchiShisuu = shussouba.Id;
+    await this.setShussoubaYosou(buffer, toBe);
+
+    return await this.tool.update(ShussoubaYosou, asIs, toBe);
   }
 
   protected async setShussoubaYosou(buffer: Buffer, toBe: ShussoubaYosou) {

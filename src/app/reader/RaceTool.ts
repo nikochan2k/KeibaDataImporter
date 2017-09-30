@@ -153,8 +153,8 @@ export abstract class RaceTool {
     return this.getShussoubaIdFrom(raceId, umaban);
   }
 
-  public getShussouba(buffer: Buffer, raceId?: number) {
-    const id = this.getShussoubaId(buffer, raceId);
+  public getShussouba(buffer: Buffer, umabanOffset: number, raceId?: number) {
+    const id = this.getShussoubaId(buffer, umabanOffset, raceId);
     if (!id) {
       return null;
     }

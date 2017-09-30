@@ -1,15 +1,19 @@
 import { Inject } from "typedi";
-import { ShussoubaData } from "./ShussoubaData";
+import { EntityManager } from "typeorm";
+import { OrmEntityManager } from "typeorm-typedi-extensions";
+import { JrdbRaceTool } from "./JrdbRaceTool";
 import * as $S from "../../converters/Shussouba";
 import * as $SJ from "../../converters/ShussoubaYosou";
-import { Shussouba } from "../../entities/Shussouba";
 import { ShussoubaYosou } from "../../entities/ShussoubaYosou";
-import { ShussoubaInfo } from "../RaceTool";
+import { Bridge } from "../Bridge";
+import { DataToImport } from "../DataToImport";
 import { readDouble, readInt } from "../Reader";
 import { Tool } from "../Tool";
-import { JrdbRaceTool } from "./JrdbRaceTool";
 
-export abstract class Joa extends ShussoubaData {
+export abstract class Joa extends DataToImport {
+
+  @OrmEntityManager()
+  protected entityManager: EntityManager;
 
   @Inject()
   protected tool: Tool;
@@ -17,14 +21,12 @@ export abstract class Joa extends ShussoubaData {
   @Inject()
   protected jrdbRaceTool: JrdbRaceTool;
 
-  protected async saveShussouba(buffer: Buffer, info: ShussoubaInfo) {
-    return info.shussouba;
-  }
+  public async save(buffer: Buffer, bridge: Bridge) {
+    const id = this.jrdbRaceTool.getShussoubaId(buffer, 8);
+    const asIs = await this.entityManager.findOneById(ShussoubaYosou, id);
 
-  protected setShussouba(buffer: Buffer, shussouba: Shussouba, info: ShussoubaInfo) {
-  }
-
-  protected async setShussoubaYosou(buffer: Buffer, toBe: ShussoubaYosou) {
+    const toBe = new ShussoubaYosou();
+    toBe.Id = id;
     toBe.CidChoukyouSoten = readDouble(buffer, 64, 5);
     toBe.CidKyuushaSoten = readDouble(buffer, 69, 5);
     toBe.Cid = readInt(buffer, 79, 3);
@@ -33,5 +35,7 @@ export abstract class Joa extends ShussoubaData {
     toBe.Em = $SJ.em.toCodeFromJrdb(buffer, 88, 1);
     toBe.KyuushaBbShirushi = $S.yosou.toCodeFromJrdb(buffer, 89, 1);
     toBe.KishuBbShirushi = $S.yosou.toCodeFromJrdb(buffer, 100, 1);
+
+    return await this.tool.update(ShussoubaYosou, asIs, toBe);
   }
 }

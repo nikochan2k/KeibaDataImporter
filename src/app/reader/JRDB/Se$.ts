@@ -16,8 +16,8 @@ import { Uma } from "../../entities/Uma";
 import { ShussoubaInfo } from "../RaceTool";
 import { RaceTool } from "../RaceTool";
 import {
-  readInt,
   readDouble,
+  readInt,
   readPositiveInt,
   readStr,
   readStrWithNoSpace
@@ -132,8 +132,17 @@ export abstract class Se$ extends ShussoubaData {
     return kyousouba;
   }
 
-  protected async saveShussoubaHyouka(buffer: Buffer) {
+  protected async saveShussoubaRelated(buffer: Buffer, shussouba: Shussouba) {
+    const asIs = await this.entityManager.findOneById(ShussoubaHyouka, shussouba.Id);
+
     const toBe = new ShussoubaHyouka();
+    toBe.Id = shussouba.Id;
+    this.setShussoubaHyouka(buffer, toBe);
+
+    await this.tool.update(ShussoubaHyouka, asIs, toBe);
+  }
+
+  protected setShussoubaHyouka(buffer: Buffer, toBe: ShussoubaHyouka) {
     toBe.Idm = readInt(buffer, 182, 3);
     toBe.IdmSoten = readInt(buffer, 185, 3);
     toBe.IdmBabasa = readInt(buffer, 188, 3);
