@@ -6,7 +6,7 @@ import { Shussouba } from "../../../entities/Shussouba";
 import { ShussoubaYosou } from "../../../entities/ShussoubaYosou";
 import { Bridge } from "../../Bridge";
 import { DataToImport } from "../../DataToImport";
-import { ShussoubaInfo } from "../../RaceTool";
+import { ShussoubaInfo } from "../../ImportTool";
 import {
   readDate,
   readDouble,
@@ -17,7 +17,7 @@ import {
 import { Tool } from "../../Tool";
 import { KolBridge } from "../KolBridge";
 import { KolChoukyouTool } from "../KolChoukyouTool";
-import { KolRaceTool } from "../KolRaceTool";
+import { KolImportTool } from "../KolImportTool";
 import { KolTool } from "../KolTool";
 
 @Service()
@@ -33,7 +33,7 @@ export class KolDen2Kd3 extends DataToImport {
   private kolTool: KolTool;
 
   @Inject()
-  private kolRaceTool: KolRaceTool;
+  private kolImportTool: KolImportTool;
 
   protected getBufferLength() {
     return 1000;
@@ -45,7 +45,7 @@ export class KolDen2Kd3 extends DataToImport {
   }
 
   public async save(buffer: Buffer, bridge: Bridge) {
-    const info = await this.kolRaceTool.getShussoubaInfo(buffer, 23);
+    const info = await this.kolImportTool.getShussoubaInfo(buffer, 23);
     if (!info) {
       return;
     }
@@ -70,7 +70,7 @@ export class KolDen2Kd3 extends DataToImport {
   }
 
   protected async saveShussouba(buffer: Buffer, info: ShussoubaInfo) {
-    const toBe = this.kolRaceTool.createShussouba(buffer, 23);
+    const toBe = this.kolImportTool.createShussouba(buffer, 23);
     if (!toBe) {
       return null;
     }

@@ -4,7 +4,7 @@ import { Race } from "../../entities/Race";
 import { Bridge } from "../Bridge";
 import { DataToImport } from "../DataToImport";
 import { Tool } from "../Tool";
-import { JrdbRaceTool } from "./JrdbRaceTool";
+import { JrdbImportTool } from "./JrdbImportTool";
 import { JrdbTool } from "./JrdbTool";
 
 export abstract class RaceData extends DataToImport {
@@ -16,7 +16,7 @@ export abstract class RaceData extends DataToImport {
   protected jrdbTool: JrdbTool;
 
   @Inject()
-  protected jrdbRaceTool: JrdbRaceTool;
+  protected jrdbImportTool: JrdbImportTool;
 
   public async save(buffer: Buffer, bridge: Bridge) {
     const kaisai = await this.saveKaisai(buffer);
@@ -28,13 +28,13 @@ export abstract class RaceData extends DataToImport {
   }
 
   protected async saveKaisai(buffer: Buffer) {
-    const toBe = this.jrdbRaceTool.createKaisai(buffer);
+    const toBe = this.jrdbImportTool.createKaisai(buffer);
     if (!toBe) {
       return null;
     }
     this.setKaisai(buffer, toBe);
 
-    const asIs = await this.jrdbRaceTool.getKaisai(buffer);
+    const asIs = await this.jrdbImportTool.getKaisai(buffer);
 
     return await this.tool.update(Kaisai, asIs, toBe);
   }
@@ -42,13 +42,13 @@ export abstract class RaceData extends DataToImport {
   protected abstract setKaisai(buffer: Buffer, toBe: Kaisai);
 
   protected async saveRace(buffer: Buffer, kaisai: Kaisai) {
-    const toBe = this.jrdbRaceTool.createRace(buffer, kaisai.Id);
+    const toBe = this.jrdbImportTool.createRace(buffer, kaisai.Id);
     if (!toBe) {
       return null;
     }
     this.setRace(buffer, toBe);
 
-    const asIs = await this.jrdbRaceTool.getRace(buffer);
+    const asIs = await this.jrdbImportTool.getRace(buffer);
     return await this.tool.update(Race, asIs, toBe);
   }
 

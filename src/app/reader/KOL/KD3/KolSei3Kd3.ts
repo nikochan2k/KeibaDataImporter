@@ -4,13 +4,13 @@ import { Race } from "../../../entities/Race";
 import {
   readStr,
 } from "../../Reader";
-import { KolRaceTool } from "../KolRaceTool";
+import { KolImportTool } from "../KolImportTool";
 
 @Service()
 export class KolSei3Kd3 extends DataToImport {
 
   @Inject()
-  private kolRaceTool: KolRaceTool;
+  private kolImportTool: KolImportTool;
 
   protected getBufferLength() {
     return 1050;
@@ -21,10 +21,10 @@ export class KolSei3Kd3 extends DataToImport {
     if (!seisaiNaiyou) {
       return;
     }
-    const kaisaiId = this.kolRaceTool.getKaisaiId(buffer);
-    const race = await this.kolRaceTool.getRace(buffer, kaisaiId);
+    const kaisaiId = this.kolImportTool.getKaisaiId(buffer);
+    const race = await this.kolImportTool.getRace(buffer, kaisaiId);
     if (!race) {
-      const raceId = this.kolRaceTool.getRaceId(buffer, kaisaiId);
+      const raceId = this.kolImportTool.getRaceId(buffer, kaisaiId);
       this.logger.warn("レース成績データが存在しません: " + raceId);
       return;
     }

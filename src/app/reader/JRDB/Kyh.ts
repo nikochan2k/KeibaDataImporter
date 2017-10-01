@@ -1,10 +1,10 @@
 import { Service } from "typedi";
-import { Shussouba } from "../../entities/Shussouba";
-import { ShussoubaYosou } from "../../entities/ShussoubaYosou";
-import { ShussoubaInfo } from "../RaceTool";
-import { Ky$ } from "./Ky$";
 import * as $S from "../../converters/Shussouba";
 import * as $SJ from "../../converters/ShussoubaYosou";
+import { Shussouba } from "../../entities/Shussouba";
+import { ShussoubaYosou } from "../../entities/ShussoubaYosou";
+import { ShussoubaInfo } from "../ImportTool";
+import { Ky$ } from "./Ky$";
 
 @Service()
 export class Kyh extends Ky$ {

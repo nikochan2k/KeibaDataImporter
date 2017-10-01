@@ -1,5 +1,5 @@
 import { Inject } from "typedi";
-import { JrdbRaceTool } from "./JrdbRaceTool";
+import { JrdbImportTool } from "./JrdbImportTool";
 import { ShussoubaData } from "./ShussoubaData";
 import * as $C from "../../converters/Common";
 import * as $KY from "../../converters/Kyuusha";
@@ -18,7 +18,7 @@ import { Kyuusha } from "../../entities/Kyuusha";
 import { Shussouba } from "../../entities/Shussouba";
 import { ShussoubaYosou } from "../../entities/ShussoubaYosou";
 import { Uma } from "../../entities/Uma";
-import { ShussoubaInfo } from "../RaceTool";
+import { ShussoubaInfo } from "../ImportTool";
 import {
   readDouble,
   readInt,
@@ -30,7 +30,7 @@ import {
 export abstract class Ky$ extends ShussoubaData {
 
   @Inject()
-  protected jrdbRaceTool: JrdbRaceTool;
+  protected jrdbImportTool: JrdbImportTool;
 
   @Inject()
   private kyuushaDao: KyuushaDao;
@@ -222,7 +222,7 @@ export abstract class Ky$ extends ShussoubaData {
   }
 
   protected async saveOddsHaitou(buffer: Buffer, shussouba: Shussouba) {
-    await this.jrdbRaceTool.saveOddsNinki(buffer, shussouba, $C.Kakutei.Yosou, $C.Baken.Tanshou, 95, 5, 100);
-    await this.jrdbRaceTool.saveOddsNinki(buffer, shussouba, $C.Kakutei.Yosou, $C.Baken.Fukushou, 102, 5, 107);
+    await this.jrdbTool.saveOddsNinki(buffer, shussouba, $C.Kakutei.Yosou, $C.Baken.Tanshou, 95, 5, 100);
+    await this.jrdbTool.saveOddsNinki(buffer, shussouba, $C.Kakutei.Yosou, $C.Baken.Fukushou, 102, 5, 107);
   }
 }

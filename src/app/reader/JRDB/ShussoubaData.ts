@@ -1,10 +1,10 @@
 import { Inject } from "typedi";
-import { JrdbRaceTool } from "./JrdbRaceTool";
+import { JrdbImportTool } from "./JrdbImportTool";
 import { JrdbTool } from "./JrdbTool";
 import { Race } from "../../entities/Race";
 import { Shussouba } from "../../entities/Shussouba";
 import { DataToImport } from "../DataToImport";
-import { ShussoubaInfo } from "../RaceTool";
+import { ShussoubaInfo } from "../ImportTool";
 import { Tool } from "../Tool";
 
 export abstract class ShussoubaData extends DataToImport {
@@ -16,10 +16,10 @@ export abstract class ShussoubaData extends DataToImport {
   protected jrdbTool: JrdbTool;
 
   @Inject()
-  protected jrdbRaceTool: JrdbRaceTool;
+  protected jrdbImportTool: JrdbImportTool;
 
   public async save(buffer: Buffer) {
-    const info = await this.jrdbRaceTool.getShussoubaInfo(buffer, 8);
+    const info = await this.jrdbImportTool.getShussoubaInfo(buffer, 8);
     if (!info) {
       return;
     }
@@ -38,7 +38,7 @@ export abstract class ShussoubaData extends DataToImport {
   }
 
   protected async saveShussouba(buffer: Buffer, info: ShussoubaInfo) {
-    const toBe = this.jrdbRaceTool.createShussouba(buffer, 8);
+    const toBe = this.jrdbImportTool.createShussouba(buffer, 8);
     if (toBe) {
       return null;
     }

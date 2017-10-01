@@ -5,7 +5,7 @@ import { Choukyou } from "../../../entities/Choukyou";
 import { Shussouba } from "../../../entities/Shussouba";
 import { ShussoubaYosou } from "../../../entities/ShussoubaYosou";
 import { DataToImport } from "../../DataToImport";
-import { ShussoubaInfo } from "../../RaceTool";
+import { ShussoubaInfo } from "../../ImportTool";
 import {
   readDate,
   readDouble,
@@ -16,7 +16,7 @@ import {
 } from "../../Reader";
 import { Tool } from "../../Tool";
 import { KolChoukyouTool } from "../KolChoukyouTool";
-import { KolRaceTool } from "../KolRaceTool";
+import { KolImportTool } from "../KolImportTool";
 import { KolTool } from "../KolTool";
 
 @Service()
@@ -32,14 +32,14 @@ export class KolSei2Kd3 extends DataToImport {
   private kolTool: KolTool;
 
   @Inject()
-  private kolRaceTool: KolRaceTool;
+  private kolImportTool: KolImportTool;
 
   protected getBufferLength() {
     return 600;
   }
 
   public async save(buffer: Buffer) {
-    const info = await this.kolRaceTool.getShussoubaInfo(buffer, 23);
+    const info = await this.kolImportTool.getShussoubaInfo(buffer, 23);
     if (!info) {
       return;
     }
@@ -59,7 +59,7 @@ export class KolSei2Kd3 extends DataToImport {
 
     await this.saveShussoubaYosou(buffer, shussouba);
 
-    await this.kolRaceTool.saveNinkiOdds(buffer, info.shussouba, 267, 269);
+    await this.kolImportTool.saveNinkiOdds(buffer, info.shussouba, 267, 269);
 
     await this.kolTool.saveShussoubaTsuukaJuni(buffer, 298, shussouba);
     if (!asIs.KolShutsubahyouSakuseiNengappi) {
@@ -72,7 +72,7 @@ export class KolSei2Kd3 extends DataToImport {
   }
 
   protected async saveShussouba(buffer: Buffer, info: ShussoubaInfo) {
-    const toBe = this.kolRaceTool.createShussouba(buffer, 23);
+    const toBe = this.kolImportTool.createShussouba(buffer, 23);
     if (toBe) {
       return null;
     }
@@ -92,9 +92,9 @@ export class KolSei2Kd3 extends DataToImport {
     toBe.KishuShozokuKyuushaId = await this.kolTool.saveShozokuKyuusha(buffer, 210);
     toBe.MinaraiKubun = $S.minaraiKubun.toCodeFromKol(buffer, 215, 1);
     toBe.Norikawari = $S.norikawari.toCodeFromKol(buffer, 216, 1);
-    toBe.KakuteiChakujun = this.kolRaceTool.getChakujun(buffer, 274, 2);
+    toBe.KakuteiChakujun = this.tool.getChakujun(buffer, 274, 2);
     toBe.ChakujunFuka = $S.chakujunFuka.toCodeFromKol(buffer, 276, 2);
-    toBe.NyuusenChakujun = this.kolRaceTool.getChakujun(buffer, 278, 2);
+    toBe.NyuusenChakujun = this.tool.getChakujun(buffer, 278, 2);
     toBe.TorikeshiShubetsu = $S.torikeshiShubetsu.toCodeFromKol(buffer, 280, 1);
     toBe.RecordNinshiki = $S.recordNinshiki.toCodeFromKol(buffer, 281, 1);
     toBe.Time = readTime(buffer, 282, 4);

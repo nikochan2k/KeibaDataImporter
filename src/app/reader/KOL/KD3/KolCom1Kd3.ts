@@ -4,20 +4,20 @@ import { Shussouba } from "../../../entities/Shussouba";
 import {
   readStr,
 } from "../../Reader";
-import { KolRaceTool } from "../KolRaceTool";
+import { KolImportTool } from "../KolImportTool";
 
 @Service()
 export class KolCom1Kd3 extends DataToImport {
 
   @Inject()
-  private kolRaceTool: KolRaceTool;
+  private kolImportTool: KolImportTool;
 
   protected getBufferLength() {
     return 3010;
   }
 
   public async save(buffer: Buffer) {
-    const info = await this.kolRaceTool.getShussoubaInfo(buffer, 70);
+    const info = await this.kolImportTool.getShussoubaInfo(buffer, 70);
     if (!info) {
       return;
     }

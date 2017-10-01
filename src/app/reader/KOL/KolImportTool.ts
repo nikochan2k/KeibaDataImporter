@@ -11,7 +11,7 @@ import { Record } from "../../entities/Record";
 import { Shussouba } from "../../entities/Shussouba";
 import { ShussoubaHassouJoukyou } from "../../entities/ShussoubaHassouJoukyou";
 import { Uma } from "../../entities/Uma";
-import { HaitouInfo, KaisaiInfo, RaceTool } from "../RaceTool";
+import { ImportTool, KaisaiInfo } from "../ImportTool";
 import {
   readDate,
   readDouble,
@@ -30,7 +30,7 @@ export interface RaceLapTimeInfo {
 }
 
 @Service()
-export class KolRaceTool extends RaceTool {
+export class KolImportTool extends ImportTool {
 
   @Inject()
   private umaDao: UmaDao;
@@ -184,7 +184,7 @@ export class KolRaceTool extends RaceTool {
   }
 
   public async saveNinkiOdds(buffer: Buffer, shussouba: Shussouba, ninkiOffset: number, oddsOffset: number) {
-    await this.saveOddsHaitou({
+    await this.tool.saveOddsHaitou({
       RaceId: shussouba.RaceId,
       Kakutei: $C.Kakutei.Kakutei,
       Baken: $C.Baken.Tanshou,
@@ -211,7 +211,7 @@ export class KolRaceTool extends RaceTool {
       if (!odds1) {
         continue;
       }
-      await this.saveOddsHaitou({
+      await this.tool.saveOddsHaitou({
         RaceId: raceId,
         Kakutei: kakutei,
         Baken: $C.Baken.Tanshou,
@@ -229,7 +229,7 @@ export class KolRaceTool extends RaceTool {
         if (!odds1) {
           continue;
         }
-        await this.saveOddsHaitou({
+        await this.tool.saveOddsHaitou({
           RaceId: raceId,
           Kakutei: kakutei,
           Baken: $C.Baken.Wakuren,
@@ -249,7 +249,7 @@ export class KolRaceTool extends RaceTool {
         if (!odds1) {
           continue;
         }
-        await this.saveOddsHaitou({
+        await this.tool.saveOddsHaitou({
           RaceId: raceId,
           Kakutei: kakutei,
           Baken: $C.Baken.Umaren,
@@ -270,7 +270,7 @@ export class KolRaceTool extends RaceTool {
       if (!odds1 || !odds2) {
         continue;
       }
-      await this.saveOddsHaitou({
+      await this.tool.saveOddsHaitou({
         RaceId: raceId,
         Kakutei: kakutei,
         Baken: $C.Baken.Fukushou,
@@ -291,7 +291,7 @@ export class KolRaceTool extends RaceTool {
         if (!odds1 || !odds2) {
           continue;
         }
-        await this.saveOddsHaitou({
+        await this.tool.saveOddsHaitou({
           RaceId: raceId,
           Kakutei: kakutei,
           Baken: $C.Baken.Wide,
@@ -315,7 +315,7 @@ export class KolRaceTool extends RaceTool {
         if (!odds1) {
           continue;
         }
-        await this.saveOddsHaitou({
+        await this.tool.saveOddsHaitou({
           RaceId: raceId,
           Kakutei: kakutei,
           Baken: $C.Baken.Umatan,
@@ -336,7 +336,7 @@ export class KolRaceTool extends RaceTool {
           if (!odds1) {
             continue;
           }
-          await this.saveOddsHaitou({
+          await this.tool.saveOddsHaitou({
             RaceId: raceId,
             Kakutei: kakutei,
             Baken: $C.Baken.Sanrenpuku,
@@ -362,7 +362,7 @@ export class KolRaceTool extends RaceTool {
           if (!odds1) {
             continue;
           }
-          await this.saveOddsHaitou({
+          await this.tool.saveOddsHaitou({
             RaceId: raceId,
             Kakutei: kakutei,
             Baken: $C.Baken.Sanrentan,
@@ -373,40 +373,6 @@ export class KolRaceTool extends RaceTool {
           });
         }
       }
-    }
-  }
-
-  public async saveRaceHaitou(buffer: Buffer, raceId: number, kakutei: $C.Kakutei, infos: HaitouInfo[]) {
-    for (let i = 0; i < infos.length; i++) {
-      const info = infos[i];
-      const bangou1 = readPositiveInt(buffer, info.bangou1, info.bangou1Len);
-      if (!bangou1) {
-        continue;
-      }
-      let bangou2;
-      if (info.bangou2) {
-        bangou2 = readPositiveInt(buffer, info.bangou2, info.bangou2Len);
-        if (!bangou2 && [$C.Baken.Tanshou, $C.Baken.Fukushou].indexOf(info.baken) === -1) {
-          continue;
-        }
-      }
-      let bangou3;
-      if (info.bangou3) {
-        bangou3 = readPositiveInt(buffer, info.bangou3, info.bangou3Len);
-        if (!bangou3 && [$C.Baken.Sanrenpuku, $C.Baken.Sanrentan].indexOf(info.baken) !== -1) {
-          continue;
-        }
-      }
-      await this.saveOddsHaitou({
-        RaceId: raceId,
-        Kakutei: kakutei,
-        Baken: info.baken,
-        Bangou1: bangou1,
-        Bangou2: bangou2,
-        Bangou3: bangou3,
-        Haitoukin: readPositiveInt(buffer, info.haitou, info.haitouLen),
-        Ninki: (info.ninki ? readPositiveInt(buffer, info.ninki, info.ninkiLen) : undefined),
-      });
     }
   }
 

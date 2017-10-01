@@ -19,7 +19,8 @@ import {
   readTime
 } from "../../Reader";
 import { Tool } from "../../Tool";
-import { KolRaceTool } from "../KolRaceTool";
+import { KolImportTool } from "../KolImportTool";
+import { KolTool } from "../KolTool";
 
 @Service()
 export class KolSei1Kd3 extends DataToImport {
@@ -28,10 +29,13 @@ export class KolSei1Kd3 extends DataToImport {
   private tool: Tool;
 
   @Inject()
-  private kolRaceTool: KolRaceTool;
+  private keikaTool: KeikaTool;
 
   @Inject()
-  private keikaTool: KeikaTool;
+  private kolTool: KolTool;
+
+  @Inject()
+  private kolImportTool: KolImportTool;
 
   protected getBufferLength() {
     return 3200;
@@ -42,7 +46,7 @@ export class KolSei1Kd3 extends DataToImport {
     if (!kaisai) {
       return null;
     }
-    const asIs = await this.kolRaceTool.getRace(buffer);
+    const asIs = await this.kolImportTool.getRace(buffer);
     if (asIs) {
       const dataSakuseiNengappi = readDate(buffer, 2910, 8);
       if (dataSakuseiNengappi <= asIs.KolSeisekiSakuseiNengappi) {
@@ -63,12 +67,12 @@ export class KolSei1Kd3 extends DataToImport {
   }
 
   protected async saveKaisai(buffer: Buffer) {
-    const asIs = await this.kolRaceTool.getKaisai(buffer);
+    const asIs = await this.kolImportTool.getKaisai(buffer);
     if (asIs) {
       return asIs;
     }
 
-    let toBe = this.kolRaceTool.createKaisai(buffer);
+    let toBe = this.kolImportTool.createKaisai(buffer);
     if (!toBe) {
       return null;
     }
@@ -80,7 +84,7 @@ export class KolSei1Kd3 extends DataToImport {
   }
 
   protected async saveRace(buffer: Buffer, kaisai: Kaisai, asIs: Race) {
-    const toBe = this.kolRaceTool.createRace(buffer);
+    const toBe = this.kolImportTool.createRace(buffer);
     if (!toBe) {
       return asIs;
     }
@@ -146,11 +150,11 @@ export class KolSei1Kd3 extends DataToImport {
     toBe.Course = $R.course.toCodeFromKol(buffer, 119, 1);
     toBe.Kyori = readPositiveInt(buffer, 120, 4);
 
-    const courceRecord = await this.kolRaceTool.getRecord(buffer, 125, 0);
+    const courceRecord = await this.kolImportTool.getRecord(buffer, 125, 0);
     toBe.CourseRecordId = courceRecord && courceRecord.Id;
-    const kyoriRecord = await this.kolRaceTool.getRecord(buffer, 178, 231);
+    const kyoriRecord = await this.kolImportTool.getRecord(buffer, 178, 231);
     toBe.KyoriRecordId = kyoriRecord && kyoriRecord.Id;
-    const raceRecord = await this.kolRaceTool.getRecord(buffer, 233, 286);
+    const raceRecord = await this.kolImportTool.getRecord(buffer, 233, 286);
     toBe.RaceRecordId = raceRecord && raceRecord.Id;
 
     toBe.Shoukin1Chaku = readPositiveInt(buffer, 288, 9);
@@ -181,7 +185,7 @@ export class KolSei1Kd3 extends DataToImport {
   protected async saveRaceLapTime(buffer: Buffer, kaisai: Kaisai, race: Race) {
     const lapTime1 = readDouble(buffer, 402, 3, 0.1);
     if (lapTime1) {
-      await this.kolRaceTool.saveRaceLapTime(buffer, 402, race);
+      await this.tool.saveRaceLapTime(buffer, 402, race);
     } else {
       const heichiShougai = $R.heichiShougai.toCodeFromKol(buffer, 25, 1);
       if (heichiShougai === 1) {
@@ -196,7 +200,7 @@ export class KolSei1Kd3 extends DataToImport {
   }
 
   protected async saveShougaiRaceLapTime(buffer: Buffer, race: Race) {
-    await this.kolRaceTool.saveSpecialRaceLapTime(buffer, race,
+    await this.kolImportTool.saveSpecialRaceLapTime(buffer, race,
       [
         { Offset: 382, Length: 5, KaishiKyori: race.Kyori - 1600, ShuuryouKyori: race.Kyori },
         { Offset: 388, Length: 4, KaishiKyori: race.Kyori - 800, ShuuryouKyori: race.Kyori },
@@ -206,7 +210,7 @@ export class KolSei1Kd3 extends DataToImport {
   }
 
   protected async saveChihouRaceLapTime(buffer: Buffer, race: Race) {
-    await this.kolRaceTool.saveSpecialRaceLapTime(buffer, race,
+    await this.kolImportTool.saveSpecialRaceLapTime(buffer, race,
       [
         { Offset: 441, Length: 3, KaishiKyori: 0, ShuuryouKyori: 600 },
         { Offset: 444, Length: 3, KaishiKyori: 0, ShuuryouKyori: 800 },
@@ -236,11 +240,11 @@ export class KolSei1Kd3 extends DataToImport {
   }
 
   protected async saveRaceHassouJoukyou(buffer: Buffer, race: Race) {
-    await this.kolRaceTool.saveRaceHassouJoukyou(buffer, 1473, race);
+    await this.kolImportTool.saveRaceHassouJoukyou(buffer, 1473, race);
   }
 
   protected async saveRaceHaitou(buffer: Buffer, race: Race) {
-    await this.kolRaceTool.saveRaceHaitou(
+    await this.kolTool.saveRaceHaitou(
       buffer, race.Id, Kakutei.Kakutei,
       [
         { baken: Baken.Tanshou, index: 1, bangou1: 2100, bangou1Len: 2, haitou: 2102, haitouLen: 6 },

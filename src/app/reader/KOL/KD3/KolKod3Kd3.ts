@@ -1,20 +1,20 @@
 import { Inject, Service } from "typedi";
 import { Kakutei } from "../../../converters/Common";
 import { DataToImport } from "../../DataToImport";
-import { KolRaceTool } from "../KolRaceTool";
+import { KolImportTool } from "../KolImportTool";
 
 @Service()
 export class KolKod3Kd3 extends DataToImport {
 
   @Inject()
-  private kolRaceTool: KolRaceTool;
+  private kolImportTool: KolImportTool;
 
   protected getBufferLength() {
     return 49123;
   }
 
   public async save(buffer: Buffer) {
-    const raceId = await this.kolRaceTool.getRaceId(buffer);
+    const raceId = await this.kolImportTool.getRaceId(buffer);
     if (!raceId) {
       return;
     }
@@ -22,6 +22,6 @@ export class KolKod3Kd3 extends DataToImport {
   }
 
   protected async saveSanrentan(buffer: Buffer, raceId: number) {
-    await this.kolRaceTool.saveSanrentanOdds(buffer, 161, raceId, Kakutei.Kakutei);
+    await this.kolImportTool.saveSanrentanOdds(buffer, 161, raceId, Kakutei.Kakutei);
   }
 }

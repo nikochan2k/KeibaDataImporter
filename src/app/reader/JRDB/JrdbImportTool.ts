@@ -1,9 +1,7 @@
 import { Service } from "typedi";
 import * as $C from "../../converters/Common";
-import { Shussouba } from "../../entities/Shussouba";
-import { KaisaiInfo, RaceTool } from "../RaceTool";
+import { ImportTool, KaisaiInfo } from "../ImportTool";
 import {
-  readDouble,
   readHex,
   readInt,
   readPositiveInt,
@@ -11,7 +9,7 @@ import {
 } from "../Reader";
 
 @Service()
-export class JrdbRaceTool extends RaceTool {
+export class JrdbImportTool extends ImportTool {
 
   protected getYear(buffer: Buffer) {
     const yy = readInt(buffer, 2, 2);
@@ -54,17 +52,6 @@ export class JrdbRaceTool extends RaceTool {
   protected getRaceBangou(buffer: Buffer) {
     const raceBangou = readPositiveInt(buffer, 8, 2);
     return raceBangou;
-  }
-
-  public async saveOddsNinki(buffer: Buffer, shussouba: Shussouba, kakutei: $C.Kakutei, baken: $C.Baken, oddsOffset: number, oddsLength: number, ninkiOffset: number) {
-    await this.saveOddsHaitou({
-      RaceId: shussouba.RaceId,
-      Kakutei: kakutei,
-      Baken: baken,
-      Bangou1: shussouba.Umaban,
-      Odds1: readDouble(buffer, oddsOffset, oddsLength),
-      Ninki: readPositiveInt(buffer, ninkiOffset, 2)
-    });
   }
 
 }

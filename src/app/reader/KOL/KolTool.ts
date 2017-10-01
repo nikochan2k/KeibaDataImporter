@@ -19,7 +19,7 @@ import { Shussouba } from "../../entities/Shussouba";
 import { ShussoubaTsuukaJuni } from "../../entities/ShussoubaTsuukaJuni";
 import { Uma } from "../../entities/Uma";
 import { getLogger } from "../../LogUtil";
-import { Tool } from "../Tool";
+import { Tool, HaitouInfo } from "../Tool";
 import {
   readDouble,
   readInt,
@@ -165,4 +165,38 @@ export class KolTool {
     }
   }
 
+
+  public async saveRaceHaitou(buffer: Buffer, raceId: number, kakutei: $C.Kakutei, infos: HaitouInfo[]) {
+    for (let i = 0; i < infos.length; i++) {
+      const info = infos[i];
+      const bangou1 = readPositiveInt(buffer, info.bangou1, info.bangou1Len);
+      if (!bangou1) {
+        continue;
+      }
+      let bangou2;
+      if (info.bangou2) {
+        bangou2 = readPositiveInt(buffer, info.bangou2, info.bangou2Len);
+        if (!bangou2 && [$C.Baken.Tanshou, $C.Baken.Fukushou].indexOf(info.baken) === -1) {
+          continue;
+        }
+      }
+      let bangou3;
+      if (info.bangou3) {
+        bangou3 = readPositiveInt(buffer, info.bangou3, info.bangou3Len);
+        if (!bangou3 && [$C.Baken.Sanrenpuku, $C.Baken.Sanrentan].indexOf(info.baken) !== -1) {
+          continue;
+        }
+      }
+      await this.tool.saveOddsHaitou({
+        RaceId: raceId,
+        Kakutei: kakutei,
+        Baken: info.baken,
+        Bangou1: bangou1,
+        Bangou2: bangou2,
+        Bangou3: bangou3,
+        Haitoukin: readPositiveInt(buffer, info.haitou, info.haitouLen),
+        Ninki: (info.ninki ? readPositiveInt(buffer, info.ninki, info.ninkiLen) : undefined),
+      });
+    }
+  }
 }

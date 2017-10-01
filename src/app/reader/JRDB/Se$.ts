@@ -1,5 +1,4 @@
 import { Inject } from "typedi";
-import { JrdbRaceTool } from "./JrdbRaceTool";
 import { ShussoubaData } from "./ShussoubaData";
 import * as $C from "../../converters/Common";
 import * as $R from "../../converters/Race";
@@ -14,7 +13,7 @@ import { Race } from "../../entities/Race";
 import { Shussouba } from "../../entities/Shussouba";
 import { ShussoubaHyouka } from "../../entities/ShussoubaHyouka";
 import { Uma } from "../../entities/Uma";
-import { ShussoubaInfo } from "../RaceTool";
+import { ShussoubaInfo } from "../ImportTool";
 import {
   readDouble,
   readInt,
@@ -22,15 +21,8 @@ import {
   readStr,
   readStrWithNoSpace
 } from "../Reader";
-import { Tool } from "../Tool";
 
 export abstract class Se$ extends ShussoubaData {
-
-  @Inject()
-  protected tool: Tool;
-
-  @Inject()
-  protected jrdbRaceTool: JrdbRaceTool;
 
   @Inject()
   protected kishuDao: KishuDao;
@@ -169,6 +161,6 @@ export abstract class Se$ extends ShussoubaData {
   }
 
   protected async saveOddsHaitou(buffer: Buffer, shussouba: Shussouba) {
-    await this.jrdbRaceTool.saveOddsNinki(buffer, shussouba, $C.Kakutei.Zenjitsu, $C.Baken.Tanshou, 174, 6, 180);
+    await this.jrdbTool.saveOddsNinki(buffer, shussouba, $C.Kakutei.Zenjitsu, $C.Baken.Tanshou, 174, 6, 180);
   }
 }
