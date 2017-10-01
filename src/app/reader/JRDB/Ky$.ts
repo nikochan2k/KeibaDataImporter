@@ -125,7 +125,7 @@ export abstract class Ky$ extends ShussoubaData {
     toBe.KishuShisuu = readDouble(buffer, 59, 5);
     toBe.JouhouShisuu = readDouble(buffer, 64, 5);
     toBe.SougouShisuu = readDouble(buffer, 84, 5);
-    toBe.Kyakushitsu = $SJ.kyakushitsu.toCodeFromJrdb(buffer, 89, 1);
+    toBe.Kyakushitsu = $S.kyakushitsu.toCodeFromJrdb(buffer, 89, 1);
     toBe.KyoriTekisei = $SJ.kyoriTekisei.toCodeFromJrdb(buffer, 90, 1);
     toBe.Joushoudo = $S.joushoudo.toCodeFromJrdb(buffer, 91, 1);
     toBe.Rotation = readInt(buffer, 92, 3);
@@ -222,7 +222,19 @@ export abstract class Ky$ extends ShussoubaData {
   }
 
   protected async saveOddsHaitou(buffer: Buffer, shussouba: Shussouba) {
-    await this.jrdbTool.saveOddsNinki(buffer, shussouba, $C.Kakutei.Yosou, $C.Baken.Tanshou, 95, 5, 100);
-    await this.jrdbTool.saveOddsNinki(buffer, shussouba, $C.Kakutei.Yosou, $C.Baken.Fukushou, 102, 5, 107);
+    await this.jrdbTool.saveOddsNinki(buffer, shussouba, {
+      Kakutei: $C.Kakutei.Yosou,
+      Baken: $C.Baken.Tanshou,
+      OddsOffset: 95,
+      OddsLength: 5,
+      NinkiOffset: 100
+    });
+    await this.jrdbTool.saveOddsNinki(buffer, shussouba, {
+      Kakutei: $C.Kakutei.Yosou,
+      Baken: $C.Baken.Fukushou,
+      OddsOffset: 102,
+      OddsLength: 5,
+      NinkiOffset: 107
+    });
   }
 }

@@ -66,7 +66,11 @@ LIMIT
 
   public async saveKishu(toBe: Kishu, namae?: string, tanshuku?: string) {
     const asIs = await this.getKishu(toBe);
-    toBe = await this.tool.update(Kishu, asIs, toBe);
+    if (asIs) {
+      toBe = await this.tool.update(Kishu, asIs, toBe);
+    } else {
+      toBe = await this.entityManager.save(toBe);
+    }
     if (namae) {
       await this.saveKishuMeishou(toBe, namae);
     }

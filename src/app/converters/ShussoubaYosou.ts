@@ -1,16 +1,5 @@
 import { Codes } from "./Codes";
 
-export const kyakushitsu = new Codes(
-  [
-    { code: 1, jrdb: "1", naiyou: "逃げ" },
-    { code: 2, jrdb: "2", naiyou: "先行" },
-    { code: 3, jrdb: "3", naiyou: "差し" },
-    { code: 4, jrdb: "4", naiyou: "追込" },
-    { code: 5, jrdb: "5", naiyou: "好位差し" },
-    { code: 6, jrdb: "6", naiyou: "自在" }
-  ]
-);
-
 export const kyoriTekisei = new Codes(
   [
     { code: 1, jrdb: "1", naiyou: "短距離" },

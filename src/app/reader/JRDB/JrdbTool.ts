@@ -7,6 +7,15 @@ import {
   readPositiveInt,
 } from "../Reader";
 
+export interface OddsHaitouInfo {
+  Kakutei: $C.Kakutei;
+  Baken: $C.Baken;
+  OddsOffset: number;
+  OddsLength: number;
+  NinkiOffset?: number;
+  HaitoukinOffset?: number;
+}
+
 @Service()
 export class JrdbTool {
 
@@ -28,14 +37,15 @@ export class JrdbTool {
     return yyyymmdd;
   }
 
-  public async saveOddsNinki(buffer: Buffer, shussouba: Shussouba, kakutei: $C.Kakutei, baken: $C.Baken, oddsOffset: number, oddsLength: number, ninkiOffset: number) {
+  public async saveOddsNinki(buffer: Buffer, shussouba: Shussouba, info: OddsHaitouInfo) {
     await this.tool.saveOddsHaitou({
       RaceId: shussouba.RaceId,
-      Kakutei: kakutei,
-      Baken: baken,
+      Kakutei: info.Kakutei,
+      Baken: info.Baken,
       Bangou1: shussouba.Umaban,
-      Odds1: readDouble(buffer, oddsOffset, oddsLength),
-      Ninki: readPositiveInt(buffer, ninkiOffset, 2)
+      Odds1: readDouble(buffer, info.OddsOffset, info.OddsLength),
+      Ninki: (info.NinkiOffset ? readPositiveInt(buffer, info.NinkiOffset, 2) : undefined),
+      Haitoukin: (info.HaitoukinOffset ? readPositiveInt(buffer, info.HaitoukinOffset, 7) : undefined)
     });
   }
 

@@ -68,4 +68,10 @@ export class ShussoubaHyouka {
 
   @Column("real", { nullable: true })
   public PaceShisuu?: number;
+
+  @Column("tinyint", { nullable: true })
+  public Kyakushitsu?: number;
+
+  @Column("tinyint", { nullable: true })
+  public PaceNagare?: number;
 }
