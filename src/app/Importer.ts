@@ -17,6 +17,7 @@ import { Kyh } from "./reader/JRDB/Kyh";
 import { Kyi } from "./reader/JRDB/Kyi";
 import { Sec } from "./reader/JRDB/Sec";
 import { Sed } from "./reader/JRDB/Sed";
+import { Skb } from "./reader/JRDB/Skb";
 import { Sra } from "./reader/JRDB/Sra";
 import { Srb } from "./reader/JRDB/Srb";
 import { Ukc } from "./reader/JRDB/Ukc";
@@ -127,7 +128,7 @@ export class Importer {
       // KD3 制裁その他データ
       { pattern: /kol_sei3.kd3/, dataToImport: Container.get(KolSei3Kd3) },
       // JRDB 成績拡張データ
-      // skb
+      { pattern: /seb\d+\.txt$3/, dataToImport: Container.get(Skb) },
       // JRDB 払戻情報データ
       // hja
       // hjc

@@ -1,6 +1,6 @@
 import { Inject } from "typedi";
 import { EntityManager } from "typeorm";
-import { OrmEntityManager } from "typeorm-typedi-extensions";
+import { OrmManager } from "typeorm-typedi-extensions";
 import { JrdbImportTool } from "./JrdbImportTool";
 import * as $S from "../../converters/Shussouba";
 import * as $SJ from "../../converters/ShussoubaYosou";
@@ -12,7 +12,7 @@ import { Tool } from "../Tool";
 
 export abstract class Joa extends DataToImport {
 
-  @OrmEntityManager()
+  @OrmManager()
   protected entityManager: EntityManager;
 
   @Inject()

@@ -1,7 +1,7 @@
 import * as fs from "fs";
 import * as log4js from "log4js";
 import { EntityManager } from "typeorm";
-import { OrmEntityManager } from "typeorm-typedi-extensions";
+import { OrmManager } from "typeorm-typedi-extensions";
 import { getLogger } from "../LogUtil";
 import { Bridge } from "./Bridge";
 
@@ -13,7 +13,7 @@ export abstract class DataToImport {
     this.logger = getLogger(this);
   }
 
-  @OrmEntityManager()
+  @OrmManager()
   protected entityManager: EntityManager;
 
   protected abstract getBufferLength(): number;

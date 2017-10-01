@@ -1,6 +1,6 @@
 import { Inject, Service } from "typedi";
 import { EntityManager, Repository } from "typeorm";
-import { OrmEntityManager, OrmRepository } from "typeorm-typedi-extensions";
+import { OrmManager, OrmRepository } from "typeorm-typedi-extensions";
 import * as $U from "../converters/Uma";
 import { Kyousouba } from "../entities/Kyousouba";
 import { Uma } from "../entities/Uma";
@@ -9,7 +9,7 @@ import { Tool } from "../reader/Tool";
 @Service()
 export class UmaDao {
 
-  @OrmEntityManager()
+  @OrmManager()
   protected entityManager: EntityManager;
 
   @OrmRepository(Kyousouba)

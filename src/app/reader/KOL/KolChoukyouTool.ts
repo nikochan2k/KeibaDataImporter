@@ -1,7 +1,7 @@
 import { Logger } from "log4js";
 import { Inject, Service } from "typedi";
 import { EntityManager } from "typeorm";
-import { OrmEntityManager } from "typeorm-typedi-extensions";
+import { OrmManager } from "typeorm-typedi-extensions";
 import * as $CH from "../../converters/Choukyou";
 import { MeishouDao } from "../../daos/MeishouDao";
 import { UmaDao } from "../../daos/UmaDao";
@@ -45,7 +45,7 @@ export class KolChoukyouTool {
 
   private logger: Logger;
 
-  @OrmEntityManager()
+  @OrmManager()
   private entityManager: EntityManager;
 
   @Inject()

@@ -1,7 +1,7 @@
 import { Logger } from "log4js";
 import { Inject, Service } from "typedi";
 import { EntityManager } from "typeorm";
-import { OrmEntityManager } from "typeorm-typedi-extensions";
+import { OrmManager } from "typeorm-typedi-extensions";
 import * as $C from "../../converters/Common";
 import * as $KY from "../../converters/Kyuusha";
 import * as $U from "../../converters/Uma";
@@ -33,7 +33,7 @@ export class KolTool {
 
   private logger: Logger;
 
-  @OrmEntityManager()
+  @OrmManager()
   private entityManager: EntityManager;
 
   @Inject()

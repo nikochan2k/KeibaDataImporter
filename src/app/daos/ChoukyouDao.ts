@@ -1,13 +1,13 @@
 import { Inject, Service } from "typedi";
 import { EntityManager, Repository } from "typeorm";
-import { OrmEntityManager, OrmRepository } from "typeorm-typedi-extensions";
+import { OrmManager, OrmRepository } from "typeorm-typedi-extensions";
 import { Choukyou } from "../entities/Choukyou";
 import { Tool } from "../reader/Tool";
 
 @Service()
 export class ChoukyouDao {
 
-  @OrmEntityManager()
+  @OrmManager()
   protected entityManager: EntityManager;
 
   @OrmRepository(Choukyou)

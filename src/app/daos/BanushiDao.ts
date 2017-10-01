@@ -1,13 +1,13 @@
 import { Inject, Service } from "typedi";
 import { EntityManager, Repository } from "typeorm";
-import { OrmEntityManager, OrmRepository } from "typeorm-typedi-extensions";
+import { OrmManager, OrmRepository } from "typeorm-typedi-extensions";
 import { Banushi } from "../entities/Banushi";
 import { Tool } from "../reader/Tool";
 
 @Service()
 export class BanushiDao {
 
-  @OrmEntityManager()
+  @OrmManager()
   protected entityManager: EntityManager;
 
   @OrmRepository(Banushi)

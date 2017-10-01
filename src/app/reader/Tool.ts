@@ -1,7 +1,7 @@
 import { Logger } from "log4js";
 import { Service } from "typedi";
 import { EntityManager, ObjectType } from "typeorm";
-import { OrmEntityManager } from "typeorm-typedi-extensions";
+import { OrmManager } from "typeorm-typedi-extensions";
 import { readStrWithNoSpace } from "./Reader";
 import { readDouble, readPositiveInt } from "./Reader";
 import { Baken } from "../converters/Common";
@@ -31,7 +31,7 @@ export abstract class Tool {
 
   protected logger: Logger;
 
-  @OrmEntityManager()
+  @OrmManager()
   protected entityManager: EntityManager;
 
   constructor() {

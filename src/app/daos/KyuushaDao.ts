@@ -1,6 +1,6 @@
 import { Service, Inject } from "typedi";
 import { EntityManager, Repository } from "typeorm";
-import { OrmEntityManager, OrmRepository } from "typeorm-typedi-extensions";
+import { OrmManager, OrmRepository } from "typeorm-typedi-extensions";
 import { Meishou } from "../entities/Meishou";
 import { Kyuusha } from "../entities/Kyuusha";
 import { KyuushaMeishou } from "../entities/KyuushaMeishou";
@@ -10,7 +10,7 @@ import { Tool } from "../reader/Tool";
 @Service()
 export class KyuushaDao {
 
-  @OrmEntityManager()
+  @OrmManager()
   protected entityManager: EntityManager;
 
   @OrmRepository(Kyuusha)

@@ -1,6 +1,6 @@
 import { Inject } from "typedi";
 import { EntityManager } from "typeorm";
-import { OrmEntityManager } from "typeorm-typedi-extensions";
+import { OrmManager } from "typeorm-typedi-extensions";
 import { JrdbImportTool } from "./JrdbImportTool";
 import { ShussoubaHyouka } from "../../entities/ShussoubaHyouka";
 import { Kubun } from "../../entities/ShussoubaJoutai";
@@ -12,7 +12,7 @@ import { JrdbTool } from "./JrdbTool";
 
 export abstract class Skb extends DataToImport {
 
-  @OrmEntityManager()
+  @OrmManager()
   protected entityManager: EntityManager;
 
   @Inject()

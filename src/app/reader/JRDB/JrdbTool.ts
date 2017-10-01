@@ -1,6 +1,6 @@
 import { Inject, Service } from "typedi";
 import { EntityManager } from "typeorm";
-import { OrmEntityManager } from "typeorm-typedi-extensions";
+import { OrmManager } from "typeorm-typedi-extensions";
 import * as $C from "../../converters/Common";
 import * as $SJ from "../../converters/ShussoubaJoutai";
 import { Shussouba } from "../../entities/Shussouba";
@@ -23,7 +23,7 @@ export interface OddsHaitouInfo {
 @Service()
 export class JrdbTool {
 
-  @OrmEntityManager()
+  @OrmManager()
   protected entityManager: EntityManager;
 
   @Inject()

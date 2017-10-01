@@ -1,7 +1,7 @@
 import { Logger } from "log4js";
 import { Service } from "typedi";
 import { EntityManager } from "typeorm";
-import { OrmEntityManager } from "typeorm-typedi-extensions";
+import { OrmManager } from "typeorm-typedi-extensions";
 import { RaceKeika } from "../entities/RaceKeika";
 import { Shussouba } from "../entities/Shussouba";
 import { ShussoubaKeika } from "../entities/ShussoubaKeika";
@@ -16,7 +16,7 @@ export class KeikaTool {
     this.logger = getLogger(this);
   }
 
-  @OrmEntityManager()
+  @OrmManager()
   private entityManager: EntityManager;
 
   protected createShussoubaKeika(old?: ShussoubaKeika) {

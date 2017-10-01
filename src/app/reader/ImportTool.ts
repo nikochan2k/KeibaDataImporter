@@ -1,7 +1,7 @@
 import { Logger } from "log4js";
 import { Inject } from "typedi";
 import { EntityManager } from "typeorm";
-import { OrmEntityManager } from "typeorm-typedi-extensions";
+import { OrmManager } from "typeorm-typedi-extensions";
 import { readPositiveInt, readRaw } from "./Reader";
 import { Tool } from "./Tool";
 import { Kaisai } from "../entities/Kaisai";
@@ -29,7 +29,7 @@ export abstract class ImportTool {
 
   protected logger: Logger;
 
-  @OrmEntityManager()
+  @OrmManager()
   protected entityManager: EntityManager;
 
   @Inject()

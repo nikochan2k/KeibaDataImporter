@@ -1,6 +1,6 @@
 import { Inject, Service } from "typedi";
 import { EntityManager, Repository } from "typeorm";
-import { OrmEntityManager, OrmRepository } from "typeorm-typedi-extensions";
+import { OrmManager, OrmRepository } from "typeorm-typedi-extensions";
 import { MeishouDao } from "./MeishouDao";
 import { Kishu } from "../entities/Kishu";
 import { KishuMeishou } from "../entities/KishuMeishou";
@@ -9,7 +9,7 @@ import { Tool } from "../reader/Tool";
 @Service()
 export class KishuDao {
 
-  @OrmEntityManager()
+  @OrmManager()
   protected entityManager: EntityManager;
 
   @OrmRepository(Kishu)
