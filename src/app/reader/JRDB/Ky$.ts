@@ -17,6 +17,7 @@ import { Kyousouba } from "../../entities/Kyousouba";
 import { Kyuusha } from "../../entities/Kyuusha";
 import { Shussouba } from "../../entities/Shussouba";
 import { ShussoubaYosou } from "../../entities/ShussoubaYosou";
+import { Kubun } from "../../entities/ShussoubaJoutai";
 import { Uma } from "../../entities/Uma";
 import { ShussoubaInfo } from "../ImportTool";
 import {
@@ -209,16 +210,19 @@ export abstract class Ky$ extends ShussoubaData {
     toBe.TaikeiUshiroTsunagari = $SJ.taikeiNagasa.toCodeFromJrdb(buffer, 492, 1);
     toBe.TaikeiO = $SJ.taikeiO.toCodeFromJrdb(buffer, 493, 1);
     toBe.TaikeiFuri = $SJ.taikeiFuri.toCodeFromJrdb(buffer, 494, 1);
-    toBe.TaikeiSougou1 = $S.tokki.toCodeFromJrdb(buffer, 501, 3);
-    toBe.TaikeiSougou2 = $S.tokki.toCodeFromJrdb(buffer, 504, 3);
-    toBe.TaikeiSougou3 = $S.tokki.toCodeFromJrdb(buffer, 507, 3);
-    toBe.Tokki1 = $S.tokki.toCodeFromJrdb(buffer, 510, 3);
-    toBe.Tokki2 = $S.tokki.toCodeFromJrdb(buffer, 513, 3);
-    toBe.Tokki3 = $S.tokki.toCodeFromJrdb(buffer, 516, 3);
     toBe.StartShisuu = readDouble(buffer, 519, 4);
     toBe.DeokureRitsu = readDouble(buffer, 523, 4);
     toBe.MankenShisuu = readInt(buffer, 534, 3);
     toBe.MankenShirushi = $S.yosou.toCodeFromJrdb(buffer, 537, 1);
+  }
+
+  protected async saveShussoubaJoutaiSeries(buffer: Buffer, shussouba: Shussouba) {
+    for (let bangou = 0, offset = 501; bangou < 3; bangou++ , offset += 3) {
+      this.jrdbTool.saveShussoubaJoutai(buffer, shussouba.Id, Kubun.TaikeiSougaou, bangou, offset);
+    }
+    for (let bangou = 0, offset = 510; bangou < 3; bangou++ , offset += 3) {
+      this.jrdbTool.saveShussoubaJoutai(buffer, shussouba.Id, Kubun.UmaTokki, bangou, offset);
+    }
   }
 
   protected async saveOddsHaitou(buffer: Buffer, shussouba: Shussouba) {

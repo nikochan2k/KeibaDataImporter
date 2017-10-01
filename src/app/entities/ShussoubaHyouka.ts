@@ -74,4 +74,17 @@ export class ShussoubaHyouka {
 
   @Column("tinyint", { nullable: true })
   public PaceNagare?: number;
+
+
+  @Column("varchar", { length: 60, nullable: true })
+  public PaddockComment?: string;
+
+  @Column("varchar", { length: 60, nullable: true })
+  public AshimotoComment?: string;
+
+  @Column("varchar", { length: 60, nullable: true })
+  public BaguSonotaComment?: string;
+
+  @Column("varchar", { length: 60, nullable: true })
+  public RaceComment?: string;
 }

@@ -304,24 +304,6 @@ export class ShussoubaYosou {
   @Column("smallint", { nullable: true })
   public TaikeiFuri: number;
 
-  @Column("smallint", { nullable: true })
-  public TaikeiSougou1: number;
-
-  @Column("smallint", { nullable: true })
-  public TaikeiSougou2: number;
-
-  @Column("smallint", { nullable: true })
-  public TaikeiSougou3: number;
-
-  @Column("smallint", { nullable: true })
-  public Tokki1: number;
-
-  @Column("smallint", { nullable: true })
-  public Tokki2: number;
-
-  @Column("smallint", { nullable: true })
-  public Tokki3: number;
-
   @Column("real", { nullable: true })
   public StartShisuu: number;
 

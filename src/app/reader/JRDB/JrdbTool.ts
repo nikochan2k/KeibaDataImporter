@@ -1,6 +1,10 @@
 import { Inject, Service } from "typedi";
+import { EntityManager } from "typeorm";
+import { OrmEntityManager } from "typeorm-typedi-extensions";
 import * as $C from "../../converters/Common";
+import * as $SJ from "../../converters/ShussoubaJoutai";
 import { Shussouba } from "../../entities/Shussouba";
+import { ShussoubaJoutai, Kubun } from "../../entities/ShussoubaJoutai";
 import { Tool } from "../Tool";
 import {
   readDouble,
@@ -18,6 +22,9 @@ export interface OddsHaitouInfo {
 
 @Service()
 export class JrdbTool {
+
+  @OrmEntityManager()
+  protected entityManager: EntityManager;
 
   @Inject()
   private tool: Tool;
@@ -47,6 +54,30 @@ export class JrdbTool {
       Ninki: (info.NinkiOffset ? readPositiveInt(buffer, info.NinkiOffset, 2) : undefined),
       Haitoukin: (info.HaitoukinOffset ? readPositiveInt(buffer, info.HaitoukinOffset, 7) : undefined)
     });
+  }
+
+  public async saveShussoubaJoutai(buffer: Buffer, shussoubaId: number, kubun: Kubun, bangou: number, offset: number) {
+    const id = shussoubaId * (2 ** (4 + 3)) + kubun * (2 ** 3) + bangou;
+    const toBe = new ShussoubaJoutai();
+    toBe.Id = id;
+    toBe.ShussoubaId = shussoubaId;
+    toBe.Kubun = kubun;
+    toBe.Bangou = bangou;
+    if (Kubun.TaikeiSougaou <= kubun && kubun <= Kubun.Tokki) {
+      toBe.Code = $SJ.tokki.toCodeFromJrdb(buffer, offset, 3);
+    } else if (Kubun.Bagu <= kubun && kubun <= Kubun.BaguKotsuryuu) {
+      toBe.Code = $SJ.bagu.toCodeFromJrdb(buffer, offset, 3);
+    } else if (Kubun.AshimotoSougou <= kubun && kubun <= Kubun.AshimotoMigiUshiro) {
+      toBe.Code = $SJ.ashimoto.toCodeFromJrdb(buffer, offset, 3);
+    } else {
+    }
+
+    const asIs = await this.entityManager.findOneById(ShussoubaJoutai, id);
+    if (asIs) {
+      await this.tool.update(ShussoubaJoutai, asIs, toBe);
+    } else {
+      await this.entityManager.save(toBe);
+    }
   }
 
 }
