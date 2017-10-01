@@ -15,6 +15,8 @@ import { Kab } from "./reader/JRDB/Kab";
 import { Kyg } from "./reader/JRDB/Kyg";
 import { Kyh } from "./reader/JRDB/Kyh";
 import { Kyi } from "./reader/JRDB/Kyi";
+import { Sec } from "./reader/JRDB/Sec";
+import { Sed } from "./reader/JRDB/Sed";
 import { Sra } from "./reader/JRDB/Sra";
 import { Srb } from "./reader/JRDB/Srb";
 import { Ukc } from "./reader/JRDB/Ukc";
@@ -120,8 +122,8 @@ export class Importer {
       // KD3 競走成績出走馬データ
       { pattern: /kol_sei2.kd3/, dataToImport: Container.get(KolSei2Kd3) },
       // JRDB 成績データ
-      // sec
-      // sed
+      { pattern: /sec\d+\.txt$3/, dataToImport: Container.get(Sec) },
+      { pattern: /sed\d+\.txt$3/, dataToImport: Container.get(Sed) },
       // KD3 制裁その他データ
       { pattern: /kol_sei3.kd3/, dataToImport: Container.get(KolSei3Kd3) },
       // JRDB 成績拡張データ
