@@ -24,9 +24,11 @@ import { Ukc } from "./reader/JRDB/Ukc";
 import { KolCom1Kd3 } from "./reader/KOL/KD3/KolCom1Kd3";
 import { KolDen1Kd3 } from "./reader/KOL/KD3/KolDen1Kd3";
 import { KolDen2Kd3 } from "./reader/KOL/KD3/KolDen2Kd3";
+import { KolKisKd3 } from "./reader/KOL/KD3/KolKisKd3";
 import { KolKod2Kd3 } from "./reader/KOL/KD3/KolKod2Kd3";
 import { KolKod3Kd3 } from "./reader/KOL/KD3/KolKod3Kd3";
 import { KolKodKd3 } from "./reader/KOL/KD3/KolKodKd3";
+import { KolKyuKd3 } from "./reader/KOL/KD3/KolKyuKd3";
 import { KolSei1Kd3 } from "./reader/KOL/KD3/KolSei1Kd3";
 import { KolSei2Kd3 } from "./reader/KOL/KD3/KolSei2Kd3";
 import { KolSei3Kd3 } from "./reader/KOL/KD3/KolSei3Kd3";
@@ -54,11 +56,11 @@ export class Importer {
     this.logger = getLogger(this);
     this.readers = [
       // KD3 厩舎データ
-      // kol_kyu.kd3
+      { pattern: /kol_kyu\.kd3/, dataToImport: Container.get(KolKyuKd3) },
       // JRDB 調教師データ
       { pattern: /c[zs]a\d+\.txt$/i, dataToImport: Container.get(C$a) },
       // KD3 騎手データ
-      // kol_kis.kd3
+      { pattern: /kol_kis\.kd3/, dataToImport: Container.get(KolKisKd3) },
       // JRDB 騎手データ
       { pattern: /k[zs]a\d+\.txt$/i, dataToImport: Container.get(K$a) },
       // KD3 種牡馬データ

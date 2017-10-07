@@ -95,6 +95,7 @@ export abstract class Ky$ extends ShussoubaData {
     toBe.Blinker = $S.blinker.toCodeFromJrdb(buffer, 170, 1);
     toBe.KishuId = (await this.saveKishu(buffer)).Id;
     toBe.Kinryou = readDouble(buffer, 183, 3, 0.1);
+    // TODO toBe.KishuRirekiId
     // StoBe.MinaraiKubun = $S.minaraiKubun.toCodeFromJrdb(buffer, 186, 1);
     toBe.KyousoubaId = (await this.saveKyousouba(buffer)).Id;
     toBe.Wakuban = readPositiveInt(buffer, 323, 1);

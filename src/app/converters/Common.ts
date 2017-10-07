@@ -114,14 +114,12 @@ export const touzaiBetsu = new Codes(
 
 export enum MasshouFlag {
   Geneki,
-  Massou,
-  Intai
+  Massou
 }
 
 export const masshouFlag = new Codes(
   [
-    { code: MasshouFlag.Massou, kol: "1", jrdb: "1", naiyou: "抹消" },
-    { code: MasshouFlag.Intai, kol: "2", naiyou: "引退" },
+    { code: MasshouFlag.Massou, kol: /1|2/, jrdb: "1", naiyou: "抹消" },
     { code: MasshouFlag.Geneki, kol: /.*/, jrdb: /.*/, naiyou: "現役" },
   ]
 );
