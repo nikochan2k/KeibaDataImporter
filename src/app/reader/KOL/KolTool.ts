@@ -4,6 +4,7 @@ import { EntityManager } from "typeorm";
 import { OrmManager } from "typeorm-typedi-extensions";
 import * as $C from "../../converters/Common";
 import * as $KY from "../../converters/Kyuusha";
+import * as $K from "../../converters/Kishu";
 import * as $U from "../../converters/Uma";
 import { BanushiDao } from "../../daos/BanushiDao";
 import { KishuDao } from "../../daos/KishuDao";
@@ -12,6 +13,7 @@ import { SeisanshaDao } from "../../daos/SeisanshaDao";
 import { UmaDao } from "../../daos/UmaDao";
 import { Banushi } from "../../entities/Banushi";
 import { Kishu } from "../../entities/Kishu";
+import { KishuRireki } from "../../entities/KishuRireki";
 import { Kyousouba } from "../../entities/Kyousouba";
 import { Kyuusha } from "../../entities/Kyuusha";
 import { Seisansha } from "../../entities/Seisansha";
@@ -58,12 +60,23 @@ export class KolTool {
     this.logger = getLogger(this);
   }
 
-  public async saveKishu(buffer: Buffer, offset: number, date: number) {
+  public async saveKishu(buffer: Buffer, offset: number) {
     const kishu = new Kishu();
     kishu.KolKishuCode = readInt(buffer, offset, 5);
     const kishuMei = readStrWithNoSpace(buffer, offset + 5, 32);
     const tanshukuKishuMei = readStrWithNoSpace(buffer, offset + 37, 8);
     return this.kishuDao.saveKishu(kishu, kishuMei, tanshukuKishuMei);
+  }
+
+  public async saveKishuRireki(buffer: Buffer, offset: number, kishu: Kishu) {
+    const kishuRireki = new KishuRireki();
+    kishuRireki.KishuId = kishu.Id;
+    kishuRireki.KishuTouzaiBetsu = $C.touzaiBetsu.toCodeFromKol(buffer, offset, 1);
+    kishuRireki.KishuShozokuBasho = $C.basho.toCodeFromKol(buffer, offset + 1, 2);
+    kishuRireki.KishuShozokuKyuushaId = await this.saveShozokuKyuusha(buffer, offset + 3);
+    kishuRireki.MinaraiKubun = $K.minaraiKubun.toCodeFromKol(buffer, offset + 8, 1);
+    kishuRireki.TourokuMasshouFlag = $C.MasshouFlag.Geneki;
+    return this.kishuDao.saveKishuRireki(kishuRireki);
   }
 
   public saveBanushi(buffer: Buffer, offset: number) {

@@ -1,7 +1,7 @@
 import { Service } from "typedi";
 import { EntityManager, Repository } from "typeorm";
 import { OrmManager, OrmRepository } from "typeorm-typedi-extensions";
-import { Meishou } from "../entities/Meishou";
+import { Kubun, Meishou } from "../entities/Meishou";
 
 @Service()
 export class MeishouDao {
@@ -21,11 +21,12 @@ export class MeishouDao {
     return this.repository.findOneById(id);
   }
 
-  public async save(namae: string) {
-    let meishou = await this.repository.findOne({ Namae: namae });
+  public async save(kubun: Kubun, name: string) {
+    let meishou = await this.repository.findOne({ Name: name });
     if (!meishou) {
       meishou = new Meishou();
-      meishou.Namae = namae;
+      meishou.Kubun = kubun;
+      meishou.Name = name;
       await this.repository.save(meishou);
     }
     return meishou;

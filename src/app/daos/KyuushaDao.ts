@@ -1,7 +1,7 @@
 import { Service, Inject } from "typedi";
 import { EntityManager, Repository } from "typeorm";
 import { OrmManager, OrmRepository } from "typeorm-typedi-extensions";
-import { Meishou } from "../entities/Meishou";
+import { Kubun, Meishou } from "../entities/Meishou";
 import { Kyuusha } from "../entities/Kyuusha";
 import { KyuushaMeishou } from "../entities/KyuushaMeishou";
 import { MeishouDao } from "./MeishouDao";
@@ -35,41 +35,48 @@ export class KyuushaDao {
     return result;
   }
 
-  protected async getKyuushaWith(namae: string) {
+  protected async getKyuushaWith(name: string) {
     return this.entityManager
       .createQueryBuilder()
       .select("k.*")
       .from(Kyuusha, "k")
       .innerJoin(KyuushaMeishou, "km", "k.Id = km.KyuushaId")
       .innerJoin(Meishou, "m", "m.Id = km.MeishouId")
-      .where("m.Namae = :namae")
-      .setParameter("namae", namae)
+      .where("m.Name = :name")
+      .setParameter("name", name)
       .getOne();
   }
 
-  public async saveKyuusha(toBe: Kyuusha, namae?: string, tanshuku?: string) {
+  public async saveKyuusha(toBe: Kyuusha, seimei?: string, tanshuku?: string, furigana?: string) {
     let asIs: Kyuusha;
     if (toBe.KolKyuushaCode || toBe.JrdbKyuushaCode) {
       asIs = await this.getKyuusha(toBe);
     } else {
-      asIs = await this.getKyuushaWith(namae);
+      asIs = await this.getKyuushaWith(seimei);
     }
-    toBe = await this.tool.update(Kyuusha, asIs, toBe);
-    if (namae) {
-      await this.saveKyuushaMeishou(toBe, namae);
+    if (asIs) {
+      toBe = await this.tool.update(Kyuusha, asIs, toBe);
+    } else {
+      toBe = await this.entityManager.save(toBe);
+    }
+    if (seimei) {
+      await this.saveKyuushaMeishou(toBe, Kubun.Seimei, seimei);
     }
     if (tanshuku) {
-      await this.saveKyuushaMeishou(toBe, tanshuku);
+      await this.saveKyuushaMeishou(toBe, Kubun.Tanshuku, tanshuku);
       if (3 < tanshuku.length) {
         tanshuku = tanshuku.substring(0, 3);
-        await this.saveKyuushaMeishou(toBe, tanshuku);
+        await this.saveKyuushaMeishou(toBe, Kubun.Tanshuku, tanshuku);
       }
+    }
+    if (furigana) {
+      await this.saveKyuushaMeishou(toBe, Kubun.Furigana, tanshuku);
     }
     return toBe;
   }
 
-  protected async saveKyuushaMeishou(kyuusha: Kyuusha, namae: string) {
-    const meishou = await this.meishouDao.save(namae);
+  protected async saveKyuushaMeishou(kyuusha: Kyuusha, kubun: Kubun, name: string) {
+    const meishou = await this.meishouDao.save(kubun, name);
     let kyuushaMeishou = await this.kyuushaMeishouRepository.findOne({ KyuushaId: kyuusha.Id, MeishouId: meishou.Id });
     if (!kyuushaMeishou) {
       kyuushaMeishou = new KyuushaMeishou();

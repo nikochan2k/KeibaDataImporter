@@ -52,17 +52,8 @@ export class Shussouba {
   @Column("int")
   public KishuId: number;
 
-  @Column("smallint", { nullable: true })
-  public KishuTouzaiBetsu?: number;
-
-  @Column("smallint", { nullable: true })
-  public KishuShozokuBasho?: number;
-
   @Column("int", { nullable: true })
-  public KishuShozokuKyuushaId?: number;
-
-  @Column("smallint", { nullable: true })
-  public MinaraiKubun: number;
+  public KishuRirekiId: number;
 
   @Column("smallint", { nullable: true })
   public Norikawari?: number;

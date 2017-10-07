@@ -46,7 +46,7 @@ export abstract class Ky$ extends ShussoubaData {
   private kishuDao: KishuDao;
 
 
-  protected async saveKishu(buffer: Buffer, date: number) {
+  protected async saveKishu(buffer: Buffer) {
     const kishu = new Kishu();
     const kishuMei = readStrWithNoSpace(buffer, 171, 12);
     kishu.JrdbKishuCode = readInt(buffer, 335, 5);
@@ -93,9 +93,9 @@ export abstract class Ky$ extends ShussoubaData {
 
   protected async setShussouba(buffer: Buffer, toBe: Shussouba, info: ShussoubaInfo) {
     toBe.Blinker = $S.blinker.toCodeFromJrdb(buffer, 170, 1);
-    toBe.KishuId = (await this.saveKishu(buffer, info.race.Nengappi)).Id;
+    toBe.KishuId = (await this.saveKishu(buffer)).Id;
     toBe.Kinryou = readDouble(buffer, 183, 3, 0.1);
-    toBe.MinaraiKubun = $S.minaraiKubun.toCodeFromJrdb(buffer, 186, 1);
+    // StoBe.MinaraiKubun = $S.minaraiKubun.toCodeFromJrdb(buffer, 186, 1);
     toBe.KyousoubaId = (await this.saveKyousouba(buffer)).Id;
     toBe.Wakuban = readPositiveInt(buffer, 323, 1);
     toBe.Bataijuu = readPositiveInt(buffer, 396, 3);

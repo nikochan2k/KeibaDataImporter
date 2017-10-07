@@ -277,11 +277,10 @@ export class KolUmaKd3 extends DataToImport {
     toBe.Bataijuu = readPositiveInt(buffer, 94, 3);
     toBe.Zougen = readInt(buffer, 97, 3);
     toBe.KolRecordShisuu = readInt(buffer, 100, 3);
-    toBe.KishuId = (await this.kolTool.saveKishu(buffer, 103, race.Nengappi)).Id;
-    toBe.KishuTouzaiBetsu = $C.touzaiBetsu.toCodeFromKol(buffer, 148, 1);
-    toBe.KishuShozokuBasho = $C.basho.toCodeFromKol(buffer, 149, 2);
-    toBe.KishuShozokuKyuushaId = await this.kolTool.saveShozokuKyuusha(buffer, 151);
-    toBe.MinaraiKubun = $S.minaraiKubun.toCodeFromKol(buffer, 156, 1);
+    const kishu = await this.kolTool.saveKishu(buffer, 103);
+    toBe.KishuId = kishu.Id;
+    const kishuRireki = await this.kolTool.saveKishuRireki(buffer, 148, kishu);
+    toBe.KishuRirekiId = kishuRireki.Id;
     toBe.Norikawari = $S.norikawari.toCodeFromKol(buffer, 157, 1);
     toBe.KakuteiChakujun = this.tool.getChakujun(buffer, 215, 2);
     toBe.ChakujunFuka = $S.chakujunFuka.toCodeFromKol(buffer, 217, 2);

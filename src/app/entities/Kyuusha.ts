@@ -18,9 +18,6 @@ export class Kyuusha {
   @Column("int", { nullable: true })
   public JrdbKyuushaCode?: number;
 
-  @Column("varchar", { length: 72, nullable: true })
-  public Furigana?: string;
-
   @Column("bigint", { nullable: true })
   public Seinengappi?: number;
 

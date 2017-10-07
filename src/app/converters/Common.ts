@@ -98,19 +98,31 @@ export const basho = new Codes(
   ]
 );
 
+export enum TouzaiBetsu {
+  Nishi = 1,
+  Higashi,
+  Sonota
+}
+
 export const touzaiBetsu = new Codes(
   [
-    { code: 0, kol: "0", jrdb: "1", naiyou: "西" },
-    { code: 1, kol: "1", jrdb: "2", naiyou: "東" },
-    { code: 2, kol: "2", naiyou: "招待" },
-    { code: 3, jrdb: "3", naiyou: "その他" }
+    { code: TouzaiBetsu.Nishi, kol: "1", jrdb: "1", naiyou: "関西", tanshuku: "西" },
+    { code: TouzaiBetsu.Higashi, kol: "2", jrdb: "2", naiyou: "関東", tanshuku: "東" },
+    { code: TouzaiBetsu.Sonota, kol: /.*/, jrdb: /.*/, naiyou: "その他" },
   ]
 );
 
+export enum MasshouFlag {
+  Geneki,
+  Massou,
+  Intai
+}
+
 export const masshouFlag = new Codes(
   [
-    { code: 1, kol: "1", jrdb: "1", naiyou: "抹消" },
-    { code: 2, kol: "2", naiyou: "引退" }
+    { code: MasshouFlag.Massou, kol: "1", jrdb: "1", naiyou: "抹消" },
+    { code: MasshouFlag.Intai, kol: "2", naiyou: "引退" },
+    { code: MasshouFlag.Geneki, kol: /.*/, jrdb: /.*/, naiyou: "現役" },
   ]
 );
 

@@ -3,14 +3,15 @@ import { Inject, Service } from "typedi";
 import { EntityManager } from "typeorm";
 import { OrmManager } from "typeorm-typedi-extensions";
 import * as $CH from "../../converters/Choukyou";
+import { ChoukyouDao } from "../../daos/ChoukyouDao";
 import { MeishouDao } from "../../daos/MeishouDao";
 import { UmaDao } from "../../daos/UmaDao";
 import { Choukyou } from "../../entities/Choukyou";
 import { ChoukyouRireki } from "../../entities/ChoukyouRireki";
 import { ChoukyouTime } from "../../entities/ChoukyouTime";
+import { Kubun } from "../../entities/Meishou";
 import { Uma } from "../../entities/Uma";
 import { getLogger } from "../../LogUtil";
-import { ChoukyouDao } from "../../daos/ChoukyouDao";
 import {
   readDate,
   readPositiveInt,
@@ -85,7 +86,7 @@ export class KolChoukyouTool {
         choukyouRireki.Noriyaku = $CH.Noriyaku.HonbanKishu; // 本番騎手
       } else {
         choukyouRireki.Noriyaku = $CH.Noriyaku.ChoukyouKishu; // 調教騎手
-        const meishou = await this.meishouDao.save(kijousha);
+        const meishou = await this.meishouDao.save(Kubun.Tanshuku, kijousha);
         choukyouRireki.TanshukuKishuMeiId = meishou.Id;
       }
     }

@@ -11,6 +11,7 @@ import { Record } from "../../entities/Record";
 import { Shussouba } from "../../entities/Shussouba";
 import { ShussoubaHassouJoukyou } from "../../entities/ShussoubaHassouJoukyou";
 import { Uma } from "../../entities/Uma";
+import { Kubun } from "../../entities/Meishou";
 import { ImportTool, KaisaiInfo } from "../ImportTool";
 import {
   readDate,
@@ -105,7 +106,7 @@ export class KolImportTool extends ImportTool {
     record.UmaId = (await this.umaDao.saveUma(uma)).Id;
     record.Kinryou = readDouble(buffer, offset + 42, 3, 0.1);
     const tanshukuKishuMei = readStrWithNoSpace(buffer, offset + 45, 8);
-    const meishou = await this.meishouDao.save(tanshukuKishuMei);
+    const meishou = await this.meishouDao.save(Kubun.Tanshuku, tanshukuKishuMei);
     record.TanshukuKishuMeiId = meishou.Id;
     record.Basho = $C.basho.toCodeFromKol(buffer, bashoOffset, 2);
     return this.raceDao.saveRecord(record);

@@ -127,8 +127,8 @@ export abstract class Se$ extends ShussoubaData {
   protected async saveKishu(buffer: Buffer, uma: Uma) {
     const kishu = new Kishu();
     kishu.JrdbKishuCode = readInt(buffer, 322, 5);
-    const namae = readStr(buffer, 150, 12);
-    return this.kishuDao.saveKishu(kishu, namae);
+    const kishuMei = readStr(buffer, 150, 12);
+    return this.kishuDao.saveKishu(kishu, kishuMei);
   }
 
   protected async saveKyuusha(buffer: Buffer) {

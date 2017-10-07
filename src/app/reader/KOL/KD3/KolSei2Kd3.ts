@@ -1,5 +1,4 @@
 import { Inject, Service } from "typedi";
-import * as $C from "../../../converters/Common";
 import * as $S from "../../../converters/Shussouba";
 import { Choukyou } from "../../../entities/Choukyou";
 import { Shussouba } from "../../../entities/Shussouba";
@@ -86,11 +85,10 @@ export class KolSei2Kd3 extends DataToImport {
     toBe.Bataijuu = readPositiveInt(buffer, 153, 3);
     toBe.Zougen = readInt(buffer, 156, 3);
     toBe.KolRecordShisuu = readInt(buffer, 159, 3);
-    toBe.KishuId = (await this.kolTool.saveKishu(buffer, 162, info.race.Nengappi)).Id;
-    toBe.KishuTouzaiBetsu = $C.touzaiBetsu.toCodeFromKol(buffer, 207, 1);
-    toBe.KishuShozokuBasho = $C.basho.toCodeFromKol(buffer, 208, 2);
-    toBe.KishuShozokuKyuushaId = await this.kolTool.saveShozokuKyuusha(buffer, 210);
-    toBe.MinaraiKubun = $S.minaraiKubun.toCodeFromKol(buffer, 215, 1);
+    const kishu = await this.kolTool.saveKishu(buffer, 162);
+    toBe.KishuId = kishu.Id;
+    const kishuRireki = await this.kolTool.saveKishuRireki(buffer, 207, kishu);
+    toBe.KishuRirekiId = kishuRireki.Id;
     toBe.Norikawari = $S.norikawari.toCodeFromKol(buffer, 216, 1);
     toBe.KakuteiChakujun = this.tool.getChakujun(buffer, 274, 2);
     toBe.ChakujunFuka = $S.chakujunFuka.toCodeFromKol(buffer, 276, 2);

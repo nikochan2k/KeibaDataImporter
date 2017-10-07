@@ -4,6 +4,8 @@ import { OrmManager, OrmRepository } from "typeorm-typedi-extensions";
 import { MeishouDao } from "./MeishouDao";
 import { Kishu } from "../entities/Kishu";
 import { KishuMeishou } from "../entities/KishuMeishou";
+import { KishuRireki } from "../entities/KishuRireki";
+import { Kubun } from "../entities/Meishou";
 import { Tool } from "../reader/Tool";
 
 @Service()
@@ -17,6 +19,9 @@ export class KishuDao {
 
   @OrmRepository(KishuMeishou)
   private kishuMeishouRepository: Repository<KishuMeishou>;
+
+  @OrmRepository(KishuRireki)
+  private kishuRirekiRepository: Repository<KishuRireki>;
 
   @Inject()
   private meishouDao: MeishouDao;
@@ -64,28 +69,31 @@ LIMIT
     return kishuList[0];
   }
 
-  public async saveKishu(toBe: Kishu, namae?: string, tanshuku?: string) {
+  public async saveKishu(toBe: Kishu, seimei?: string, tanshuku?: string, furigana?: string) {
     const asIs = await this.getKishu(toBe);
     if (asIs) {
       toBe = await this.tool.update(Kishu, asIs, toBe);
     } else {
       toBe = await this.entityManager.save(toBe);
     }
-    if (namae) {
-      await this.saveKishuMeishou(toBe, namae);
+    if (seimei) {
+      await this.saveKishuMeishou(toBe, Kubun.Seimei, seimei);
     }
     if (tanshuku) {
-      await this.saveKishuMeishou(toBe, tanshuku);
+      await this.saveKishuMeishou(toBe, Kubun.Tanshuku, tanshuku);
       if (3 < tanshuku.length) {
         tanshuku = tanshuku.substring(0, 3);
-        await this.saveKishuMeishou(toBe, tanshuku);
+        await this.saveKishuMeishou(toBe, Kubun.Tanshuku, tanshuku);
       }
+    }
+    if (furigana) {
+      await this.saveKishuMeishou(toBe, Kubun.Furigana, furigana);
     }
     return toBe;
   }
 
-  protected async saveKishuMeishou(kishu: Kishu, namae: string) {
-    const meishou = await this.meishouDao.save(namae);
+  protected async saveKishuMeishou(kishu: Kishu, kubun: Kubun, name: string) {
+    const meishou = await this.meishouDao.save(kubun, name);
     let kishuMeishou = await this.kishuMeishouRepository.findOne({ KishuId: kishu.Id, MeishouId: meishou.Id });
     if (!kishuMeishou) {
       kishuMeishou = new KishuMeishou();
@@ -93,6 +101,47 @@ LIMIT
       kishuMeishou.MeishouId = meishou.Id;
       await this.kishuMeishouRepository.save(kishuMeishou);
     }
+  }
+
+  protected async getKishuRireki(kishuRireki: KishuRireki) {
+    const qb = this.kishuRirekiRepository
+      .createQueryBuilder("kr")
+      .where("kr.KishuId = :kishuId")
+      .setParameter("kishuId", kishuRireki.KishuId)
+      .andWhere("kr.MinaraiKubun = :minaraiKubun")
+      .setParameter("minaraiKubun", kishuRireki.MinaraiKubun)
+      .andWhere("kr.tourokuMasshouFlag = :tourokuMasshouFlag")
+      .setParameter("tourokuMasshouFlag", kishuRireki.TourokuMasshouFlag);
+    /* tslint:disable:triple-equals */
+    if (kishuRireki.KishuShozokuBasho != null) {
+      qb.andWhere("kr.KishuShozokuBasho = :kishuShozokuBasho")
+        .setParameter("kishuShozokuBasho", kishuRireki.KishuShozokuBasho);
+    } else {
+      qb.andWhere("kr.KishuShozokuBasho IS NULL");
+    }
+    if (kishuRireki.KijouShikakuKubun != null) {
+      qb.andWhere("kr.KijouShikakuKubun = :kijouShikakuKubun")
+        .setParameter("kijouShikakuKubun", kishuRireki.KijouShikakuKubun);
+    }
+    /* tslint:enable:triple-equals */
+    if (kishuRireki.KishuShozokuKyuushaId) {
+      qb.andWhere("kr.KishuShozokuKyuushaId = :kishuShozokuKyuushaId")
+        .setParameter("kishuShozokuKyuushaId", kishuRireki.KishuShozokuKyuushaId);
+    } else {
+      qb.andWhere("kr.KishuShozokuKyuushaId IS NULL");
+    }
+    qb.orderBy("kr.KijouShikakuKubun", "DESC");
+    return qb.getOne();
+  }
+
+  public async saveKishuRireki(toBe: KishuRireki) {
+    const asIs = await this.getKishuRireki(toBe);
+    if (asIs) {
+      toBe = await this.tool.update(KishuRireki, asIs, toBe);
+    } else {
+      toBe = await this.kishuRirekiRepository.save(toBe);
+    }
+    return toBe;
   }
 
 }

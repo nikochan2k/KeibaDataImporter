@@ -23,7 +23,7 @@ export abstract class C$$ extends DataToImport {
     toBe.TourokuMasshouFlag = $C.masshouFlag.toCodeFromJrdb(buffer, 5, 1);
     toBe.TourokuMasshouNengappi = readInt(buffer, 6, 8);
     const kyuushaMei = readStr(buffer, 14, 12);
-    toBe.Furigana = readStr(buffer, 26, 30);
+    const furigana = readStr(buffer, 26, 30);
     const tanshukuKyuushaMei = readStr(buffer, 56, 6);
     toBe.TouzaiBetsu = $C.touzaiBetsu.toCodeFromJrdb(buffer, 62, 1);
     toBe.ShozokuBasho = $C.basho.toCodeFromJrdb(buffer, 63, 4);
@@ -32,7 +32,7 @@ export abstract class C$$ extends DataToImport {
     }
     toBe.Seinengappi = readPositiveInt(buffer, 67, 8);
     toBe.HatsuMenkyoNen = readPositiveInt(buffer, 75, 4);
-    const kyuusha = await this.kyuushaDao.saveKyuusha(toBe, kyuushaMei, tanshukuKyuushaMei);
+    const kyuusha = await this.kyuushaDao.saveKyuusha(toBe, kyuushaMei, tanshukuKyuushaMei, furigana);
     await this.saveKyuushaComment(buffer, kyuusha);
   }
 
