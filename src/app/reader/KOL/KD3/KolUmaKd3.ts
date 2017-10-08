@@ -6,12 +6,14 @@ import * as $R from "../../../converters/Race";
 import * as $S from "../../../converters/Shussouba";
 import * as $U from "../../../converters/Uma";
 import { UmaDao } from "../../../daos/UmaDao";
+import { Choukyou } from "../../../entities/Choukyou";
 import { Kaisai } from "../../../entities/Kaisai";
 import { Kyousouba } from "../../../entities/Kyousouba";
 import { Kyuusha } from "../../../entities/Kyuusha";
-import { Choukyou } from "../../../entities/Choukyou";
 import { Race } from "../../../entities/Race";
 import { Shussouba } from "../../../entities/Shussouba";
+import { ShussoubaHyouka } from "../../../entities/ShussoubaHyouka";
+import { ShussoubaSeiseki } from "../../../entities/ShussoubaSeiseki";
 import { ShussoubaYosou } from "../../../entities/ShussoubaYosou";
 import { Uma } from "../../../entities/Uma";
 import { DataToImport } from "../../DataToImport";
@@ -95,14 +97,11 @@ export class KolUmaKd3 extends DataToImport {
       const shussoubaBuffer = buffer.slice(offset + 151, offset + 590);
       const shussouba = await this.saveShussouba(shussoubaBuffer, race, kyousouba, uma);
       if (shussouba) {
+        await this.saveShussoubaSeiseki(shussoubaBuffer, race, shussouba);
         await this.saveShussoubaYosou(shussoubaBuffer, shussouba);
         await this.kolImportTool.saveNinkiOdds(shussoubaBuffer, shussouba, 208, 210);
         await this.kolTool.saveShussoubaTsuukaJuni(shussoubaBuffer, 239, shussouba);
-        const tanshukuKishuMei = readStrWithNoSpace(shussoubaBuffer, 140, 8);
-        const choukyou = new Choukyou();
-        choukyou.Id = shussouba.Id;
-        await this.choukyouTool.saveChoukyou(choukyou);
-        await this.choukyouTool.saveChoukyouRireki(shussoubaBuffer, 248, choukyou, tanshukuKishuMei, 1);
+        await this.saveChoukyou(shussoubaBuffer, shussouba, uma);
       }
     }
   }
@@ -154,7 +153,7 @@ export class KolUmaKd3 extends DataToImport {
 
     const asIs = await this.kolImportTool.getKaisai(buffer);
 
-    return await this.tool.update(Kaisai, asIs, toBe);
+    return await this.tool.saveOrUpdate(Kaisai, asIs, toBe);
   }
 
   protected async saveRace(buffer: Buffer, kaisai: Kaisai) {
@@ -183,7 +182,6 @@ export class KolUmaKd3 extends DataToImport {
     if (!toBe.BetteiBareiHandi) {
       toBe.BetteiBareiHandiReigai = betteiBareiHandiReigai;
     }
-
 
     const joukenFuka = readRaw(buffer, 94, 2);
     toBe.JoukenBoba = $R.joukenBoba.toCodeFromKol(joukenFuka);
@@ -237,7 +235,7 @@ export class KolUmaKd3 extends DataToImport {
     toBe.Tenki = $R.tenki.toCodeFromKol(buffer, 128, 1);
     toBe.Baba = $R.baba.toCodeFromKol(buffer, 129, 1);
 
-    return await this.tool.update(Race, asIs, toBe);
+    return await this.tool.saveOrUpdate(Race, asIs, toBe);
   }
 
   protected async saveShussouba(buffer: Buffer, race: Race, kyousouba: Kyousouba, uma: Uma) {
@@ -255,6 +253,7 @@ export class KolUmaKd3 extends DataToImport {
         asIs = await this.entityManager.findOneById(Shussouba, id);
       } while (asIs && asIs.KyousoubaId !== kyousouba.Id);
     }
+    /* TODO
     if (asIs) {
       if (asIs.KolSeisekiSakuseiNengappi) {
         return asIs;
@@ -262,21 +261,29 @@ export class KolUmaKd3 extends DataToImport {
         return asIs;
       }
     }
+    */
 
     const toBe = new Shussouba();
     toBe.Id = id;
     toBe.RaceId = race.Id;
     toBe.Wakuban = readPositiveInt(buffer, 0, 1);
     toBe.Umaban = umaban;
-    toBe.Gate = readPositiveInt(buffer, 3, 2);
     const kyuusha = await this.kolTool.saveKyuusha(buffer, 158);
     toBe.KyousoubaId = (await this.saveKyousoubaOfRace(buffer, kyousouba, uma, kyuusha)).Kyousouba.Id;
     toBe.Nenrei = readPositiveInt(buffer, 8, 2);
-    toBe.Blinker = $S.blinker.toCodeFromKol(buffer, 90, 1);
+    // TODO
+    // toBe.Blinker = $S.blinker.toCodeFromKol(buffer, 90, 1);
     toBe.Kinryou = readDouble(buffer, 91, 3, 0.1);
+
+    return await this.tool.saveOrUpdate(Shussouba, asIs, toBe);
+  }
+
+  protected async saveShussoubaSeiseki(buffer: Buffer, race: Race, shussouba: Shussouba) {
+    const toBe = new ShussoubaSeiseki();
+    toBe.Id = shussouba.Id;
+    toBe.Gate = readPositiveInt(buffer, 3, 2);
     toBe.Bataijuu = readPositiveInt(buffer, 94, 3);
     toBe.Zougen = readInt(buffer, 97, 3);
-    toBe.KolRecordShisuu = readInt(buffer, 100, 3);
     const kishu = await this.kolTool.saveKishu(buffer, 103);
     toBe.KishuId = kishu.Id;
     const kishuRireki = await this.kolTool.saveKishuRireki(buffer, 148, kishu);
@@ -291,6 +298,7 @@ export class KolUmaKd3 extends DataToImport {
     toBe.Chakusa1 = readInt(buffer, 227, 2);
     toBe.Chakusa2 = $S.chakura2.toCodeFromKol(buffer, 229, 1);
     toBe.TimeSa = this.kolTool.getTimeSa(buffer, 230);
+    
     if (1200 <= race.Kyori) {
       toBe.Ten3F = readDouble(buffer, 233, 3, 0.1);
       if (toBe.Time && toBe.Ten3F) {
@@ -306,7 +314,9 @@ export class KolUmaKd3 extends DataToImport {
     }
     toBe.YonCornerIchiDori = $S.ichi.toCodeFromKol(buffer, 247, 1);
 
-    return await this.tool.update(Shussouba, asIs, toBe);
+    const asIs = await this.entityManager.findOneById(ShussoubaSeiseki, toBe.Id);
+
+    return await this.tool.saveOrUpdate(ShussoubaSeiseki, asIs, toBe);
   }
 
   protected async saveShussoubaYosou(buffer: Buffer, shussouba: Shussouba) {
@@ -317,7 +327,25 @@ export class KolUmaKd3 extends DataToImport {
 
     const asIs = await this.entityManager.findOneById(ShussoubaYosou, shussouba.Id);
 
-    return await this.tool.update(ShussoubaYosou, asIs, toBe);
+    return await this.tool.saveOrUpdate(ShussoubaYosou, asIs, toBe);
+  }
+
+  protected async saveShussoubaHyouka(buffer: Buffer, shussouba: Shussouba) {
+    const toBe = new ShussoubaHyouka();
+    toBe.Id = shussouba.Id;
+    toBe.KolRecordShisuu = readInt(buffer, 100, 3);
+
+    const asIs = await this.entityManager.findOneById(ShussoubaHyouka, shussouba.Id);
+
+    return await this.tool.saveOrUpdate(ShussoubaHyouka, asIs, toBe);
+  }
+
+  protected async saveChoukyou(buffer: Buffer, shussouba: Shussouba, uma: Uma) {
+    const tanshukuKishuMei = readStrWithNoSpace(buffer, 140, 8);
+    const choukyou = new Choukyou();
+    choukyou.Id = shussouba.Id;
+    await this.choukyouTool.saveChoukyou(choukyou);
+    await this.choukyouTool.saveChoukyouRireki(buffer, 248, uma.Id, tanshukuKishuMei);
   }
 
   public async saveKyousoubaOfRace(buffer: Buffer, k: Kyousouba, u: Uma, kyuusha: Kyuusha) {

@@ -12,6 +12,7 @@ import { Kyousouba } from "../../entities/Kyousouba";
 import { Kyuusha } from "../../entities/Kyuusha";
 import { Race } from "../../entities/Race";
 import { Shussouba } from "../../entities/Shussouba";
+import { ShussoubaSeiseki } from "../../entities/ShussoubaSeiseki";
 import { ShussoubaHyouka } from "../../entities/ShussoubaHyouka";
 import { ShussoubaTsuukaJuni } from "../../entities/ShussoubaTsuukaJuni";
 import { Uma } from "../../entities/Uma";
@@ -44,7 +45,7 @@ export abstract class Se$ extends ShussoubaData {
       return;
     }
 
-    await this.tool.update(Race, asIs, toBe);
+    await this.tool.saveOrUpdate(Race, asIs, toBe);
   }
 
   protected setRace(buffer: Buffer, toBe: Race) {
@@ -86,28 +87,9 @@ export abstract class Se$ extends ShussoubaData {
   }
 
   protected async setShussouba(buffer: Buffer, toBe: Shussouba, info: ShussoubaInfo) {
-    toBe.KakuteiChakujun = readPositiveInt(buffer, 140, 2);
-    toBe.ChakujunFuka = $S.chakujunFuka.toCodeFromJrdb(buffer, 142, 1);
-    toBe.Time = readDouble(buffer, 143, 4, 0.1);
     toBe.Kinryou = readDouble(buffer, 147, 3, 0.1);
     const kyousouba = await this.saveKyousouba(buffer, toBe);
     toBe.KyousoubaId = kyousouba.Id;
-    if (1200 <= info.race.Kyori) {
-      toBe.Ten3F = readDouble(buffer, 258, 3, 0.1);
-      if (toBe.Time && toBe.Ten3F) {
-        toBe.Ten3FIkou = toBe.Time - toBe.Ten3F;
-      }
-    }
-    toBe.Agari3F = readDouble(buffer, 261, 3, 0.1);
-    if (toBe.Time && toBe.Agari3F) {
-      toBe.Agari3FIzen = toBe.Time - toBe.Agari3F;
-    }
-    if (1200 < info.race.Kyori && toBe.Ten3F && toBe.Agari3F) {
-      toBe.Douchuu = toBe.Time - toBe.Ten3F - toBe.Agari3F;
-    }
-
-    toBe.Bataijuu = readPositiveInt(buffer, 332, 3);
-    toBe.Zougen = readInt(buffer, 335, 3);
   }
 
   protected async saveKyousouba(buffer: Buffer, toBe: Shussouba) {
@@ -138,10 +120,39 @@ export abstract class Se$ extends ShussoubaData {
     return this.kyuushaDao.saveKyuusha(kyuusha, kyuushaMei);
   }
 
-  protected async saveShussoubaRelated(buffer: Buffer, shussouba: Shussouba) {
-    await this.saveShussoubaHyouka(buffer, shussouba);
-    await this.saveOddsHaitou(buffer, shussouba);
-    await this.saveShussoubaTsuukaJuni(buffer, shussouba);
+  protected async saveShussoubaRelated(buffer: Buffer, info: ShussoubaInfo) {
+    await this.saveShussoubaHyouka(buffer, info.shussouba);
+    await this.saveOddsHaitou(buffer, info.shussouba);
+    await this.saveShussoubaTsuukaJuni(buffer, info.shussouba);
+  }
+
+  protected async saveShussoubaSeiseki(buffer: Buffer, info: ShussoubaInfo) {
+    const toBe = new ShussoubaSeiseki();
+    toBe.Id = info.shussouba.Id;
+    this.setShussoubaSeiseki(buffer, toBe, info);
+    const asIs = await this.entityManager.findOneById(ShussoubaSeiseki, toBe.Id);
+    await this.tool.saveOrUpdate(ShussoubaHyouka, asIs, toBe);
+  }
+
+  protected setShussoubaSeiseki(buffer: Buffer, toBe: ShussoubaSeiseki, info: ShussoubaInfo) {
+    toBe.KakuteiChakujun = readPositiveInt(buffer, 140, 2);
+    toBe.ChakujunFuka = $S.chakujunFuka.toCodeFromJrdb(buffer, 142, 1);
+    toBe.Time = readDouble(buffer, 143, 4, 0.1);
+    if (1200 <= info.race.Kyori) {
+      toBe.Ten3F = readDouble(buffer, 258, 3, 0.1);
+      if (toBe.Time && toBe.Ten3F) {
+        toBe.Ten3FIkou = toBe.Time - toBe.Ten3F;
+      }
+    }
+    toBe.Agari3F = readDouble(buffer, 261, 3, 0.1);
+    if (toBe.Time && toBe.Agari3F) {
+      toBe.Agari3FIzen = toBe.Time - toBe.Agari3F;
+    }
+    if (1200 < info.race.Kyori && toBe.Ten3F && toBe.Agari3F) {
+      toBe.Douchuu = toBe.Time - toBe.Ten3F - toBe.Agari3F;
+    }
+    toBe.Bataijuu = readPositiveInt(buffer, 332, 3);
+    toBe.Zougen = readInt(buffer, 335, 3);
   }
 
   protected async saveShussoubaHyouka(buffer: Buffer, shussouba: Shussouba) {
@@ -150,11 +161,7 @@ export abstract class Se$ extends ShussoubaData {
     this.setShussoubaHyouka(buffer, toBe);
 
     const asIs = await this.entityManager.findOneById(ShussoubaHyouka, shussouba.Id);
-    if (asIs) {
-      await this.tool.update(ShussoubaHyouka, asIs, toBe);
-    } else {
-      await this.entityManager.save(toBe);
-    }
+    await this.tool.saveOrUpdate(ShussoubaHyouka, asIs, toBe);
   }
 
   protected setShussoubaHyouka(buffer: Buffer, toBe: ShussoubaHyouka) {

@@ -2,11 +2,12 @@ import { Logger } from "log4js";
 import { Inject } from "typedi";
 import { EntityManager } from "typeorm";
 import { OrmManager } from "typeorm-typedi-extensions";
-import { readPositiveInt, readRaw } from "./Reader";
+import { readPositiveInt, readInt, readRaw } from "./Reader";
 import { Tool } from "./Tool";
 import { Kaisai } from "../entities/Kaisai";
 import { Race } from "../entities/Race";
 import { Shussouba } from "../entities/Shussouba";
+import { Uma } from "../entities/Uma";
 import { getLogger } from "../LogUtil";
 
 export interface KaisaiInfo {
@@ -23,6 +24,7 @@ export interface ShussoubaInfo {
   kaisai: Kaisai;
   race: Race;
   shussouba: Shussouba;
+  uma?: Uma;
 }
 
 export abstract class ImportTool {
@@ -40,6 +42,34 @@ export abstract class ImportTool {
   }
 
   protected abstract getKaisaiInfo(buffer: Buffer): KaisaiInfo;
+
+  /**
+   * 年月日を示すIDを返します。
+   * 年(7ビット)、月(4ビット)、日(5ビット)の計16ビットです。
+   * @param {Buffer} buffer バッファ
+   * @param {number} offset オフセット
+   * @returns 年月日を示すID
+   * @memberof ImportTool
+   */
+  public getDateId(buffer: Buffer, offset: number) {
+    /* tslint:disable:triple-equals */
+    const year = readInt(buffer, offset, 4);
+    if (year == null) {
+      return null;
+    }
+    const month = readInt(buffer, offset + 4, 2);
+    if (month == null) {
+      return null;
+    }
+    const day = readInt(buffer, offset + 6, 2);
+    if (day == null) {
+      return null;
+    }
+    /* tslint:enable:triple-equals */
+
+    const id = year * (2 ** (4 + 5)) + month * (2 ** 5) + day;
+    return id;
+  }
 
   /**
    * 開催IDを返します。
@@ -173,7 +203,7 @@ export abstract class ImportTool {
 
   /**
    * 出走馬IDを取得します。
-   * 出走馬IDはレースID(30ビット)、
+   * 出走馬IDはレースID(30ビット)、馬番(6ビット)の計36ビットです。
    * @param {Buffer} buffer バッファ
    * @param {number} umabanOffset 馬番のオフセット
    * @param {number} [raceId] レースID

@@ -7,11 +7,13 @@ import { ChoukyouDao } from "../../daos/ChoukyouDao";
 import { MeishouDao } from "../../daos/MeishouDao";
 import { UmaDao } from "../../daos/UmaDao";
 import { Choukyou } from "../../entities/Choukyou";
+import { ImportTool } from "../ImportTool";
 import { ChoukyouRireki } from "../../entities/ChoukyouRireki";
 import { ChoukyouTime } from "../../entities/ChoukyouTime";
 import { Kubun } from "../../entities/Meishou";
 import { Uma } from "../../entities/Uma";
 import { getLogger } from "../../LogUtil";
+import { crc16 } from "crc";
 import {
   readDate,
   readPositiveInt,
@@ -50,6 +52,9 @@ export class KolChoukyouTool {
   private entityManager: EntityManager;
 
   @Inject()
+  private importTool: ImportTool;
+
+  @Inject()
   private umaDao: UmaDao;
 
   @Inject()
@@ -66,7 +71,7 @@ export class KolChoukyouTool {
     this.choukyouDao.save(choukyou);
   }
 
-  public async saveChoukyouRireki(buffer: Buffer, offset: number, choukyou: Choukyou, tanshukuKishuMei: string, bangou: number, awase?: string
+  public async saveChoukyouRireki(buffer: Buffer, offset: number, umaId: number, tanshukuKishuMei: string, awase?: string
   ) {
     const kijousha = readStrWithNoSpace(buffer, offset + 1, 8);
     if (!kijousha) {
@@ -74,9 +79,11 @@ export class KolChoukyouTool {
     }
 
     const choukyouRireki = new ChoukyouRireki();
-    choukyouRireki.Id = choukyou.Id * (2 ** 2) + bangou;
-    choukyouRireki.ChoukyouId = choukyou.Id;
-    choukyouRireki.Bangou = bangou;
+    const dateId = this.importTool.getDateId(buffer, offset + 9);
+    const buf = buffer.slice(offset + 27, 42);
+    const hash = crc16(buf);
+    choukyouRireki.Id = umaId * (2 ** (16 + 16)) + dateId * (2 ** 16) + hash;
+    choukyouRireki.UmaId = umaId;
     choukyouRireki.ChoukyouFlag = $CH.choukyouFlag.toCodeFromKol(buffer, offset, 1);
     choukyouRireki.Noriyaku = $CH.noriyaku.toCodeFromKol(kijousha);
     const nengappi = readDate(buffer, offset + 9, 8);
@@ -164,7 +171,7 @@ export class KolChoukyouTool {
         continue;
       }
       const choukyouRirekiTime = new ChoukyouTime();
-      choukyouRirekiTime.Id = choukyouRireki.Id * (2 ** 4) + cf.f;
+      choukyouRirekiTime.Id = choukyouRireki.Id * (2 ** 3) + (cf.f - 1);
       choukyouRirekiTime.ChoukyouRirekiId = choukyouRireki.Id;
       choukyouRirekiTime.F = cf.f;
       const time = parseFloat(comment);

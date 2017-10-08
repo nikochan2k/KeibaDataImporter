@@ -92,21 +92,22 @@ export abstract class Ky$ extends ShussoubaData {
   }
 
   protected async setShussouba(buffer: Buffer, toBe: Shussouba, info: ShussoubaInfo) {
-    toBe.Blinker = $S.blinker.toCodeFromJrdb(buffer, 170, 1);
+    // TODO
+    // toBe.Blinker = $S.blinker.toCodeFromJrdb(buffer, 170, 1);
     toBe.KishuId = (await this.saveKishu(buffer)).Id;
     toBe.Kinryou = readDouble(buffer, 183, 3, 0.1);
     // TODO toBe.KishuRirekiId
     // StoBe.MinaraiKubun = $S.minaraiKubun.toCodeFromJrdb(buffer, 186, 1);
     toBe.KyousoubaId = (await this.saveKyousouba(buffer)).Id;
     toBe.Wakuban = readPositiveInt(buffer, 323, 1);
-    toBe.Bataijuu = readPositiveInt(buffer, 396, 3);
-    toBe.Zougen = readInt(buffer, 399, 3);
+    toBe.WakuKakuteiBataijuu = readPositiveInt(buffer, 396, 3);
+    toBe.WakuKakuteiZougen = readInt(buffer, 399, 3);
     toBe.TorikeshiShubetsu = $S.torikeshiShubetsu.toCodeFromJrdb(buffer, 402, 1);
   }
 
-  protected async saveShussoubaRelated(buffer: Buffer, shussouba: Shussouba) {
-    await this.saveShussoubaYosou(buffer, shussouba);
-    await this.saveOddsHaitou(buffer, shussouba);
+  protected async saveShussoubaRelated(buffer: Buffer, info: ShussoubaInfo) {
+    await this.saveShussoubaYosou(buffer, info.shussouba);
+    await this.saveOddsHaitou(buffer, info.shussouba);
   }
 
   protected async saveShussoubaYosou(buffer: Buffer, shussouba: Shussouba) {
@@ -115,11 +116,7 @@ export abstract class Ky$ extends ShussoubaData {
     this.setShussoubaYosou(buffer, toBe);
 
     const asIs = await this.entityManager.findOneById(ShussoubaYosou, shussouba.Id);
-    if (asIs) {
-      await this.tool.update(ShussoubaYosou, asIs, toBe);
-    } else {
-      await this.entityManager.save(toBe);
-    }
+    await this.tool.saveOrUpdate(ShussoubaYosou, asIs, toBe);
   }
 
   protected setShussoubaYosou(buffer: Buffer, toBe: ShussoubaYosou) {

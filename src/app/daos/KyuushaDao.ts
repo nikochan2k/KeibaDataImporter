@@ -54,11 +54,7 @@ export class KyuushaDao {
     } else {
       asIs = await this.getKyuushaWith(seimei);
     }
-    if (asIs) {
-      toBe = await this.tool.update(Kyuusha, asIs, toBe);
-    } else {
-      toBe = await this.entityManager.save(toBe);
-    }
+    toBe = await this.tool.saveOrUpdate(Kyuusha, asIs, toBe);
     if (seimei) {
       await this.saveKyuushaMeishou(toBe, Kubun.Seimei, seimei);
     }

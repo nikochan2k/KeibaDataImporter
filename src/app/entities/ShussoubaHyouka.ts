@@ -9,6 +9,11 @@ export class ShussoubaHyouka {
   @PrimaryColumn("bigint")
   public Id: number;
 
+
+  @Column("smallint", { nullable: true })
+  public KolRecordShisuu?: number;
+
+
   @Column("smallint", { nullable: true })
   public Idm?: number;
 

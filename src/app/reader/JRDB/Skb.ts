@@ -39,11 +39,7 @@ export abstract class Skb extends DataToImport {
     toBe.RaceComment = readStr(buffer, 233, 40);
 
     const asIs = await this.entityManager.findOneById(ShussoubaHyouka, id);
-    if (asIs) {
-      await this.tool.update(ShussoubaHyouka, asIs, toBe);
-    } else {
-      await this.entityManager.save(toBe);
-    }
+    await this.tool.saveOrUpdate(ShussoubaHyouka, asIs, toBe);
   }
 
   protected async saveShussoubaJoutaiSeries(buffer: Buffer, shussoubaId: number) {

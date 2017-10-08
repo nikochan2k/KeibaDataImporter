@@ -2,6 +2,7 @@ import * as $C from "../../converters/Common";
 import * as $S from "../../converters/Shussouba";
 import { Race } from "../../entities/Race";
 import { Shussouba } from "../../entities/Shussouba";
+import { ShussoubaSeiseki } from "../../entities/ShussoubaSeiseki";
 import { ShussoubaHyouka } from "../../entities/ShussoubaHyouka";
 import { ShussoubaInfo } from "../ImportTool";
 import { Se$ } from "./Se$";
@@ -20,8 +21,8 @@ export class Sed extends Se$ {
     toBe.PaceNagare = readInt(buffer, 365, 2);
   }
 
-  protected async setShussouba(buffer: Buffer, toBe: Shussouba, info: ShussoubaInfo) {
-    await super.setShussouba(buffer, toBe, info);
+  protected setShussoubaSeiseki(buffer: Buffer, toBe: ShussoubaSeiseki, info: ShussoubaInfo) {
+    super.setShussoubaSeiseki(buffer, toBe, info);
     toBe.HonShoukin = readInt(buffer, 355, 5, 10000);
     toBe.ShuutokuShoukin = readInt(buffer, 360, 5, 10000);
     toBe.YonCornerIchiDori = $S.ichi.toCodeFromJrdb(buffer, 369, 1);

@@ -36,7 +36,7 @@ export abstract class RaceData extends DataToImport {
 
     const asIs = await this.jrdbImportTool.getKaisai(buffer);
 
-    return await this.tool.update(Kaisai, asIs, toBe);
+    return await this.tool.saveOrUpdate(Kaisai, asIs, toBe);
   }
 
   protected abstract setKaisai(buffer: Buffer, toBe: Kaisai);
@@ -49,7 +49,7 @@ export abstract class RaceData extends DataToImport {
     this.setRace(buffer, toBe);
 
     const asIs = await this.jrdbImportTool.getRace(buffer);
-    return await this.tool.update(Race, asIs, toBe);
+    return await this.tool.saveOrUpdate(Race, asIs, toBe);
   }
 
   protected abstract setRace(buffer: Buffer, toBe: Race);

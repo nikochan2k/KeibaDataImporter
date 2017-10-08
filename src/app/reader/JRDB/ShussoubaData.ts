@@ -30,8 +30,9 @@ export abstract class ShussoubaData extends DataToImport {
     if (!shussouba) {
       return;
     }
+    info.shussouba = shussouba;
 
-    await this.saveShussoubaRelated(buffer, shussouba);
+    await this.saveShussoubaRelated(buffer, info);
   }
 
   protected async saveRace(buffer: Buffer, asIs: Race) {
@@ -45,10 +46,10 @@ export abstract class ShussoubaData extends DataToImport {
     this.setShussouba(buffer, toBe, info);
 
     const asIs = info.shussouba;
-    return await this.tool.update(Shussouba, asIs, toBe);
+    return await this.tool.saveOrUpdate(Shussouba, asIs, toBe);
   }
 
   protected abstract setShussouba(buffer: Buffer, shussouba: Shussouba, info: ShussoubaInfo);
 
-  protected abstract async saveShussoubaRelated(buffer: Buffer, shussouba: Shussouba);
+  protected abstract async saveShussoubaRelated(buffer: Buffer, info: ShussoubaInfo);
 }

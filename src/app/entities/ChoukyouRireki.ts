@@ -6,60 +6,57 @@ import {
 } from "typeorm";
 
 @Entity("ChoukyouRireki")
-@Index("IxChoukyouRireki", (c: ChoukyouRireki) => [c.ChoukyouId])
+@Index("IxChoukyouRireki", (c: ChoukyouRireki) => [c.UmaId])
 export class ChoukyouRireki {
   @PrimaryColumn("bigint")
   public Id: number;
 
-  @Column("bigint")
-  public ChoukyouId: number;
+  @Column("int")
+  public UmaId: number;
 
-  @Column("smallint")
-  public Bangou: number;
-
-  @Column("smallint", { nullable: true })
+  @Column("tinyint", { nullable: true })
   public ChoukyouFlag?: number;
 
-  @Column("smallint", { nullable: true })
+  @Column("tinyint", { nullable: true })
   public Noriyaku?: number;
 
-  @Column("bigint", { nullable: true })
+  @Column("int", { nullable: true })
   public TanshukuKishuMeiId: number;
 
-  @Column("bigint", { nullable: true })
+  @Column("int", { nullable: true })
   public Nengappi?: number;
 
-  @Column("smallint", { nullable: true })
+  @Column("tinyint", { nullable: true })
   public Basho?: number;
 
-  @Column("smallint", { nullable: true })
+  @Column("tinyint", { nullable: true })
   public Type?: number;
 
-  @Column("smallint", { nullable: true })
+  @Column("tinyint", { nullable: true })
   public Course?: number;
 
   @Column("varchar", { length: 12, nullable: true })
   public BashoCourse?: string;
 
-  @Column("smallint", { nullable: true })
+  @Column("tinyint", { nullable: true })
   public Baba?: number;
 
-  @Column("smallint", { nullable: true })
+  @Column("tinyint", { nullable: true })
   public Kaisuu?: number;
 
-  @Column("smallint", { nullable: true })
+  @Column("tinyint", { nullable: true })
   public IchiDori?: number;
 
-  @Column("smallint", { nullable: true })
+  @Column("tinyint", { nullable: true })
   public Oikiri?: number;
 
-  @Column("smallint", { nullable: true })
+  @Column("tinyint", { nullable: true })
   public Ashiiro?: number;
 
   @Column("varchar", { length: 9, nullable: true })
   public OikiriSonota?: string;
 
-  @Column("smallint", { nullable: true })
+  @Column("tinyint", { nullable: true })
   public Yajirushi?: number; // 1:一変　2:平行 3:下降　4:良化　5:下降気味
 
   @Column("varchar", { length: 60, nullable: true })
@@ -68,10 +65,10 @@ export class ChoukyouRireki {
   @Column("int", { nullable: true })
   public AwaseUmaId?: number;
 
-  @Column("smallint", { nullable: true })
+  @Column("tinyint", { nullable: true })
   public AwaseKekka?: number;
 
-  @Column("smallint", { nullable: true })
+  @Column("tinyint", { nullable: true })
   public Chakusa?: number;
 
   @Column("float", { nullable: true })

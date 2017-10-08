@@ -36,6 +36,6 @@ export abstract class Joa extends DataToImport {
     toBe.KyuushaBbShirushi = $S.yosou.toCodeFromJrdb(buffer, 89, 1);
     toBe.KishuBbShirushi = $S.yosou.toCodeFromJrdb(buffer, 100, 1);
 
-    return await this.tool.update(ShussoubaYosou, asIs, toBe);
+    return await this.tool.saveOrUpdate(ShussoubaYosou, asIs, toBe);
   }
 }

@@ -73,11 +73,7 @@ export class JrdbTool {
     }
 
     const asIs = await this.entityManager.findOneById(ShussoubaJoutai, id);
-    if (asIs) {
-      await this.tool.update(ShussoubaJoutai, asIs, toBe);
-    } else {
-      await this.entityManager.save(toBe);
-    }
+    await this.tool.saveOrUpdate(ShussoubaJoutai, asIs, toBe);
   }
 
 }

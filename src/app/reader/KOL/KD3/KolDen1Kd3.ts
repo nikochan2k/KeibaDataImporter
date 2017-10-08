@@ -158,7 +158,7 @@ export class KolDen1Kd3 extends DataToImport {
     toBe.SuiteiTimeOmoFuryou = readTime(buffer, 345, 4);
     toBe.YosouPace = $R.pace.toCodeFromKol(buffer, 349, 1);
 
-    return await this.tool.update(Race, asIs, toBe);
+    return await this.tool.saveOrUpdate(Race, asIs, toBe);
   }
 
   protected setYosouTenkai(buffer: Buffer, race: Race, bridge: KolBridge) {

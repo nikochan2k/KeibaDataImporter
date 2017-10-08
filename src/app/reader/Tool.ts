@@ -38,7 +38,7 @@ export abstract class Tool {
     this.logger = getLogger(this);
   }
 
-  public async update<T>(entity: ObjectType<T>, asIs: T, toBe: T, forceKeys?: string[]) {
+  public async saveOrUpdate<T>(entity: ObjectType<T>, asIs: T, toBe: T, forceKeys?: string[]) {
     if (asIs) {
       const updateSet = this.createUpdateSet(asIs, toBe, forceKeys);
       if (Object.keys(updateSet).length) {
@@ -187,7 +187,7 @@ export abstract class Tool {
     toBe.Id = this.getOddsHaitouId(partial);
     const asIs = await this.getOddsHaitouById(toBe.Id);
     if (asIs) {
-      toBe = await this.update(OddsHaitou, asIs, toBe);
+      toBe = await this.saveOrUpdate(OddsHaitou, asIs, toBe);
     } else {
       toBe = await this.entityManager.save(toBe);
     }

@@ -27,7 +27,7 @@ export class BanushiDao {
 
   public async save(toBe: Banushi) {
     const asIs = await this.repository.findOne({ BanushiMei: toBe.BanushiMei });
-    return await this.tool.update(Banushi, asIs, toBe);
+    return await this.tool.saveOrUpdate(Banushi, asIs, toBe);
   }
 
 }

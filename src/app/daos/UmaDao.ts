@@ -64,7 +64,7 @@ export class UmaDao {
       toBe.Seibetsu = $U.Seibetsu.Boba;
     }
     const asIs = await this.getUma(toBe);
-    return await this.tool.update(Uma, asIs, toBe);
+    return await this.tool.saveOrUpdate(Uma, asIs, toBe);
   }
 
   public async saveKyousouba(toBe: Kyousouba) {

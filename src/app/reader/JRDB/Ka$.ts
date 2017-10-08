@@ -24,7 +24,7 @@ export abstract class Ka$ extends DataToImport {
     this.setKaisai(buffer, toBe);
 
     const asIs = await this.jrdbImportTool.getKaisai(buffer);
-    await this.tool.update(Kaisai, asIs, toBe);
+    await this.tool.saveOrUpdate(Kaisai, asIs, toBe);
   }
 
   protected setKaisai(buffer: Buffer, toBe: Kaisai) {

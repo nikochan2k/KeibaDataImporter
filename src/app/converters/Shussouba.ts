@@ -40,7 +40,7 @@ export const chakujunFuka = new Codes(
 
 export const torikeshiShubetsu = new Codes(
   [
-    { code: 1, kol: "1", jrdb: "1", naiyou: "出走取消" },
+    { code: 1, kol: /1|9/, jrdb: "1", naiyou: "出走取消" },
     { code: 2, kol: "2", naiyou: "出走除外" },
     { code: 3, kol: "3", naiyou: "競走除外" },
     { code: 4, kol: "4", naiyou: "競走中止" },

@@ -122,10 +122,6 @@ export const basho = new Codes(
     { code: 97, kol: /瑞国/, naiyou: "瑞国" },
     { code: 98, kol: /星国/, naiyou: "星国" },
     { code: 99, kol: /北海/, naiyou: "北海" },
-    { code: 35, kol: /札/, naiyou: "札幌(地方)" },
-    { code: 36, kol: /函/, naiyou: "函館(地方)" },
-    { code: 40, kol: /中/, naiyou: "中京(地方)" },
-    { code: 41, kol: /新/, naiyou: "新潟(地方)" },
     { code: 100, jrdb: "81", naiyou: "美浦" },
     { code: 101, jrdb: "50", naiyou: "地方" },
     { code: ChoukyouBasho.Sonota, kol: /.+/, jrdb: "B1", naiyou: "他" }

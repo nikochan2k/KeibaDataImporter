@@ -71,11 +71,7 @@ LIMIT
 
   public async saveKishu(toBe: Kishu, seimei?: string, tanshuku?: string, furigana?: string) {
     const asIs = await this.getKishu(toBe);
-    if (asIs) {
-      toBe = await this.tool.update(Kishu, asIs, toBe);
-    } else {
-      toBe = await this.entityManager.save(toBe);
-    }
+    toBe = await this.tool.saveOrUpdate(Kishu, asIs, toBe);
     if (seimei) {
       await this.saveKishuMeishou(toBe, Kubun.Seimei, seimei);
     }
@@ -136,11 +132,7 @@ LIMIT
 
   public async saveKishuRireki(toBe: KishuRireki) {
     const asIs = await this.getKishuRireki(toBe);
-    if (asIs) {
-      toBe = await this.tool.update(KishuRireki, asIs, toBe);
-    } else {
-      toBe = await this.kishuRirekiRepository.save(toBe);
-    }
+    toBe = await this.tool.saveOrUpdate(KishuRireki, asIs, toBe);
     return toBe;
   }
 

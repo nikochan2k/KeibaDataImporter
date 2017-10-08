@@ -2,11 +2,12 @@ import { Inject, Service } from "typedi";
 import * as $S from "../../../converters/Shussouba";
 import { Choukyou } from "../../../entities/Choukyou";
 import { Shussouba } from "../../../entities/Shussouba";
+import { ShussoubaHyouka } from "../../../entities/ShussoubaHyouka";
+import { ShussoubaSeiseki } from "../../../entities/ShussoubaSeiseki";
 import { ShussoubaYosou } from "../../../entities/ShussoubaYosou";
 import { DataToImport } from "../../DataToImport";
 import { ShussoubaInfo } from "../../ImportTool";
 import {
-  readDate,
   readDouble,
   readInt,
   readPositiveInt,
@@ -42,6 +43,7 @@ export class KolSei2Kd3 extends DataToImport {
     if (!info) {
       return;
     }
+    /* TODO
     const asIs = info.shussouba;
     if (asIs) {
       const dataSakuseiNengappi = readDate(buffer, 424, 8);
@@ -50,24 +52,19 @@ export class KolSei2Kd3 extends DataToImport {
         return;
       }
     }
+    */
 
     const shussouba = await this.saveShussouba(buffer, info);
     if (!shussouba) {
       return;
     }
+    info.shussouba = shussouba;
 
+    await this.saveShussoubaSeiseki(buffer, info);
     await this.saveShussoubaYosou(buffer, shussouba);
-
     await this.kolImportTool.saveNinkiOdds(buffer, info.shussouba, 267, 269);
-
     await this.kolTool.saveShussoubaTsuukaJuni(buffer, 298, shussouba);
-    if (!asIs.KolShutsubahyouSakuseiNengappi) {
-      const tanshukuKishuMei = readStrWithNoSpace(buffer, 199, 8);
-      const choukyou = new Choukyou();
-      choukyou.Id = shussouba.Id;
-      await this.choukyouTool.saveChoukyou(choukyou);
-      await this.choukyouTool.saveChoukyouRireki(buffer, 307, choukyou, tanshukuKishuMei, 1);
-    }
+    await this.saveChoukyou(buffer, info);
   }
 
   protected async saveShussouba(buffer: Buffer, info: ShussoubaInfo) {
@@ -76,15 +73,25 @@ export class KolSei2Kd3 extends DataToImport {
       return null;
     }
     toBe.Wakuban = readPositiveInt(buffer, 22, 1);
-    toBe.Gate = readPositiveInt(buffer, 25, 2);
     const kyuusha = await this.kolTool.saveKyuusha(buffer, 217);
-    toBe.KyousoubaId = (await this.kolTool.saveKyousouba(buffer, 34, kyuusha)).Kyousouba.Id;
+    const umaInfo = await this.kolTool.saveKyousouba(buffer, 34, kyuusha);
+    info.uma = umaInfo.Uma;
+    toBe.KyousoubaId = umaInfo.Kyousouba.Id;
     toBe.Nenrei = readPositiveInt(buffer, 67, 2);
-    toBe.Blinker = $S.blinker.toCodeFromKol(buffer, 149, 1);
+    // TODO
+    // toBe.Blinker = $S.blinker.toCodeFromKol(buffer, 149, 1);
     toBe.Kinryou = readDouble(buffer, 150, 3, 0.1);
+
+    const asIs = info.shussouba;
+    return await this.tool.saveOrUpdate(Shussouba, asIs, toBe);
+  }
+
+  protected async saveShussoubaSeiseki(buffer: Buffer, info: ShussoubaInfo) {
+    const toBe = new ShussoubaSeiseki();
+    toBe.Id = info.shussouba.Id;
+    toBe.Gate = readPositiveInt(buffer, 25, 2);
     toBe.Bataijuu = readPositiveInt(buffer, 153, 3);
     toBe.Zougen = readInt(buffer, 156, 3);
-    toBe.KolRecordShisuu = readInt(buffer, 159, 3);
     const kishu = await this.kolTool.saveKishu(buffer, 162);
     toBe.KishuId = kishu.Id;
     const kishuRireki = await this.kolTool.saveKishuRireki(buffer, 207, kishu);
@@ -113,10 +120,10 @@ export class KolSei2Kd3 extends DataToImport {
       toBe.Douchuu = toBe.Time - toBe.Ten3F - toBe.Agari3F;
     }
     toBe.YonCornerIchiDori = $S.ichi.toCodeFromKol(buffer, 306, 1);
-    toBe.KolSeisekiSakuseiNengappi = readDate(buffer, 424, 8);
 
-    const asIs = info.shussouba;
-    return await this.tool.update(Shussouba, asIs, toBe);
+    const asIs = await this.entityManager.findOneById(ShussoubaSeiseki, toBe.Id);
+
+    return await this.tool.saveOrUpdate(ShussoubaSeiseki, asIs, toBe);
   }
 
   protected async saveShussoubaYosou(buffer: Buffer, shussouba: Shussouba) {
@@ -127,7 +134,25 @@ export class KolSei2Kd3 extends DataToImport {
 
     const asIs = await this.entityManager.findOneById(ShussoubaYosou, shussouba.Id);
 
-    return await this.tool.update(ShussoubaYosou, asIs, toBe);
+    return await this.tool.saveOrUpdate(ShussoubaYosou, asIs, toBe);
+  }
+
+  protected async saveShussoubaHyouka(buffer: Buffer, shussouba: Shussouba) {
+    const toBe = new ShussoubaHyouka();
+    toBe.Id = shussouba.Id;
+    toBe.KolRecordShisuu = readInt(buffer, 159, 3);
+
+    const asIs = await this.entityManager.findOneById(ShussoubaHyouka, shussouba.Id);
+
+    return await this.tool.saveOrUpdate(ShussoubaHyouka, asIs, toBe);
+  }
+
+  protected async saveChoukyou(buffer: Buffer, info: ShussoubaInfo) {
+    const tanshukuKishuMei = readStrWithNoSpace(buffer, 199, 8);
+    const choukyou = new Choukyou();
+    choukyou.Id = info.shussouba.Id;
+    await this.choukyouTool.saveChoukyou(choukyou);
+    await this.choukyouTool.saveChoukyouRireki(buffer, 307, info.uma.Id, tanshukuKishuMei);
   }
 
 }

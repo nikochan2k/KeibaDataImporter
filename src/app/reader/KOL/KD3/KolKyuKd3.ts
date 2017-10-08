@@ -5,7 +5,6 @@ import * as $C from "../../../converters/Common";
 import * as $K from "../../../converters/Kyuusha";
 import { KyuushaDao } from "../../../daos/KyuushaDao";
 import { Kyuusha } from "../../../entities/Kyuusha";
-import { KishuRireki } from "../../../entities/KishuRireki";
 import { DataToImport } from "../../DataToImport";
 import {
   readInt,

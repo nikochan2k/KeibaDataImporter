@@ -27,7 +27,7 @@ export class ChoukyouDao {
 
   public async save(toBe: Choukyou) {
     const asIs = await this.findOneById(toBe.Id);
-    return await this.tool.update(Choukyou, asIs, toBe);
+    return await this.tool.saveOrUpdate(Choukyou, asIs, toBe);
   }
 
 }
