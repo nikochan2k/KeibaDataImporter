@@ -1,6 +1,6 @@
 import { Inject, Service } from "typedi";
 import { DataToImport } from "../../DataToImport";
-import { Race } from "../../../entities/Race";
+import { RaceSeiseki } from "../../../entities/RaceSeiseki";
 import {
   readStr,
 } from "../../Reader";
@@ -21,19 +21,14 @@ export class KolSei3Kd3 extends DataToImport {
     if (!seisaiNaiyou) {
       return;
     }
-    const kaisaiId = this.kolImportTool.getKaisaiId(buffer);
-    const race = await this.kolImportTool.getRace(buffer, kaisaiId);
-    if (!race) {
-      const raceId = this.kolImportTool.getRaceId(buffer, kaisaiId);
-      this.logger.warn("レース成績データが存在しません: " + raceId);
-      return;
-    }
-    if (!race.SeisaiNaiyou) {
+    const id = this.kolImportTool.getRaceId(buffer);
+    const asIs = await this.entityManager.findOneById(RaceSeiseki, id);
+    if (!asIs.SeisaiNaiyou) {
       await this.entityManager
         .createQueryBuilder()
-        .update(Race, { SeisaiNaiyou: seisaiNaiyou })
+        .update(RaceSeiseki, { SeisaiNaiyou: seisaiNaiyou })
         .where("Id = :id")
-        .setParameter("id", race.Id)
+        .setParameter("id", id)
         .execute();
     }
   }

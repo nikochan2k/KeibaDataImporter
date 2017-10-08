@@ -185,24 +185,6 @@ export class Race {
   @Column("smallint", { nullable: true })
   public TorikeshiTousuu?: number;
 
-  @Column("smallint", { nullable: true })
-  public Pace?: number;
-
-  @Column("real", { nullable: true })
-  public PaceShisuu?: number;
-
-  @Column("smallint", { nullable: true })
-  public PaceUpNokoriFalon?: number;
-
-  @Column("smallint", { nullable: true })
-  public Tenki?: number;
-
-  @Column("smallint", { nullable: true })
-  public Baba?: number;
-
-  @Column("smallint", { nullable: true })
-  public BabaSokudo?: number; // 0:普通 1:速い 2:遅い
-
   @Column("float", { nullable: true })
   public ShougaiHeikin1F?: number;
 
@@ -231,12 +213,6 @@ export class Race {
   public Shoukin5Chaku: number;
 
   @Column("int", { nullable: true })
-  public Shoukin5ChakuDouchaku: number;
-
-  @Column("int", { nullable: true })
-  public Shoukin5ChakuDouchaku2: number;
-
-  @Column("int", { nullable: true })
   public Shoukin1ChakuSannyuShoukin: number;
 
   @Column("int", { nullable: true })
@@ -244,12 +220,6 @@ export class Race {
 
   @Column("int", { nullable: true })
   public FukaShou?: number;
-
-  @Column("text", { nullable: true })
-  public SeisaiNaiyou?: string;
-
-  @Column("text", { nullable: true })
-  public RaceComment?: string;
 
   @Column("float", { nullable: true })
   public SuiteiTimeRyou?: number;
@@ -262,13 +232,4 @@ export class Race {
 
   @Column("varchar", { nullable: true, length: 18 })
   public Yosoushamei2: string;
-
-  @Column("tinyint", { nullable: true })
-  public PaceNagare?: number;
-
-  @Column("bigint", { nullable: true })
-  public KolShutsubahyouSakuseiNengappi?: number;
-
-  @Column("bigint", { nullable: true })
-  public KolSeisekiSakuseiNengappi?: number;
 }

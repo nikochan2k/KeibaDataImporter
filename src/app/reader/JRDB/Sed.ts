@@ -1,6 +1,6 @@
 import * as $C from "../../converters/Common";
 import * as $S from "../../converters/Shussouba";
-import { Race } from "../../entities/Race";
+import { RaceSeiseki } from "../../entities/RaceSeiseki";
 import { Shussouba } from "../../entities/Shussouba";
 import { ShussoubaSeiseki } from "../../entities/ShussoubaSeiseki";
 import { ShussoubaHyouka } from "../../entities/ShussoubaHyouka";
@@ -16,8 +16,7 @@ export class Sed extends Se$ {
     return 376;
   }
 
-  protected setRace(buffer: Buffer, toBe: Race) {
-    super.setRace(buffer, toBe);
+  protected setRaceSeiseki(buffer: Buffer, toBe: RaceSeiseki) {
     toBe.PaceNagare = readInt(buffer, 365, 2);
   }
 

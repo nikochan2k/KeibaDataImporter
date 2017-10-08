@@ -5,6 +5,7 @@ import * as $R from "../../../converters/Race";
 import * as $RK from "../../../converters/RaceKeika";
 import { Kaisai } from "../../../entities/Kaisai";
 import { Race } from "../../../entities/Race";
+import { RaceSeiseki } from "../../../entities/RaceSeiseki";
 import { RaceKeika } from "../../../entities/RaceKeika";
 import { DataToImport } from "../../DataToImport";
 import { KeikaTool } from "../../KeikaTool";
@@ -46,20 +47,12 @@ export class KolSei1Kd3 extends DataToImport {
     if (!kaisai) {
       return null;
     }
-    const asIs = await this.kolImportTool.getRace(buffer);
-    if (asIs) {
-      const dataSakuseiNengappi = readDate(buffer, 2910, 8);
-      if (dataSakuseiNengappi <= asIs.KolSeisekiSakuseiNengappi) {
-        this.logger.info("既に最新のレース成績データが格納されています: " + asIs.Id);
-        return;
-      }
-    }
-
-    const race = await this.saveRace(buffer, kaisai, asIs);
+    let race = await this.kolImportTool.getRace(buffer);
     if (!race) {
-      return null;
+      race = await this.saveRace(buffer, kaisai);
     }
 
+    await this.saveRaceSeiseki(buffer, race);
     await this.saveRaceLapTime(buffer, kaisai, race);
     await this.saveRaceKeika(buffer, race);
     await this.saveRaceHassouJoukyou(buffer, race);
@@ -83,10 +76,10 @@ export class KolSei1Kd3 extends DataToImport {
     return toBe;
   }
 
-  protected async saveRace(buffer: Buffer, kaisai: Kaisai, asIs: Race) {
+  protected async saveRace(buffer: Buffer, kaisai: Kaisai) {
     const toBe = this.kolImportTool.createRace(buffer);
     if (!toBe) {
-      return asIs;
+      return null;
     }
 
     toBe.Nengappi = readDate(buffer, 12, 8);
@@ -157,6 +150,22 @@ export class KolSei1Kd3 extends DataToImport {
     const raceRecord = await this.kolImportTool.getRecord(buffer, 233, 286);
     toBe.RaceRecordId = raceRecord && raceRecord.Id;
 
+    toBe.FukaShou = readPositiveInt(buffer, 351, 9);
+    toBe.MaeuriFlag = $R.maeuriFlag.toCodeFromKol(buffer, 360, 1);
+    toBe.YoteiHassouJikan = readStr(buffer, 361, 5);
+    toBe.Tousuu = readPositiveInt(buffer, 366, 2);
+    toBe.SuiteiTimeRyou = readTime(buffer, 370, 4);
+    toBe.SuiteiTimeOmoFuryou = readTime(buffer, 374, 4);
+    if (toBe.HeichiShougai === 1) { // 障害
+      toBe.ShougaiHeikin1F = readDouble(buffer, 398, 4, 0.1);
+    }
+
+    return await this.entityManager.save(toBe);
+  }
+
+  protected async saveRaceSeiseki(buffer: Buffer, race: Race) {
+    const toBe = new RaceSeiseki();
+    toBe.Id = race.Id;
     toBe.Shoukin1Chaku = readPositiveInt(buffer, 288, 9);
     toBe.Shoukin2Chaku = readPositiveInt(buffer, 297, 9);
     toBe.Shoukin3Chaku = readPositiveInt(buffer, 306, 9);
@@ -164,22 +173,14 @@ export class KolSei1Kd3 extends DataToImport {
     toBe.Shoukin5Chaku = readPositiveInt(buffer, 324, 9);
     toBe.Shoukin5ChakuDouchaku = readPositiveInt(buffer, 333, 9);
     toBe.Shoukin5ChakuDouchaku2 = readPositiveInt(buffer, 342, 9);
-    toBe.FukaShou = readPositiveInt(buffer, 351, 9);
-
-    toBe.MaeuriFlag = $R.maeuriFlag.toCodeFromKol(buffer, 360, 1);
-    toBe.YoteiHassouJikan = readStr(buffer, 361, 5);
-    toBe.Tousuu = readPositiveInt(buffer, 366, 2);
     toBe.TorikeshiTousuu = readInt(buffer, 368, 2);
-    toBe.SuiteiTimeRyou = readTime(buffer, 370, 4);
-    toBe.SuiteiTimeOmoFuryou = readTime(buffer, 374, 4);
     toBe.Pace = $R.pace.toCodeFromKol(buffer, 378, 1);
     toBe.Tenki = $R.tenki.toCodeFromKol(buffer, 379, 1);
     toBe.Baba = $R.baba.toCodeFromKol(buffer, 380, 1);
-    if (toBe.HeichiShougai === 1) { // 障害
-      toBe.ShougaiHeikin1F = readDouble(buffer, 398, 4, 0.1);
-    }
 
-    return await this.tool.saveOrUpdate(Race, asIs, toBe);
+    const asIs = await this.entityManager.findOneById(RaceSeiseki, toBe.Id);
+
+    await this.tool.saveOrUpdate(RaceSeiseki, asIs, toBe);
   }
 
   protected async saveRaceLapTime(buffer: Buffer, kaisai: Kaisai, race: Race) {

@@ -1,10 +1,12 @@
 import { Inject, Service } from "typedi";
 import * as $S from "../../../converters/Shussouba";
 import { Choukyou } from "../../../entities/Choukyou";
+import { Kyousouba } from "../../../entities/Kyousouba";
 import { Shussouba } from "../../../entities/Shussouba";
 import { ShussoubaHyouka } from "../../../entities/ShussoubaHyouka";
 import { ShussoubaSeiseki } from "../../../entities/ShussoubaSeiseki";
 import { ShussoubaYosou } from "../../../entities/ShussoubaYosou";
+import { Uma } from "../../../entities/Uma";
 import { DataToImport } from "../../DataToImport";
 import { ShussoubaInfo } from "../../ImportTool";
 import {
@@ -43,27 +45,22 @@ export class KolSei2Kd3 extends DataToImport {
     if (!info) {
       return;
     }
-    /* TODO
-    const asIs = info.shussouba;
-    if (asIs) {
-      const dataSakuseiNengappi = readDate(buffer, 424, 8);
-      if (dataSakuseiNengappi <= asIs.KolSeisekiSakuseiNengappi) {
-        this.logger.info("既に最新の出走馬成績データが格納されています: " + asIs.Id);
+    // TODO
+    if (!info.shussouba) {
+      info.shussouba = await this.saveShussouba(buffer, info);
+      if (!info.shussouba) {
         return;
       }
+    } else {
+      const kyousouba = await this.entityManager.findOneById(Kyousouba, info.shussouba.KyousoubaId);
+      info.uma = new Uma();
+      info.uma.Id = kyousouba.UmaId;
     }
-    */
-
-    const shussouba = await this.saveShussouba(buffer, info);
-    if (!shussouba) {
-      return;
-    }
-    info.shussouba = shussouba;
 
     await this.saveShussoubaSeiseki(buffer, info);
-    await this.saveShussoubaYosou(buffer, shussouba);
+    await this.saveShussoubaYosou(buffer, info.shussouba);
     await this.kolImportTool.saveNinkiOdds(buffer, info.shussouba, 267, 269);
-    await this.kolTool.saveShussoubaTsuukaJuni(buffer, 298, shussouba);
+    await this.kolTool.saveShussoubaTsuukaJuni(buffer, 298, info.shussouba);
     await this.saveChoukyou(buffer, info);
   }
 

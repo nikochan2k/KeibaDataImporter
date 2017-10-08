@@ -11,6 +11,7 @@ import { Kishu } from "../../entities/Kishu";
 import { Kyousouba } from "../../entities/Kyousouba";
 import { Kyuusha } from "../../entities/Kyuusha";
 import { Race } from "../../entities/Race";
+import { RaceSeiseki } from "../../entities/RaceSeiseki";
 import { Shussouba } from "../../entities/Shussouba";
 import { ShussoubaSeiseki } from "../../entities/ShussoubaSeiseki";
 import { ShussoubaHyouka } from "../../entities/ShussoubaHyouka";
@@ -40,12 +41,22 @@ export abstract class Se$ extends ShussoubaData {
   protected kyuushaDao: KyuushaDao;
 
   protected async saveRace(buffer: Buffer, asIs: Race) {
-    const toBe = Object.assign(new Race(), asIs);
-    if (!this.setRace(buffer, toBe)) {
-      return;
-    }
+    let toBe = Object.assign(new Race(), asIs);
+    this.setRace(buffer, toBe);
 
-    await this.tool.saveOrUpdate(Race, asIs, toBe);
+    toBe = await this.tool.saveOrUpdate(Race, asIs, toBe);
+
+    await this.saveRaceSeiseki(buffer, toBe);
+  }
+
+  protected async saveRaceSeiseki(buffer: Buffer, race: Race) {
+    const toBe = new RaceSeiseki();
+    toBe.Id = race.Id;
+    this.setRaceSeiseki(buffer, toBe);
+
+    const asIs = await this.entityManager.findOneById(RaceSeiseki, toBe.Id);
+
+    await this.tool.saveOrUpdate(RaceSeiseki, asIs, toBe);
   }
 
   protected setRace(buffer: Buffer, toBe: Race) {
@@ -53,8 +64,6 @@ export abstract class Se$ extends ShussoubaData {
     toBe.HeichiShougai = $R.heichiShougai.toCodeFromJrdb(buffer, 66, 1);
     toBe.MigiHidari = $R.migiHidari.toCodeFromJrdb(buffer, 67, 1);
     toBe.UchiSoto = $R.uchiSoto.toCodeFromJrdb(buffer, 68, 1);
-    toBe.Baba = $R.baba.toCodeFromJrdb(buffer, 69, 1);
-    toBe.BabaSokudo = $R.babaSokudo.toCodeFromJrdb(buffer, 70, 1);
     toBe.JoukenNenreiSeigen = $R.joukenNenreiSeigen.toCodeFromJrdb(buffer, 71, 2);
     toBe.Jouken1 = $R.jouken.toCodeFromJrdb(buffer, 73, 2);
 
@@ -79,11 +88,16 @@ export abstract class Se$ extends ShussoubaData {
     toBe.TokubetsuMei = readStr(buffer, 80, 50);
     toBe.Tousuu = readPositiveInt(buffer, 130, 2);
     toBe.TanshukuTokubetsuMei = readStr(buffer, 132, 8);
+
+    toBe.Course = $R.course.toCodeFromJrdb(buffer, 339, 1);
+  }
+
+  protected setRaceSeiseki(buffer: Buffer, toBe: RaceSeiseki) {
+    toBe.Baba = $R.baba.toCodeFromJrdb(buffer, 69, 1);
+    toBe.BabaSokudo = $R.babaSokudo.toCodeFromJrdb(buffer, 70, 1);
     toBe.Pace = $R.pace.toCodeFromJrdb(buffer, 221, 1);
     toBe.PaceShisuu = readDouble(buffer, 238, 5);
-
     toBe.Tenki = $R.tenki.toCodeFromJrdb(buffer, 338, 1);
-    toBe.Course = $R.course.toCodeFromJrdb(buffer, 339, 1);
   }
 
   protected async setShussouba(buffer: Buffer, toBe: Shussouba, info: ShussoubaInfo) {

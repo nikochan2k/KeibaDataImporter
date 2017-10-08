@@ -1,8 +1,8 @@
 import { Service } from "typedi";
 import * as $R from "../../converters/Race";
 import * as $S from "../../converters/Shussouba";
-import { Kaisai } from "../../entities/Kaisai";
 import { Race } from "../../entities/Race";
+import { RaceSeiseki } from "../../entities/RaceSeiseki";
 import { RaceTrackBias } from "../../entities/RaceTrackBias";
 import { readPositiveInt, readStr } from "../Reader";
 import { Sr$ } from "./Sr$";
@@ -14,17 +14,21 @@ export class Srb extends Sr$ {
     return 852;
   }
 
-  protected setKaisai(buffer: Buffer, toBe: Kaisai) {
-  }
-
-  protected setRace(buffer: Buffer, toBe: Race) {
-    toBe.PaceUpNokoriFalon = readPositiveInt(buffer, 318, 2, 200);
-    toBe.RaceComment = readStr(buffer, 342, 500);
-  }
-
   protected async saveRaceRelated(buffer: Buffer, race: Race) {
     await super.saveRaceRelated(buffer, race);
+    await this.saveRaceSeiseki(buffer, race);
     await this.saveRaceTrackBiases(buffer, race);
+  }
+
+  protected async saveRaceSeiseki(buffer: Buffer, race: Race) {
+    const toBe = new RaceSeiseki();
+    toBe.Id = race.Id;
+    toBe.PaceUpNokoriFalon = readPositiveInt(buffer, 318, 2, 200);
+    toBe.RaceComment = readStr(buffer, 342, 500);
+
+    const asIs = await this.entityManager.findOneById(RaceSeiseki, toBe.Id);
+
+    await this.tool.saveOrUpdate(RaceSeiseki, asIs, toBe);
   }
 
   protected async saveRaceTrackBiases(buffer: Buffer, race: Race) {
