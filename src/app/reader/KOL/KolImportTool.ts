@@ -102,7 +102,11 @@ export class KolImportTool extends ImportTool {
     record.Nengappi = nengappi;
     record.Time = readTime(buffer, offset + 8, 4);
     const uma = new Uma();
-    uma.Bamei = bamei;
+    if (this.tool.isEnglish(bamei)) {
+      uma.EigoBamei = bamei;
+    } else {
+      uma.KanaBamei = bamei;
+    }
     record.UmaId = (await this.umaDao.saveUma(uma)).Id;
     record.Kinryou = readDouble(buffer, offset + 42, 3, 0.1);
     const tanshukuKishuMei = readStrWithNoSpace(buffer, offset + 45, 8);

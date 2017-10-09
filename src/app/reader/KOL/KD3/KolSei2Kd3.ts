@@ -71,7 +71,7 @@ export class KolSei2Kd3 extends DataToImport {
     }
     toBe.Wakuban = readPositiveInt(buffer, 22, 1);
     const kyuusha = await this.kolTool.saveKyuusha(buffer, 217);
-    const umaInfo = await this.kolTool.saveKyousouba(buffer, 34, kyuusha);
+    const umaInfo = await this.kolTool.saveKyousouba(buffer, 27, kyuusha);
     info.uma = umaInfo.Uma;
     toBe.KyousoubaId = umaInfo.Kyousouba.Id;
     toBe.Nenrei = readPositiveInt(buffer, 67, 2);

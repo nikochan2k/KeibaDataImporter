@@ -108,7 +108,13 @@ export abstract class Se$ extends ShussoubaData {
 
   protected async saveKyousouba(buffer: Buffer, toBe: Shussouba) {
     let uma = new Uma();
-    uma.Bamei = readStr(buffer, 26, 36);
+    uma.KettouTourokuBangou = readStr(buffer, 10, 8);
+    const bamei = readStr(buffer, 26, 36);
+    if (this.tool.isEnglish(bamei)) {
+      uma.EigoBamei = bamei;
+    } else {
+      uma.KanaBamei = bamei;
+    }
     uma = await this.umaDao.saveUma(uma);
     const kishu = await this.saveKishu(buffer, uma);
     toBe.KishuId = kishu.Id;

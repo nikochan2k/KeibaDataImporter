@@ -5,6 +5,7 @@ import * as $U from "../../../converters/Uma";
 import { UmaDao } from "../../../daos/UmaDao";
 import { Uma } from "../../../entities/Uma";
 import { DataToImport } from "../../DataToImport";
+import { Tool } from "../../Tool";
 import { KolUmaTool } from "../KolUmaTool";
 import {
   readInt,
@@ -16,6 +17,9 @@ export class KolKetKd3 extends DataToImport {
 
   @OrmManager()
   protected entityManager: EntityManager;
+
+  @Inject()
+  private tool: Tool;
 
   @Inject()
   private umaDao: UmaDao;
@@ -51,7 +55,12 @@ export class KolKetKd3 extends DataToImport {
 
     const uma = new Uma();
     uma.KolUmaCode = readInt(buffer, 0, 7);
-    uma.Bamei = readStr(buffer, 7, 30);
+    const bamei = readStr(buffer, 7, 30);
+    if (this.tool.isEnglish(bamei)) {
+      uma.EigoBamei = bamei;
+    } else {
+      uma.KanaBamei = bamei;
+    }
     uma.ChichiUmaId = c.Id;
     uma.HahaUmaId = h.Id;
     await this.umaDao.saveUma(toBe);

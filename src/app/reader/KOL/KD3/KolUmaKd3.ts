@@ -97,7 +97,13 @@ export class KolUmaKd3 extends DataToImport {
   protected async saveKyousouba(buffer: Buffer) {
     const seibetsu = $U.seibetsu.toCodeFromKol(buffer, 94, 1);
     let uma = new Uma();
-    uma.Bamei = readStr(buffer, 7, 30);
+    uma.KolUmaCode = readInt(buffer, 0, 7);
+    const bamei = readStr(buffer, 7, 30);
+    if (this.tool.isEnglish(bamei)) {
+      uma.EigoBamei = bamei;
+    } else {
+      uma.KanaBamei = bamei;
+    }
     uma.KyuuBamei = readStr(buffer, 37, 40);
     uma.Seinen = readPositiveInt(buffer, 77, 4);
     uma.Seinengappi = readDate(buffer, 77, 8);
@@ -258,7 +264,8 @@ export class KolUmaKd3 extends DataToImport {
     toBe.Wakuban = readPositiveInt(buffer, 0, 1);
     toBe.Umaban = umaban;
     const kyuusha = await this.kolTool.saveKyuusha(buffer, 158);
-    toBe.KyousoubaId = (await this.saveKyousoubaOfRace(buffer, kyousouba, uma, kyuusha)).Kyousouba.Id;
+    kyousouba = await this.saveKyousoubaOfRace(buffer, kyousouba, kyuusha);
+    toBe.KyousoubaId = kyousouba.Id;
     toBe.Nenrei = readPositiveInt(buffer, 8, 2);
     // TODO
     // toBe.Blinker = $S.blinker.toCodeFromKol(buffer, 90, 1);
@@ -337,21 +344,17 @@ export class KolUmaKd3 extends DataToImport {
     await this.choukyouTool.saveChoukyouRireki(buffer, 248, uma.Id, tanshukuKishuMei);
   }
 
-  public async saveKyousoubaOfRace(buffer: Buffer, k: Kyousouba, u: Uma, kyuusha: Kyuusha) {
+  public async saveKyousoubaOfRace(buffer: Buffer, k: Kyousouba, kyuusha: Kyuusha) {
     const seibetsu = $U.seibetsu.toCodeFromKol(buffer, 7, 1);
-    let uma = new Uma();
-    uma.Bamei = u.Bamei;
-    uma.Seibetsu = seibetsu || u.Seibetsu;
-    uma = await this.umaDao.saveUma(uma);
     let kyousouba = new Kyousouba();
-    kyousouba.UmaId = uma.Id;
+    kyousouba.UmaId = k.UmaId;
     kyousouba.Seibetsu = seibetsu || k.Seibetsu;
     kyousouba.UmaKigou = $U.umaKigou.toCodeFromKol(buffer, 5, 2) || k.UmaKigou;
     const banushi = await this.kolTool.saveBanushi(buffer, 10);
     kyousouba.BanushiId = banushi && banushi.Id || k.BanushiId;
     kyousouba.KyuushaId = kyuusha && kyuusha.Id || k.KyuushaId;
     kyousouba = await this.umaDao.saveKyousouba(kyousouba);
-    return { Kyousouba: kyousouba, Uma: uma };
+    return kyousouba;
   }
 
 }

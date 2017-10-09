@@ -35,7 +35,12 @@ export class Ukc extends DataToImport {
   public async save(buffer: Buffer, bridge: Bridge) {
     const seibetsu = $U.seibetsu.toCodeFromJrdb(buffer, 44, 1);
     let uma = new Uma();
-    uma.Bamei = readStr(buffer, 8, 36);
+    const bamei = readStr(buffer, 8, 36);
+    if (this.tool.isEnglish(bamei)) {
+      uma.EigoBamei = bamei;
+    } else {
+      uma.KanaBamei = bamei;
+    }
     uma.Seibetsu = seibetsu;
     uma.Keiro = $U.keiro.toCodeFromJrdb(buffer, 45, 2);
     uma.Seibetsu = seibetsu;
@@ -69,7 +74,11 @@ export class Ukc extends DataToImport {
       return null;
     }
     const uma = new Uma();
-    uma.Bamei = bamei;
+    if (this.tool.isEnglish(bamei)) {
+      uma.EigoBamei = bamei;
+    } else {
+      uma.KanaBamei = bamei;
+    }
     uma.Seinen = readInt(buffer, seinenOffset, 4);
     uma.Seibetsu = seibetsu;
     uma.ChichiUmaId = chichiUma && chichiUma.Id;

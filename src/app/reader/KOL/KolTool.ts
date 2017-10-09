@@ -91,16 +91,22 @@ export class KolTool {
   }
 
   public async saveKyousouba(buffer: Buffer, offset: number, kyuusha: Kyuusha) {
-    const seibetsu = $U.seibetsu.toCodeFromKol(buffer, offset + 32, 1);
+    const seibetsu = $U.seibetsu.toCodeFromKol(buffer, offset + 39, 1);
     let uma = new Uma();
-    uma.Bamei = readStr(buffer, offset, 30);
+    uma.KolUmaCode = readInt(buffer, offset, 7);
+    const bamei = readStr(buffer, offset + 7, 30);
+    if (this.tool.isEnglish(bamei)) {
+      uma.EigoBamei = bamei;
+    } else {
+      uma.KanaBamei = bamei;
+    }
     uma.Seibetsu = seibetsu;
     uma = await this.umaDao.saveUma(uma);
     let kyousouba = new Kyousouba();
     kyousouba.UmaId = uma.Id;
     kyousouba.Seibetsu = seibetsu;
-    kyousouba.UmaKigou = $U.umaKigou.toCodeFromKol(buffer, offset + 30, 2);
-    const banushi = await this.saveBanushi(buffer, offset + 35);
+    kyousouba.UmaKigou = $U.umaKigou.toCodeFromKol(buffer, offset + 37, 2);
+    const banushi = await this.saveBanushi(buffer, offset + 42);
     kyousouba.BanushiId = banushi && banushi.Id;
     kyousouba.KyuushaId = kyuusha && kyuusha.Id;
     kyousouba = await this.umaDao.saveKyousouba(kyousouba);

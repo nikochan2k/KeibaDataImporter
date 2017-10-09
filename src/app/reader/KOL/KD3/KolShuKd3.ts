@@ -6,6 +6,7 @@ import * as $U from "../../../converters/Uma";
 import { UmaDao } from "../../../daos/UmaDao";
 import { Uma } from "../../../entities/Uma";
 import { DataToImport } from "../../DataToImport";
+import { Tool } from "../../Tool";
 import { KolUmaTool } from "../KolUmaTool";
 import {
   readPositiveInt,
@@ -19,6 +20,9 @@ export class KolShuKd3 extends DataToImport {
   protected entityManager: EntityManager;
 
   @Inject()
+  private tool: Tool;
+
+  @Inject()
   private umaDao: UmaDao;
 
   @Inject()
@@ -30,7 +34,12 @@ export class KolShuKd3 extends DataToImport {
 
   public async save(buffer: Buffer) {
     let uma = new Uma();
-    uma.Bamei = readStr(buffer, 7, 34);
+    const bamei = readStr(buffer, 7, 34);
+    if (this.tool.isEnglish(bamei)) {
+      uma.EigoBamei = bamei;
+    } else {
+      uma.KanaBamei = bamei;
+    }
     uma.Seinen = readPositiveInt(buffer, 41, 4);
     uma.Keiro = $U.keiro.toCodeFromKol(buffer, 45, 2);
     uma.Sanchi = $U.sanch.toCodeFromKol(buffer, 47, 3);

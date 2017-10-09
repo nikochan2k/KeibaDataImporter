@@ -6,22 +6,25 @@ import {
 } from "typeorm";
 
 @Entity("Uma")
-@Index("IxUma", (u: Uma) => [u.Bamei])
+@Index("IxUma1", (u: Uma) => [u.KolUmaCode], { unique: true })
+@Index("IxUma2", (u: Uma) => [u.KettouTourokuBangou], { unique: true })
+@Index("IxUma3", (u: Uma) => [u.KanaBamei])
+@Index("IxUma4", (u: Uma) => [u.EigoBamei])
 export class Uma {
   @PrimaryGeneratedColumn()
   public Id: number;
 
   @Column("int", { nullable: true })
-  public KolUmaCode: number;
+  public KolUmaCode?: number;
 
-  @Column("int", { nullable: true })
-  public JrdbUmaCode: number;
+  @Column("varchar", { length: 8, nullable: true })
+  public KettouTourokuBangou?: string;
 
   @Column("varchar", { length: 54, nullable: true })
-  public Bamei: string;
+  public KanaBamei?: string;
 
   @Column("varchar", { length: 34, nullable: true })
-  public EigoBamei: string;
+  public EigoBamei?: string;
 
   @Column("varchar", { length: 60, nullable: true })
   public KyuuBamei: string;
@@ -82,9 +85,6 @@ export class Uma {
 
   @Column("smallint", { nullable: true })
   public ShibouNen?: number;
-
-  @Column("varchar", { length: 8, nullable: true })
-  public KettouTourokuBangou?: string;
 
   @Column("tinyint", { nullable: true })
   public ChichiKeitouCode?: number;

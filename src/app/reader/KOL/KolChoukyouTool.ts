@@ -126,7 +126,7 @@ export class KolChoukyouTool {
       if (execed && 0 < execed.length) {
         const awaseUma = execed[0];
         const uma = new Uma();
-        uma.Bamei = awaseUma;
+        uma.KanaBamei = awaseUma;
         choukyouRireki.AwaseUmaId = (await this.umaDao.saveUma(uma)).Id;
       } else {
         reigai = true;

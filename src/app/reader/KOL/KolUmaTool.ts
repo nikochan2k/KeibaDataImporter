@@ -25,9 +25,9 @@ export class KolUmaTool {
     uma.YunyuubaFlag = $U.yunyuubaFlag.toCodeFromKol(buffer, offset, 1);
     uma.KolUmaCode = readInt(buffer, offset + 1, 7);
     if (this.tool.isEnglish(bamei)) {
-      uma.Bamei = bamei;
-    } else {
       uma.EigoBamei = bamei;
+    } else {
+      uma.KanaBamei = bamei;
     }
     uma.ChichiUmaId = chichiUmaId;
     uma.HahaUmaId = hahaUmaId;
@@ -45,7 +45,11 @@ export class KolUmaTool {
     uma.Seibetsu = seibetsu;
     uma.YunyuubaFlag = $U.yunyuubaFlag.toCodeFromKol(buffer, offset, 1);
     uma.KolUmaCode = readInt(buffer, offset + 1, 7);
-    uma.Bamei = bamei;
+    if (this.tool.isEnglish(bamei)) {
+      uma.EigoBamei = bamei;
+    } else {
+      uma.KanaBamei = bamei;
+    }
     uma.EigoBamei = readStr(buffer, offset + 42, 34);
     uma.Seinen = readInt(buffer, offset + 76, 4);
     uma.Keiro = $U.keiro.toCodeFromKol(buffer, offset + 80, 2);
@@ -63,7 +67,11 @@ export class KolUmaTool {
     }
     const uma = new Uma();
     uma.KolUmaCode = readInt(buffer, offset, 7);
-    uma.Bamei = bamei;
+    if (this.tool.isEnglish(bamei)) {
+      uma.EigoBamei = bamei;
+    } else {
+      uma.KanaBamei = bamei;
+    }
     if (chichiOffset && !uma.ChichiUmaId) {
       const chichiUma = await this.saveOyaUma(buffer, chichiOffset, $U.Seibetsu.Boba);
       uma.ChichiUmaId = chichiUma && chichiUma.Id;

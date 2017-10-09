@@ -79,7 +79,7 @@ export class KolDen2Kd3 extends DataToImport {
     const asIs = info.shussouba;
     toBe.Wakuban = readPositiveInt(buffer, 22, 1);
     const kyuusha = await this.kolTool.saveKyuusha(buffer, 206);
-    const umaInfo = await this.kolTool.saveKyousouba(buffer, 32, kyuusha);
+    const umaInfo = await this.kolTool.saveKyousouba(buffer, 25, kyuusha);
     info.uma = umaInfo.Uma;
     toBe.KyousoubaId = umaInfo.Kyousouba.Id;
     toBe.Nenrei = readPositiveInt(buffer, 65, 2);

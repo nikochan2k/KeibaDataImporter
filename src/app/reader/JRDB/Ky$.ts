@@ -76,7 +76,12 @@ export abstract class Ky$ extends ShussoubaData {
     const seibetsu = $U.seibetsu.toCodeFromJrdb(buffer, 403, 1);
     let uma = new Uma();
     uma.KettouTourokuBangou = readStr(buffer, 10, 8);
-    uma.Bamei = readStr(buffer, 18, 36);
+    const bamei = readStr(buffer, 18, 36);
+    if (this.tool.isEnglish) {
+      uma.EigoBamei = bamei;
+    } else {
+      uma.KanaBamei = bamei;
+    }
     uma.Seibetsu = seibetsu;
     uma = await this.umaDao.saveUma(uma);
     let kyousouba = new Kyousouba();

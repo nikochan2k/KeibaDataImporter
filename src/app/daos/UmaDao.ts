@@ -21,8 +21,23 @@ export class UmaDao {
   @Inject()
   private tool: Tool;
 
-  protected getUma(uma: Uma) {
-    return this.umaRepository.findOne({ Bamei: uma.Bamei });
+  protected async getUma(uma: Uma) {
+    let result: Uma;
+    if (uma.KolUmaCode) {
+      result = await this.umaRepository.findOne({ KolUmaCode: uma.KolUmaCode });
+    }
+    if (!result && uma.KettouTourokuBangou) {
+      result = await this.umaRepository.findOne({ KettouTourokuBangou: uma.KettouTourokuBangou });
+    }
+    if (!result && uma.KanaBamei) {
+      // TODO 馬名重複
+      result = await this.umaRepository.findOne({ KanaBamei: uma.KanaBamei });
+    }
+    if (!result && uma.EigoBamei) {
+      // TODO 馬名重複
+      result = await this.umaRepository.findOne({ EigoBamei: uma.EigoBamei });
+    }
+    return result;
   }
 
   public getKyousouba(kyousouba: Kyousouba) {
