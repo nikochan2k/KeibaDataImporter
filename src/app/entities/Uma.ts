@@ -17,10 +17,10 @@ export class Uma {
   @Column("int", { nullable: true })
   public JrdbUmaCode: number;
 
-  @Column("varchar", { length: 54 })
+  @Column("varchar", { length: 54, nullable: true })
   public Bamei: string;
 
-  @Column("varchar", { length: 34 })
+  @Column("varchar", { length: 34, nullable: true })
   public EigoBamei: string;
 
   @Column("varchar", { length: 60, nullable: true })

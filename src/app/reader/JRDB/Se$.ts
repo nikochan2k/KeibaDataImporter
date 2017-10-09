@@ -145,7 +145,7 @@ export abstract class Se$ extends ShussoubaData {
     toBe.Id = info.shussouba.Id;
     this.setShussoubaSeiseki(buffer, toBe, info);
     const asIs = await this.entityManager.findOneById(ShussoubaSeiseki, toBe.Id);
-    await this.tool.saveOrUpdate(ShussoubaHyouka, asIs, toBe);
+    await this.tool.saveOrUpdate(ShussoubaSeiseki, asIs, toBe);
   }
 
   protected setShussoubaSeiseki(buffer: Buffer, toBe: ShussoubaSeiseki, info: ShussoubaInfo) {

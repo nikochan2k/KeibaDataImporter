@@ -40,7 +40,7 @@ export abstract class Tool {
 
   public async saveOrUpdate<T>(entity: ObjectType<T>, asIs: T, toBe: T, forceKeys?: string[]) {
     if (asIs) {
-      const updateSet = this.createUpdateSet(asIs, toBe, forceKeys);
+      const updateSet = this.createUpdateSet(asIs, toBe);
       if (Object.keys(updateSet).length) {
         await this.entityManager
           .createQueryBuilder()
@@ -56,22 +56,15 @@ export abstract class Tool {
     return toBe;
   }
 
-  protected createUpdateSet<T>(asIs: T, toBe: T, forceKeys?: string[]) {
+  protected createUpdateSet<T>(asIs: T, toBe: T) {
     const updateSet = <T>{};
     const keys = Object.keys(toBe);
     for (let i = 0; i < keys.length; i++) {
       const key = keys[i];
       const toBeValue = toBe[key];
-      if (forceKeys && 0 <= forceKeys.indexOf(key)) {
-        updateSet[key] = toBeValue;
-        asIs[key] = toBeValue;
+      if (toBeValue === undefined) {
         continue;
       }
-      /* tslint:disable:triple-equals */
-      if (toBeValue == null) {
-        continue;
-      }
-      /* tslint:disable:triple-equals */
       if (asIs[key] !== toBeValue) {
         updateSet[key] = toBeValue;
         asIs[key] = toBeValue;
@@ -191,7 +184,7 @@ export abstract class Tool {
     toBe.Id = this.getOddsHaitouId(partial);
     const asIs = await this.getOddsHaitouById(toBe.Id);
     if (asIs) {
-      toBe = await this.saveOrUpdate(OddsHaitou, asIs, toBe);
+      toBe = await this.saveOrUpdate(OddsHaitou, toBe, asIs);
     } else {
       toBe = await this.entityManager.save(toBe);
     }
