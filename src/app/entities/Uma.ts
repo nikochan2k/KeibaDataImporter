@@ -20,6 +20,9 @@ export class Uma {
   @Column("varchar", { length: 54 })
   public Bamei: string;
 
+  @Column("varchar", { length: 34 })
+  public EigoBamei: string;
+
   @Column("varchar", { length: 60, nullable: true })
   public KyuuBamei: string;
 

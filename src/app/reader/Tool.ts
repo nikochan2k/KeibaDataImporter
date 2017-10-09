@@ -120,6 +120,10 @@ export abstract class Tool {
     }
   }
 
+  public isEnglish(name: string) {
+    return /^[\x00-\x7F]*$/.test(name);
+  }
+
   public getChakujun(buffer, offset, length) {
     const chakujun = readPositiveInt(buffer, offset, length);
     if (1 <= chakujun && chakujun <= 28) {

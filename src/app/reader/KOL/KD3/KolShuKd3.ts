@@ -13,7 +13,7 @@ import {
 } from "../../Reader";
 
 @Service()
-export class KolKisKd3 extends DataToImport {
+export class KolShuKd3 extends DataToImport {
 
   @OrmManager()
   protected entityManager: EntityManager;
