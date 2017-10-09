@@ -11,6 +11,12 @@ export class Uma {
   @PrimaryGeneratedColumn()
   public Id: number;
 
+  @Column("int", { nullable: true })
+  public KolUmaCode: number;
+
+  @Column("int", { nullable: true })
+  public JrdbUmaCode: number;
+
   @Column("varchar", { length: 54 })
   public Bamei: string;
 
@@ -23,10 +29,10 @@ export class Uma {
   @Column("int", { nullable: true })
   public Seinengappi?: number;
 
-  @Column("smallint", { nullable: true })
+  @Column("tinyint", { nullable: true })
   public Keiro?: number;
 
-  @Column("smallint", { nullable: true })
+  @Column("tinyint", { nullable: true })
   public Kesshu?: number;
 
   @Column("smallint", { nullable: true })
@@ -35,7 +41,7 @@ export class Uma {
   @Column("varchar", { length: 12, nullable: true })
   public SanchiMei?: string;
 
-  @Column("smallint", { nullable: true })
+  @Column("tinyint", { nullable: true })
   public Seibetsu?: number;
 
   @Column("int", { nullable: true })
@@ -47,7 +53,7 @@ export class Uma {
   @Column("int", { nullable: true })
   public SeisanshaId?: number;
 
-  @Column("smallint", { nullable: true })
+  @Column("tinyint", { nullable: true })
   public MasshouFlag?: number;
 
   @Column("bigint", { nullable: true })
@@ -59,8 +65,17 @@ export class Uma {
   @Column("varchar", { length: 15, nullable: true })
   public Ikisaki?: string;
 
-  @Column("smallint", { nullable: true })
+  @Column("tinyint", { nullable: true })
   public YunyuubaFlag?: number;
+
+  @Column("tinyint", { nullable: true })
+  public KyoriTekisei?: number;
+
+  @Column("tinyint", { nullable: true })
+  public OmoKousetsu?: number;
+
+  @Column("tinyint", { nullable: true })
+  public DirtKousetsu?: number;
 
   @Column("smallint", { nullable: true })
   public ShibouNen?: number;

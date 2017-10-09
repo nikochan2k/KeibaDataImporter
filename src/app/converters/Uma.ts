@@ -422,3 +422,11 @@ export const yunyuubaFlag = new Codes(
     { code: 5, kol: "5", naiyou: "外国馬" }
   ]
 );
+
+export const kyoriTekisei = new Codes(
+  [
+    { code: 1, kol: "1", naiyou: "短" },
+    { code: 2, kol: "2", naiyou: "中" },
+    { code: 3, kol: "3", naiyou: "長" },
+  ]
+);

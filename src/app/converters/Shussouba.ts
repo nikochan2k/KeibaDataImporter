@@ -131,14 +131,6 @@ export const joushoudo = new Codes(
   ]
 );
 
-export const hyouka = new Codes(
-  [
-    { code: 1, jrdb: "1", naiyou: "◎" },
-    { code: 2, jrdb: "2", naiyou: "○" },
-    { code: 3, jrdb: "3", naiyou: "△" },
-  ]
-);
-
 export const classCode = new Codes(
   [
     { code: 1, jrdb: "01", naiyou: "芝G1" },

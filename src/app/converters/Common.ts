@@ -154,3 +154,11 @@ export enum Kakutei {
   ToujitsuAM,
   Kakutei
 }
+
+export const hyouka = new Codes(
+  [
+    { code: 1, kol: "1", jrdb: "1", naiyou: "◎" },
+    { code: 2, kol: "2", jrdb: "2", naiyou: "○" },
+    { code: 3, kol: "3", jrdb: "3", naiyou: "△" },
+  ]
+);

@@ -32,6 +32,7 @@ import { Tool } from "../../Tool";
 import { KolChoukyouTool } from "../KolChoukyouTool";
 import { KolImportTool } from "../KolImportTool";
 import { KolTool } from "../KolTool";
+import { KolUmaTool } from "../KolUmaTool";
 
 
 @Service()
@@ -49,6 +50,9 @@ export class KolUmaKd3 extends DataToImport {
   private kolImportTool: KolImportTool;
 
   @Inject()
+  private kolUmaTool: KolUmaTool;
+
+  @Inject()
   private choukyouTool: KolChoukyouTool;
 
   @Inject()
@@ -56,26 +60,6 @@ export class KolUmaKd3 extends DataToImport {
 
   protected getBufferLength() {
     return 5166;
-  }
-
-  protected async saveOyaUma(buffer: Buffer, offset: number, seibetsu: $U.Seibetsu, chichiOffset?: number, hahaOffset?: number) {
-    const bamei = readStr(buffer, offset, 34);
-    if (!bamei) {
-      return null;
-    }
-    const uma = new Uma();
-    uma.Bamei = bamei;
-    if (chichiOffset && !uma.ChichiUmaId) {
-      const chichiUma = await this.saveOyaUma(buffer, chichiOffset, $U.Seibetsu.Boba);
-      uma.ChichiUmaId = chichiUma && chichiUma.Id;
-    }
-    if (hahaOffset && !uma.HahaUmaId) {
-      const hahaUma = await this.saveOyaUma(buffer, hahaOffset, $U.Seibetsu.Hinba);
-      uma.HahaUmaId = hahaUma && hahaUma.Id;
-    }
-    uma.Seibetsu = seibetsu;
-
-    return this.umaDao.saveUma(uma);
   }
 
   public async save(buffer: Buffer) {
@@ -121,9 +105,9 @@ export class KolUmaKd3 extends DataToImport {
     uma.Kesshu = $U.kesshu.toCodeFromKol(buffer, 87, 2);
     uma.Sanchi = $U.sanch.toCodeFromKol(buffer, 89, 3);
     uma.Seibetsu = seibetsu;
-    const chichiUma = await this.saveOyaUma(buffer, 104, $U.Seibetsu.Boba);
+    const chichiUma = await this.kolUmaTool.saveOyaUma(buffer, 97, $U.Seibetsu.Boba);
     uma.ChichiUmaId = chichiUma && chichiUma.Id;
-    const hahaUma = await this.saveOyaUma(buffer, 145, $U.Seibetsu.Hinba, 186, 227);
+    const hahaUma = await this.kolUmaTool.saveOyaUma(buffer, 138, $U.Seibetsu.Hinba, 179, 220);
     uma.HahaUmaId = hahaUma && hahaUma.Id;
     const seisansha = await this.kolTool.saveSeisansha(buffer, 423);
     uma.SeisanshaId = seisansha && seisansha.Id;
