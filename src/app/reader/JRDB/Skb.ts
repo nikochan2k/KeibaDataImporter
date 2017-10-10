@@ -44,32 +44,32 @@ export abstract class Skb extends DataToImport {
 
   protected async saveShussoubaJoutaiSeries(buffer: Buffer, shussoubaId: number) {
     for (let bangou = 0, offset = 26; bangou < 6; bangou++ , offset += 3) {
-      await this.jrdbTool.saveShussoubaJoutai(buffer, shussoubaId, Kubun.Tokki, bangou, offset);
+      await this.jrdbTool.saveShussoubaJoutai(buffer, shussoubaId, Kubun.Tokki, offset);
     }
     for (let bangou = 0, offset = 44; bangou < 8; bangou++ , offset += 3) {
-      await this.jrdbTool.saveShussoubaJoutai(buffer, shussoubaId, Kubun.Bagu, bangou, offset);
+      await this.jrdbTool.saveShussoubaJoutai(buffer, shussoubaId, Kubun.Bagu, offset);
     }
     for (let bangou = 0, offset = 69; bangou < 3; bangou++ , offset += 3) {
-      await this.jrdbTool.saveShussoubaJoutai(buffer, shussoubaId, Kubun.AshimotoSougou, bangou, offset);
+      await this.jrdbTool.saveShussoubaJoutai(buffer, shussoubaId, Kubun.AshimotoSougou, offset);
     }
     for (let bangou = 0, offset = 78; bangou < 3; bangou++ , offset += 3) {
-      await this.jrdbTool.saveShussoubaJoutai(buffer, shussoubaId, Kubun.AshimotoHidariMae, bangou, offset);
+      await this.jrdbTool.saveShussoubaJoutai(buffer, shussoubaId, Kubun.AshimotoHidariMae, offset);
     }
     for (let bangou = 0, offset = 86; bangou < 3; bangou++ , offset += 3) {
-      await this.jrdbTool.saveShussoubaJoutai(buffer, shussoubaId, Kubun.AshimotoMigiMae, bangou, offset);
+      await this.jrdbTool.saveShussoubaJoutai(buffer, shussoubaId, Kubun.AshimotoMigiMae, offset);
     }
     for (let bangou = 0, offset = 95; bangou < 3; bangou++ , offset += 3) {
-      await this.jrdbTool.saveShussoubaJoutai(buffer, shussoubaId, Kubun.AshimotoHidariUshiro, bangou, offset);
+      await this.jrdbTool.saveShussoubaJoutai(buffer, shussoubaId, Kubun.AshimotoHidariUshiro, offset);
     }
     for (let bangou = 0, offset = 104; bangou < 3; bangou++ , offset += 3) {
-      await this.jrdbTool.saveShussoubaJoutai(buffer, shussoubaId, Kubun.AshimotoMigiUshiro, bangou, offset);
+      await this.jrdbTool.saveShussoubaJoutai(buffer, shussoubaId, Kubun.AshimotoMigiUshiro, offset);
     }
-    await this.jrdbTool.saveShussoubaJoutai(buffer, shussoubaId, Kubun.BaguHami, 0, 273);
-    await this.jrdbTool.saveShussoubaJoutai(buffer, shussoubaId, Kubun.BaguBandage, 0, 276);
-    await this.jrdbTool.saveShussoubaJoutai(buffer, shussoubaId, Kubun.BaguTeitetsu, 0, 279);
-    await this.jrdbTool.saveShussoubaJoutai(buffer, shussoubaId, Kubun.BaguHidume, 0, 282);
-    await this.jrdbTool.saveShussoubaJoutai(buffer, shussoubaId, Kubun.BaguSoe, 0, 285);
-    await this.jrdbTool.saveShussoubaJoutai(buffer, shussoubaId, Kubun.BaguKotsuryuu, 0, 288);
+    await this.jrdbTool.saveShussoubaJoutai(buffer, shussoubaId, Kubun.BaguHami, 273);
+    await this.jrdbTool.saveShussoubaJoutai(buffer, shussoubaId, Kubun.BaguBandage, 276);
+    await this.jrdbTool.saveShussoubaJoutai(buffer, shussoubaId, Kubun.BaguTeitetsu, 279);
+    await this.jrdbTool.saveShussoubaJoutai(buffer, shussoubaId, Kubun.BaguHidume, 282);
+    await this.jrdbTool.saveShussoubaJoutai(buffer, shussoubaId, Kubun.BaguSoe, 285);
+    await this.jrdbTool.saveShussoubaJoutai(buffer, shussoubaId, Kubun.BaguKotsuryuu, 288);
   }
 
 }

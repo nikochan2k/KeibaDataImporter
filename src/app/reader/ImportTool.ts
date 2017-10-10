@@ -2,11 +2,12 @@ import { Logger } from "log4js";
 import { Inject } from "typedi";
 import { EntityManager } from "typeorm";
 import { OrmManager } from "typeorm-typedi-extensions";
-import { readPositiveInt, readInt, readRaw } from "./Reader";
+import { readInt, readPositiveInt, readRaw } from "./Reader";
 import { Tool } from "./Tool";
 import { Kaisai } from "../entities/Kaisai";
 import { Race } from "../entities/Race";
 import { Shussouba } from "../entities/Shussouba";
+import { ShussoubaJoutai, Kubun } from "../entities/ShussoubaJoutai";
 import { Uma } from "../entities/Uma";
 import { getLogger } from "../LogUtil";
 
@@ -275,6 +276,21 @@ export abstract class ImportTool {
     const id = race.Id * (2 ** 6) + umaban;
     const shussouba = await this.entityManager.findOneById(Shussouba, id);
     return { kaisai: kaisai, race: race, shussouba: shussouba };
+  }
+
+  public async saveShussoubaJoutai(shussoubaId: number, kubun: Kubun, code: number) {
+    const id = shussoubaId * (2 ** (4 + 10)) + kubun * (2 ** 10) + code;
+    const toBe = new ShussoubaJoutai();
+    toBe.Id = id;
+    toBe.ShussoubaId = shussoubaId;
+    toBe.Kubun = kubun;
+    toBe.Code = code;
+
+    const asIs = await this.entityManager.findOneById(ShussoubaJoutai, id);
+    if (asIs) {
+      return;
+    }
+    await this.entityManager.save(toBe);
   }
 
 }

@@ -876,9 +876,13 @@ export const baguShubetsu = new Codes(
   ]
 );
 
+export enum Bagu {
+  Blinker = 1
+}
+
 export const bagu = new Codes(
   [
-    { code: 1, kol: "1", jrdb: "001", naiyou: "ブリンカー", tanshuku: "ブ" },
+    { code: Bagu.Blinker, kol: "1", jrdb: "001", naiyou: "ブリンカー", tanshuku: "ブ" },
     { code: 2, jrdb: "002", naiyou: "シャドーロール", tanshuku: "鼻" },
     { code: 3, jrdb: "003", naiyou: "リングハミ", tanshuku: "R" },
     { code: 4, jrdb: "004", naiyou: "Dハミ", tanshuku: "D" },

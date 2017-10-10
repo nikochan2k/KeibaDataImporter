@@ -26,7 +26,7 @@ export enum Kubun {
 }
 
 @Entity("ShussoubaJoutai")
-@Index("IxShussoubaJoutai", (stj: ShussoubaJoutai) => [stj.ShussoubaId])
+@Index("IxShussoubaJoutai", (stj: ShussoubaJoutai) => [stj.ShussoubaId, stj.Kubun, stj.Code], { unique: true })
 export class ShussoubaJoutai {
   @PrimaryColumn("bigint")
   public Id: number;
@@ -36,9 +36,6 @@ export class ShussoubaJoutai {
 
   @Column("tinyint")
   public Kubun: Kubun;
-
-  @Column("tinyint")
-  public Bangou: number;
 
   @Column("smallint", { nullable: true })
   public Code: number;

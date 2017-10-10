@@ -1,7 +1,9 @@
 import { Inject, Service } from "typedi";
 import * as $S from "../../../converters/Shussouba";
+import { Bagu } from "../../../converters/ShussoubaJoutai";
 import { Choukyou } from "../../../entities/Choukyou";
 import { Shussouba } from "../../../entities/Shussouba";
+import { Kubun } from "../../../entities/ShussoubaJoutai";
 import { ShussoubaYosou } from "../../../entities/ShussoubaYosou";
 import { Bridge } from "../../Bridge";
 import { DataToImport } from "../../DataToImport";
@@ -64,8 +66,8 @@ export class KolDen2Kd3 extends DataToImport {
     }
     info.shussouba = shussouba;
 
+    await this.saveShussoubaJoutai(buffer, shussouba);
     await this.saveShussoubaYosou(buffer, shussouba, <KolBridge>bridge);
-
     const tanshukuKishuMei = readStrWithNoSpace(buffer, 188, 8);
     await this.saveChoukyou(buffer, info, tanshukuKishuMei);
   }
@@ -83,8 +85,6 @@ export class KolDen2Kd3 extends DataToImport {
     info.uma = umaInfo.Uma;
     toBe.KyousoubaId = umaInfo.Kyousouba.Id;
     toBe.Nenrei = readPositiveInt(buffer, 65, 2);
-    // TODO
-    // toBe.Blinker = $S.blinker.toCodeFromKol(buffer, 147, 1);
     toBe.Kinryou = readDouble(buffer, 148, 3, 0.1);
     const kishu = await this.kolTool.saveKishu(buffer, 151);
     toBe.KishuId = kishu.Id;
@@ -96,6 +96,13 @@ export class KolDen2Kd3 extends DataToImport {
     toBe.KyuuyouRiyuuCode = $S.kyuuyouRiyuuCode.toCodeFromKol(buffer, 783, 60);
 
     return await this.tool.saveOrUpdate(Shussouba, asIs, toBe);
+  }
+
+  protected async saveShussoubaJoutai(buffer: Buffer, shussouba: Shussouba) {
+    const blinker = readPositiveInt(buffer, 147, 1);
+    if (0 < blinker) {
+      this.kolImportTool.saveShussoubaJoutai(shussouba.Id, Kubun.Bagu, Bagu.Blinker);
+    }
   }
 
   protected async saveShussoubaYosou(buffer: Buffer, shussouba: Shussouba, bridge: KolBridge) {

@@ -5,6 +5,8 @@ import * as $K from "../../../converters/Kaisai";
 import * as $R from "../../../converters/Race";
 import * as $S from "../../../converters/Shussouba";
 import * as $U from "../../../converters/Uma";
+import { Kubun } from "../../../entities/ShussoubaJoutai";
+import { Bagu } from "../../../converters/ShussoubaJoutai";
 import { UmaDao } from "../../../daos/UmaDao";
 import { Choukyou } from "../../../entities/Choukyou";
 import { Kaisai } from "../../../entities/Kaisai";
@@ -85,6 +87,7 @@ export class KolUmaKd3 extends DataToImport {
       const shussoubaBuffer = buffer.slice(offset + 151, offset + 590);
       const shussouba = await this.saveShussouba(shussoubaBuffer, race, kyousouba, uma);
       if (shussouba) {
+        await this.saveShussoubaJoutai(shussoubaBuffer, shussouba);
         await this.saveShussoubaSeiseki(shussoubaBuffer, race, shussouba);
         await this.saveShussoubaYosou(shussoubaBuffer, shussouba);
         await this.kolImportTool.saveNinkiOdds(shussoubaBuffer, shussouba, 208, 210);
@@ -267,11 +270,16 @@ export class KolUmaKd3 extends DataToImport {
     kyousouba = await this.saveKyousoubaOfRace(buffer, kyousouba, kyuusha);
     toBe.KyousoubaId = kyousouba.Id;
     toBe.Nenrei = readPositiveInt(buffer, 8, 2);
-    // TODO
-    // toBe.Blinker = $S.blinker.toCodeFromKol(buffer, 90, 1);
     toBe.Kinryou = readDouble(buffer, 91, 3, 0.1);
 
     return await this.tool.saveOrUpdate(Shussouba, asIs, toBe);
+  }
+
+  protected async saveShussoubaJoutai(buffer: Buffer, shussouba: Shussouba) {
+    const blinker = readPositiveInt(buffer, 90, 1);
+    if (0 < blinker) {
+      this.kolImportTool.saveShussoubaJoutai(shussouba.Id, Kubun.Bagu, Bagu.Blinker);
+    }
   }
 
   protected async saveShussoubaSeiseki(buffer: Buffer, race: Race, shussouba: Shussouba) {

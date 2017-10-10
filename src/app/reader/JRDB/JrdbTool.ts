@@ -4,7 +4,8 @@ import { OrmManager } from "typeorm-typedi-extensions";
 import * as $C from "../../converters/Common";
 import * as $SJ from "../../converters/ShussoubaJoutai";
 import { Shussouba } from "../../entities/Shussouba";
-import { ShussoubaJoutai, Kubun } from "../../entities/ShussoubaJoutai";
+import { Kubun } from "../../entities/ShussoubaJoutai";
+import { ImportTool } from "../ImportTool";
 import { Tool } from "../Tool";
 import {
   readDouble,
@@ -28,6 +29,9 @@ export class JrdbTool {
 
   @Inject()
   private tool: Tool;
+
+  @Inject()
+  private importTool: ImportTool;
 
   public getDateFromFilename(basename: string) {
     const execed = /^[^0-9]+([0-9]{6})\.txt$/.exec(basename);
@@ -56,24 +60,19 @@ export class JrdbTool {
     });
   }
 
-  public async saveShussoubaJoutai(buffer: Buffer, shussoubaId: number, kubun: Kubun, bangou: number, offset: number) {
-    const id = shussoubaId * (2 ** (4 + 3)) + kubun * (2 ** 3) + bangou;
-    const toBe = new ShussoubaJoutai();
-    toBe.Id = id;
-    toBe.ShussoubaId = shussoubaId;
-    toBe.Kubun = kubun;
-    toBe.Bangou = bangou;
+  public async saveShussoubaJoutai(buffer: Buffer, shussoubaId: number, kubun: Kubun, offset: number) {
+    let code: number;
     if (Kubun.TaikeiSougaou <= kubun && kubun <= Kubun.Tokki) {
-      toBe.Code = $SJ.tokki.toCodeFromJrdb(buffer, offset, 3);
+      code = $SJ.tokki.toCodeFromJrdb(buffer, offset, 3);
     } else if (Kubun.Bagu <= kubun && kubun <= Kubun.BaguKotsuryuu) {
-      toBe.Code = $SJ.bagu.toCodeFromJrdb(buffer, offset, 3);
+      code = $SJ.bagu.toCodeFromJrdb(buffer, offset, 3);
     } else if (Kubun.AshimotoSougou <= kubun && kubun <= Kubun.AshimotoMigiUshiro) {
-      toBe.Code = $SJ.ashimoto.toCodeFromJrdb(buffer, offset, 3);
+      code = $SJ.ashimoto.toCodeFromJrdb(buffer, offset, 3);
     } else {
+      // TODO ログ
+      return;
     }
-
-    const asIs = await this.entityManager.findOneById(ShussoubaJoutai, id);
-    await this.tool.saveOrUpdate(ShussoubaJoutai, asIs, toBe);
+    await this.importTool.saveShussoubaJoutai(shussoubaId, kubun, code);
   }
 
 }

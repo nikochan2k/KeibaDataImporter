@@ -1,9 +1,11 @@
 import { Inject, Service } from "typedi";
 import * as $S from "../../../converters/Shussouba";
+import { Bagu } from "../../../converters/ShussoubaJoutai";
 import { Choukyou } from "../../../entities/Choukyou";
 import { Kyousouba } from "../../../entities/Kyousouba";
 import { Shussouba } from "../../../entities/Shussouba";
 import { ShussoubaHyouka } from "../../../entities/ShussoubaHyouka";
+import { Kubun } from "../../../entities/ShussoubaJoutai";
 import { ShussoubaSeiseki } from "../../../entities/ShussoubaSeiseki";
 import { ShussoubaYosou } from "../../../entities/ShussoubaYosou";
 import { Uma } from "../../../entities/Uma";
@@ -75,12 +77,17 @@ export class KolSei2Kd3 extends DataToImport {
     info.uma = umaInfo.Uma;
     toBe.KyousoubaId = umaInfo.Kyousouba.Id;
     toBe.Nenrei = readPositiveInt(buffer, 67, 2);
-    // TODO
-    // toBe.Blinker = $S.blinker.toCodeFromKol(buffer, 149, 1);
     toBe.Kinryou = readDouble(buffer, 150, 3, 0.1);
 
     const asIs = info.shussouba;
     return await this.tool.saveOrUpdate(Shussouba, asIs, toBe);
+  }
+
+  protected async saveShussoubaJoutai(buffer: Buffer, shussouba: Shussouba) {
+    const blinker = readPositiveInt(buffer, 149, 1);
+    if (0 < blinker) {
+      this.kolImportTool.saveShussoubaJoutai(shussouba.Id, Kubun.Bagu, Bagu.Blinker);
+    }
   }
 
   protected async saveShussoubaSeiseki(buffer: Buffer, info: ShussoubaInfo) {
