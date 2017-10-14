@@ -8,22 +8,19 @@ import {
 @Entity("Race")
 @Index("IxRace", (r: Race) => [r.KaisaiId, r.RaceBangou])
 export class Race {
-  @PrimaryColumn("bigint")
+  @PrimaryColumn("int")
   public Id: number;
 
   @Column("int")
   public KaisaiId: number;
 
-  @Column("smallint")
+  @Column("tinyint")
   public RaceBangou: number;
 
-  @Column("bigint", { nullable: true })
-  public Nengappi: number;
-
-  @Column("smallint", { nullable: true })
+  @Column("tinyint", { nullable: true })
   public IppanTokubetsu: number;
 
-  @Column("smallint", { nullable: true })
+  @Column("tinyint", { nullable: true })
   public HeichiShougai: number;
 
   @Column("tinyint", { nullable: true })

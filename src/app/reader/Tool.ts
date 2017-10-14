@@ -3,7 +3,7 @@ import { Service } from "typedi";
 import { EntityManager, ObjectType } from "typeorm";
 import { OrmManager } from "typeorm-typedi-extensions";
 import { readInt, readPositiveInt, readStrWithNoSpace } from "./Reader";
-import { Race } from "../entities/Race";
+import { Kaisai } from "../entities/Kaisai";
 import { Shussouba } from "../entities/Shussouba";
 import { getLogger } from "../LogUtil";
 
@@ -121,8 +121,8 @@ export class Tool {
     meishou = meishou.replace(/H$|ハンデ$/, "ハンデキャップ");
     return meishou;
   }
-  public normalizeNenrei(race: Race, shussouba: Shussouba) {
-    if (race.Nengappi < 20010000) {
+  public normalizeNenrei(kaisai: Kaisai, shussouba: Shussouba) {
+    if (kaisai.Nen < 2001) {
       shussouba.Nenrei--;
     }
   }

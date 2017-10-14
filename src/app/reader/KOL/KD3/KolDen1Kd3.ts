@@ -89,7 +89,6 @@ export class KolDen1Kd3 extends DataToImport {
 
     // TODO
     // if (!asIs || !asIs.KolSeisekiSakuseiNengappi) {
-    toBe.Nengappi = readInt(buffer, 12, 8);
     toBe.IppanTokubetsu = $R.ippanTokubetsu.toCodeFromKol(buffer, 23, 1);
     toBe.HeichiShougai = $R.heichiShougai.toCodeFromKol(buffer, 24, 1);
     toBe.JuushouKaisuu = readPositiveInt(buffer, 25, 3);
