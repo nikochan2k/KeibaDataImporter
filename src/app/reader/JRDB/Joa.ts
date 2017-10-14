@@ -1,7 +1,7 @@
 import { Inject } from "typedi";
 import { EntityManager } from "typeorm";
 import { OrmManager } from "typeorm-typedi-extensions";
-import { JrdbImportTool } from "./JrdbImportTool";
+import { JrdbShussoubaTool } from "./JrdbShussoubaTool";
 import * as $S from "../../converters/Shussouba";
 import * as $SJ from "../../converters/ShussoubaYosou";
 import { ShussoubaYosou } from "../../entities/ShussoubaYosou";
@@ -19,10 +19,10 @@ export abstract class Joa extends DataToImport {
   protected tool: Tool;
 
   @Inject()
-  protected jrdbImportTool: JrdbImportTool;
+  protected jrdbShussoubaTool: JrdbShussoubaTool;
 
   public async save(buffer: Buffer, bridge: Bridge) {
-    const id = this.jrdbImportTool.getShussoubaId(buffer, 8);
+    const id = this.jrdbShussoubaTool.getShussoubaId(buffer, 8);
     const asIs = await this.entityManager.findOneById(ShussoubaYosou, id);
 
     const toBe = new ShussoubaYosou();

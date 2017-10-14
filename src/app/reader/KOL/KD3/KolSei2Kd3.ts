@@ -10,7 +10,7 @@ import { ShussoubaSeiseki } from "../../../entities/ShussoubaSeiseki";
 import { ShussoubaYosou } from "../../../entities/ShussoubaYosou";
 import { Uma } from "../../../entities/Uma";
 import { DataToImport } from "../../DataToImport";
-import { ShussoubaInfo } from "../../ImportTool";
+import { ShussoubaInfo } from "../../ShussoubaTool";
 import {
   readDouble,
   readInt,
@@ -20,7 +20,8 @@ import {
 } from "../../Reader";
 import { Tool } from "../../Tool";
 import { KolChoukyouTool } from "../KolChoukyouTool";
-import { KolImportTool } from "../KolImportTool";
+import { KolShussoubaTool } from "../KolShussoubaTool";
+import { KolOddsHaitouTool } from "../KolOddsHaitouTool";
 import { KolTool } from "../KolTool";
 
 @Service()
@@ -36,14 +37,17 @@ export class KolSei2Kd3 extends DataToImport {
   private kolTool: KolTool;
 
   @Inject()
-  private kolImportTool: KolImportTool;
+  private kolShussoubaTool: KolShussoubaTool;
+
+  @Inject()
+  private kolOddsHaitouTool: KolOddsHaitouTool;
 
   protected getBufferLength() {
     return 600;
   }
 
   public async save(buffer: Buffer) {
-    const info = await this.kolImportTool.getShussoubaInfo(buffer, 23);
+    const info = await this.kolShussoubaTool.getShussoubaInfo(buffer, 23);
     if (!info) {
       return;
     }
@@ -61,13 +65,13 @@ export class KolSei2Kd3 extends DataToImport {
 
     await this.saveShussoubaSeiseki(buffer, info);
     await this.saveShussoubaYosou(buffer, info.shussouba);
-    await this.kolImportTool.saveNinkiOdds(buffer, info.shussouba, 267, 269);
-    await this.kolTool.saveShussoubaTsuukaJuni(buffer, 298, info.shussouba);
+    await this.kolOddsHaitouTool.saveNinkiOdds(buffer, info.shussouba, 267, 269);
+    await this.kolShussoubaTool.saveShussoubaTsuukaJuni(buffer, 298, info.shussouba);
     await this.saveChoukyou(buffer, info);
   }
 
   protected async saveShussouba(buffer: Buffer, info: ShussoubaInfo) {
-    const toBe = this.kolImportTool.createShussouba(buffer, 23);
+    const toBe = this.kolShussoubaTool.createShussouba(buffer, 23);
     if (toBe) {
       return null;
     }
@@ -86,7 +90,7 @@ export class KolSei2Kd3 extends DataToImport {
   protected async saveShussoubaJoutai(buffer: Buffer, shussouba: Shussouba) {
     const blinker = readPositiveInt(buffer, 149, 1);
     if (0 < blinker) {
-      this.kolImportTool.saveShussoubaJoutai(shussouba.Id, Kubun.Bagu, Bagu.Blinker);
+      this.kolShussoubaTool.saveShussoubaJoutai(shussouba.Id, Kubun.Bagu, Bagu.Blinker);
     }
   }
 
@@ -109,7 +113,7 @@ export class KolSei2Kd3 extends DataToImport {
     toBe.Time = readTime(buffer, 282, 4);
     toBe.Chakusa1 = readInt(buffer, 286, 2);
     toBe.Chakusa2 = $S.chakura2.toCodeFromKol(buffer, 288, 1);
-    toBe.TimeSa = this.kolTool.getTimeSa(buffer, 289);
+    toBe.TimeSa = this.kolShussoubaTool.getTimeSa(buffer, 289);
     if (1200 <= info.race.Kyori) {
       toBe.Ten3F = readDouble(buffer, 292, 3, 0.1);
       if (toBe.Time && toBe.Ten3F) {

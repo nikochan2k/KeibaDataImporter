@@ -1,5 +1,5 @@
 import { Inject } from "typedi";
-import { JrdbImportTool } from "./JrdbImportTool";
+import { JrdbShussoubaTool } from "./JrdbShussoubaTool";
 import * as $CH from "../../converters/Choukyou";
 import { Choukyou } from "../../entities/Choukyou";
 import { DataToImport } from "../DataToImport";
@@ -8,19 +8,19 @@ import { ChoukyouDao } from "../../daos/ChoukyouDao";
 export abstract class Cy$ extends DataToImport {
 
   @Inject()
-  protected jrdbImportTool: JrdbImportTool;
+  protected jrdbShussoubaTool: JrdbShussoubaTool;
 
   @Inject()
   protected choukyouDao: ChoukyouDao;
 
   public async save(buffer: Buffer) {
-    const shussouba = await this.jrdbImportTool.getShussouba(buffer, 8);
-    if (!shussouba) {
+    const shussoubaId = await this.jrdbShussoubaTool.getShussoubaId(buffer, 8);
+    if (!shussoubaId) {
       return;
     }
 
     const choukyou = new Choukyou();
-    choukyou.Id = shussouba.Id;
+    choukyou.Id = shussoubaId;
     this.setChoukyou(buffer, choukyou);
     await this.choukyouDao.save(choukyou);
   }

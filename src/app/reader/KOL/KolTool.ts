@@ -1,10 +1,8 @@
 import { Logger } from "log4js";
 import { Inject, Service } from "typedi";
-import { EntityManager } from "typeorm";
-import { OrmManager } from "typeorm-typedi-extensions";
 import * as $C from "../../converters/Common";
-import * as $KY from "../../converters/Kyuusha";
 import * as $K from "../../converters/Kishu";
+import * as $KY from "../../converters/Kyuusha";
 import * as $U from "../../converters/Uma";
 import { BanushiDao } from "../../daos/BanushiDao";
 import { KishuDao } from "../../daos/KishuDao";
@@ -17,26 +15,20 @@ import { KishuRireki } from "../../entities/KishuRireki";
 import { Kyousouba } from "../../entities/Kyousouba";
 import { Kyuusha } from "../../entities/Kyuusha";
 import { Seisansha } from "../../entities/Seisansha";
-import { Shussouba } from "../../entities/Shussouba";
-import { ShussoubaTsuukaJuni } from "../../entities/ShussoubaTsuukaJuni";
 import { Uma } from "../../entities/Uma";
 import { getLogger } from "../../LogUtil";
-import { Tool, HaitouInfo } from "../Tool";
 import {
-  readDouble,
   readInt,
   readPositiveInt,
   readStr,
   readStrWithNoSpace
 } from "../Reader";
+import { Tool } from "../Tool";
 
 @Service()
 export class KolTool {
 
-  private logger: Logger;
-
-  @OrmManager()
-  private entityManager: EntityManager;
+  protected logger: Logger;
 
   @Inject()
   private tool: Tool;
@@ -149,73 +141,4 @@ export class KolTool {
     return this.kyuushaDao.saveKyuusha(kyuusha, kyuushaMei, tanshukuKyuushaMei);
   }
 
-  public getTimeSa(buffer: Buffer, offset: number) {
-    const timeSa = readDouble(buffer, offset, 3, 0.1);
-    if (99.8 <= timeSa) {
-      return 0.0;
-    }
-    return timeSa;
-  }
-
-  public async saveShussoubaTsuukaJuni(buffer: Buffer, offset: number, shussouba: Shussouba) {
-    for (let bangou = 1; bangou <= 4; bangou++ , offset += 2) {
-      const shussoubaTsuukaJuni = new ShussoubaTsuukaJuni();
-
-      const juni = readPositiveInt(buffer, offset, 2);
-      if (juni === null) {
-        continue;
-      }
-      if (1 <= juni && juni <= 28) {
-        shussoubaTsuukaJuni.Juni = juni;
-      } else if (juni === 31 || juni === 32) {
-        shussoubaTsuukaJuni.Joukyou = juni;
-      } else if (41 <= juni && juni <= 68) {
-        shussoubaTsuukaJuni.Juni = juni - 40;
-        shussoubaTsuukaJuni.Joukyou = 40;
-      } else {
-        this.logger.warn("不正な順位: " + juni);
-        continue;
-      }
-
-      shussoubaTsuukaJuni.Id = shussouba.Id * (2 ** 3) + bangou;
-      shussoubaTsuukaJuni.ShussoubaId = shussouba.Id;
-      shussoubaTsuukaJuni.Bangou = bangou;
-      await this.entityManager.save(shussoubaTsuukaJuni);
-    }
-  }
-
-
-  public async saveRaceHaitou(buffer: Buffer, raceId: number, kakutei: $C.Kakutei, infos: HaitouInfo[]) {
-    for (let i = 0; i < infos.length; i++) {
-      const info = infos[i];
-      const bangou1 = readPositiveInt(buffer, info.bangou1, info.bangou1Len);
-      if (!bangou1) {
-        continue;
-      }
-      let bangou2;
-      if (info.bangou2) {
-        bangou2 = readPositiveInt(buffer, info.bangou2, info.bangou2Len);
-        if (!bangou2 && [$C.Baken.Tanshou, $C.Baken.Fukushou].indexOf(info.baken) === -1) {
-          continue;
-        }
-      }
-      let bangou3;
-      if (info.bangou3) {
-        bangou3 = readPositiveInt(buffer, info.bangou3, info.bangou3Len);
-        if (!bangou3 && [$C.Baken.Sanrenpuku, $C.Baken.Sanrentan].indexOf(info.baken) !== -1) {
-          continue;
-        }
-      }
-      await this.tool.saveOddsHaitou({
-        RaceId: raceId,
-        Kakutei: kakutei,
-        Baken: info.baken,
-        Bangou1: bangou1,
-        Bangou2: bangou2,
-        Bangou3: bangou3,
-        Haitoukin: readPositiveInt(buffer, info.haitou, info.haitouLen),
-        Ninki: (info.ninki ? readPositiveInt(buffer, info.ninki, info.ninkiLen) : undefined),
-      });
-    }
-  }
 }

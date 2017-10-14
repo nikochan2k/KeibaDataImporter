@@ -16,7 +16,8 @@ import {
 } from "../../Reader";
 import { Tool } from "../../Tool";
 import { KolBridge } from "../KolBridge";
-import { KolImportTool } from "../KolImportTool";
+import { KolKaisaiTool } from "../KolKaisaiTool";
+import { KolRaceTool } from "../KolRaceTool";
 
 @Service()
 export class KolDen1Kd3 extends DataToImport {
@@ -25,7 +26,10 @@ export class KolDen1Kd3 extends DataToImport {
   private tool: Tool;
 
   @Inject()
-  private kolImportTool: KolImportTool;
+  private kolKaisaiTool: KolKaisaiTool;
+
+  @Inject()
+  private kolRaceTool: KolRaceTool;
 
   protected getBufferLength() {
     return 848;
@@ -42,7 +46,7 @@ export class KolDen1Kd3 extends DataToImport {
       return;
     }
 
-    const asIs = await this.kolImportTool.getRace(buffer);
+    const asIs = await this.kolRaceTool.getRace(buffer);
     /* TODO
     if (asIs) {
       const dataSakuseiNengappi = readDate(buffer, 418, 8);
@@ -62,12 +66,12 @@ export class KolDen1Kd3 extends DataToImport {
   }
 
   protected async saveKaisai(buffer: Buffer) {
-    const asIs = await this.kolImportTool.getKaisai(buffer);
+    const asIs = await this.kolKaisaiTool.getKaisai(buffer);
     if (asIs) {
       return asIs;
     }
 
-    let toBe = this.kolImportTool.createKaisai(buffer);
+    let toBe = this.kolKaisaiTool.createKaisai(buffer);
     if (!toBe) {
       return null;
     }
@@ -79,7 +83,7 @@ export class KolDen1Kd3 extends DataToImport {
   }
 
   protected async saveRace(buffer: Buffer, kaisai: Kaisai, asIs: Race) {
-    const toBe = this.kolImportTool.createRace(buffer);
+    const toBe = this.kolRaceTool.createRace(buffer, kaisai.Id);
     if (!toBe) {
       return asIs;
     }
@@ -139,11 +143,11 @@ export class KolDen1Kd3 extends DataToImport {
     toBe.UchiSoto = $R.uchiSoto.toCodeFromKol(buffer, 107, 1);
     toBe.Course = $R.course.toCodeFromKol(buffer, 108, 1);
     toBe.Kyori = readPositiveInt(buffer, 109, 4);
-    const courceRecord = await this.kolImportTool.getRecord(buffer, 114, 0);
+    const courceRecord = await this.kolRaceTool.getRecord(buffer, 114, 0);
     toBe.CourseRecordId = courceRecord && courceRecord.Id;
-    const kyoriRecord = await this.kolImportTool.getRecord(buffer, 167, 220);
+    const kyoriRecord = await this.kolRaceTool.getRecord(buffer, 167, 220);
     toBe.KyoriRecordId = kyoriRecord && kyoriRecord.Id;
-    const raceRecord = await this.kolImportTool.getRecord(buffer, 222, 275);
+    const raceRecord = await this.kolRaceTool.getRecord(buffer, 222, 275);
     toBe.RaceRecordId = raceRecord && raceRecord.Id;
     toBe.Shoukin1Chaku = readPositiveInt(buffer, 277, 9);
     toBe.Shoukin2Chaku = readPositiveInt(buffer, 286, 9);

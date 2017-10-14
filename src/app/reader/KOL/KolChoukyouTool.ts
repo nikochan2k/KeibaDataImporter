@@ -1,3 +1,4 @@
+import { crc16 } from "crc";
 import { Logger } from "log4js";
 import { Inject, Service } from "typedi";
 import { EntityManager } from "typeorm";
@@ -7,21 +8,20 @@ import { ChoukyouDao } from "../../daos/ChoukyouDao";
 import { MeishouDao } from "../../daos/MeishouDao";
 import { UmaDao } from "../../daos/UmaDao";
 import { Choukyou } from "../../entities/Choukyou";
-import { ImportTool } from "../ImportTool";
 import { ChoukyouRireki } from "../../entities/ChoukyouRireki";
 import { ChoukyouTime } from "../../entities/ChoukyouTime";
 import { Kubun } from "../../entities/Meishou";
 import { Uma } from "../../entities/Uma";
 import { getLogger } from "../../LogUtil";
-import { crc16 } from "crc";
 import {
   readDate,
   readPositiveInt,
   readStr,
   readStrWithNoSpace
 } from "../Reader";
+import { Tool } from "../Tool";
 
-export interface FurlongOffset {
+interface FurlongOffset {
   f: number;
   offset: number;
 }
@@ -52,7 +52,7 @@ export class KolChoukyouTool {
   private entityManager: EntityManager;
 
   @Inject()
-  private importTool: ImportTool;
+  private tool: Tool;
 
   @Inject()
   private umaDao: UmaDao;
@@ -79,7 +79,7 @@ export class KolChoukyouTool {
     }
 
     const choukyouRireki = new ChoukyouRireki();
-    const dateId = this.importTool.getDateId(buffer, offset + 9);
+    const dateId = this.tool.getDateId(buffer, offset + 9);
     const buf = buffer.slice(offset + 27, 42);
     const hash = crc16(buf);
     choukyouRireki.Id = umaId * (2 ** (16 + 16)) + dateId * (2 ** 16) + hash;

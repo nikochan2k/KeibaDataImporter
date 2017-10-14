@@ -1,6 +1,6 @@
 import { Service } from "typedi";
 import * as $C from "../../converters/Common";
-import { ImportTool, KaisaiInfo } from "../ImportTool";
+import { KaisaiInfo, KaisaiTool } from "../KaisaiTool";
 import {
   readHex,
   readInt,
@@ -9,7 +9,7 @@ import {
 } from "../Reader";
 
 @Service()
-export class JrdbImportTool extends ImportTool {
+export class JrdbKaisaiTool extends KaisaiTool {
 
   protected getYear(buffer: Buffer) {
     const yy = readInt(buffer, 2, 2);
@@ -47,11 +47,6 @@ export class JrdbImportTool extends ImportTool {
       nichiji: nichiji,
       year: year
     };
-  }
-
-  protected getRaceBangou(buffer: Buffer) {
-    const raceBangou = readPositiveInt(buffer, 8, 2);
-    return raceBangou;
   }
 
 }

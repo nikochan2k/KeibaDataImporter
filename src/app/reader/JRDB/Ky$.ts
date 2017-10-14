@@ -1,5 +1,4 @@
 import { Inject } from "typedi";
-import { JrdbImportTool } from "./JrdbImportTool";
 import { ShussoubaData } from "./ShussoubaData";
 import * as $C from "../../converters/Common";
 import * as $KY from "../../converters/Kyuusha";
@@ -20,7 +19,6 @@ import { Shussouba } from "../../entities/Shussouba";
 import { Kubun } from "../../entities/ShussoubaJoutai";
 import { ShussoubaYosou } from "../../entities/ShussoubaYosou";
 import { Uma } from "../../entities/Uma";
-import { ShussoubaInfo } from "../ImportTool";
 import {
   readDouble,
   readInt,
@@ -28,11 +26,9 @@ import {
   readStr,
   readStrWithNoSpace
 } from "../Reader";
+import { ShussoubaInfo } from "../ShussoubaTool";
 
 export abstract class Ky$ extends ShussoubaData {
-
-  @Inject()
-  protected jrdbImportTool: JrdbImportTool;
 
   @Inject()
   private kyuushaDao: KyuushaDao;
@@ -117,7 +113,7 @@ export abstract class Ky$ extends ShussoubaData {
   protected async saveShussoubaJoutai(buffer: Buffer, shussouba: Shussouba) {
     const blinker = readInt(buffer, 170, 1);
     if (0 < blinker) {
-      await this.jrdbImportTool.saveShussoubaJoutai(shussouba.Id, Kubun.Bagu, Bagu.Blinker);
+      await this.jrdbShussoubaTool.saveShussoubaJoutai(shussouba.Id, Kubun.Bagu, Bagu.Blinker);
     }
   }
 
@@ -227,22 +223,22 @@ export abstract class Ky$ extends ShussoubaData {
 
   protected async saveShussoubaJoutaiSeries(buffer: Buffer, shussouba: Shussouba) {
     for (let bangou = 0, offset = 501; bangou < 3; bangou++ , offset += 3) {
-      this.jrdbTool.saveShussoubaJoutai(buffer, shussouba.Id, Kubun.TaikeiSougaou, offset);
+      this.jrdbShussoubaTool.saveShussoubaJoutaiWith(buffer, offset, shussouba.Id, Kubun.TaikeiSougaou);
     }
     for (let bangou = 0, offset = 510; bangou < 3; bangou++ , offset += 3) {
-      this.jrdbTool.saveShussoubaJoutai(buffer, shussouba.Id, Kubun.UmaTokki, offset);
+      this.jrdbShussoubaTool.saveShussoubaJoutaiWith(buffer, offset, shussouba.Id, Kubun.UmaTokki);
     }
   }
 
   protected async saveOddsHaitou(buffer: Buffer, shussouba: Shussouba) {
-    await this.jrdbTool.saveOddsNinki(buffer, shussouba, {
+    await this.jrdbOddsHaitouTool.saveOddsNinki(buffer, shussouba, {
       Kakutei: $C.Kakutei.Yosou,
       Baken: $C.Baken.Tanshou,
       OddsOffset: 95,
       OddsLength: 5,
       NinkiOffset: 100
     });
-    await this.jrdbTool.saveOddsNinki(buffer, shussouba, {
+    await this.jrdbOddsHaitouTool.saveOddsNinki(buffer, shussouba, {
       Kakutei: $C.Kakutei.Yosou,
       Baken: $C.Baken.Fukushou,
       OddsOffset: 102,

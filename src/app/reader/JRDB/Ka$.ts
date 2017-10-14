@@ -6,7 +6,7 @@ import { Bridge } from "../Bridge";
 import { DataToImport } from "../DataToImport";
 import { readDouble } from "../Reader";
 import { Tool } from "../Tool";
-import { JrdbImportTool } from "./JrdbImportTool";
+import { JrdbKaisaiTool } from "./JrdbKaisaiTool";
 
 export abstract class Ka$ extends DataToImport {
 
@@ -14,16 +14,16 @@ export abstract class Ka$ extends DataToImport {
   protected tool: Tool;
 
   @Inject()
-  protected jrdbImportTool: JrdbImportTool;
+  protected jrdbKaisaiTool: JrdbKaisaiTool;
 
   public async save(buffer: Buffer, bridge: Bridge) {
-    const toBe = this.jrdbImportTool.createKaisai(buffer);
+    const toBe = this.jrdbKaisaiTool.createKaisai(buffer);
     if (!toBe) {
       return;
     }
     this.setKaisai(buffer, toBe);
 
-    const asIs = await this.jrdbImportTool.getKaisai(buffer);
+    const asIs = await this.jrdbKaisaiTool.getKaisai(buffer);
     await this.tool.saveOrUpdate(Kaisai, asIs, toBe);
   }
 

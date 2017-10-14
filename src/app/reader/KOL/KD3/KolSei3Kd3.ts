@@ -1,16 +1,14 @@
 import { Inject, Service } from "typedi";
-import { DataToImport } from "../../DataToImport";
 import { RaceSeiseki } from "../../../entities/RaceSeiseki";
-import {
-  readStr,
-} from "../../Reader";
-import { KolImportTool } from "../KolImportTool";
+import { DataToImport } from "../../DataToImport";
+import { readStr } from "../../Reader";
+import { KolRaceTool } from "../KolRaceTool";
 
 @Service()
 export class KolSei3Kd3 extends DataToImport {
 
   @Inject()
-  private kolImportTool: KolImportTool;
+  private kolRaceTool: KolRaceTool;
 
   protected getBufferLength() {
     return 1050;
@@ -21,7 +19,7 @@ export class KolSei3Kd3 extends DataToImport {
     if (!seisaiNaiyou) {
       return;
     }
-    const id = this.kolImportTool.getRaceId(buffer);
+    const id = this.kolRaceTool.getRaceId(buffer);
     const asIs = await this.entityManager.findOneById(RaceSeiseki, id);
     if (!asIs.SeisaiNaiyou) {
       await this.entityManager

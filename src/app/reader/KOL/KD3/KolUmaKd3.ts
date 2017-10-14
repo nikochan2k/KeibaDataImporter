@@ -31,10 +31,13 @@ import {
   readTime
 } from "../../Reader";
 import { Tool } from "../../Tool";
-import { KolChoukyouTool } from "../KolChoukyouTool";
-import { KolImportTool } from "../KolImportTool";
 import { KolTool } from "../KolTool";
+import { KolChoukyouTool } from "../KolChoukyouTool";
+import { KolRaceTool } from "../KolRaceTool";
+import { KolKaisaiTool } from "../KolKaisaiTool";
+import { KolShussoubaTool } from "../KolShussoubaTool";
 import { KolUmaTool } from "../KolUmaTool";
+import { KolOddsHaitouTool } from "../KolOddsHaitouTool";
 
 
 @Service()
@@ -49,13 +52,22 @@ export class KolUmaKd3 extends DataToImport {
   private kolTool: KolTool;
 
   @Inject()
-  private kolImportTool: KolImportTool;
+  private kolKaisaiTool: KolKaisaiTool;
+
+  @Inject()
+  private kolRaceTool: KolRaceTool;
+
+  @Inject()
+  private kolShussoubaTool: KolShussoubaTool;
 
   @Inject()
   private kolUmaTool: KolUmaTool;
 
   @Inject()
-  private choukyouTool: KolChoukyouTool;
+  private kolChoukyouTool: KolChoukyouTool;
+
+  @Inject()
+  private kolOddsHaitouTool: KolOddsHaitouTool;
 
   @Inject()
   private umaDao: UmaDao;
@@ -90,8 +102,8 @@ export class KolUmaKd3 extends DataToImport {
         await this.saveShussoubaJoutai(shussoubaBuffer, shussouba);
         await this.saveShussoubaSeiseki(shussoubaBuffer, race, shussouba);
         await this.saveShussoubaYosou(shussoubaBuffer, shussouba);
-        await this.kolImportTool.saveNinkiOdds(shussoubaBuffer, shussouba, 208, 210);
-        await this.kolTool.saveShussoubaTsuukaJuni(shussoubaBuffer, 239, shussouba);
+        await this.kolOddsHaitouTool.saveNinkiOdds(shussoubaBuffer, shussouba, 208, 210);
+        await this.kolShussoubaTool.saveShussoubaTsuukaJuni(shussoubaBuffer, 239, shussouba);
         await this.saveChoukyou(shussoubaBuffer, shussouba, uma);
       }
     }
@@ -139,7 +151,7 @@ export class KolUmaKd3 extends DataToImport {
   }
 
   protected async saveKaisai(buffer: Buffer) {
-    const toBe = this.kolImportTool.createKaisai(buffer);
+    const toBe = this.kolKaisaiTool.createKaisai(buffer);
     if (!toBe) {
       return null;
     }
@@ -148,19 +160,19 @@ export class KolUmaKd3 extends DataToImport {
     toBe.ChuuouChihouGaikoku = $K.chuuouChihouGaikoku.toCodeFromKol(buffer, 23, 1);
     toBe.GaikokuKeibajouMei = readStr(buffer, 131, 20);
 
-    const asIs = await this.kolImportTool.getKaisai(buffer);
+    const asIs = await this.kolKaisaiTool.getKaisai(buffer);
 
     return await this.tool.saveOrUpdate(Kaisai, asIs, toBe);
   }
 
   protected async saveRace(buffer: Buffer, kaisai: Kaisai) {
-    const asIs = await this.kolImportTool.getRace(buffer, kaisai.Id);
+    const asIs = await this.kolRaceTool.getRace(buffer, kaisai.Id);
     // TODO
     if (asIs) {
       return asIs;
     }
 
-    const toBe = this.kolImportTool.createRace(buffer);
+    const toBe = this.kolRaceTool.createRace(buffer, kaisai.Id);
     if (!toBe) {
       return null;
     }
@@ -278,7 +290,7 @@ export class KolUmaKd3 extends DataToImport {
   protected async saveShussoubaJoutai(buffer: Buffer, shussouba: Shussouba) {
     const blinker = readPositiveInt(buffer, 90, 1);
     if (0 < blinker) {
-      this.kolImportTool.saveShussoubaJoutai(shussouba.Id, Kubun.Bagu, Bagu.Blinker);
+      this.kolShussoubaTool.saveShussoubaJoutai(shussouba.Id, Kubun.Bagu, Bagu.Blinker);
     }
   }
 
@@ -301,7 +313,7 @@ export class KolUmaKd3 extends DataToImport {
     toBe.Time = readTime(buffer, 223, 4);
     toBe.Chakusa1 = readInt(buffer, 227, 2);
     toBe.Chakusa2 = $S.chakura2.toCodeFromKol(buffer, 229, 1);
-    toBe.TimeSa = this.kolTool.getTimeSa(buffer, 230);
+    toBe.TimeSa = this.kolShussoubaTool.getTimeSa(buffer, 230);
 
     if (1200 <= race.Kyori) {
       toBe.Ten3F = readDouble(buffer, 233, 3, 0.1);
@@ -348,8 +360,8 @@ export class KolUmaKd3 extends DataToImport {
     const tanshukuKishuMei = readStrWithNoSpace(buffer, 140, 8);
     const choukyou = new Choukyou();
     choukyou.Id = shussouba.Id;
-    await this.choukyouTool.saveChoukyou(choukyou);
-    await this.choukyouTool.saveChoukyouRireki(buffer, 248, uma.Id, tanshukuKishuMei);
+    await this.kolChoukyouTool.saveChoukyou(choukyou);
+    await this.kolChoukyouTool.saveChoukyouRireki(buffer, 248, uma.Id, tanshukuKishuMei);
   }
 
   public async saveKyousoubaOfRace(buffer: Buffer, k: Kyousouba, kyuusha: Kyuusha) {

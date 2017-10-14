@@ -10,14 +10,14 @@ import { getLogger } from "../LogUtil";
 @Service()
 export class KeikaTool {
 
-  private logger: Logger;
+  protected logger: Logger;
+
+  @OrmManager()
+  protected entityManager: EntityManager;
 
   constructor() {
     this.logger = getLogger(this);
   }
-
-  @OrmManager()
-  private entityManager: EntityManager;
 
   protected createShussoubaKeika(old?: ShussoubaKeika) {
     const shussoubaKeika = new ShussoubaKeika();

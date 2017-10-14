@@ -3,7 +3,7 @@ import * as $S from "../../converters/Shussouba";
 import * as $SJ from "../../converters/ShussoubaYosou";
 import { Shussouba } from "../../entities/Shussouba";
 import { ShussoubaYosou } from "../../entities/ShussoubaYosou";
-import { ShussoubaInfo } from "../ImportTool";
+import { ShussoubaInfo } from "../ShussoubaTool";
 import { Ky$ } from "./Ky$";
 
 @Service()
