@@ -21,7 +21,7 @@ export abstract class RaceTool {
 
   /**
    * レースIDを返します。
-   * レースIDは開催ID(24ビット)、レース番号(6ビット)の計30ビットです
+   * レースIDは開催ID(22ビット)、レース番号(6ビット)の計28ビットです
    * @protected
    * @param {number} kaisaiId 開催ID
    * @param {number} raceBangou レース番号
@@ -35,7 +35,7 @@ export abstract class RaceTool {
 
   /**
    * レースIDを返します。
-   * レースIDは開催ID(24ビット)、レース番号(6ビット)の計30ビットです
+   * レースIDは開催ID(22ビット)、レース番号(6ビット)の計28ビットです
    * @param {Buffer} buffer バッファ
    * @param {number} [kaisaiId] 開催ID
    * @returns レースID

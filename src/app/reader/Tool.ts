@@ -54,6 +54,13 @@ export class Tool {
     return updateSet;
   }
 
+  public getDateIdFrom(nen: number, gatsu: number, nichi: number) {
+    const date = new Date(nen, gatsu - 1, nichi);
+    const time = date.getTime();
+    const daysFrom1970 = time / (24 * 60 * 60 * 1000);
+    return daysFrom1970;
+  }
+
   /**
    * 年月日を示すIDを返します。
    * 年(7ビット)、月(4ビット)、日(5ビット)の計16ビットです。
@@ -64,22 +71,20 @@ export class Tool {
    */
   public getDateId(buffer: Buffer, offset: number) {
     /* tslint:disable:triple-equals */
-    const year = readInt(buffer, offset, 4);
-    if (year == null) {
+    const nen = readInt(buffer, offset, 4);
+    if (nen == null) {
       return null;
     }
-    const month = readInt(buffer, offset + 4, 2);
-    if (month == null) {
+    const gatsu = readInt(buffer, offset + 4, 2);
+    if (gatsu == null) {
       return null;
     }
-    const day = readInt(buffer, offset + 6, 2);
-    if (day == null) {
+    const nichi = readInt(buffer, offset + 6, 2);
+    if (nichi == null) {
       return null;
     }
     /* tslint:enable:triple-equals */
-
-    const id = year * (2 ** (4 + 5)) + month * (2 ** 5) + day;
-    return id;
+    return this.getDateIdFrom(nen, gatsu, nichi);
   }
 
   public normalizeHoujinMei(buffer, offset, length) {

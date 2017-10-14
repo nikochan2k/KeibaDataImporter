@@ -52,7 +52,7 @@ export class KolDen2Kd3 extends DataToImport {
     /* TODO
     const asIs = info.shussouba;
     if (asIs) {
-      const dataSakuseiNengappi = readDate(buffer, 727, 8);
+      const dataSakuseiNengappi = readInt(buffer, 727, 8);
       if (dataSakuseiNengappi <= asIs.KolSeisekiSakuseiNengappi) {
         this.logger.info("既に最新の出走馬成績データが格納されています: " + asIs.Id);
         return;

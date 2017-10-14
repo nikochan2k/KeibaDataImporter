@@ -44,7 +44,7 @@ export abstract class OddsHaitouTool {
 
   /**
    * オッズ配当IDを取得します。
-   * オッズ配当IDはレースID(30ビット)、確定(2ビット)、馬券(4ビット)、馬番1(5ビット)、馬番2(5ビット)、馬番3(5ビット)の計51ビットです。
+   * オッズ配当IDはレースID(28ビット)、確定(2ビット)、馬券(4ビット)、馬番1(5ビット)、馬番2(5ビット)、馬番3(5ビット)の計49ビットです。
    * @param {number} raceId レースID
    * @param {Baken} baken 馬券
    * @param {number} bangou1 馬番1

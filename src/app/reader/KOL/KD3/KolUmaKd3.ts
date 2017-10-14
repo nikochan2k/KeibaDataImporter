@@ -21,7 +21,6 @@ import { ShussoubaYosou } from "../../../entities/ShussoubaYosou";
 import { Uma } from "../../../entities/Uma";
 import { DataToImport } from "../../DataToImport";
 import {
-  readDate,
   readDouble,
   readInt,
   readPositiveInt,
@@ -121,7 +120,7 @@ export class KolUmaKd3 extends DataToImport {
     }
     uma.KyuuBamei = readStr(buffer, 37, 40);
     uma.Seinen = readPositiveInt(buffer, 77, 4);
-    uma.Seinengappi = readDate(buffer, 77, 8);
+    uma.Seinengappi = readInt(buffer, 77, 8);
     uma.Keiro = $U.keiro.toCodeFromKol(buffer, 85, 2);
     uma.Kesshu = $U.kesshu.toCodeFromKol(buffer, 87, 2);
     uma.Sanchi = $U.sanch.toCodeFromKol(buffer, 89, 3);
@@ -133,7 +132,7 @@ export class KolUmaKd3 extends DataToImport {
     const seisansha = await this.kolTool.saveSeisansha(buffer, 423);
     uma.SeisanshaId = seisansha && seisansha.Id;
     uma.MasshouFlag = $C.masshouFlag.toCodeFromKol(buffer, 544, 1);
-    uma.MasshouNengappi = readDate(buffer, 545, 8);
+    uma.MasshouNengappi = readInt(buffer, 545, 8);
     uma.Jiyuu = readStr(buffer, 553, 6);
     uma.Ikisaki = readStr(buffer, 559, 10);
     uma = await this.umaDao.saveUma(uma);
@@ -176,7 +175,7 @@ export class KolUmaKd3 extends DataToImport {
     if (!toBe) {
       return null;
     }
-    toBe.Nengappi = readDate(buffer, 12, 8);
+    toBe.Nengappi = readInt(buffer, 12, 8);
     toBe.IppanTokubetsu = $R.ippanTokubetsu.toCodeFromKol(buffer, 24, 1);
     toBe.HeichiShougai = $R.heichiShougai.toCodeFromKol(buffer, 25, 1);
     toBe.JuushouKaisuu = readPositiveInt(buffer, 26, 3);

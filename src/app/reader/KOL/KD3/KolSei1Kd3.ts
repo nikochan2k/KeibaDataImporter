@@ -10,7 +10,6 @@ import { RaceKeika } from "../../../entities/RaceKeika";
 import { DataToImport } from "../../DataToImport";
 import { KeikaTool } from "../../KeikaTool";
 import {
-  readDate,
   readDouble,
   readInt,
   readPositiveInt,
@@ -86,7 +85,7 @@ export class KolSei1Kd3 extends DataToImport {
       return null;
     }
 
-    toBe.Nengappi = readDate(buffer, 12, 8);
+    toBe.Nengappi = readInt(buffer, 12, 8);
     toBe.IppanTokubetsu = $R.ippanTokubetsu.toCodeFromKol(buffer, 24, 1);
     toBe.HeichiShougai = $R.heichiShougai.toCodeFromKol(buffer, 25, 1);
     toBe.JuushouKaisuu = readPositiveInt(buffer, 26, 3);

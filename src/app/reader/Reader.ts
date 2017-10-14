@@ -96,11 +96,3 @@ export function readHex(buf: Buffer, offset: number, length: number) {
   const i = parseInt(str, 16);
   return isNaN(i) ? null : i;
 }
-
-export function readDate(buf: Buffer, offset: number, length: number) {
-  const date = readInt(buf, offset, length);
-  if (date === null) {
-    return null;
-  }
-  return date;
-}

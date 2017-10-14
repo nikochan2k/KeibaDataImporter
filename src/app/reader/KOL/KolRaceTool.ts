@@ -14,14 +14,14 @@ import { ShussoubaHassouJoukyou } from "../../entities/ShussoubaHassouJoukyou";
 import { Uma } from "../../entities/Uma";
 import { RaceTool } from "../RaceTool";
 import {
-  readDate,
   readDouble,
+  readInt,
   readPositiveInt,
   readRaw,
   readStr,
   readStrWithNoSpace,
   readTime
-} from "../Reader";
+  } from "../Reader";
 import { Tool } from "../Tool";
 
 export interface RaceLapTimeInfo {
@@ -77,7 +77,7 @@ export class KolRaceTool extends RaceTool {
     }
 
     const record = new Record();
-    const nengappi = readDate(buffer, offset, 8);
+    const nengappi = readInt(buffer, offset, 8);
     record.Nengappi = nengappi;
     record.Time = readTime(buffer, offset + 8, 4);
     const uma = new Uma();

@@ -14,7 +14,7 @@ import { Kubun } from "../../entities/Meishou";
 import { Uma } from "../../entities/Uma";
 import { getLogger } from "../../LogUtil";
 import {
-  readDate,
+  readInt,
   readPositiveInt,
   readStr,
   readStrWithNoSpace
@@ -82,11 +82,11 @@ export class KolChoukyouTool {
     const dateId = this.tool.getDateId(buffer, offset + 9);
     const buf = buffer.slice(offset + 27, 42);
     const hash = crc16(buf);
-    choukyouRireki.Id = umaId * (2 ** (16 + 16)) + dateId * (2 ** 16) + hash;
+    choukyouRireki.Id = umaId * (2 ** (15 + 16)) + dateId * (2 ** 16) + hash;
     choukyouRireki.UmaId = umaId;
     choukyouRireki.ChoukyouFlag = $CH.choukyouFlag.toCodeFromKol(buffer, offset, 1);
     choukyouRireki.Noriyaku = $CH.noriyaku.toCodeFromKol(kijousha);
-    const nengappi = readDate(buffer, offset + 9, 8);
+    const nengappi = readInt(buffer, offset + 9, 8);
     choukyouRireki.Nengappi = nengappi;
     if (!choukyouRireki.Noriyaku) {
       if (tanshukuKishuMei === kijousha) {

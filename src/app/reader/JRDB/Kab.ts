@@ -1,6 +1,6 @@
 import { Service } from "typedi";
 import * as $K from "../../converters/Kaisai";
-import { Kaisai } from "../../entities/Kaisai";
+import { KaisaiYosou } from "../../entities/KaisaiYosou";
 import { readDouble, readInt } from "../Reader";
 import { Ka$ } from "./Ka$";
 
@@ -11,8 +11,8 @@ export class Kab extends Ka$ {
     return 72;
   }
 
-  protected setKaisai(buffer: Buffer, toBe: Kaisai) {
-    super.setKaisai(buffer, toBe);
+  protected setKaisaiYosou(buffer: Buffer, toBe: KaisaiYosou) {
+    super.setKaisaiYosou(buffer, toBe);
     toBe.RenzokuNissuu = readInt(buffer, 49, 2);
     toBe.ShibaShurui = $K.shibaShurui.toCodeFromJrdb(buffer, 51, 1);
     toBe.Kusatake = readDouble(buffer, 52, 4);

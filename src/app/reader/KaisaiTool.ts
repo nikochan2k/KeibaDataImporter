@@ -1,17 +1,18 @@
 import { Logger } from "log4js";
+import { Inject } from "typedi";
 import { EntityManager } from "typeorm";
 import { OrmManager } from "typeorm-typedi-extensions";
+import { Tool } from "./Tool";
 import { Kaisai } from "../entities/Kaisai";
 import { getLogger } from "../LogUtil";
 
 export interface KaisaiInfo {
   basho: number;
-  kaiji: number;
-  nichiji: number;
-  nengappi?: number;
-  year: number;
-  month?: number;
-  day?: number;
+  nen: number;
+  gatsu: number;
+  nichi: number;
+  kaiji?: number;
+  nichiji?: number;
 }
 
 export abstract class KaisaiTool {
@@ -21,6 +22,9 @@ export abstract class KaisaiTool {
   @OrmManager()
   protected entityManager: EntityManager;
 
+  @Inject()
+  private tool: Tool;
+
   constructor() {
     this.logger = getLogger(this);
   }
@@ -29,25 +33,31 @@ export abstract class KaisaiTool {
 
   /**
    * 開催IDを返します。
-   * 開催IDは年(7ビット)、回次(5ビット)、日次(5ビット)、場所(7ビット)の計24ビットです。
+   * 開催IDは場所(7ビット)、1970年1月1日からの経過日数(15ビット)の計22ビットです。
    * @protected
    * @param {KaisaiInfo} info 開催情報
    * @returns 開催ID
-   * @memberof RaceTool
+   * @memberof KaisaiTool
    */
-  protected getKaisaiIdFrom(info: KaisaiInfo) {
-    let kaiji = info.kaiji || 0;
-    let nichiji = info.nichiji || 0;
-    if (kaiji === 0 && nichiji === 0) {
-      kaiji = info.month;
-      nichiji = info.day;
-    }
-    const years = info.year - 1970;
-    const id = years * (2 ** (5 + 5 + 7))
-      + kaiji * (2 ** (5 + 7))
-      + nichiji * (2 ** 7)
-      + info.basho;
+  protected generateKaisaiId(info: KaisaiInfo) {
+    const daysFrom1970 = this.tool.getDateIdFrom(info.nen, info.gatsu, info.nichi);
+    const id = daysFrom1970 * (2 ** 7) + info.basho;
     return id;
+  }
+
+  protected getKaisaiKeyFrom(nen: number, kaiji: number, nichiji: number) {
+    const yy = nen - 1970;
+    const key = yy * (2 ** (5 + 5 + 7))
+      + kaiji * (2 ** (5 + 7))
+      + nichiji * (2 ** 7);
+    return key;
+  }
+
+  protected getKaisaiKey(info: KaisaiInfo) {
+    if (!info.kaiji || !info.nichiji) {
+      return null;
+    }
+    return this.getKaisaiKeyFrom(info.nen, info.kaiji, info.nichiji);
   }
 
   public getKaisaiId(buffer: Buffer) {
@@ -55,7 +65,7 @@ export abstract class KaisaiTool {
     if (!info) {
       return null;
     }
-    const id = this.getKaisaiIdFrom(info);
+    const id = this.generateKaisaiId(info);
     return id;
   }
 
@@ -70,12 +80,14 @@ export abstract class KaisaiTool {
       return null;
     }
     const kaisai = new Kaisai();
-    kaisai.Id = this.getKaisaiIdFrom(info);
+    kaisai.Id = this.generateKaisaiId(info);
+    kaisai.Key = this.getKaisaiKey(info);
     kaisai.Basho = info.basho;
+    kaisai.Nen = info.nen;
+    kaisai.Gatsu = info.gatsu;
+    kaisai.Nichi = info.nichi;
     kaisai.Kaiji = info.kaiji;
     kaisai.Nichiji = info.nichiji;
-    kaisai.Nen = info.year;
-    kaisai.Nengappi = info.nengappi;
     return kaisai;
   }
 }

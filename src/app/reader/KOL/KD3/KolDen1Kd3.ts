@@ -6,7 +6,6 @@ import { Race } from "../../../entities/Race";
 import { Bridge } from "../../Bridge";
 import { DataToImport } from "../../DataToImport";
 import {
-  readDate,
   readInt,
   readPositiveInt,
   readRaw,
@@ -49,7 +48,7 @@ export class KolDen1Kd3 extends DataToImport {
     const asIs = await this.kolRaceTool.getRace(buffer);
     /* TODO
     if (asIs) {
-      const dataSakuseiNengappi = readDate(buffer, 418, 8);
+      const dataSakuseiNengappi = readInt(buffer, 418, 8);
       if (dataSakuseiNengappi <= asIs.KolShutsubahyouSakuseiNengappi) {
         this.logger.info("既に最新の出走馬レースデータが格納されています: " + asIs.Id);
         return;
@@ -90,7 +89,7 @@ export class KolDen1Kd3 extends DataToImport {
 
     // TODO
     // if (!asIs || !asIs.KolSeisekiSakuseiNengappi) {
-    toBe.Nengappi = readDate(buffer, 12, 8);
+    toBe.Nengappi = readInt(buffer, 12, 8);
     toBe.IppanTokubetsu = $R.ippanTokubetsu.toCodeFromKol(buffer, 23, 1);
     toBe.HeichiShougai = $R.heichiShougai.toCodeFromKol(buffer, 24, 1);
     toBe.JuushouKaisuu = readPositiveInt(buffer, 25, 3);

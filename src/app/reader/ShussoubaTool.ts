@@ -28,7 +28,7 @@ export abstract class ShussoubaTool {
 
   /**
    * 出走馬IDを取得します。
-   * 出走馬IDはレースID(30ビット)、馬番(6ビット)の計36ビットです。
+   * 出走馬IDはレースID(28ビット)、馬番(6ビット)の計34ビットです。
    * @protected
    * @param {number} raceId レースID
    * @param {number} umaban 馬番
@@ -42,7 +42,7 @@ export abstract class ShussoubaTool {
 
   /**
    * 出走馬IDを取得します。
-   * 出走馬IDはレースID(30ビット)、馬番(6ビット)の計36ビットです。
+   * 出走馬IDはレースID(28ビット)、馬番(6ビット)の計34ビットです。
    * @param {Buffer} buffer バッファ
    * @param {number} umabanOffset 馬番のオフセット
    * @param {number} [raceId] レースID
