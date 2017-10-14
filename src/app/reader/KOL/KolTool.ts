@@ -1,4 +1,3 @@
-import { Logger } from "log4js";
 import { Inject, Service } from "typedi";
 import * as $C from "../../converters/Common";
 import * as $K from "../../converters/Kishu";
@@ -16,7 +15,6 @@ import { Kyousouba } from "../../entities/Kyousouba";
 import { Kyuusha } from "../../entities/Kyuusha";
 import { Seisansha } from "../../entities/Seisansha";
 import { Uma } from "../../entities/Uma";
-import { getLogger } from "../../LogUtil";
 import {
   readInt,
   readPositiveInt,
@@ -27,8 +25,6 @@ import { Tool } from "../Tool";
 
 @Service()
 export class KolTool {
-
-  protected logger: Logger;
 
   @Inject()
   private tool: Tool;
@@ -47,10 +43,6 @@ export class KolTool {
 
   @Inject()
   private kishuDao: KishuDao;
-
-  constructor() {
-    this.logger = getLogger(this);
-  }
 
   public async saveKishu(buffer: Buffer, offset: number) {
     const kishu = new Kishu();
@@ -133,7 +125,8 @@ export class KolTool {
       return null;
     }
     const kyuusha = new Kyuusha();
-    kyuusha.KolKyuushaCode = readPositiveInt(buffer, offset, 5);
+    const kolKyuushaCode = readPositiveInt(buffer, offset, 5);
+    kyuusha.KolKyuushaCode = kolKyuushaCode;
     const tanshukuKyuushaMei = readStrWithNoSpace(buffer, offset + 37, 8);
     kyuusha.ShozokuBasho = $C.basho.toCodeFromKol(buffer, offset + 45, 2);
     kyuusha.TouzaiBetsu = $KY.touzaiBetsu.toCodeFromKol(buffer, offset + 47, 1);

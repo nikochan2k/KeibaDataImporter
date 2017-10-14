@@ -11,6 +11,6 @@ export function getLogger(obj: any) {
     categoryName = categoryName.replace(/\\[object\\s+|\\]/g, "");
   }
   const logger = log4js.getLogger(categoryName);
-  logger.level = "debug";
+  (<any>logger).level = "debug";
   return logger;
 }
