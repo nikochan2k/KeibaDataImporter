@@ -208,7 +208,7 @@ export class Traversal {
       const importFile = importFiles[i];
       const filepath = importFile.path;
       const basename = importFile.basename;
-      if (this.logger.isInfoEnabled) {
+      if (this.logger.isLevelEnabled("info")) {
         this.logger.info('"' + basename + '"を取り込んでいます');
       }
       if (/\.lzh$/i.test(basename)) {
@@ -218,7 +218,7 @@ export class Traversal {
         entries[basename] = filepath;
         await this.importer.import(entries);
       } else {
-        if (this.logger.isInfoEnabled) {
+        if (this.logger.isLevelEnabled("info")) {
           this.logger.info('"' + basename + '"は取り込み対象ファイルではありません。');
         }
       }
