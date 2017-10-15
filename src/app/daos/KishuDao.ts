@@ -18,7 +18,7 @@ export class KishuDao {
   private kishuRepository: Repository<Kishu>;
 
   @OrmRepository(KishuMei)
-  private kishuMeishouRepository: Repository<KishuMei>;
+  private kishuMeiRepository: Repository<KishuMei>;
 
   @OrmRepository(KishuRireki)
   private kishuRirekiRepository: Repository<KishuRireki>;
@@ -39,14 +39,14 @@ export class KishuDao {
     return result;
   }
 
-  public async getKishuWith(meishouId: number, umaId: number) {
+  public async getKishuWith(jinmeiId: number, umaId: number) {
     const kishuList = <Kishu[]>await this.entityManager.query(`SELECT
   k.*
 FROM
   Kishu k
-  INNER JOIN KishuMeishou km ON k.Id = km.KishuId
+  INNER JOIN KishuMei km ON k.Id = km.KishuId
 WHERE
-  km.MeishouId = ?
+  km.JinmeiId = ?
 ORDER BY
   (
     SELECT
@@ -60,7 +60,7 @@ ORDER BY
       ky.UmaId = ?
   ) DESC
 LIMIT
-  1`, [meishouId, umaId]);
+  1`, [jinmeiId, umaId]);
 
     if (kishuList.length === 0) {
       return null;
@@ -73,29 +73,29 @@ LIMIT
     const asIs = await this.getKishu(toBe);
     toBe = await this.tool.saveOrUpdate(Kishu, asIs, toBe);
     if (seimei) {
-      await this.saveKishuMeishou(toBe, Kubun.Seimei, seimei);
+      await this.saveKishuMei(toBe, Kubun.Seimei, seimei);
     }
     if (tanshuku) {
-      await this.saveKishuMeishou(toBe, Kubun.Tanshuku, tanshuku);
+      await this.saveKishuMei(toBe, Kubun.Tanshuku, tanshuku);
       if (3 < tanshuku.length) {
         tanshuku = tanshuku.substring(0, 3);
-        await this.saveKishuMeishou(toBe, Kubun.Tanshuku, tanshuku);
+        await this.saveKishuMei(toBe, Kubun.Tanshuku, tanshuku);
       }
     }
     if (furigana) {
-      await this.saveKishuMeishou(toBe, Kubun.Furigana, furigana);
+      await this.saveKishuMei(toBe, Kubun.Furigana, furigana);
     }
     return toBe;
   }
 
-  protected async saveKishuMeishou(kishu: Kishu, kubun: Kubun, name: string) {
-    const meishou = await this.jinmeiDao.save(kubun, name);
-    let kishuMeishou = await this.kishuMeishouRepository.findOne({ KishuId: kishu.Id, JinmeiId: meishou.Id });
-    if (!kishuMeishou) {
-      kishuMeishou = new KishuMei();
-      kishuMeishou.KishuId = kishu.Id;
-      kishuMeishou.JinmeiId = meishou.Id;
-      await this.kishuMeishouRepository.save(kishuMeishou);
+  protected async saveKishuMei(kishu: Kishu, kubun: Kubun, name: string) {
+    const jinmei = await this.jinmeiDao.save(kubun, name);
+    let kishuMei = await this.kishuMeiRepository.findOne({ KishuId: kishu.Id, JinmeiId: jinmei.Id });
+    if (!kishuMei) {
+      kishuMei = new KishuMei();
+      kishuMei.KishuId = kishu.Id;
+      kishuMei.JinmeiId = jinmei.Id;
+      await this.kishuMeiRepository.save(kishuMei);
     }
   }
 

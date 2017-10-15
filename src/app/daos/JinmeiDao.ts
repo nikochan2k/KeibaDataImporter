@@ -22,14 +22,14 @@ export class JinmeiDao {
   }
 
   public async save(kubun: Kubun, name: string) {
-    let meishou = await this.repository.findOne({ Name: name });
-    if (!meishou) {
-      meishou = new Jinmei();
-      meishou.Kubun = kubun;
-      meishou.Name = name;
-      await this.repository.save(meishou);
+    let jinmei = await this.repository.findOne({ Name: name });
+    if (!jinmei) {
+      jinmei = new Jinmei();
+      jinmei.Kubun = kubun;
+      jinmei.Name = name;
+      await this.repository.save(jinmei);
     }
-    return meishou;
+    return jinmei;
   }
 
 }
