@@ -36,7 +36,7 @@ export abstract class Ka$ extends DataToImport {
     }
     this.setKaisai(buffer, toBe);
 
-    const asIs = await this.jrdbKaisaiTool.getKaisai(buffer);
+    const asIs = await this.jrdbKaisaiTool.getKaisaiWithId(buffer);
     return await this.tool.saveOrUpdate(Kaisai, asIs, toBe);
   }
 
@@ -53,7 +53,7 @@ export abstract class Ka$ extends DataToImport {
   }
 
   protected setKaisai(buffer: Buffer, toBe: Kaisai) {
-    toBe.KaisaiKubun = $K.youbi.toCodeFromJrdb(buffer, 14, 1);
+    toBe.KaisaiKubun = $K.kaisaiKubun.toCodeFromJrdb(buffer, 14, 1);
     toBe.Youbi = $K.youbi.toCodeFromJrdb(buffer, 15, 2);
   }
 

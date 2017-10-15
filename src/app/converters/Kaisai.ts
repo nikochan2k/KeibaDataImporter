@@ -30,11 +30,17 @@ export const chuuouChihouGaikoku = new Codes(
   ]
 );
 
+export enum KaisaiKubun {
+  Kantou = 1,
+  Kansai,
+  Local
+}
+
 export const kaisaiKubun = new Codes(
   [
-    { code: 1, jrdb: "1", naiyou: "関東" },
-    { code: 2, jrdb: "2", naiyou: "関西" },
-    { code: 3, jrdb: "3", naiyou: "ローカル" }
+    { code: KaisaiKubun.Kantou, jrdb: "1", naiyou: "関東" },
+    { code: KaisaiKubun.Kansai, jrdb: "2", naiyou: "関西" },
+    { code: KaisaiKubun.Local, jrdb: "3", naiyou: "ローカル" }
   ]
 );
 

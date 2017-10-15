@@ -79,7 +79,7 @@ export class KolChoukyouTool {
     }
 
     const choukyouRireki = new ChoukyouRireki();
-    const dateId = this.tool.getDateId(buffer, offset + 9);
+    const dateId = this.tool.getDaysFrom1970(buffer, offset + 9);
     const buf = buffer.slice(offset + 27, 42);
     const hash = crc16(buf);
     choukyouRireki.Id = umaId * (2 ** (15 + 16)) + dateId * (2 ** 16) + hash;

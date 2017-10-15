@@ -32,13 +32,16 @@ export abstract class RaceData extends DataToImport {
   }
 
   protected async saveKaisai(buffer: Buffer) {
+    const asIs = await this.jrdbKaisaiTool.getKaisaiWithKey(buffer);
+    if (asIs) {
+      return asIs;
+    }
+
     const toBe = this.jrdbKaisaiTool.createKaisai(buffer);
     if (!toBe) {
       return null;
     }
     this.setKaisai(buffer, toBe);
-
-    const asIs = await this.jrdbKaisaiTool.getKaisai(buffer);
 
     return await this.tool.saveOrUpdate(Kaisai, asIs, toBe);
   }

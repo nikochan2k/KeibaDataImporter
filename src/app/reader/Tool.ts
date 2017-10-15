@@ -54,7 +54,7 @@ export class Tool {
     return updateSet;
   }
 
-  public getDateIdFrom(nen: number, gatsu: number, nichi: number) {
+  public getDaysFrom1970With(nen: number, gatsu: number, nichi: number) {
     const date = new Date(nen, gatsu - 1, nichi);
     const time = date.getTime();
     const daysFrom1970 = time / (24 * 60 * 60 * 1000);
@@ -69,7 +69,7 @@ export class Tool {
    * @returns 年月日を示すID
    * @memberof ImportTool
    */
-  public getDateId(buffer: Buffer, offset: number) {
+  public getDaysFrom1970(buffer: Buffer, offset: number) {
     /* tslint:disable:triple-equals */
     const nen = readInt(buffer, offset, 4);
     if (nen == null) {
@@ -84,7 +84,7 @@ export class Tool {
       return null;
     }
     /* tslint:enable:triple-equals */
-    return this.getDateIdFrom(nen, gatsu, nichi);
+    return this.getDaysFrom1970With(nen, gatsu, nichi);
   }
 
   public normalizeHoujinMei(buffer, offset, length) {

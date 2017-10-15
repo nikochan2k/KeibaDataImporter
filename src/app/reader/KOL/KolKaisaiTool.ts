@@ -1,6 +1,7 @@
 import { Logger } from "log4js";
 import { Service } from "typedi";
 import * as $C from "../../converters/Common";
+import { KaisaiKubun } from "../../converters/Kaisai";
 import { getLogger } from "../../LogUtil";
 import { KaisaiInfo, KaisaiTool } from "../KaisaiTool";
 import {
@@ -40,5 +41,23 @@ export class KolKaisaiTool extends KaisaiTool {
     };
   }
 
+  public convertKaisaiKubunFrom(basho: number) {
+    switch (basho) {
+      case 0:
+      case 1:
+        return KaisaiKubun.Kansai;
+      case 4:
+      case 5:
+        return KaisaiKubun.Kantou;
+      case 2:
+      case 3:
+      case 6:
+      case 7:
+      case 8:
+      case 9:
+        return KaisaiKubun.Local;
+    }
+    return null;
+  }
 
 }

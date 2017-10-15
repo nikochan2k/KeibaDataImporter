@@ -40,12 +40,12 @@ export abstract class KaisaiTool {
    * @memberof KaisaiTool
    */
   protected generateKaisaiId(info: KaisaiInfo) {
-    const daysFrom1970 = this.tool.getDateIdFrom(info.nen, info.gatsu, info.nichi);
+    const daysFrom1970 = this.tool.getDaysFrom1970With(info.nen, info.gatsu, info.nichi);
     const id = daysFrom1970 * (2 ** 7) + info.basho;
     return id;
   }
 
-  protected getKaisaiKeyFrom(nen: number, kaiji: number, nichiji: number) {
+  protected generateKaisaiKeyWith(nen: number, kaiji: number, nichiji: number) {
     const yy = nen - 1970;
     const key = yy * (2 ** (5 + 5 + 7))
       + kaiji * (2 ** (5 + 7))
@@ -53,11 +53,11 @@ export abstract class KaisaiTool {
     return key;
   }
 
-  protected getKaisaiKey(info: KaisaiInfo) {
+  protected generateKaisaiKey(info: KaisaiInfo) {
     if (!info.kaiji || !info.nichiji) {
       return null;
     }
-    return this.getKaisaiKeyFrom(info.nen, info.kaiji, info.nichiji);
+    return this.generateKaisaiKeyWith(info.nen, info.kaiji, info.nichiji);
   }
 
   public getKaisaiId(buffer: Buffer) {
@@ -69,9 +69,28 @@ export abstract class KaisaiTool {
     return id;
   }
 
-  public getKaisai(buffer: Buffer) {
+  protected getKaisaiKey(buffer: Buffer) {
+    const info = this.getKaisaiInfo(buffer);
+    if (!info) {
+      return null;
+    }
+    return this.generateKaisaiKey(info);
+  }
+
+  public getKaisaiWithId(buffer: Buffer) {
     const id = this.getKaisaiId(buffer);
     return this.entityManager.findOneById(Kaisai, id);
+  }
+
+  public getKaisaiWithKey(buffer: Buffer) {
+    const key = this.getKaisaiKey(buffer);
+    // 開催は悪天により日付がずれる可能性があるので、最新のものを取得する。
+    return this.entityManager
+      .createQueryBuilder(Kaisai, "k")
+      .where("Key = :key")
+      .setParameter("key", key)
+      .orderBy("Id", "DESC")
+      .getOne();
   }
 
   public createKaisai(buffer: Buffer) {
@@ -81,7 +100,7 @@ export abstract class KaisaiTool {
     }
     const kaisai = new Kaisai();
     kaisai.Id = this.generateKaisaiId(info);
-    kaisai.Key = this.getKaisaiKey(info);
+    kaisai.Key = this.generateKaisaiKey(info);
     kaisai.Basho = info.basho;
     kaisai.Nen = info.nen;
     kaisai.Gatsu = info.gatsu;
