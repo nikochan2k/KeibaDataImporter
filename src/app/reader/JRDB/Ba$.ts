@@ -43,7 +43,6 @@ export abstract class Ba$ extends RaceData {
     toBe.BetteiBareiHandi = $R.betteiBareiHandi.toCodeFromJrdb(buffer, 34, 1);
     toBe.IppanTokubetsu = $R.ippanTokubetsu.toCodeFromJrdb(buffer, 35, 1);
     toBe.Grade = $R.grade.toCodeFromJrdb(buffer, 35, 1);
-    toBe.TokubetsuMei = readStr(buffer, 36, 50);
     const kaisuu = readStr(buffer, 86, 8);
     const execed = /\d+/.exec(kaisuu);
     if (execed) {
@@ -51,8 +50,6 @@ export abstract class Ba$ extends RaceData {
     }
     toBe.Tousuu = readPositiveInt(buffer, 94, 2);
     toBe.Course = $R.course.toCodeFromJrdb(buffer, 96, 1);
-    toBe.TanshukuTokubetsuMei = readStr(buffer, 98, 8);
-    toBe.RaceMei = readStr(buffer, 106, 18);
 
     toBe.Shoukin1Chaku = readPositiveInt(buffer, 125, 5, 10000);
     toBe.Shoukin2Chaku = readPositiveInt(buffer, 130, 5, 10000);
@@ -64,6 +61,13 @@ export abstract class Ba$ extends RaceData {
   }
 
   protected async saveRaceRelated(buffer: Buffer, race: Race) {
+    await this.saveRaceMei(buffer, race);
+  }
+
+  protected async saveRaceMei(buffer: Buffer, race: Race) {
+    await this.jrdbRaceTool.saveRaceMei(buffer, 36, 50, race);
+    await this.jrdbRaceTool.saveRaceMei(buffer, 98, 8, race);
+    await this.jrdbRaceTool.saveRaceMei(buffer, 106, 18, race);
   }
 
 }

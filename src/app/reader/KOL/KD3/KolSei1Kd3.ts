@@ -5,8 +5,8 @@ import * as $R from "../../../converters/Race";
 import * as $RK from "../../../converters/RaceKeika";
 import { Kaisai } from "../../../entities/Kaisai";
 import { Race } from "../../../entities/Race";
-import { RaceSeiseki } from "../../../entities/RaceSeiseki";
 import { RaceKeika } from "../../../entities/RaceKeika";
+import { RaceSeiseki } from "../../../entities/RaceSeiseki";
 import { DataToImport } from "../../DataToImport";
 import { KeikaTool } from "../../KeikaTool";
 import {
@@ -15,13 +15,12 @@ import {
   readPositiveInt,
   readRaw,
   readStr,
-  readStrWithNoSpace,
   readTime
 } from "../../Reader";
 import { Tool } from "../../Tool";
 import { KolKaisaiTool } from "../KolKaisaiTool";
-import { KolRaceTool } from "../KolRaceTool";
 import { KolOddsHaitouTool } from "../KolOddsHaitouTool";
+import { KolRaceTool } from "../KolRaceTool";
 
 @Service()
 export class KolSei1Kd3 extends DataToImport {
@@ -55,6 +54,7 @@ export class KolSei1Kd3 extends DataToImport {
       race = await this.saveRace(buffer, kaisai);
     }
 
+    await this.saveRaceMei(buffer, race);
     await this.saveRaceSeiseki(buffer, race);
     await this.saveRaceLapTime(buffer, kaisai, race);
     await this.saveRaceKeika(buffer, race);
@@ -91,8 +91,6 @@ export class KolSei1Kd3 extends DataToImport {
     toBe.IppanTokubetsu = $R.ippanTokubetsu.toCodeFromKol(buffer, 24, 1);
     toBe.HeichiShougai = $R.heichiShougai.toCodeFromKol(buffer, 25, 1);
     toBe.JuushouKaisuu = readPositiveInt(buffer, 26, 3);
-    toBe.TokubetsuMei = this.tool.normalizeTokubetsuMei(buffer, 29, 30);
-    toBe.TanshukuTokubetsuMei = readStrWithNoSpace(buffer, 59, 14);
     toBe.Grade = $R.grade.toCodeFromKol(buffer, 73, 1);
     toBe.JpnFlag = $R.jpnFlag.toCodeFromKol(buffer, 74, 1);
     const betteiBareiHandiReigai = readStr(buffer, 77, 18);
@@ -166,6 +164,11 @@ export class KolSei1Kd3 extends DataToImport {
     }
 
     return await this.entityManager.save(toBe);
+  }
+
+  protected async saveRaceMei(buffer: Buffer, race: Race) {
+    await this.kolRaceTool.saveRaceMei(buffer, 29, 30, race);
+    await this.kolRaceTool.saveRaceMei(buffer, 59, 14, race);
   }
 
   protected async saveRaceSeiseki(buffer: Buffer, race: Race) {

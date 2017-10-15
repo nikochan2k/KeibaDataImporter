@@ -3,7 +3,6 @@ import { KolKaisaiTool } from "./KolKaisaiTool";
 import * as $C from "../../converters/Common";
 import * as $R from "../../converters/Race";
 import { JinmeiDao } from "../../daos/JinmeiDao";
-import { RaceDao } from "../../daos/RaceDao";
 import { UmaDao } from "../../daos/UmaDao";
 import { Kubun } from "../../entities/Jinmei";
 import { Race } from "../../entities/Race";
@@ -21,8 +20,7 @@ import {
   readStr,
   readStrWithNoSpace,
   readTime
-  } from "../Reader";
-import { Tool } from "../Tool";
+} from "../Reader";
 
 export interface RaceLapTimeInfo {
   Offset: number;
@@ -35,9 +33,6 @@ export interface RaceLapTimeInfo {
 export class KolRaceTool extends RaceTool {
 
   @Inject()
-  private tool: Tool;
-
-  @Inject()
   private kolKaisaiTool: KolKaisaiTool;
 
   @Inject()
@@ -45,9 +40,6 @@ export class KolRaceTool extends RaceTool {
 
   @Inject()
   private jinmeiDao: JinmeiDao;
-
-  @Inject()
-  private raceDao: RaceDao;
 
   protected getRaceBangou(buffer: Buffer) {
     const raceBangou = readPositiveInt(buffer, 10, 2);

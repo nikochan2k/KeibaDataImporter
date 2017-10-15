@@ -1,7 +1,10 @@
 import { Logger } from "log4js";
+import { Inject } from "typedi";
 import { EntityManager } from "typeorm";
 import { OrmManager } from "typeorm-typedi-extensions";
 import { readDouble } from "./Reader";
+import { Tool } from "./Tool";
+import { RaceDao } from "../daos/RaceDao";
 import { Race } from "../entities/Race";
 import { RaceLapTime } from "../entities/RaceLapTime";
 import { getLogger } from "../LogUtil";
@@ -12,6 +15,12 @@ export abstract class RaceTool {
 
   @OrmManager()
   protected entityManager: EntityManager;
+
+  @Inject()
+  protected raceDao: RaceDao;
+
+  @Inject()
+  protected tool: Tool;
 
   constructor() {
     this.logger = getLogger(this);
@@ -90,6 +99,13 @@ export abstract class RaceTool {
       raceLapTime.ShuuryouKyori = shuuryouKyori;
       raceLapTime.LapTime = lapTime;
       await this.entityManager.save(raceLapTime);
+    }
+  }
+
+  public async saveRaceMei(buffer: Buffer, offset: number, length: number, race: Race) {
+    const meishou = this.tool.normalizeTokubetsuMei(buffer, offset, length);
+    if (meishou) {
+      await this.raceDao.saveRaceMei(race, meishou);
     }
   }
 }

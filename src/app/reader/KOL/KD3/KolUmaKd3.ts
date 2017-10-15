@@ -93,6 +93,7 @@ export class KolUmaKd3 extends DataToImport {
         continue;
       }
 
+      await this.saveRaceMei(raceBuffer, race);
       await this.saveRaceSeiseki(raceBuffer, race);
 
       const shussoubaBuffer = buffer.slice(offset + 151, offset + 590);
@@ -189,8 +190,6 @@ export class KolUmaKd3 extends DataToImport {
     toBe.IppanTokubetsu = $R.ippanTokubetsu.toCodeFromKol(buffer, 24, 1);
     toBe.HeichiShougai = $R.heichiShougai.toCodeFromKol(buffer, 25, 1);
     toBe.JuushouKaisuu = readPositiveInt(buffer, 26, 3);
-    toBe.TokubetsuMei = this.tool.normalizeTokubetsuMei(buffer, 29, 30);
-    toBe.TanshukuTokubetsuMei = readStrWithNoSpace(buffer, 59, 14);
     toBe.Grade = $R.grade.toCodeFromKol(buffer, 73, 1);
     const betteiBareiHandiReigai = readStr(buffer, 76, 18);
     toBe.BetteiBareiHandi = $R.betteiBareiHandi.toCodeFromKol(buffer, 74, 2) || $R.betteiBareiHandi.toCodeFromKol(betteiBareiHandiReigai);
@@ -248,6 +247,11 @@ export class KolUmaKd3 extends DataToImport {
     toBe.TorikeshiTousuu = readInt(buffer, 125, 2);
 
     return await this.tool.saveOrUpdate(Race, asIs, toBe);
+  }
+
+  protected async saveRaceMei(buffer: Buffer, race: Race) {
+    await this.kolRaceTool.saveRaceMei(buffer, 29, 30, race);
+    await this.kolRaceTool.saveRaceMei(buffer, 59, 14, race);
   }
 
   protected async saveRaceSeiseki(buffer: Buffer, race: Race) {

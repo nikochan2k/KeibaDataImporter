@@ -10,7 +10,6 @@ import {
   readPositiveInt,
   readRaw,
   readStr,
-  readStrWithNoSpace,
   readTime
 } from "../../Reader";
 import { Tool } from "../../Tool";
@@ -61,6 +60,7 @@ export class KolDen1Kd3 extends DataToImport {
       return null;
     }
 
+    this.saveRaceMei(buffer, race);
     this.setYosouTenkai(buffer, race, <KolBridge>bridge);
   }
 
@@ -95,8 +95,6 @@ export class KolDen1Kd3 extends DataToImport {
     toBe.IppanTokubetsu = $R.ippanTokubetsu.toCodeFromKol(buffer, 23, 1);
     toBe.HeichiShougai = $R.heichiShougai.toCodeFromKol(buffer, 24, 1);
     toBe.JuushouKaisuu = readPositiveInt(buffer, 25, 3);
-    toBe.TokubetsuMei = this.tool.normalizeTokubetsuMei(buffer, 28, 30);
-    toBe.TanshukuTokubetsuMei = readStrWithNoSpace(buffer, 58, 14);
     toBe.Grade = $R.grade.toCodeFromKol(buffer, 72, 1);
     toBe.JpnFlag = $R.jpnFlag.toCodeFromKol(buffer, 73, 1);
     const betteiBareiHandiReigai = readStr(buffer, 76, 18);
@@ -166,6 +164,11 @@ export class KolDen1Kd3 extends DataToImport {
     toBe.YosouPace = $R.pace.toCodeFromKol(buffer, 349, 1);
 
     return await this.tool.saveOrUpdate(Race, asIs, toBe);
+  }
+
+  protected async saveRaceMei(buffer: Buffer, race: Race) {
+    await this.kolRaceTool.saveRaceMei(buffer, 28, 30, race);
+    await this.kolRaceTool.saveRaceMei(buffer, 58, 14, race);
   }
 
   protected setYosouTenkai(buffer: Buffer, race: Race, bridge: KolBridge) {

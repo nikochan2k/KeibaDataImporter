@@ -1,11 +1,12 @@
 import { Inject } from "typedi";
+import { JrdbRaceTool } from "./JrdbRaceTool";
 import { ShussoubaData } from "./ShussoubaData";
 import * as $C from "../../converters/Common";
 import * as $R from "../../converters/Race";
 import * as $S from "../../converters/Shussouba";
+import { JinmeiDao } from "../../daos/JinmeiDao";
 import { KishuDao } from "../../daos/KishuDao";
 import { KyuushaDao } from "../../daos/KyuushaDao";
-import { JinmeiDao } from "../../daos/JinmeiDao";
 import { UmaDao } from "../../daos/UmaDao";
 import { Kishu } from "../../entities/Kishu";
 import { Kyousouba } from "../../entities/Kyousouba";
@@ -13,11 +14,10 @@ import { Kyuusha } from "../../entities/Kyuusha";
 import { Race } from "../../entities/Race";
 import { RaceSeiseki } from "../../entities/RaceSeiseki";
 import { Shussouba } from "../../entities/Shussouba";
-import { ShussoubaSeiseki } from "../../entities/ShussoubaSeiseki";
 import { ShussoubaHyouka } from "../../entities/ShussoubaHyouka";
+import { ShussoubaSeiseki } from "../../entities/ShussoubaSeiseki";
 import { ShussoubaTsuukaJuni } from "../../entities/ShussoubaTsuukaJuni";
 import { Uma } from "../../entities/Uma";
-import { ShussoubaInfo } from "../ShussoubaTool";
 import {
   readDouble,
   readInt,
@@ -25,8 +25,12 @@ import {
   readStr,
   readStrWithNoSpace
 } from "../Reader";
+import { ShussoubaInfo } from "../ShussoubaTool";
 
 export abstract class Se$ extends ShussoubaData {
+
+  @Inject()
+  protected jrdbRaceTool: JrdbRaceTool;
 
   @Inject()
   protected kishuDao: KishuDao;
@@ -46,7 +50,13 @@ export abstract class Se$ extends ShussoubaData {
 
     toBe = await this.tool.saveOrUpdate(Race, asIs, toBe);
 
+    await this.saveRaceMei(buffer, toBe);
     await this.saveRaceSeiseki(buffer, toBe);
+  }
+
+  protected async saveRaceMei(buffer: Buffer, race: Race) {
+    await this.jrdbRaceTool.saveRaceMei(buffer, 80, 50, race);
+    await this.jrdbRaceTool.saveRaceMei(buffer, 132, 8, race);
   }
 
   protected async saveRaceSeiseki(buffer: Buffer, race: Race) {
@@ -85,9 +95,7 @@ export abstract class Se$ extends ShussoubaData {
     toBe.JoukenKyuushuusan = $R.joukenKyuushuusan.toCodeFromJrdb(kigou);
 
     toBe.BetteiBareiHandi = $R.betteiBareiHandi.toCodeFromJrdb(buffer, 78, 1);
-    toBe.TokubetsuMei = readStr(buffer, 80, 50);
     toBe.Tousuu = readPositiveInt(buffer, 130, 2);
-    toBe.TanshukuTokubetsuMei = readStr(buffer, 132, 8);
 
     toBe.Course = $R.course.toCodeFromJrdb(buffer, 339, 1);
   }

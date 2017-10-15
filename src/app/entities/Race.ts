@@ -29,15 +29,6 @@ export class Race {
   @Column("tinyint", { nullable: true })
   public JpnFlag?: number;
 
-  @Column("varchar", { nullable: true, length: 27 })
-  public RaceMei?: string;
-
-  @Column("varchar", { nullable: true, length: 75 })
-  public TokubetsuMei?: string;
-
-  @Column("varchar", { nullable: true, length: 12 })
-  public TanshukuTokubetsuMei?: string;
-
   @Column("smallint", { nullable: true })
   public JuushouKaisuu?: number;
 
