@@ -47,13 +47,16 @@ export class KolSei1Kd3 extends DataToImport {
   public async save(buffer: Buffer) {
     const kaisai = await this.saveKaisai(buffer);
     if (!kaisai) {
-      return null;
-    }
-    let race = await this.kolRaceTool.getRace(buffer);
-    if (!race) {
-      race = await this.saveRace(buffer, kaisai);
+      return;
     }
 
+    const dataNengappi = readInt(buffer, 2910, 8);
+    const asIs = await this.kolRaceTool.getRace(buffer);
+    if (asIs && asIs.KolSeiNengappi && asIs.KolSeiNengappi <= dataNengappi) {
+      return;
+    }
+
+    const race = await this.saveRace(buffer, kaisai, asIs, dataNengappi);
     await this.saveRaceMei(buffer, race);
     await this.saveRaceSeiseki(buffer, race);
     await this.saveRaceLapTime(buffer, kaisai, race);
@@ -82,7 +85,7 @@ export class KolSei1Kd3 extends DataToImport {
     return toBe;
   }
 
-  protected async saveRace(buffer: Buffer, kaisai: Kaisai) {
+  protected async saveRace(buffer: Buffer, kaisai: Kaisai, asIs: Race, dataNengappi: number) {
     const toBe = this.kolRaceTool.createRace(buffer, kaisai.Id);
     if (!toBe) {
       return null;
@@ -159,11 +162,10 @@ export class KolSei1Kd3 extends DataToImport {
     toBe.Tousuu = readPositiveInt(buffer, 366, 2);
     toBe.SuiteiTimeRyou = readTime(buffer, 370, 4);
     toBe.SuiteiTimeOmoFuryou = readTime(buffer, 374, 4);
-    if (toBe.HeichiShougai === 1) { // 障害
-      toBe.ShougaiHeikin1F = readDouble(buffer, 398, 4, 0.1);
-    }
 
-    return await this.entityManager.save(toBe);
+    toBe.KolSeiNengappi = dataNengappi;
+
+    return await this.tool.saveOrUpdate(Race, asIs, toBe);
   }
 
   protected async saveRaceMei(buffer: Buffer, race: Race) {
@@ -185,6 +187,9 @@ export class KolSei1Kd3 extends DataToImport {
     toBe.Pace = $R.pace.toCodeFromKol(buffer, 378, 1);
     toBe.Tenki = $R.tenki.toCodeFromKol(buffer, 379, 1);
     toBe.Baba = $R.baba.toCodeFromKol(buffer, 380, 1);
+    if (race.HeichiShougai === 1) { // 障害
+      toBe.ShougaiHeikin1F = readDouble(buffer, 398, 4, 0.1);
+    }
 
     const asIs = await this.entityManager.findOneById(RaceSeiseki, toBe.Id);
 

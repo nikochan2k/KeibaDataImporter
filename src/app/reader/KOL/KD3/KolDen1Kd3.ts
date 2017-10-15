@@ -44,23 +44,19 @@ export class KolDen1Kd3 extends DataToImport {
       return;
     }
 
+    const dataNengappi = readInt(buffer, 418, 8);
     const asIs = await this.kolRaceTool.getRace(buffer);
-    /* TODO
-    if (asIs) {
-      const dataSakuseiNengappi = readInt(buffer, 418, 8);
-      if (dataSakuseiNengappi <= asIs.KolShutsubahyouSakuseiNengappi) {
-        this.logger.info("既に最新の出走馬レースデータが格納されています: " + asIs.Id);
-        return;
-      }
+    if (asIs && asIs.KolDenNengappi && asIs.KolDenNengappi <= dataNengappi) {
+      // 既に取り込み済みの場合
+      return;
     }
-    */
 
-    const race = await this.saveRace(buffer, kaisai, asIs);
+    const race = await this.saveRace(buffer, kaisai, asIs, dataNengappi);
     if (!race) {
-      return null;
+      return;
     }
 
-    this.saveRaceMei(buffer, race);
+    await this.saveRaceMei(buffer, race);
     this.setYosouTenkai(buffer, race, <KolBridge>bridge);
   }
 
@@ -84,7 +80,7 @@ export class KolDen1Kd3 extends DataToImport {
     return toBe;
   }
 
-  protected async saveRace(buffer: Buffer, kaisai: Kaisai, asIs: Race) {
+  protected async saveRace(buffer: Buffer, kaisai: Kaisai, asIs: Race, dataNengappi: number) {
     const toBe = this.kolRaceTool.createRace(buffer, kaisai.Id);
     if (!toBe) {
       return asIs;
@@ -162,6 +158,8 @@ export class KolDen1Kd3 extends DataToImport {
     toBe.SuiteiTimeRyou = readTime(buffer, 341, 4);
     toBe.SuiteiTimeOmoFuryou = readTime(buffer, 345, 4);
     toBe.YosouPace = $R.pace.toCodeFromKol(buffer, 349, 1);
+
+    toBe.KolDenNengappi = dataNengappi;
 
     return await this.tool.saveOrUpdate(Race, asIs, toBe);
   }

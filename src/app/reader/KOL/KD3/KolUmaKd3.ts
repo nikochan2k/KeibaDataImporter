@@ -88,7 +88,11 @@ export class KolUmaKd3 extends DataToImport {
         continue;
       }
 
-      const race = await this.saveRace(raceBuffer, kaisai);
+      const asIs = await this.kolRaceTool.getRace(raceBuffer, kaisai.Id);
+      if (asIs && asIs.KolSeiNengappi) {
+        continue;
+      }
+      const race = await this.saveRace(raceBuffer, kaisai, asIs);
       if (!race) {
         continue;
       }
@@ -176,13 +180,7 @@ export class KolUmaKd3 extends DataToImport {
     return await this.tool.saveOrUpdate(Kaisai, asIs, toBe);
   }
 
-  protected async saveRace(buffer: Buffer, kaisai: Kaisai) {
-    const asIs = await this.kolRaceTool.getRace(buffer, kaisai.Id);
-    // TODO
-    if (asIs) {
-      return asIs;
-    }
-
+  protected async saveRace(buffer: Buffer, kaisai: Kaisai, asIs: Race) {
     const toBe = this.kolRaceTool.createRace(buffer, kaisai.Id);
     if (!toBe) {
       return null;

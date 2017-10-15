@@ -173,9 +173,6 @@ export class Race {
   @Column("tinyint", { nullable: true })
   public TorikeshiTousuu?: number;
 
-  @Column("float", { nullable: true })
-  public ShougaiHeikin1F?: number;
-
   @Column("int", { nullable: true })
   public CourseRecordId?: number;
 
@@ -220,4 +217,13 @@ export class Race {
 
   @Column("varchar", { nullable: true, length: 18 })
   public Yosoushamei2: string;
+
+  @Column("int", { nullable: true })
+  public KolDenNengappi: number;
+
+  @Column("int", { nullable: true })
+  public KolSeiNengappi: number;
+
+  @Column("int", { nullable: true })
+  public JrdbNengappi: number;
 }
