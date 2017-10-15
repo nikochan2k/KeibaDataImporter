@@ -11,9 +11,9 @@ export enum Kubun {
   Furigana
 }
 
-@Entity("Meishou")
-@Index("IxMeishou", (k: Meishou) => [k.Name], { unique: true })
-export class Meishou {
+@Entity("Jinmei")
+@Index("IxJinmei", (k: Jinmei) => [k.Name], { unique: true })
+export class Jinmei {
   @PrimaryGeneratedColumn()
   public Id: number;
 

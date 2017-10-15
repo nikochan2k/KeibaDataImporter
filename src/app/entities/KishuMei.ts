@@ -5,9 +5,9 @@ import {
   PrimaryGeneratedColumn
 } from "typeorm";
 
-@Entity("KishuMeishou")
-@Index("IxKishuMeishou", (k: KishuMeishou) => [k.KishuId, k.MeishouId], { unique: true })
-export class KishuMeishou {
+@Entity("KishuMei")
+@Index("IxKishuMei", (k: KishuMei) => [k.KishuId, k.JinmeiId], { unique: true })
+export class KishuMei {
   @PrimaryGeneratedColumn()
   public Id: number;
 
@@ -15,5 +15,5 @@ export class KishuMeishou {
   public KishuId: number;
 
   @Column("bigint")
-  public MeishouId: number;
+  public JinmeiId: number;
 }

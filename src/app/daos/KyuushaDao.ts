@@ -1,10 +1,10 @@
 import { Service, Inject } from "typedi";
 import { EntityManager, Repository } from "typeorm";
 import { OrmManager, OrmRepository } from "typeorm-typedi-extensions";
-import { Kubun, Meishou } from "../entities/Meishou";
+import { Kubun, Jinmei } from "../entities/Jinmei";
 import { Kyuusha } from "../entities/Kyuusha";
-import { KyuushaMeishou } from "../entities/KyuushaMeishou";
-import { MeishouDao } from "./MeishouDao";
+import { KyuushaMei } from "../entities/KyuushaMei";
+import { JinmeiDao } from "./JinmeiDao";
 import { Tool } from "../reader/Tool";
 
 @Service()
@@ -16,11 +16,11 @@ export class KyuushaDao {
   @OrmRepository(Kyuusha)
   private kyuushaRepository: Repository<Kyuusha>;
 
-  @OrmRepository(KyuushaMeishou)
-  private kyuushaMeishouRepository: Repository<KyuushaMeishou>;
+  @OrmRepository(KyuushaMei)
+  private kyuushaMeishouRepository: Repository<KyuushaMei>;
 
   @Inject()
-  private meishouDao: MeishouDao;
+  private jinmeiDao: JinmeiDao;
 
   @Inject()
   private tool: Tool;
@@ -40,8 +40,8 @@ export class KyuushaDao {
       .createQueryBuilder()
       .select("k.*")
       .from(Kyuusha, "k")
-      .innerJoin(KyuushaMeishou, "km", "k.Id = km.KyuushaId")
-      .innerJoin(Meishou, "m", "m.Id = km.MeishouId")
+      .innerJoin(KyuushaMei, "km", "k.Id = km.KyuushaId")
+      .innerJoin(Jinmei, "m", "m.Id = km.MeishouId")
       .where("m.Name = :name")
       .setParameter("name", name)
       .getOne();
@@ -72,12 +72,12 @@ export class KyuushaDao {
   }
 
   protected async saveKyuushaMeishou(kyuusha: Kyuusha, kubun: Kubun, name: string) {
-    const meishou = await this.meishouDao.save(kubun, name);
-    let kyuushaMeishou = await this.kyuushaMeishouRepository.findOne({ KyuushaId: kyuusha.Id, MeishouId: meishou.Id });
+    const jinmei = await this.jinmeiDao.save(kubun, name);
+    let kyuushaMeishou = await this.kyuushaMeishouRepository.findOne({ KyuushaId: kyuusha.Id, JinmeiId: jinmei.Id });
     if (!kyuushaMeishou) {
-      kyuushaMeishou = new KyuushaMeishou();
+      kyuushaMeishou = new KyuushaMei();
       kyuushaMeishou.KyuushaId = kyuusha.Id;
-      kyuushaMeishou.MeishouId = meishou.Id;
+      kyuushaMeishou.JinmeiId = jinmei.Id;
       await this.kyuushaMeishouRepository.save(kyuushaMeishou);
     }
   }

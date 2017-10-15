@@ -2,10 +2,10 @@ import { Codes } from "./Codes";
 
 export const ippanTokubetsu = new Codes(
   [
-    { code: 3, kol: "3", jrdb: /1|2|3|4/, naiyou: "重賞" },
-    { code: 2, kol: "2", naiyou: "準重賞" },
-    { code: 0, kol: "0", jrdb: /./, naiyou: "一般" },
     { code: 1, kol: "1", jrdb: "5", naiyou: "特別" },
+    { code: 2, kol: "2", naiyou: "準重賞" },
+    { code: 3, kol: "3", jrdb: /1|2|3|4/, naiyou: "重賞" },
+    { code: 0, kol: "0", jrdb: /./, naiyou: "一般" },
   ]
 );
 

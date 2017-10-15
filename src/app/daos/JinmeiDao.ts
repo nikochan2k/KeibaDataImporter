@@ -1,16 +1,16 @@
 import { Service } from "typedi";
 import { EntityManager, Repository } from "typeorm";
 import { OrmManager, OrmRepository } from "typeorm-typedi-extensions";
-import { Kubun, Meishou } from "../entities/Meishou";
+import { Kubun, Jinmei } from "../entities/Jinmei";
 
 @Service()
-export class MeishouDao {
+export class JinmeiDao {
 
   @OrmManager()
   protected entityManager: EntityManager;
 
-  @OrmRepository(Meishou)
-  private repository: Repository<Meishou>;
+  @OrmRepository(Jinmei)
+  private repository: Repository<Jinmei>;
 
   public findOneById(id: number) {
     /* tslint:disable:triple-equals */
@@ -24,7 +24,7 @@ export class MeishouDao {
   public async save(kubun: Kubun, name: string) {
     let meishou = await this.repository.findOne({ Name: name });
     if (!meishou) {
-      meishou = new Meishou();
+      meishou = new Jinmei();
       meishou.Kubun = kubun;
       meishou.Name = name;
       await this.repository.save(meishou);

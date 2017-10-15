@@ -5,7 +5,7 @@ import * as $R from "../../converters/Race";
 import * as $S from "../../converters/Shussouba";
 import { KishuDao } from "../../daos/KishuDao";
 import { KyuushaDao } from "../../daos/KyuushaDao";
-import { MeishouDao } from "../../daos/MeishouDao";
+import { JinmeiDao } from "../../daos/JinmeiDao";
 import { UmaDao } from "../../daos/UmaDao";
 import { Kishu } from "../../entities/Kishu";
 import { Kyousouba } from "../../entities/Kyousouba";
@@ -32,7 +32,7 @@ export abstract class Se$ extends ShussoubaData {
   protected kishuDao: KishuDao;
 
   @Inject()
-  protected meishouDao: MeishouDao;
+  protected jinmeiDao: JinmeiDao;
 
   @Inject()
   protected umaDao: UmaDao;

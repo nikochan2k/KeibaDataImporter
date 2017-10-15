@@ -131,55 +131,55 @@ export class Race {
   @Column("tinyint", { nullable: true })
   public JoukenSeed: number;
 
-  @Column("smallint", { nullable: true })
+  @Column("tinyint", { nullable: true })
   public BetteiBareiHandi?: number;
 
   @Column("varchar", { nullable: true, length: 27 })
   public BetteiBareiHandiReigai: string;
 
-  @Column("smallint", { nullable: true })
+  @Column("tinyint", { nullable: true })
   public JoukenNenreiSeigen?: number;
 
   @Column("smallint", { nullable: true })
   public Jouken1?: number;
 
-  @Column("smallint", { nullable: true })
+  @Column("tinyint", { nullable: true })
   public Kumi1?: number;
 
-  @Column("smallint", { nullable: true })
+  @Column("tinyint", { nullable: true })
   public IjouIkaMiman?: number;
 
   @Column("smallint", { nullable: true })
   public Jouken2?: number;
 
-  @Column("smallint", { nullable: true })
+  @Column("tinyint", { nullable: true })
   public Kumi2?: number;
 
-  @Column("smallint", { nullable: true })
+  @Column("tinyint", { nullable: true })
   public DirtShiba: number;
 
-  @Column("smallint", { nullable: true })
+  @Column("tinyint", { nullable: true })
   public MigiHidari: number;
 
-  @Column("smallint", { nullable: true })
+  @Column("tinyint", { nullable: true })
   public UchiSoto?: number;
 
-  @Column("smallint", { nullable: true })
+  @Column("tinyint", { nullable: true })
   public Course?: number;
 
   @Column("smallint", { nullable: true })
   public Kyori: number;
 
-  @Column("smallint", { nullable: true })
+  @Column("tinyint", { nullable: true })
   public MaeuriFlag?: number;
 
   @Column("varchar", { nullable: true, length: 5 })
   public YoteiHassouJikan: string;
 
-  @Column("smallint", { nullable: true })
+  @Column("tinyint", { nullable: true })
   public Tousuu?: number;
 
-  @Column("smallint", { nullable: true })
+  @Column("tinyint", { nullable: true })
   public TorikeshiTousuu?: number;
 
   @Column("float", { nullable: true })
@@ -210,10 +210,10 @@ export class Race {
   public Shoukin5Chaku: number;
 
   @Column("int", { nullable: true })
-  public Shoukin1ChakuSannyuShoukin: number;
+  public SannyuShoukin1Chaku: number;
 
   @Column("int", { nullable: true })
-  public Shoukin2ChakuSannyuShoukin: number;
+  public SannyuShoukin2Chaku: number;
 
   @Column("int", { nullable: true })
   public FukaShou?: number;

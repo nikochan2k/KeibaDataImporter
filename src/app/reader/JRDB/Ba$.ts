@@ -41,6 +41,7 @@ export abstract class Ba$ extends RaceData {
     toBe.JoukenKyuushuusan = $R.joukenKyuushuusan.toCodeFromJrdb(kigou);
 
     toBe.BetteiBareiHandi = $R.betteiBareiHandi.toCodeFromJrdb(buffer, 34, 1);
+    toBe.IppanTokubetsu = $R.ippanTokubetsu.toCodeFromJrdb(buffer, 35, 1);
     toBe.Grade = $R.grade.toCodeFromJrdb(buffer, 35, 1);
     toBe.TokubetsuMei = readStr(buffer, 36, 50);
     const kaisuu = readStr(buffer, 86, 8);
@@ -58,8 +59,8 @@ export abstract class Ba$ extends RaceData {
     toBe.Shoukin3Chaku = readPositiveInt(buffer, 135, 5, 10000);
     toBe.Shoukin4Chaku = readPositiveInt(buffer, 140, 5, 10000);
     toBe.Shoukin5Chaku = readPositiveInt(buffer, 145, 5, 10000);
-    toBe.Shoukin1ChakuSannyuShoukin = readPositiveInt(buffer, 150, 5, 10000);
-    toBe.Shoukin2ChakuSannyuShoukin = readPositiveInt(buffer, 155, 5, 10000);
+    toBe.SannyuShoukin1Chaku = readPositiveInt(buffer, 150, 5, 10000);
+    toBe.SannyuShoukin2Chaku = readPositiveInt(buffer, 155, 5, 10000);
   }
 
   protected async saveRaceRelated(buffer: Buffer, race: Race) {

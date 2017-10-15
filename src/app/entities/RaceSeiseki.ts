@@ -57,12 +57,6 @@ export class RaceSeiseki {
   @Column("int", { nullable: true })
   public Shoukin5ChakuDouchaku2: number;
 
-  @Column("int", { nullable: true })
-  public Shoukin1ChakuSannyuShoukin: number;
-
-  @Column("int", { nullable: true })
-  public Shoukin2ChakuSannyuShoukin: number;
-
   @Column("text", { nullable: true })
   public SeisaiNaiyou?: string;
 

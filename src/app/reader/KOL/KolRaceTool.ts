@@ -2,10 +2,10 @@ import { Inject, Service } from "typedi";
 import { KolKaisaiTool } from "./KolKaisaiTool";
 import * as $C from "../../converters/Common";
 import * as $R from "../../converters/Race";
-import { MeishouDao } from "../../daos/MeishouDao";
+import { JinmeiDao } from "../../daos/JinmeiDao";
 import { RaceDao } from "../../daos/RaceDao";
 import { UmaDao } from "../../daos/UmaDao";
-import { Kubun } from "../../entities/Meishou";
+import { Kubun } from "../../entities/Jinmei";
 import { Race } from "../../entities/Race";
 import { RaceHassouJoukyou } from "../../entities/RaceHassouJoukyou";
 import { RaceLapTime } from "../../entities/RaceLapTime";
@@ -44,7 +44,7 @@ export class KolRaceTool extends RaceTool {
   private umaDao: UmaDao;
 
   @Inject()
-  private meishouDao: MeishouDao;
+  private jinmeiDao: JinmeiDao;
 
   @Inject()
   private raceDao: RaceDao;
@@ -89,8 +89,8 @@ export class KolRaceTool extends RaceTool {
     record.UmaId = (await this.umaDao.saveUma(uma)).Id;
     record.Kinryou = readDouble(buffer, offset + 42, 3, 0.1);
     const tanshukuKishuMei = readStrWithNoSpace(buffer, offset + 45, 8);
-    const meishou = await this.meishouDao.save(Kubun.Tanshuku, tanshukuKishuMei);
-    record.TanshukuKishuMeiId = meishou.Id;
+    const jinmei = await this.jinmeiDao.save(Kubun.Tanshuku, tanshukuKishuMei);
+    record.TanshukuKishuMeiId = jinmei.Id;
     record.Basho = $C.basho.toCodeFromKol(buffer, bashoOffset, 2);
     return this.raceDao.saveRecord(record);
   }

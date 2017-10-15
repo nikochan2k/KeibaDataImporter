@@ -1,11 +1,11 @@
 import { Inject, Service } from "typedi";
 import { EntityManager, Repository } from "typeorm";
 import { OrmManager, OrmRepository } from "typeorm-typedi-extensions";
-import { MeishouDao } from "./MeishouDao";
+import { JinmeiDao } from "./JinmeiDao";
 import { Kishu } from "../entities/Kishu";
-import { KishuMeishou } from "../entities/KishuMeishou";
+import { KishuMei } from "../entities/KishuMei";
 import { KishuRireki } from "../entities/KishuRireki";
-import { Kubun } from "../entities/Meishou";
+import { Kubun } from "../entities/Jinmei";
 import { Tool } from "../reader/Tool";
 
 @Service()
@@ -17,14 +17,14 @@ export class KishuDao {
   @OrmRepository(Kishu)
   private kishuRepository: Repository<Kishu>;
 
-  @OrmRepository(KishuMeishou)
-  private kishuMeishouRepository: Repository<KishuMeishou>;
+  @OrmRepository(KishuMei)
+  private kishuMeishouRepository: Repository<KishuMei>;
 
   @OrmRepository(KishuRireki)
   private kishuRirekiRepository: Repository<KishuRireki>;
 
   @Inject()
-  private meishouDao: MeishouDao;
+  private jinmeiDao: JinmeiDao;
 
   @Inject()
   private tool: Tool;
@@ -89,12 +89,12 @@ LIMIT
   }
 
   protected async saveKishuMeishou(kishu: Kishu, kubun: Kubun, name: string) {
-    const meishou = await this.meishouDao.save(kubun, name);
-    let kishuMeishou = await this.kishuMeishouRepository.findOne({ KishuId: kishu.Id, MeishouId: meishou.Id });
+    const meishou = await this.jinmeiDao.save(kubun, name);
+    let kishuMeishou = await this.kishuMeishouRepository.findOne({ KishuId: kishu.Id, JinmeiId: meishou.Id });
     if (!kishuMeishou) {
-      kishuMeishou = new KishuMeishou();
+      kishuMeishou = new KishuMei();
       kishuMeishou.KishuId = kishu.Id;
-      kishuMeishou.MeishouId = meishou.Id;
+      kishuMeishou.JinmeiId = meishou.Id;
       await this.kishuMeishouRepository.save(kishuMeishou);
     }
   }
