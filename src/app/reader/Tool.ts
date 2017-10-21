@@ -3,8 +3,6 @@ import { Service } from "typedi";
 import { EntityManager, ObjectType } from "typeorm";
 import { OrmManager } from "typeorm-typedi-extensions";
 import { readInt, readPositiveInt, readStrWithNoSpace } from "./Reader";
-import { Kaisai } from "../entities/Kaisai";
-import { Shussouba } from "../entities/Shussouba";
 import { getLogger } from "../LogUtil";
 
 @Service()
@@ -121,10 +119,15 @@ export class Tool {
     meishou = meishou.replace(/H$|ハンデ$/, "ハンデキャップ");
     return meishou;
   }
-  public normalizeNenrei(kaisai: Kaisai, shussouba: Shussouba) {
-    if (kaisai.Nen < 2001) {
-      shussouba.Nenrei--;
+  public normalizeNenrei(nenrei: number, nen: number) {
+    if (nen < 2001) {
+      nenrei--;
     }
+    return nenrei;
+  }
+
+  public calculateNenrei(nen: number, seinen: number) {
+    return nen - seinen;
   }
 
   public isEnglish(name: string) {

@@ -101,7 +101,7 @@ export class KolUmaKd3 extends DataToImport {
       await this.saveRaceSeiseki(raceBuffer, race);
 
       const shussoubaBuffer = buffer.slice(offset + 151, offset + 590);
-      const shussouba = await this.saveShussouba(shussoubaBuffer, race, kyousouba, uma);
+      const shussouba = await this.saveShussouba(shussoubaBuffer, kaisai, race, kyousouba, uma);
       if (shussouba) {
         await this.saveShussoubaJoutai(shussoubaBuffer, shussouba);
         await this.saveShussoubaSeiseki(shussoubaBuffer, race, shussouba);
@@ -264,22 +264,10 @@ export class KolUmaKd3 extends DataToImport {
     await this.tool.saveOrUpdate(RaceSeiseki, asIs, toBe);
   }
 
-  protected async saveShussouba(buffer: Buffer, race: Race, kyousouba: Kyousouba, uma: Uma) {
-    let umaban = readPositiveInt(buffer, 1, 2);
-    let id: number;
-    let asIs: Shussouba;
-    if (1 <= umaban && umaban <= 28) {
-      id = race.Id * (2 ** 6) + umaban;
-      asIs = await this.entityManager.findOneById(Shussouba, id);
-    } else {
-      umaban = 28;
-      do {
-        umaban++; // 地方競馬で馬番がない場合 29から始まる
-        id = race.Id * (2 ** 6) + umaban;
-        asIs = await this.entityManager.findOneById(Shussouba, id);
-      } while (asIs && asIs.KyousoubaId !== kyousouba.Id);
-    }
-    // TODO
+  protected async saveShussouba(buffer: Buffer, kaisai: Kaisai, race: Race, kyousouba: Kyousouba, uma: Uma) {
+    const umaban = readPositiveInt(buffer, 1, 2) || 0;
+    const id = race.Id * (2 ** 6) + umaban;
+    const asIs = await this.entityManager.findOneById(Shussouba, id);
     if (asIs) {
       return null;
     }
@@ -292,8 +280,9 @@ export class KolUmaKd3 extends DataToImport {
     const kyuusha = await this.kolTool.saveKyuusha(buffer, 158);
     kyousouba = await this.saveKyousoubaOfRace(buffer, kyousouba, kyuusha);
     toBe.KyousoubaId = kyousouba.Id;
-    toBe.Nenrei = readPositiveInt(buffer, 8, 2);
-    toBe.Kinryou = readDouble(buffer, 91, 3, 0.1);
+    const nenrei = readPositiveInt(buffer, 8, 2);
+    const nen = kaisai.Nen;
+    toBe.Nenrei = this.tool.normalizeNenrei(nenrei, nen);
 
     return await this.tool.saveOrUpdate(Shussouba, asIs, toBe);
   }
@@ -310,6 +299,7 @@ export class KolUmaKd3 extends DataToImport {
     toBe.Id = shussouba.Id;
     toBe.Gate = readPositiveInt(buffer, 3, 2);
     toBe.Bataijuu = readPositiveInt(buffer, 94, 3);
+    toBe.Kinryou = readDouble(buffer, 91, 3, 0.1);
     toBe.Zougen = readInt(buffer, 97, 3);
     const kishu = await this.kolTool.saveKishu(buffer, 103);
     toBe.KishuId = kishu.Id;

@@ -19,6 +19,9 @@ export class ShussoubaSeiseki {
   @Column("smallint", { nullable: true })
   public Gate?: number;
 
+  @Column("real", { nullable: true })
+  public Kinryou?: number;
+
   @Column("smallint", { nullable: true })
   public Bataijuu?: number;
 

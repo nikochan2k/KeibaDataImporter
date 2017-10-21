@@ -80,8 +80,9 @@ export class KolSei2Kd3 extends DataToImport {
     const umaInfo = await this.kolTool.saveKyousouba(buffer, 27, kyuusha);
     info.uma = umaInfo.Uma;
     toBe.KyousoubaId = umaInfo.Kyousouba.Id;
-    toBe.Nenrei = readPositiveInt(buffer, 67, 2);
-    toBe.Kinryou = readDouble(buffer, 150, 3, 0.1);
+    const nenrei = readPositiveInt(buffer, 67, 2);
+    const nen = readInt(buffer, 2, 4);
+    toBe.Nenrei = this.tool.normalizeNenrei(nenrei, nen);
 
     const asIs = info.shussouba;
     return await this.tool.saveOrUpdate(Shussouba, asIs, toBe);
@@ -98,6 +99,7 @@ export class KolSei2Kd3 extends DataToImport {
     const toBe = new ShussoubaSeiseki();
     toBe.Id = info.shussouba.Id;
     toBe.Gate = readPositiveInt(buffer, 25, 2);
+    toBe.Kinryou = readDouble(buffer, 150, 3, 0.1);
     toBe.Bataijuu = readPositiveInt(buffer, 153, 3);
     toBe.Zougen = readInt(buffer, 156, 3);
     const kishu = await this.kolTool.saveKishu(buffer, 162);

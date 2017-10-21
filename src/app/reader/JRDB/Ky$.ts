@@ -69,7 +69,7 @@ export abstract class Ky$ extends ShussoubaData {
     return this.banushiDao.save(banushi);
   }
 
-  protected async saveKyousouba(buffer: Buffer) {
+  protected async saveKyousouba(buffer: Buffer, info: ShussoubaInfo) {
     const seibetsu = $U.seibetsu.toCodeFromJrdb(buffer, 403, 1);
     let uma = new Uma();
     uma.KettouTourokuBangou = readStr(buffer, 10, 8);
@@ -81,6 +81,7 @@ export abstract class Ky$ extends ShussoubaData {
     }
     uma.Seibetsu = seibetsu;
     uma = await this.umaDao.saveUma(uma);
+    info.uma = uma;
     let kyousouba = new Kyousouba();
     kyousouba.UmaId = uma.Id;
     kyousouba.Seibetsu = seibetsu;
@@ -97,10 +98,15 @@ export abstract class Ky$ extends ShussoubaData {
     toBe.KishuId = (await this.saveKishu(buffer)).Id;
     toBe.Kinryou = readDouble(buffer, 183, 3, 0.1);
     // toBe.MinaraiKubun = $S.minaraiKubun.toCodeFromJrdb(buffer, 186, 1);
-    toBe.KyousoubaId = (await this.saveKyousouba(buffer)).Id;
+    if (info.uma.Seinen) {
+      const nen = 2000 + readInt(buffer, 2, 2);
+      toBe.Nenrei = this.tool.calculateNenrei(nen, info.uma.Seinen);
+    }
+    const kyousouba = await this.saveKyousouba(buffer, info);
+    toBe.KyousoubaId = kyousouba.Id;
     toBe.Wakuban = readPositiveInt(buffer, 323, 1);
-    toBe.WakuKakuteiBataijuu = readPositiveInt(buffer, 396, 3);
-    toBe.WakuKakuteiZougen = readInt(buffer, 399, 3);
+    toBe.Bataijuu = readPositiveInt(buffer, 396, 3);
+    toBe.Zougen = readInt(buffer, 399, 3);
     toBe.TorikeshiShubetsu = $S.torikeshiShubetsu.toCodeFromJrdb(buffer, 402, 1);
   }
 

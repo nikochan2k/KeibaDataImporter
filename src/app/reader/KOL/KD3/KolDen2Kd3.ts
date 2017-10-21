@@ -8,6 +8,7 @@ import { ShussoubaYosou } from "../../../entities/ShussoubaYosou";
 import { Bridge } from "../../Bridge";
 import { DataToImport } from "../../DataToImport";
 import {
+  readInt,
   readDouble,
   readPositiveInt,
   readStr,
@@ -49,18 +50,14 @@ export class KolDen2Kd3 extends DataToImport {
     if (!info) {
       return;
     }
-    /* TODO
-    const asIs = info.shussouba;
-    if (asIs) {
-      const dataSakuseiNengappi = readInt(buffer, 727, 8);
-      if (dataSakuseiNengappi <= asIs.KolSeisekiSakuseiNengappi) {
-        this.logger.info("既に最新の出走馬成績データが格納されています: " + asIs.Id);
-        return;
-      }
-    }
-    */
 
-    const shussouba = await this.saveShussouba(buffer, info);
+    const dataNengappi = readInt(buffer, 727, 8);
+    const asIs = info.shussouba;
+    if (asIs && asIs.KolSeiNengappi && asIs.KolSeiNengappi <= dataNengappi) {
+      return;
+    }
+
+    const shussouba = await this.saveShussouba(buffer, info, dataNengappi);
     if (!shussouba) {
       return;
     }
@@ -72,7 +69,7 @@ export class KolDen2Kd3 extends DataToImport {
     await this.saveChoukyou(buffer, info, tanshukuKishuMei);
   }
 
-  protected async saveShussouba(buffer: Buffer, info: ShussoubaInfo) {
+  protected async saveShussouba(buffer: Buffer, info: ShussoubaInfo, dataNengappi: number) {
     const toBe = this.kolShussoubaTool.createShussouba(buffer, 23);
     if (!toBe) {
       return null;
@@ -84,7 +81,9 @@ export class KolDen2Kd3 extends DataToImport {
     const umaInfo = await this.kolTool.saveKyousouba(buffer, 25, kyuusha);
     info.uma = umaInfo.Uma;
     toBe.KyousoubaId = umaInfo.Kyousouba.Id;
-    toBe.Nenrei = readPositiveInt(buffer, 65, 2);
+    const nenrei = readPositiveInt(buffer, 65, 2);
+    const nen = readInt(buffer, 2, 4);
+    toBe.Nenrei = this.tool.normalizeNenrei(nenrei, nen);
     toBe.Kinryou = readDouble(buffer, 148, 3, 0.1);
     const kishu = await this.kolTool.saveKishu(buffer, 151);
     toBe.KishuId = kishu.Id;
@@ -94,6 +93,8 @@ export class KolDen2Kd3 extends DataToImport {
     toBe.TorikeshiShubetsu = $S.torikeshiShubetsu.toCodeFromKol(buffer, 254, 1) || $S.torikeshiShubetsu.toCodeFromKol(buffer, 255, 1);
     toBe.KyuuyouRiyuu = readStr(buffer, 783, 60);
     toBe.KyuuyouRiyuuCode = $S.kyuuyouRiyuuCode.toCodeFromKol(buffer, 783, 60);
+
+    toBe.KolDenNengappi = dataNengappi;
 
     return await this.tool.saveOrUpdate(Shussouba, asIs, toBe);
   }

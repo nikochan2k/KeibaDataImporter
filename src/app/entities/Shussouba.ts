@@ -24,9 +24,6 @@ export class Shussouba {
   @Column("tinyint")
   public Umaban: number;
 
-  @Column("tinyint", { nullable: true })
-  public Gate?: number;
-
   @Column("int", { nullable: true })
   public KyousoubaId: number;
 
@@ -48,10 +45,10 @@ export class Shussouba {
   /* JRDB 競走馬データ */
 
   @Column("smallint", { nullable: true })
-  public WakuKakuteiBataijuu?: number;
+  public Bataijuu?: number;
 
   @Column("tinyint", { nullable: true })
-  public WakuKakuteiZougen?: number;
+  public Zougen?: number;
 
   @Column("tinyint", { nullable: true })
   public TorikeshiShubetsu?: number;
@@ -72,6 +69,16 @@ export class Shussouba {
   @Column("text", { nullable: true })
   public JisouhenoMemo: string;
 
-  /* JRDB 競走馬データ */
 
+  @Column("int", { nullable: true })
+  public KolDenNengappi: number;
+
+  @Column("int", { nullable: true })
+  public KolSeiNengappi: number;
+
+  @Column("int", { nullable: true })
+  public JrdbDenNengappi: number;
+
+  @Column("int", { nullable: true })
+  public JrdbSeiNengappi: number;
 }

@@ -109,7 +109,6 @@ export abstract class Se$ extends ShussoubaData {
   }
 
   protected async setShussouba(buffer: Buffer, toBe: Shussouba, info: ShussoubaInfo) {
-    toBe.Kinryou = readDouble(buffer, 147, 3, 0.1);
     const kyousouba = await this.saveKyousouba(buffer, toBe);
     toBe.KyousoubaId = kyousouba.Id;
   }
@@ -149,6 +148,7 @@ export abstract class Se$ extends ShussoubaData {
   }
 
   protected async saveShussoubaRelated(buffer: Buffer, info: ShussoubaInfo) {
+    await this.saveShussoubaSeiseki(buffer, info);
     await this.saveShussoubaHyouka(buffer, info.shussouba);
     await this.saveOddsHaitou(buffer, info.shussouba);
     await this.saveShussoubaTsuukaJuni(buffer, info.shussouba);
@@ -166,6 +166,7 @@ export abstract class Se$ extends ShussoubaData {
     toBe.KakuteiChakujun = readPositiveInt(buffer, 140, 2);
     toBe.ChakujunFuka = $S.chakujunFuka.toCodeFromJrdb(buffer, 142, 1);
     toBe.Time = readDouble(buffer, 143, 4, 0.1);
+    toBe.Kinryou = readDouble(buffer, 147, 3, 0.1);
     if (1200 <= info.race.Kyori) {
       toBe.Ten3F = readDouble(buffer, 258, 3, 0.1);
       if (toBe.Time && toBe.Ten3F) {
