@@ -46,7 +46,7 @@ export class KolDen1Kd3 extends DataToImport {
 
     const dataNengappi = readInt(buffer, 418, 8);
     const asIs = await this.kolRaceTool.getRace(buffer);
-    if (asIs && asIs.KolDenNengappi && asIs.KolDenNengappi <= dataNengappi) {
+    if (asIs && asIs.KolNengappi && asIs.KolNengappi <= dataNengappi) {
       // 既に取り込み済みの場合
       return;
     }
@@ -159,7 +159,7 @@ export class KolDen1Kd3 extends DataToImport {
     toBe.SuiteiTimeOmoFuryou = readTime(buffer, 345, 4);
     toBe.YosouPace = $R.pace.toCodeFromKol(buffer, 349, 1);
 
-    toBe.KolDenNengappi = dataNengappi;
+    toBe.KolNengappi = dataNengappi;
 
     return await this.tool.saveOrUpdate(Race, asIs, toBe);
   }

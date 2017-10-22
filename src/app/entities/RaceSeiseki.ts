@@ -62,4 +62,10 @@ export class RaceSeiseki {
 
   @Column("text", { nullable: true })
   public RaceComment?: string;
+
+  @Column("int", { nullable: true })
+  public KolNengappi: number;
+
+  @Column("tinyint", { nullable: true })
+  public Jrdb: number;
 }

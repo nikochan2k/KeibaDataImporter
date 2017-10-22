@@ -22,11 +22,11 @@ export abstract class Joa extends DataToImport {
   protected jrdbShussoubaTool: JrdbShussoubaTool;
 
   public async save(buffer: Buffer, bridge: Bridge) {
-    const id = this.jrdbShussoubaTool.getShussoubaId(buffer, 8);
-    const asIs = await this.entityManager.findOneById(ShussoubaYosou, id);
+    const rsId = this.jrdbShussoubaTool.getRaceShussoubaId(buffer, 8);
+    const asIs = await this.entityManager.findOneById(ShussoubaYosou, rsId.shussoubaId);
 
     const toBe = new ShussoubaYosou();
-    toBe.Id = id;
+    toBe.Id = rsId.shussoubaId;
     toBe.CidChoukyouSoten = readDouble(buffer, 64, 5);
     toBe.CidKyuushaSoten = readDouble(buffer, 69, 5);
     toBe.Cid = readInt(buffer, 79, 3);

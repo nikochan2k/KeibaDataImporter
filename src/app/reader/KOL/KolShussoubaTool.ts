@@ -2,7 +2,7 @@ import { Inject, Service } from "typedi";
 import { Shussouba } from "../../entities/Shussouba";
 import { ShussoubaTsuukaJuni } from "../../entities/ShussoubaTsuukaJuni";
 import { readDouble, readPositiveInt } from "../Reader";
-import { ShussoubaInfo, ShussoubaTool } from "../ShussoubaTool";
+import { ShussoubaTool } from "../ShussoubaTool";
 import { KolRaceTool } from "./KolRaceTool";
 
 @Service()
@@ -19,14 +19,8 @@ export class KolShussoubaTool extends ShussoubaTool {
     return timeSa;
   }
 
-  public async getShussoubaInfo(buffer: Buffer, umabanOffset: number): Promise<ShussoubaInfo> {
-    const race = await this.kolRaceTool.getRace(buffer);
-    return super.getShussoubaInfo(buffer, umabanOffset, race);
-  }
-
-  public createShussouba(buffer: Buffer, umabanOffset: number) {
-    const raceId = this.kolRaceTool.getRaceId(buffer);
-    return super.createShussouba(buffer, umabanOffset, raceId);
+  protected getRaceId(buffer: Buffer) {
+    return this.kolRaceTool.getRaceId(buffer);
   }
 
   public async saveShussoubaTsuukaJuni(buffer: Buffer, offset: number, shussouba: Shussouba) {

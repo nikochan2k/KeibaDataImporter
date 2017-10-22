@@ -15,6 +15,12 @@ export interface ShussoubaInfo {
   uma?: Uma;
 }
 
+export interface RaceShussoubaId {
+  raceId: number;
+  shussoubaId: number;
+  umaban: number;
+}
+
 export abstract class ShussoubaTool {
 
   protected logger: Logger;
@@ -40,8 +46,10 @@ export abstract class ShussoubaTool {
     return id;
   }
 
+  protected abstract getRaceId(buffer: Buffer);
+
   /**
-   * 出走馬IDを取得します。
+   * レースIDと出走馬IDを取得します。
    * 出走馬IDはレースID(28ビット)、馬番(6ビット)の計34ビットです。
    * @param {Buffer} buffer バッファ
    * @param {number} umabanOffset 馬番のオフセット
@@ -49,45 +57,57 @@ export abstract class ShussoubaTool {
    * @returns 出走馬ID
    * @memberof RaceTool
    */
-  public getShussoubaId(buffer: Buffer, umabanOffset: number, raceId: number) {
+  public getRaceShussoubaId(buffer: Buffer, umabanOffset: number): RaceShussoubaId {
+    const raceId = this.getRaceId(buffer);
+    if (!raceId) {
+      return null;
+    }
     const umaban = readPositiveInt(buffer, umabanOffset, 2);
     if (!umaban) {
       this.logger.warn("不正な馬番です: " + readRaw(buffer, umabanOffset, 2));
       return null;
     }
 
-    return this.getShussoubaIdFrom(raceId, umaban);
+    const shussoubaId = this.getShussoubaIdFrom(raceId, umaban);
+    return {
+      raceId: raceId,
+      shussoubaId: shussoubaId,
+      umaban: umaban
+    };
   }
 
-  public getShussouba(buffer: Buffer, umabanOffset: number, raceId: number) {
-    const id = this.getShussoubaId(buffer, umabanOffset, raceId);
-    if (!id) {
+  public getShussouba(buffer: Buffer, umabanOffset: number) {
+    const rsId = this.getRaceShussoubaId(buffer, umabanOffset);
+    if (!rsId) {
       return null;
     }
-    return this.entityManager.findOneById(Shussouba, id);
+    return this.entityManager.findOneById(Shussouba, rsId.shussoubaId);
   }
 
-  public createShussouba(buffer: Buffer, umabanOffset: number, raceId: number) {
-    const umaban = readPositiveInt(buffer, umabanOffset, 2);
-    if (!umaban) {
-      this.logger.warn("不正な馬番です: " + readRaw(buffer, umabanOffset, 2));
+  public createShussouba(buffer: Buffer, umabanOffset: number) {
+    const rsId = this.getRaceShussoubaId(buffer, umabanOffset);
+    if (!rsId) {
       return null;
     }
     const shussouba = new Shussouba();
-    shussouba.Id = this.getShussoubaIdFrom(raceId, umaban);
-    shussouba.RaceId = raceId;
-    shussouba.Umaban = umaban;
+    shussouba.Id = rsId.shussoubaId;
+    shussouba.RaceId = rsId.raceId;
+    shussouba.Umaban = rsId.umaban;
     return shussouba;
   }
 
-  public async getShussoubaInfo(buffer: Buffer, umabanOffset: number, race: Race): Promise<ShussoubaInfo> {
-    const umaban = readPositiveInt(buffer, umabanOffset, 2);
-    if (!umaban) {
-      this.logger.warn("不正な馬番です: " + readRaw(buffer, umabanOffset, 2));
+  public async getShussoubaInfo(buffer: Buffer, umabanOffset: number): Promise<ShussoubaInfo> {
+    const rsId = this.getRaceShussoubaId(buffer, umabanOffset);
+    if (!rsId) {
       return null;
     }
 
-    const id = race.Id * (2 ** 6) + umaban;
+    const race = await this.entityManager.findOneById(Race, rsId.raceId);
+    if (!race) {
+      return null;
+    }
+
+    const id = rsId.raceId * (2 ** 6) + rsId.umaban;
     const shussouba = await this.entityManager.findOneById(Shussouba, id);
     return { race: race, shussouba: shussouba };
   }

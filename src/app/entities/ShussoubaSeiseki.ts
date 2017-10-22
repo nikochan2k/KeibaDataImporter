@@ -97,4 +97,8 @@ export class ShussoubaSeiseki {
 
   @Column("int", { nullable: true })
   public ShuutokuShoukin?: number;
+
+
+  @Column("int", { nullable: true })
+  public KolNengappi: number;
 }

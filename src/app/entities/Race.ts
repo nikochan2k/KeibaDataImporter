@@ -219,11 +219,8 @@ export class Race {
   public Yosoushamei2: string;
 
   @Column("int", { nullable: true })
-  public KolDenNengappi: number;
+  public KolNengappi: number;
 
-  @Column("int", { nullable: true })
-  public KolSeiNengappi: number;
-
-  @Column("int", { nullable: true })
-  public JrdbNengappi: number;
+  @Column("tinyint", { nullable: true })
+  public Jrdb: number;
 }

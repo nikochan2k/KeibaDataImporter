@@ -1,10 +1,9 @@
 import * as $C from "../../converters/Common";
 import * as $S from "../../converters/Shussouba";
 import { RaceSeiseki } from "../../entities/RaceSeiseki";
-import { Shussouba } from "../../entities/Shussouba";
 import { ShussoubaSeiseki } from "../../entities/ShussoubaSeiseki";
 import { ShussoubaHyouka } from "../../entities/ShussoubaHyouka";
-import { ShussoubaInfo } from "../ShussoubaTool";
+import { RaceShussoubaId } from "../ShussoubaTool";
 import { Se$ } from "./Se$";
 import {
   readInt,
@@ -20,8 +19,8 @@ export class Sed extends Se$ {
     toBe.PaceNagare = readInt(buffer, 365, 2);
   }
 
-  protected setShussoubaSeiseki(buffer: Buffer, toBe: ShussoubaSeiseki, info: ShussoubaInfo) {
-    super.setShussoubaSeiseki(buffer, toBe, info);
+  protected setShussoubaSeiseki(buffer: Buffer, toBe: ShussoubaSeiseki) {
+    super.setShussoubaSeiseki(buffer, toBe);
     toBe.HonShoukin = readInt(buffer, 355, 5, 10000);
     toBe.ShuutokuShoukin = readInt(buffer, 360, 5, 10000);
     toBe.YonCornerIchiDori = $S.ichi.toCodeFromJrdb(buffer, 369, 1);
@@ -32,8 +31,8 @@ export class Sed extends Se$ {
     toBe.PaceNagare = readInt(buffer, 367, 2);
   }
 
-  protected async saveOddsHaitou(buffer: Buffer, shussouba: Shussouba) {
-    await this.jrdbOddsHaitouTool.saveOddsNinki(buffer, shussouba, {
+  protected async saveOddsHaitou(buffer: Buffer, rsId: RaceShussoubaId) {
+    await this.jrdbOddsHaitouTool.saveOddsNinki(buffer, rsId, {
       Kakutei: $C.Kakutei.Kakutei,
       Baken: $C.Baken.Tanshou,
       OddsOffset: 174,
@@ -41,20 +40,20 @@ export class Sed extends Se$ {
       NinkiOffset: 180,
       HaitoukinOffset: 341
     });
-    await this.jrdbOddsHaitouTool.saveOddsNinki(buffer, shussouba, {
+    await this.jrdbOddsHaitouTool.saveOddsNinki(buffer, rsId, {
       Kakutei: $C.Kakutei.Kakutei,
       Baken: $C.Baken.Fukushou,
       OddsOffset: 290,
       OddsLength: 6,
       HaitoukinOffset: 348
     });
-    await this.jrdbOddsHaitouTool.saveOddsNinki(buffer, shussouba, {
+    await this.jrdbOddsHaitouTool.saveOddsNinki(buffer, rsId, {
       Kakutei: $C.Kakutei.ToujitsuAM,
       Baken: $C.Baken.Tanshou,
       OddsOffset: 296,
       OddsLength: 6
     });
-    await this.jrdbOddsHaitouTool.saveOddsNinki(buffer, shussouba, {
+    await this.jrdbOddsHaitouTool.saveOddsNinki(buffer, rsId, {
       Kakutei: $C.Kakutei.ToujitsuAM,
       Baken: $C.Baken.Fukushou,
       OddsOffset: 302,

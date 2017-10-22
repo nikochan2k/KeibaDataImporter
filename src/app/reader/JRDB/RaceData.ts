@@ -37,6 +37,7 @@ export abstract class RaceData extends DataToImport {
       return asIs;
     }
 
+    // TODO 既に取り込まれている場合は取り込まない
     const toBe = this.jrdbKaisaiTool.createKaisai(buffer);
     if (!toBe) {
       return null;

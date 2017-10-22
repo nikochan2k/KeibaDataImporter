@@ -14,13 +14,13 @@ export abstract class Cy$ extends DataToImport {
   protected choukyouDao: ChoukyouDao;
 
   public async save(buffer: Buffer) {
-    const shussoubaId = await this.jrdbShussoubaTool.getShussoubaId(buffer, 8);
-    if (!shussoubaId) {
+    const rsId = await this.jrdbShussoubaTool.getRaceShussoubaId(buffer, 8);
+    if (!rsId) {
       return;
     }
 
     const choukyou = new Choukyou();
-    choukyou.Id = shussoubaId;
+    choukyou.Id = rsId.shussoubaId;
     this.setChoukyou(buffer, choukyou);
     await this.choukyouDao.save(choukyou);
   }

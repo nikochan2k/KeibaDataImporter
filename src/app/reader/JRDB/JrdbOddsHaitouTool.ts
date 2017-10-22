@@ -1,6 +1,6 @@
 import { Service } from "typedi";
 import * as $C from "../../converters/Common";
-import { Shussouba } from "../../entities/Shussouba";
+import { RaceShussoubaId } from "../ShussoubaTool";
 import { OddsHaitouTool } from "../OddsHaitouTool";
 import {
   readDouble,
@@ -19,12 +19,12 @@ export interface OddsHaitouInfo {
 @Service()
 export class JrdbOddsHaitouTool extends OddsHaitouTool {
 
-  public async saveOddsNinki(buffer: Buffer, shussouba: Shussouba, info: OddsHaitouInfo) {
+  public async saveOddsNinki(buffer: Buffer, rsId: RaceShussoubaId, info: OddsHaitouInfo) {
     await this.saveOddsHaitou({
-      RaceId: shussouba.RaceId,
+      RaceId: rsId.raceId,
       Kakutei: info.Kakutei,
       Baken: info.Baken,
-      Bangou1: shussouba.Umaban,
+      Bangou1: rsId.umaban,
       Odds1: readDouble(buffer, info.OddsOffset, info.OddsLength),
       Ninki: (info.NinkiOffset ? readPositiveInt(buffer, info.NinkiOffset, 2) : undefined),
       Haitoukin: (info.HaitoukinOffset ? readPositiveInt(buffer, info.HaitoukinOffset, 7) : undefined)

@@ -47,6 +47,14 @@ export class KolSei2Kd3 extends DataToImport {
   }
 
   public async save(buffer: Buffer) {
+    const rsId = this.kolShussoubaTool.getRaceShussoubaId(buffer, 23);
+    const dataNenggapi = readInt(buffer, 424, 8);
+
+    const shussoubaSeiseki = await this.entityManager.findOneById(ShussoubaSeiseki, rsId.shussoubaId);
+    if (shussoubaSeiseki && shussoubaSeiseki.KolNengappi && shussoubaSeiseki.KolNengappi <= dataNenggapi) {
+      return;
+    }
+
     const info = await this.kolShussoubaTool.getShussoubaInfo(buffer, 23);
     if (!info) {
       return;
@@ -63,7 +71,7 @@ export class KolSei2Kd3 extends DataToImport {
       info.uma.Id = kyousouba.UmaId;
     }
 
-    await this.saveShussoubaSeiseki(buffer, info);
+    await this.saveShussoubaSeiseki(buffer, info, shussoubaSeiseki, dataNenggapi);
     await this.saveShussoubaYosou(buffer, info.shussouba);
     await this.kolOddsHaitouTool.saveNinkiOdds(buffer, info.shussouba, 267, 269);
     await this.kolShussoubaTool.saveShussoubaTsuukaJuni(buffer, 298, info.shussouba);
@@ -95,7 +103,7 @@ export class KolSei2Kd3 extends DataToImport {
     }
   }
 
-  protected async saveShussoubaSeiseki(buffer: Buffer, info: ShussoubaInfo) {
+  protected async saveShussoubaSeiseki(buffer: Buffer, info: ShussoubaInfo, asIs: ShussoubaSeiseki, dataNengappi: number) {
     const toBe = new ShussoubaSeiseki();
     toBe.Id = info.shussouba.Id;
     toBe.Gate = readPositiveInt(buffer, 25, 2);
@@ -130,8 +138,7 @@ export class KolSei2Kd3 extends DataToImport {
       toBe.Douchuu = toBe.Time - toBe.Ten3F - toBe.Agari3F;
     }
     toBe.YonCornerIchiDori = $S.ichi.toCodeFromKol(buffer, 306, 1);
-
-    const asIs = await this.entityManager.findOneById(ShussoubaSeiseki, toBe.Id);
+    toBe.KolNengappi = dataNengappi;
 
     return await this.tool.saveOrUpdate(ShussoubaSeiseki, asIs, toBe);
   }

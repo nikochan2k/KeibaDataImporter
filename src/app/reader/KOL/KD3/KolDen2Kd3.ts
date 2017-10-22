@@ -53,7 +53,7 @@ export class KolDen2Kd3 extends DataToImport {
 
     const dataNengappi = readInt(buffer, 727, 8);
     const asIs = info.shussouba;
-    if (asIs && asIs.KolSeiNengappi && asIs.KolSeiNengappi <= dataNengappi) {
+    if (asIs && asIs.KolNengappi && asIs.KolNengappi <= dataNengappi) {
       return;
     }
 
@@ -94,7 +94,7 @@ export class KolDen2Kd3 extends DataToImport {
     toBe.KyuuyouRiyuu = readStr(buffer, 783, 60);
     toBe.KyuuyouRiyuuCode = $S.kyuuyouRiyuuCode.toCodeFromKol(buffer, 783, 60);
 
-    toBe.KolDenNengappi = dataNengappi;
+    toBe.KolNengappi = dataNengappi;
 
     return await this.tool.saveOrUpdate(Shussouba, asIs, toBe);
   }

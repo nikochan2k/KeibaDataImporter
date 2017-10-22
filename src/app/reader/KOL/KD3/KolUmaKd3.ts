@@ -83,25 +83,34 @@ export class KolUmaKd3 extends DataToImport {
       const offset = KolUmaKd3.raceOffsets[i];
       const raceBuffer = buffer.slice(offset, offset + 151);
 
-      const kaisai = await this.saveKaisai(raceBuffer);
-      if (!kaisai) {
+      const raceId = this.kolRaceTool.getRaceId(raceBuffer);
+      const raceSeiseki = await this.entityManager.findOneById(RaceSeiseki, raceId);
+      if (raceSeiseki && raceSeiseki.KolNengappi) {
+        // 既に競走成績レースデータが取り込まれている場合
         continue;
       }
 
-      const asIs = await this.kolRaceTool.getRace(raceBuffer, kaisai.Id);
-      if (asIs && asIs.KolSeiNengappi) {
-        continue;
-      }
-      const race = await this.saveRace(raceBuffer, kaisai, asIs);
+      let race = await this.entityManager.findOneById(Race, raceId);
       if (!race) {
+        const kaisai = await this.saveKaisai(raceBuffer);
+        if (!kaisai) {
+          continue;
+        }
+        race = await this.saveRace(raceBuffer, kaisai, race);
+        if (!race) {
+          continue;
+        }
+        await this.saveRaceMei(raceBuffer, race);
+      } else if (raceSeiseki) {
+        // 既に競走馬データが取り込まれている場合
         continue;
       }
 
-      await this.saveRaceMei(raceBuffer, race);
       await this.saveRaceSeiseki(raceBuffer, race);
 
       const shussoubaBuffer = buffer.slice(offset + 151, offset + 590);
-      const shussouba = await this.saveShussouba(shussoubaBuffer, kaisai, race, kyousouba, uma);
+      const nen = readInt(raceBuffer, 2, 4);
+      const shussouba = await this.saveShussouba(shussoubaBuffer, race, kyousouba, uma, nen);
       if (shussouba) {
         await this.saveShussoubaJoutai(shussoubaBuffer, shussouba);
         await this.saveShussoubaSeiseki(shussoubaBuffer, race, shussouba);
@@ -264,7 +273,7 @@ export class KolUmaKd3 extends DataToImport {
     await this.tool.saveOrUpdate(RaceSeiseki, asIs, toBe);
   }
 
-  protected async saveShussouba(buffer: Buffer, kaisai: Kaisai, race: Race, kyousouba: Kyousouba, uma: Uma) {
+  protected async saveShussouba(buffer: Buffer, race: Race, kyousouba: Kyousouba, uma: Uma, nen: number) {
     const umaban = readPositiveInt(buffer, 1, 2) || 0;
     const id = race.Id * (2 ** 6) + umaban;
     const asIs = await this.entityManager.findOneById(Shussouba, id);
@@ -281,7 +290,6 @@ export class KolUmaKd3 extends DataToImport {
     kyousouba = await this.saveKyousoubaOfRace(buffer, kyousouba, kyuusha);
     toBe.KyousoubaId = kyousouba.Id;
     const nenrei = readPositiveInt(buffer, 8, 2);
-    const nen = kaisai.Nen;
     toBe.Nenrei = this.tool.normalizeNenrei(nenrei, nen);
 
     return await this.tool.saveOrUpdate(Shussouba, asIs, toBe);

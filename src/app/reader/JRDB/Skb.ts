@@ -21,8 +21,8 @@ export abstract class Skb extends DataToImport {
   protected jrdbShussoubaTool: JrdbShussoubaTool;
 
   public async save(buffer: Buffer, bridge: Bridge) {
-    const id = this.jrdbShussoubaTool.getShussoubaId(buffer, 8);
-    await this.saveShussoubaHyouka(buffer, id);
+    const rsId = this.jrdbShussoubaTool.getRaceShussoubaId(buffer, 8);
+    await this.saveShussoubaHyouka(buffer, rsId.shussoubaId);
 
   }
 

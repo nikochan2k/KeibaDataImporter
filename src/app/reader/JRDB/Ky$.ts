@@ -1,5 +1,6 @@
 import { Inject } from "typedi";
-import { ShussoubaData } from "./ShussoubaData";
+import { JrdbOddsHaitouTool } from "./JrdbOddsHaitouTool";
+import { JrdbShussoubaTool } from "./JrdbShussoubaTool";
 import * as $C from "../../converters/Common";
 import * as $KY from "../../converters/Kyuusha";
 import * as $R from "../../converters/Race";
@@ -19,6 +20,7 @@ import { Shussouba } from "../../entities/Shussouba";
 import { Kubun } from "../../entities/ShussoubaJoutai";
 import { ShussoubaYosou } from "../../entities/ShussoubaYosou";
 import { Uma } from "../../entities/Uma";
+import { DataToImport } from "../DataToImport";
 import {
   readDouble,
   readInt,
@@ -26,9 +28,19 @@ import {
   readStr,
   readStrWithNoSpace
 } from "../Reader";
-import { ShussoubaInfo } from "../ShussoubaTool";
+import { RaceShussoubaId, ShussoubaInfo } from "../ShussoubaTool";
+import { Tool } from "../Tool";
 
-export abstract class Ky$ extends ShussoubaData {
+export abstract class Ky$ extends DataToImport {
+
+  @Inject()
+  protected tool: Tool;
+
+  @Inject()
+  protected jrdbShussoubaTool: JrdbShussoubaTool;
+
+  @Inject()
+  protected jrdbOddsHaitouTool: JrdbOddsHaitouTool;
 
   @Inject()
   private kyuushaDao: KyuushaDao;
@@ -42,6 +54,34 @@ export abstract class Ky$ extends ShussoubaData {
   @Inject()
   private kishuDao: KishuDao;
 
+  public async save(buffer: Buffer) {
+    const info = await this.jrdbShussoubaTool.getShussoubaInfo(buffer, 8);
+    if (!info) {
+      return;
+    }
+
+    if (info.shussouba && info.shussouba.Jrdb) {
+      // 既に競走馬データが格納されている場合
+      return;
+    }
+    info.shussouba = await this.saveShussouba(buffer, info);
+
+    await this.saveShussoubaJoutai(buffer, info.shussouba);
+    await this.saveShussoubaYosou(buffer, info.shussouba);
+    await this.saveOddsHaitou(buffer, info.shussouba);
+  }
+
+  protected async saveShussouba(buffer: Buffer, info: ShussoubaInfo) {
+    const toBe = this.jrdbShussoubaTool.createShussouba(buffer, 8);
+    if (toBe) {
+      return info.shussouba;
+    }
+    this.setShussouba(buffer, toBe, info);
+    toBe.Jrdb = 1;
+
+    const asIs = info.shussouba;
+    return await this.tool.saveOrUpdate(Shussouba, asIs, toBe);
+  }
 
   protected async saveKishu(buffer: Buffer) {
     const kishu = new Kishu();
@@ -108,12 +148,6 @@ export abstract class Ky$ extends ShussoubaData {
     toBe.Bataijuu = readPositiveInt(buffer, 396, 3);
     toBe.Zougen = readInt(buffer, 399, 3);
     toBe.TorikeshiShubetsu = $S.torikeshiShubetsu.toCodeFromJrdb(buffer, 402, 1);
-  }
-
-  protected async saveShussoubaRelated(buffer: Buffer, info: ShussoubaInfo) {
-    await this.saveShussoubaJoutai(buffer, info.shussouba);
-    await this.saveShussoubaYosou(buffer, info.shussouba);
-    await this.saveOddsHaitou(buffer, info.shussouba);
   }
 
   protected async saveShussoubaJoutai(buffer: Buffer, shussouba: Shussouba) {
@@ -237,14 +271,19 @@ export abstract class Ky$ extends ShussoubaData {
   }
 
   protected async saveOddsHaitou(buffer: Buffer, shussouba: Shussouba) {
-    await this.jrdbOddsHaitouTool.saveOddsNinki(buffer, shussouba, {
+    const rsId: RaceShussoubaId = {
+      raceId: shussouba.RaceId,
+      shussoubaId: shussouba.Id,
+      umaban: shussouba.Umaban
+    };
+    await this.jrdbOddsHaitouTool.saveOddsNinki(buffer, rsId, {
       Kakutei: $C.Kakutei.Yosou,
       Baken: $C.Baken.Tanshou,
       OddsOffset: 95,
       OddsLength: 5,
       NinkiOffset: 100
     });
-    await this.jrdbOddsHaitouTool.saveOddsNinki(buffer, shussouba, {
+    await this.jrdbOddsHaitouTool.saveOddsNinki(buffer, rsId, {
       Kakutei: $C.Kakutei.Yosou,
       Baken: $C.Baken.Fukushou,
       OddsOffset: 102,

@@ -16,7 +16,6 @@ import {
   readDouble,
   readInt,
   readPositiveInt,
-  readRaw,
   readStr,
   readStrWithNoSpace,
   readTime
@@ -44,7 +43,6 @@ export class KolRaceTool extends RaceTool {
   protected getRaceBangou(buffer: Buffer) {
     const raceBangou = readPositiveInt(buffer, 10, 2);
     if (raceBangou === null) {
-      this.logger.warn("不正なレース番号です: " + readRaw(buffer, 10, 2));
       return null;
     }
     return raceBangou;
