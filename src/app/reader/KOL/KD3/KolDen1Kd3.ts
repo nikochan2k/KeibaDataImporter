@@ -46,7 +46,7 @@ export class KolDen1Kd3 extends DataToImport {
 
     const dataNengappi = readInt(buffer, 418, 8);
     const asIs = await this.kolRaceTool.getRace(buffer);
-    if (asIs && asIs.KolNengappi && asIs.KolNengappi <= dataNengappi) {
+    if (asIs && asIs.KolNengappi && dataNengappi <= asIs.KolNengappi) {
       // 既に取り込み済みの場合
       return;
     }

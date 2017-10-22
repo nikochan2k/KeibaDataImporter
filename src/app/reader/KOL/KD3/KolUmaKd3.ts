@@ -8,7 +8,7 @@ import * as $U from "../../../converters/Uma";
 import { Kubun } from "../../../entities/ShussoubaJoutai";
 import { Bagu } from "../../../converters/ShussoubaJoutai";
 import { UmaDao } from "../../../daos/UmaDao";
-import { Choukyou } from "../../../entities/Choukyou";
+import { ShussoubaChoukyou } from "../../../entities/ShussoubaChoukyou";
 import { Kaisai } from "../../../entities/Kaisai";
 import { Kyousouba } from "../../../entities/Kyousouba";
 import { Kyuusha } from "../../../entities/Kyuusha";
@@ -91,7 +91,8 @@ export class KolUmaKd3 extends DataToImport {
       }
 
       let race = await this.entityManager.findOneById(Race, raceId);
-      if (!race) {
+      /* tslint:disable:triple-equals */
+      if (!race || race.KolNengappi == null) {
         const kaisai = await this.saveKaisai(raceBuffer);
         if (!kaisai) {
           continue;
@@ -101,10 +102,11 @@ export class KolUmaKd3 extends DataToImport {
           continue;
         }
         await this.saveRaceMei(raceBuffer, race);
-      } else if (raceSeiseki) {
+      } else if (raceSeiseki && raceSeiseki.KolNengappi === 0) {
         // 既に競走馬データが取り込まれている場合
         continue;
       }
+      /* tslint:enable:triple-equals */
 
       await this.saveRaceSeiseki(raceBuffer, race);
 
@@ -150,6 +152,7 @@ export class KolUmaKd3 extends DataToImport {
     uma.Jiyuu = readStr(buffer, 553, 6);
     uma.Ikisaki = readStr(buffer, 559, 10);
     uma = await this.umaDao.saveUma(uma);
+
     let kyousouba = new Kyousouba();
     kyousouba.UmaId = uma.Id;
     kyousouba.Seibetsu = seibetsu;
@@ -160,6 +163,7 @@ export class KolUmaKd3 extends DataToImport {
     kyousouba.KyuushaId = kyuusha && kyuusha.Id;
     kyousouba.KoueiGaikokuKyuushaMei = readStr(buffer, 536, 8);
     kyousouba = await this.umaDao.saveKyousouba(kyousouba);
+
     return { Kyousouba: kyousouba, Uma: uma };
   }
 
@@ -252,6 +256,7 @@ export class KolUmaKd3 extends DataToImport {
     toBe.Kyori = readPositiveInt(buffer, 119, 4);
     toBe.Tousuu = readPositiveInt(buffer, 123, 2);
     toBe.TorikeshiTousuu = readInt(buffer, 125, 2);
+    toBe.KolNengappi = 0;
 
     return await this.tool.saveOrUpdate(Race, asIs, toBe);
   }
@@ -267,6 +272,7 @@ export class KolUmaKd3 extends DataToImport {
     toBe.Pace = $R.pace.toCodeFromKol(buffer, 127, 1);
     toBe.Tenki = $R.tenki.toCodeFromKol(buffer, 128, 1);
     toBe.Baba = $R.baba.toCodeFromKol(buffer, 129, 1);
+    toBe.KolNengappi = 0;
 
     const asIs = await this.entityManager.findOneById(RaceSeiseki, toBe.Id);
 
@@ -291,6 +297,7 @@ export class KolUmaKd3 extends DataToImport {
     toBe.KyousoubaId = kyousouba.Id;
     const nenrei = readPositiveInt(buffer, 8, 2);
     toBe.Nenrei = this.tool.normalizeNenrei(nenrei, nen);
+    toBe.KolNengappi = 0;
 
     return await this.tool.saveOrUpdate(Shussouba, asIs, toBe);
   }
@@ -367,10 +374,10 @@ export class KolUmaKd3 extends DataToImport {
 
   protected async saveChoukyou(buffer: Buffer, shussouba: Shussouba, uma: Uma) {
     const tanshukuKishuMei = readStrWithNoSpace(buffer, 140, 8);
-    const choukyou = new Choukyou();
-    choukyou.Id = shussouba.Id;
-    await this.kolChoukyouTool.saveChoukyou(choukyou);
-    await this.kolChoukyouTool.saveChoukyouRireki(buffer, 248, uma.Id, tanshukuKishuMei);
+    const sc = new ShussoubaChoukyou();
+    sc.Id = shussouba.Id;
+    await this.kolChoukyouTool.saveShussoubaChoukyou(sc);
+    await this.kolChoukyouTool.saveChoukyou(buffer, 248, uma.Id, tanshukuKishuMei);
   }
 
   public async saveKyousoubaOfRace(buffer: Buffer, k: Kyousouba, kyuusha: Kyuusha) {

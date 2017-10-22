@@ -49,7 +49,7 @@ export class KolSei1Kd3 extends DataToImport {
     const dataNengappi = readInt(buffer, 2910, 8);
 
     const raceSeisei = await this.entityManager.findOneById(RaceSeiseki, id);
-    if (raceSeisei && raceSeisei.KolNengappi && raceSeisei.KolNengappi <= dataNengappi) {
+    if (raceSeisei && raceSeisei.KolNengappi && dataNengappi <= raceSeisei.KolNengappi) {
       return;
     }
 

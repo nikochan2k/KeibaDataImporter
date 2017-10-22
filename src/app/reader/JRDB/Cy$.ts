@@ -1,7 +1,7 @@
 import { Inject } from "typedi";
 import { JrdbShussoubaTool } from "./JrdbShussoubaTool";
 import * as $CH from "../../converters/Choukyou";
-import { Choukyou } from "../../entities/Choukyou";
+import { ShussoubaChoukyou } from "../../entities/ShussoubaChoukyou";
 import { DataToImport } from "../DataToImport";
 import { ChoukyouDao } from "../../daos/ChoukyouDao";
 
@@ -19,23 +19,23 @@ export abstract class Cy$ extends DataToImport {
       return;
     }
 
-    const choukyou = new Choukyou();
-    choukyou.Id = rsId.shussoubaId;
-    this.setChoukyou(buffer, choukyou);
-    await this.choukyouDao.save(choukyou);
+    const sc = new ShussoubaChoukyou();
+    sc.Id = rsId.shussoubaId;
+    this.setChoukyou(buffer, sc);
+    await this.choukyouDao.save(sc);
   }
 
-  protected setChoukyou(buffer: Buffer, choukyou: Choukyou) {
-    choukyou.ChoukyouType = $CH.choukyouType.toCodeFromJrdb(buffer, 10, 2);
-    choukyou.Choukyouryou = $CH.choukyouryou.toCodeFromJrdb(buffer, 10, 2);
-    choukyou.ChoukyouTsuyosa = $CH.choukyouTsuyosa.toCodeFromJrdb(buffer, 10, 2);
-    choukyou.ChoukyouCourseMain = $CH.choukyouCourseShubetsu.toCodeFromJrdb(buffer, 12, 1);
-    choukyou.ChoukyouCourseHanro = $CH.choukyouCourseShurui.toCodeFromJrdb(buffer, 13, 2);
-    choukyou.ChoukyouCourseWood = $CH.choukyouCourseShurui.toCodeFromJrdb(buffer, 15, 2);
-    choukyou.ChoukyouCourseDirt = $CH.choukyouCourseShurui.toCodeFromJrdb(buffer, 17, 2);
-    choukyou.ChoukyouCourseShiba = $CH.choukyouCourseShurui.toCodeFromJrdb(buffer, 19, 2);
-    choukyou.ChoukyouCoursePool = $CH.choukyouCourseShurui.toCodeFromJrdb(buffer, 21, 2);
-    choukyou.ChoukyouCourseShougai = $CH.choukyouCourseShurui.toCodeFromJrdb(buffer, 23, 2);
+  protected setChoukyou(buffer: Buffer, sc: ShussoubaChoukyou) {
+    sc.ChoukyouType = $CH.choukyouType.toCodeFromJrdb(buffer, 10, 2);
+    sc.Choukyouryou = $CH.choukyouryou.toCodeFromJrdb(buffer, 10, 2);
+    sc.ChoukyouTsuyosa = $CH.choukyouTsuyosa.toCodeFromJrdb(buffer, 10, 2);
+    sc.ChoukyouCourseMain = $CH.choukyouCourseShubetsu.toCodeFromJrdb(buffer, 12, 1);
+    sc.ChoukyouCourseHanro = $CH.choukyouCourseShurui.toCodeFromJrdb(buffer, 13, 2);
+    sc.ChoukyouCourseWood = $CH.choukyouCourseShurui.toCodeFromJrdb(buffer, 15, 2);
+    sc.ChoukyouCourseDirt = $CH.choukyouCourseShurui.toCodeFromJrdb(buffer, 17, 2);
+    sc.ChoukyouCourseShiba = $CH.choukyouCourseShurui.toCodeFromJrdb(buffer, 19, 2);
+    sc.ChoukyouCoursePool = $CH.choukyouCourseShurui.toCodeFromJrdb(buffer, 21, 2);
+    sc.ChoukyouCourseShougai = $CH.choukyouCourseShurui.toCodeFromJrdb(buffer, 23, 2);
   }
 
 }

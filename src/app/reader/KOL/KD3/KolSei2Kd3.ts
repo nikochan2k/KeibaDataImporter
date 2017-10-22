@@ -1,7 +1,7 @@
 import { Inject, Service } from "typedi";
 import * as $S from "../../../converters/Shussouba";
 import { Bagu } from "../../../converters/ShussoubaJoutai";
-import { Choukyou } from "../../../entities/Choukyou";
+import { ShussoubaChoukyou } from "../../../entities/ShussoubaChoukyou";
 import { Kyousouba } from "../../../entities/Kyousouba";
 import { Shussouba } from "../../../entities/Shussouba";
 import { ShussoubaHyouka } from "../../../entities/ShussoubaHyouka";
@@ -51,7 +51,7 @@ export class KolSei2Kd3 extends DataToImport {
     const dataNenggapi = readInt(buffer, 424, 8);
 
     const shussoubaSeiseki = await this.entityManager.findOneById(ShussoubaSeiseki, rsId.shussoubaId);
-    if (shussoubaSeiseki && shussoubaSeiseki.KolNengappi && shussoubaSeiseki.KolNengappi <= dataNenggapi) {
+    if (shussoubaSeiseki && shussoubaSeiseki.KolNengappi && dataNenggapi <= shussoubaSeiseki.KolNengappi) {
       return;
     }
 
@@ -166,10 +166,10 @@ export class KolSei2Kd3 extends DataToImport {
 
   protected async saveChoukyou(buffer: Buffer, info: ShussoubaInfo) {
     const tanshukuKishuMei = readStrWithNoSpace(buffer, 199, 8);
-    const choukyou = new Choukyou();
-    choukyou.Id = info.shussouba.Id;
-    await this.choukyouTool.saveChoukyou(choukyou);
-    await this.choukyouTool.saveChoukyouRireki(buffer, 307, info.uma.Id, tanshukuKishuMei);
+    const sc = new ShussoubaChoukyou();
+    sc.Id = info.shussouba.Id;
+    await this.choukyouTool.saveShussoubaChoukyou(sc);
+    await this.choukyouTool.saveChoukyou(buffer, 307, info.uma.Id, tanshukuKishuMei);
   }
 
 }

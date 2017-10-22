@@ -1,7 +1,7 @@
 import { Inject, Service } from "typedi";
 import * as $S from "../../../converters/Shussouba";
 import { Bagu } from "../../../converters/ShussoubaJoutai";
-import { Choukyou } from "../../../entities/Choukyou";
+import { ShussoubaChoukyou } from "../../../entities/ShussoubaChoukyou";
 import { Shussouba } from "../../../entities/Shussouba";
 import { Kubun } from "../../../entities/ShussoubaJoutai";
 import { ShussoubaYosou } from "../../../entities/ShussoubaYosou";
@@ -53,7 +53,7 @@ export class KolDen2Kd3 extends DataToImport {
 
     const dataNengappi = readInt(buffer, 727, 8);
     const asIs = info.shussouba;
-    if (asIs && asIs.KolNengappi && asIs.KolNengappi <= dataNengappi) {
+    if (asIs && asIs.KolNengappi && dataNengappi <= asIs.KolNengappi) {
       return;
     }
 
@@ -66,7 +66,7 @@ export class KolDen2Kd3 extends DataToImport {
     await this.saveShussoubaJoutai(buffer, shussouba);
     await this.saveShussoubaYosou(buffer, shussouba, <KolBridge>bridge);
     const tanshukuKishuMei = readStrWithNoSpace(buffer, 188, 8);
-    await this.saveChoukyou(buffer, info, tanshukuKishuMei);
+    await this.saveShussoubaChoukyou(buffer, info, tanshukuKishuMei);
   }
 
   protected async saveShussouba(buffer: Buffer, info: ShussoubaInfo, dataNengappi: number) {
@@ -119,22 +119,22 @@ export class KolDen2Kd3 extends DataToImport {
     return await this.tool.saveOrUpdate(ShussoubaYosou, asIs, toBe);
   }
 
-  protected async saveChoukyou(buffer: Buffer, info: ShussoubaInfo, tanshukuKishuMei: string) {
-    const choukyou = new Choukyou();
-    choukyou.Id = info.shussouba.Id;
-    choukyou.ChoukyouTanpyou = readStr(buffer, 694, 24);
-    choukyou.ChoukyouHonsuuCourse = readPositiveInt(buffer, 718, 3);
-    choukyou.ChoukyouHonsuuHanro = readPositiveInt(buffer, 721, 3);
-    choukyou.ChoukyouHonsuuPool = readPositiveInt(buffer, 724, 3);
-    await this.choukyouTool.saveChoukyou(choukyou);
+  protected async saveShussoubaChoukyou(buffer: Buffer, info: ShussoubaInfo, tanshukuKishuMei: string) {
+    const sc = new ShussoubaChoukyou();
+    sc.Id = info.shussouba.Id;
+    sc.ChoukyouTanpyou = readStr(buffer, 694, 24);
+    sc.ChoukyouHonsuuCourse = readPositiveInt(buffer, 718, 3);
+    sc.ChoukyouHonsuuHanro = readPositiveInt(buffer, 721, 3);
+    sc.ChoukyouHonsuuPool = readPositiveInt(buffer, 724, 3);
+    await this.choukyouTool.saveShussoubaChoukyou(sc);
 
     const choukyouAwaseFlag = readPositiveInt(buffer, 607, 1);
     const choukyouAwase = readStr(buffer, 608, 86);
-    await this.choukyouTool.saveChoukyouRireki(buffer, 256, info.uma.Id, tanshukuKishuMei,
+    await this.choukyouTool.saveChoukyou(buffer, 256, info.uma.Id, tanshukuKishuMei,
       choukyouAwaseFlag === 1 ? choukyouAwase : null);
-    await this.choukyouTool.saveChoukyouRireki(buffer, 373, info.uma.Id, tanshukuKishuMei,
+    await this.choukyouTool.saveChoukyou(buffer, 373, info.uma.Id, tanshukuKishuMei,
       choukyouAwaseFlag === 2 ? choukyouAwase : null);
-    await this.choukyouTool.saveChoukyouRireki(buffer, 490, info.uma.Id, tanshukuKishuMei,
+    await this.choukyouTool.saveChoukyou(buffer, 490, info.uma.Id, tanshukuKishuMei,
       choukyouAwaseFlag === 3 ? choukyouAwase : null);
   }
 

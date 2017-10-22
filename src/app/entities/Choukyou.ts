@@ -1,97 +1,30 @@
 import {
   Column,
   Entity,
+  Index,
   PrimaryColumn
 } from "typeorm";
 
 @Entity("Choukyou")
+@Index("IxChoukyou", (c: Choukyou) => [c.UmaId])
 export class Choukyou {
   @PrimaryColumn("bigint")
   public Id: number;
 
-  /* KD3 出馬表出走馬データ */
-
-  @Column("varchar", { length: 7, nullable: true })
-  public ChoukyouTanpyou?: string;
-
-  @Column("smallint", { nullable: true })
-  public ChoukyouHonsuuCourse?: number;
-
-  @Column("smallint", { nullable: true })
-  public ChoukyouHonsuuHanro?: number;
-
-  @Column("smallint", { nullable: true })
-  public ChoukyouHonsuuPool?: number;
-
-  /* JRDB 調教分析データ */
+  @Column("int")
+  public UmaId: number;
 
   @Column("tinyint", { nullable: true })
-  public ChoukyouType?: number;
+  public ChoukyouFlag?: number;
 
   @Column("tinyint", { nullable: true })
-  public Choukyouryou?: number;
-
-  @Column("tinyint", { nullable: true })
-  public ChoukyouTsuyosa?: number;
-
-  @Column("tinyint", { nullable: true })
-  public ChoukyouCourseMain?: number;
-
-  @Column("tinyint", { nullable: true })
-  public ChoukyouCourseHanro?: number;
-
-  @Column("tinyint", { nullable: true })
-  public ChoukyouCourseWood?: number;
-
-  @Column("tinyint", { nullable: true })
-  public ChoukyouCourseDirt?: number;
-
-  @Column("tinyint", { nullable: true })
-  public ChoukyouCourseShiba?: number;
-
-  @Column("tinyint", { nullable: true })
-  public ChoukyouCoursePool?: number;
-
-  @Column("tinyint", { nullable: true })
-  public ChoukyouCourseShougai?: number;
-
-  @Column("tinyint", { nullable: true })
-  public ChoukyouCoursePoly?: number;
-
-  @Column("tinyint", { nullable: true })
-  public ChoukyouKyori?: number;
-
-  @Column("tinyint", { nullable: true })
-  public ChoukyouJuuten?: number;
-
-  @Column("smallint", { nullable: true })
-  public OikiriShisuu?: number;
-
-  @Column("smallint", { nullable: true })
-  public ShiageShisuu?: number;
-
-  @Column("tinyint", { nullable: true })
-  public ChoukyouryouHyouka?: number;
-
-  @Column("tinyint", { nullable: true })
-  public ShiageShisuuHenka?: number;
-
-  @Column("varchar", { length: 60, nullable: true })
-  public ChoukyouComment?: string;
+  public Noriyaku?: number;
 
   @Column("int", { nullable: true })
-  public CommentNengappi?: number;
-
-  @Column("tinyint", { nullable: true })
-  public ChoukyouHyouka?: number;
-
-  /* JRDB 調教本追切データ */
+  public TanshukuKishuMeiId: number;
 
   @Column("int", { nullable: true })
-  public ChoukyouNengappi?: number;
-
-  @Column("tinyint", { nullable: true })
-  public Kaisuu?: number;
+  public Nengappi?: number;
 
   @Column("tinyint", { nullable: true })
   public Basho?: number;
@@ -100,48 +33,47 @@ export class Choukyou {
   public Type?: number;
 
   @Column("tinyint", { nullable: true })
+  public Course?: number;
+
+  @Column("varchar", { length: 12, nullable: true })
+  public BashoCourse?: string;
+
+  @Column("tinyint", { nullable: true })
+  public Baba?: number;
+
+  @Column("tinyint", { nullable: true })
+  public Kaisuu?: number;
+
+  @Column("tinyint", { nullable: true })
+  public IchiDori?: number;
+
+  @Column("tinyint", { nullable: true })
   public Oikiri?: number;
 
   @Column("tinyint", { nullable: true })
-  public OiJoutai?: number;
+  public Ashiiro?: number;
+
+  @Column("varchar", { length: 9, nullable: true })
+  public OikiriSonota?: string;
 
   @Column("tinyint", { nullable: true })
-  public Noriyaku?: number;
+  public Yajirushi?: number; // 1:一変　2:平行 3:下降　4:良化　5:下降気味
+
+  @Column("varchar", { length: 60, nullable: true })
+  public Reigai?: string;
+
+  @Column("int", { nullable: true })
+  public AwaseUmaId?: number;
 
   @Column("tinyint", { nullable: true })
-  public ChoukyouF?: number;
-
-  // 時計分析データ
-
-  @Column("smallint", { nullable: true })
-  public TenF?: number;
-
-  @Column("smallint", { nullable: true })
-  public ChuukanF?: number;
-
-  @Column("smallint", { nullable: true })
-  public ShimaiF?: number;
-
-  @Column("smallint", { nullable: true })
-  public TenFShisuu?: number;
-
-  @Column("smallint", { nullable: true })
-  public ChuukanFShisuu?: number;
-
-  @Column("smallint", { nullable: true })
-  public ShimaiFShisuu?: number;
-
-  // 併せ馬相手データ
+  public AwaseKekka?: number;
 
   @Column("tinyint", { nullable: true })
-  public Awasekekka?: number;
+  public Chakusa?: number;
 
-  @Column("tinyint", { nullable: true })
-  public AwaseumaOikiriShurui?: number;
+  @Column("float", { nullable: true })
+  public TimeSa?: number;
 
-  @Column("tinyint", { nullable: true })
-  public AwaseumaNenrei?: number;
-
-  @Column("tinyint", { nullable: true })
-  public AwaseumaClass?: number;
+  @Column("varchar", { length: 129, nullable: true })
+  public AwaseReigai?: string;
 }

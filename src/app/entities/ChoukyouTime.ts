@@ -6,13 +6,13 @@ import {
 } from "typeorm";
 
 @Entity("ChoukyouTime")
-@Index("IxChoukyouTime", (c: ChoukyouTime) => [c.ChoukyouRirekiId])
+@Index("IxChoukyouTime", (c: ChoukyouTime) => [c.ChoukyouId])
 export class ChoukyouTime {
   @PrimaryColumn("bigint")
   public Id: number;
 
   @Column("bigint")
-  public ChoukyouRirekiId: number;
+  public ChoukyouId: number;
 
   @Column("smallint")
   public F: number;
