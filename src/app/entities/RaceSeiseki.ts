@@ -9,31 +9,31 @@ export class RaceSeiseki {
   @PrimaryColumn("bigint")
   public Id: number;
 
-  @Column("smallint", { nullable: true })
+  @Column("tinyint", { nullable: true })
   public TorikeshiTousuu?: number;
 
-  @Column("smallint", { nullable: true })
+  @Column("tinyint", { nullable: true })
   public Pace?: number;
 
   @Column("real", { nullable: true })
   public PaceShisuu?: number;
 
-  @Column("smallint", { nullable: true })
+  @Column("tinyint", { nullable: true })
   public PaceUpNokoriFalon?: number;
 
   @Column("tinyint", { nullable: true })
   public PaceNagare?: number;
 
-  @Column("smallint", { nullable: true })
+  @Column("tinyint", { nullable: true })
   public Tenki?: number;
 
-  @Column("smallint", { nullable: true })
+  @Column("tinyint", { nullable: true })
   public Baba?: number;
 
-  @Column("smallint", { nullable: true })
+  @Column("tinyint", { nullable: true })
   public BabaSokudo?: number; // 0:普通 1:速い 2:遅い
 
-  @Column("float", { nullable: true })
+  @Column("real", { nullable: true })
   public ShougaiHeikin1F?: number;
 
   @Column("int", { nullable: true })

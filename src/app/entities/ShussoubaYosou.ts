@@ -10,17 +10,14 @@ export class ShussoubaYosou {
   public Id: number;
 
 
-  @Column("smallint", { nullable: true })
+  @Column("tinyint", { nullable: true })
   public KolYosou1?: number;
 
-  @Column("smallint", { nullable: true })
+  @Column("tinyint", { nullable: true })
   public KolYosou2?: number;
 
-  @Column("float", { nullable: true })
+  @Column("real", { nullable: true })
   public Rating?: number;
-
-  @Column("smallint", { nullable: true })
-  public YosouTenkai?: number;
 
 
   @Column("real", { nullable: true })
@@ -36,13 +33,13 @@ export class ShussoubaYosou {
   public SougouShisuu?: number;
 
 
-  @Column("smallint", { nullable: true })
-  public Kyakushitsu: number;
+  @Column("tinyint", { nullable: true })
+  public Kyakushitsu: number; // Jrdb優先
 
-  @Column("smallint", { nullable: true })
+  @Column("tinyint", { nullable: true })
   public KyoriTekisei: number;
 
-  @Column("smallint", { nullable: true })
+  @Column("tinyint", { nullable: true })
   public Joushoudo: number;
 
   @Column("smallint", { nullable: true })
@@ -89,10 +86,10 @@ export class ShussoubaYosou {
   public KyuushaShisuu?: number;
 
 
-  @Column("smallint", { nullable: true })
+  @Column("tinyint", { nullable: true })
   public ChoukyouYajirushi?: number;
 
-  @Column("smallint", { nullable: true })
+  @Column("tinyint", { nullable: true })
   public KyuushaHyouka?: number;
 
   @Column("real", { nullable: true })
@@ -101,44 +98,44 @@ export class ShussoubaYosou {
   @Column("smallint", { nullable: true })
   public GekisouShisuu: number;
 
-  @Column("smallint", { nullable: true })
+  @Column("tinyint", { nullable: true })
   public HidumeCode: number;
 
-  @Column("smallint", { nullable: true })
+  @Column("tinyint", { nullable: true })
   public OmoTekisei: number;
 
-  @Column("smallint", { nullable: true })
+  @Column("tinyint", { nullable: true })
   public ClassCode: number;
 
 
   // 印
 
-  @Column("smallint", { nullable: true })
+  @Column("tinyint", { nullable: true })
   public SougouShirushi?: number;
 
-  @Column("smallint", { nullable: true })
+  @Column("tinyint", { nullable: true })
   public IdmShirushi?: number;
 
-  @Column("smallint", { nullable: true })
+  @Column("tinyint", { nullable: true })
   public JouhouShirushi?: number;
 
-  @Column("smallint", { nullable: true })
+  @Column("tinyint", { nullable: true })
   public KishuShirushi?: number;
 
-  @Column("smallint", { nullable: true })
+  @Column("tinyint", { nullable: true })
   public KyuushaShirushi?: number;
 
-  @Column("smallint", { nullable: true })
+  @Column("tinyint", { nullable: true })
   public ChoukyouShirushi?: number;
 
-  @Column("smallint", { nullable: true })
+  @Column("tinyint", { nullable: true })
   public GekisouShirushi?: number;
 
 
-  @Column("smallint", { nullable: true })
+  @Column("tinyint", { nullable: true })
   public ShibaTekisei?: number;
 
-  @Column("smallint", { nullable: true })
+  @Column("tinyint", { nullable: true })
   public DirtTekisei?: number;
 
 
@@ -150,7 +147,7 @@ export class ShussoubaYosou {
   @Column("int", { nullable: true })
   public ShuutokuShoukin: number;
 
-  @Column("smallint", { nullable: true })
+  @Column("tinyint", { nullable: true })
   public JoukenClass: number;
 
 
@@ -168,60 +165,60 @@ export class ShussoubaYosou {
   @Column("real", { nullable: true })
   public IchiShisuu: number;
 
-  @Column("smallint", { nullable: true })
+  @Column("tinyint", { nullable: true })
   public PaceYosou: number;
 
-  @Column("smallint", { nullable: true })
+  @Column("tinyint", { nullable: true })
   public DouchuuJuni: number;
 
   @Column("real", { nullable: true })
   public DouchuuSa: number;
 
-  @Column("smallint", { nullable: true })
+  @Column("tinyint", { nullable: true })
   public DouchuuUchiSoto: number;
 
-  @Column("smallint", { nullable: true })
+  @Column("tinyint", { nullable: true })
   public Agari3FJuni: number;
 
   @Column("real", { nullable: true })
   public Agari3FSa: number;
 
-  @Column("smallint", { nullable: true })
+  @Column("tinyint", { nullable: true })
   public Agari3FUchiSoto: number;
 
-  @Column("smallint", { nullable: true })
+  @Column("tinyint", { nullable: true })
   public GoalJuni: number;
 
   @Column("real", { nullable: true })
   public GoalSa: number;
 
-  @Column("smallint", { nullable: true })
+  @Column("tinyint", { nullable: true })
   public GoalUchiSoto: number;
 
-  @Column("smallint", { nullable: true })
+  @Column("tinyint", { nullable: true })
   public TenkaiKigou: number;
 
 
-  @Column("smallint", { nullable: true })
+  @Column("tinyint", { nullable: true })
   public KyoriTekisei2: number;
 
 
-  @Column("smallint", { nullable: true })
+  @Column("tinyint", { nullable: true })
   public GekisouJuni: number;
 
-  @Column("smallint", { nullable: true })
+  @Column("tinyint", { nullable: true })
   public LsShisuuJuni: number;
 
-  @Column("smallint", { nullable: true })
+  @Column("tinyint", { nullable: true })
   public TenShisuuJuni: number;
 
-  @Column("smallint", { nullable: true })
+  @Column("tinyint", { nullable: true })
   public PaceShisuuJuni: number;
 
-  @Column("smallint", { nullable: true })
+  @Column("tinyint", { nullable: true })
   public AgariShisuuJuni: number;
 
-  @Column("smallint", { nullable: true })
+  @Column("tinyint", { nullable: true })
   public IchiShisuuJuni: number;
 
 
@@ -231,77 +228,77 @@ export class ShussoubaYosou {
   @Column("real", { nullable: true })
   public KishuKitai3ChakunaiRitsu: number;
 
-  @Column("smallint", { nullable: true })
+  @Column("tinyint", { nullable: true })
   public YosouKubun: number;
 
 
-  @Column("smallint", { nullable: true })
+  @Column("tinyint", { nullable: true })
   public SouhouZentai: number;
 
-  @Column("smallint", { nullable: true })
+  @Column("tinyint", { nullable: true })
   public SouhouAshidukai: number;
 
-  @Column("smallint", { nullable: true })
+  @Column("tinyint", { nullable: true })
   public SouhouKaiten: number;
 
-  @Column("smallint", { nullable: true })
+  @Column("tinyint", { nullable: true })
   public SouhouHohaba: number;
 
-  @Column("smallint", { nullable: true })
+  @Column("tinyint", { nullable: true })
   public SouhouAshiage: number;
 
-  @Column("smallint", { nullable: true })
+  @Column("tinyint", { nullable: true })
   public TaikeiZentai: number;
 
-  @Column("smallint", { nullable: true })
+  @Column("tinyint", { nullable: true })
   public TaikeiSenaka: number;
 
-  @Column("smallint", { nullable: true })
+  @Column("tinyint", { nullable: true })
   public TaikeiDou: number;
 
-  @Column("smallint", { nullable: true })
+  @Column("tinyint", { nullable: true })
   public TaikeiShiri: number;
 
-  @Column("smallint", { nullable: true })
+  @Column("tinyint", { nullable: true })
   public TaikeiTomo: number;
 
-  @Column("smallint", { nullable: true })
+  @Column("tinyint", { nullable: true })
   public TaikeiHarabukuro: number;
 
-  @Column("smallint", { nullable: true })
+  @Column("tinyint", { nullable: true })
   public TaikeiAtama: number;
 
-  @Column("smallint", { nullable: true })
+  @Column("tinyint", { nullable: true })
   public TaikeiKubi: number;
 
-  @Column("smallint", { nullable: true })
+  @Column("tinyint", { nullable: true })
   public TaikeiMune: number;
 
-  @Column("smallint", { nullable: true })
+  @Column("tinyint", { nullable: true })
   public TaikeiKata: number;
 
-  @Column("smallint", { nullable: true })
+  @Column("tinyint", { nullable: true })
   public TaikeiMaeNagasa: number;
 
-  @Column("smallint", { nullable: true })
+  @Column("tinyint", { nullable: true })
   public TaikeiUshiroNagasa: number;
 
-  @Column("smallint", { nullable: true })
+  @Column("tinyint", { nullable: true })
   public TaikeiMaeHaba: number;
 
-  @Column("smallint", { nullable: true })
+  @Column("tinyint", { nullable: true })
   public TaikeiUshiroHaba: number;
 
-  @Column("smallint", { nullable: true })
+  @Column("tinyint", { nullable: true })
   public TaikeiMaeTsunagari: number;
 
-  @Column("smallint", { nullable: true })
+  @Column("tinyint", { nullable: true })
   public TaikeiUshiroTsunagari: number;
 
-  @Column("smallint", { nullable: true })
+  @Column("tinyint", { nullable: true })
   public TaikeiO: number;
 
-  @Column("smallint", { nullable: true })
+  @Column("tinyint", { nullable: true })
   public TaikeiFuri: number;
 
   @Column("real", { nullable: true })
@@ -313,7 +310,7 @@ export class ShussoubaYosou {
   @Column("smallint", { nullable: true })
   public MankenShisuu: number;
 
-  @Column("smallint", { nullable: true })
+  @Column("tinyint", { nullable: true })
   public MankenShirushi: number;
 
 

@@ -20,6 +20,6 @@ export class RaceLapTime {
   @Column("smallint")
   public ShuuryouKyori: number;
 
-  @Column("float")
+  @Column("real")
   public LapTime: number;
 }

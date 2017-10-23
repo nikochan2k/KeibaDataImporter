@@ -35,7 +35,7 @@ export class KolDen1Kd3 extends DataToImport {
 
   protected setup(bridge: Bridge) {
     const kolBridge = <KolBridge>bridge;
-    kolBridge.yosouTenkaiMap = new Map<number, number>();
+    kolBridge.yosouKyakushitsuMap = new Map<number, number>();
   }
 
   public async save(buffer: Buffer, bridge: Bridge) {
@@ -175,7 +175,7 @@ export class KolDen1Kd3 extends DataToImport {
         const umaban = readInt(buffer, offset + i * 2, 2);
         if (1 <= umaban && umaban <= 28) {
           const shussoubaId = race.Id * (2 ** 6) + umaban;
-          bridge.yosouTenkaiMap.set(shussoubaId, index + 1);
+          bridge.yosouKyakushitsuMap.set(shussoubaId, index + 1);
         }
       }
     });

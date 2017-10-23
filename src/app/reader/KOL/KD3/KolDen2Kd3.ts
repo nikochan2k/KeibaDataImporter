@@ -42,7 +42,7 @@ export class KolDen2Kd3 extends DataToImport {
 
   protected teardown(bridge: Bridge) {
     const kolBridge = <KolBridge>bridge;
-    delete kolBridge.yosouTenkaiMap;
+    delete kolBridge.yosouKyakushitsuMap;
   }
 
   public async save(buffer: Buffer, bridge: Bridge) {
@@ -112,7 +112,7 @@ export class KolDen2Kd3 extends DataToImport {
     toBe.KolYosou1 = $S.yosou.toCodeFromKol(buffer, 254, 1);
     toBe.KolYosou2 = $S.yosou.toCodeFromKol(buffer, 255, 1);
     toBe.Rating = readDouble(buffer, 739, 3, 0.1);
-    toBe.YosouTenkai = bridge.yosouTenkaiMap.get(toBe.Id);
+    toBe.Kyakushitsu = bridge.yosouKyakushitsuMap.get(toBe.Id);
 
     const asIs = await this.entityManager.findOneById(ShussoubaYosou, shussouba.Id);
 

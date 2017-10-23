@@ -14,18 +14,18 @@ export class Record {
   @Column("bigint")
   public Nengappi: number;
 
-  @Column("float")
+  @Column("real")
   public Time: number;
 
   @Column("int")
   public UmaId: number;
 
-  @Column("float")
+  @Column("real")
   public Kinryou: number;
 
   @Column("bigint")
   public TanshukuKishuMeiId: number;
 
-  @Column("smallint")
+  @Column("tinyint")
   public Basho: number;
 }

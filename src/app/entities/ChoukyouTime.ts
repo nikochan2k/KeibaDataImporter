@@ -14,10 +14,10 @@ export class ChoukyouTime {
   @Column("bigint")
   public ChoukyouId: number;
 
-  @Column("smallint")
+  @Column("tinyint")
   public F: number;
 
-  @Column("float", { nullable: true })
+  @Column("real", { nullable: true })
   public Time?: number;
 
   @Column("varchar", { nullable: true })

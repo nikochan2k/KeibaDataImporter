@@ -206,10 +206,10 @@ export class Race {
   @Column("int", { nullable: true })
   public FukaShou?: number;
 
-  @Column("float", { nullable: true })
+  @Column("real", { nullable: true })
   public SuiteiTimeRyou?: number;
 
-  @Column("float", { nullable: true })
+  @Column("real", { nullable: true })
   public SuiteiTimeOmoFuryou?: number;
 
   @Column("smallint", { nullable: true })

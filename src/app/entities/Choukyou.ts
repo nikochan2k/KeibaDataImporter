@@ -71,7 +71,7 @@ export class Choukyou {
   @Column("tinyint", { nullable: true })
   public Chakusa?: number;
 
-  @Column("float", { nullable: true })
+  @Column("real", { nullable: true })
   public TimeSa?: number;
 
   @Column("varchar", { length: 129, nullable: true })

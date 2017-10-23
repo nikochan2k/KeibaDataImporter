@@ -23,9 +23,9 @@ export class RaceHassouJoukyou {
   @Column("tinyint")
   public Joukyou: number;
 
-  @Column("float", { nullable: true })
+  @Column("real", { nullable: true })
   public FuriBashin?: number;
 
-  @Column("float", { nullable: true })
+  @Column("real", { nullable: true })
   public FuriByou?: number;
 }
