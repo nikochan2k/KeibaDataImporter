@@ -119,7 +119,6 @@ export abstract class Ky$ extends DataToImport {
     } else {
       uma.KanaBamei = bamei;
     }
-    uma.Seibetsu = seibetsu;
     uma = await this.umaDao.saveUma(uma);
     info.uma = uma;
     let kyousouba = new Kyousouba();

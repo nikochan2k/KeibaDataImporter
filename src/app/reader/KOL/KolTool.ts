@@ -84,7 +84,6 @@ export class KolTool {
     } else {
       uma.KanaBamei = bamei;
     }
-    uma.Seibetsu = seibetsu;
     uma = await this.umaDao.saveUma(uma);
     let kyousouba = new Kyousouba();
     kyousouba.UmaId = uma.Id;

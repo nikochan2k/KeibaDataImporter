@@ -57,7 +57,8 @@ export class Ukc extends DataToImport {
     uma.MasshouFlag = $C.masshouFlag.toCodeFromJrdb(buffer, 267, 1);
     uma.ChichiKeitouCode = $U.keitou.toCodeFromJravan(buffer, 276, 4);
     uma.HahaChichiKeitouCode = $U.keitou.toCodeFromJravan(buffer, 280, 4);
-    uma = await this.umaDao.saveUma(uma);
+    uma = await this.umaDao.saveUma(uma, true);
+
     let kyousouba = new Kyousouba();
     kyousouba.UmaId = uma.Id;
     kyousouba.Seibetsu = seibetsu;
@@ -82,7 +83,7 @@ export class Ukc extends DataToImport {
     uma.Seinen = readInt(buffer, seinenOffset, 4);
     uma.Seibetsu = seibetsu;
     uma.ChichiUmaId = chichiUma && chichiUma.Id;
-    return this.umaDao.saveUma(uma);
+    return this.umaDao.saveUma(uma, true);
   }
 
   public saveSeisansha(buffer: Buffer) {

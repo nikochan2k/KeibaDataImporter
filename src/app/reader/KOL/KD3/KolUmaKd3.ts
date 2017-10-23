@@ -151,7 +151,7 @@ export class KolUmaKd3 extends DataToImport {
     uma.MasshouNengappi = readInt(buffer, 545, 8);
     uma.Jiyuu = readStr(buffer, 553, 6);
     uma.Ikisaki = readStr(buffer, 559, 10);
-    uma = await this.umaDao.saveUma(uma);
+    uma = await this.umaDao.saveUma(uma, true);
 
     let kyousouba = new Kyousouba();
     kyousouba.UmaId = uma.Id;

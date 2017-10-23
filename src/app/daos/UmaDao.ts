@@ -22,22 +22,26 @@ export class UmaDao {
   private tool: Tool;
 
   protected async getUma(uma: Uma) {
-    let result: Uma;
+    const qb = this.umaRepository
+      .createQueryBuilder("u")
+      .where("0 = 0");
     if (uma.KolUmaCode) {
-      result = await this.umaRepository.findOne({ KolUmaCode: uma.KolUmaCode });
+      qb.orWhere("u.KolUmaCode = :kolUmaCode")
+        .setParameter("kolUmaCode", uma.KolUmaCode);
     }
-    if (!result && uma.KettouTourokuBangou) {
-      result = await this.umaRepository.findOne({ KettouTourokuBangou: uma.KettouTourokuBangou });
+    if (uma.KettouTourokuBangou) {
+      qb.orWhere("u.KettouTourokuBangou = :kettouTourokuBangou")
+        .setParameter("kettouTourokuBangou", uma.KettouTourokuBangou);
     }
-    if (!result && uma.KanaBamei) {
-      // TODO 馬名重複
-      result = await this.umaRepository.findOne({ KanaBamei: uma.KanaBamei });
+    if (uma.KanaBamei) {
+      qb.orWhere("u.KanaBamei = :kanaBamei")
+        .setParameter("kanaBamei", uma.KanaBamei);
     }
-    if (!result && uma.EigoBamei) {
-      // TODO 馬名重複
-      result = await this.umaRepository.findOne({ EigoBamei: uma.EigoBamei });
+    if (uma.EigoBamei) {
+      qb.orWhere("u.EigoBamei = :eigoBamei")
+        .setParameter("eigoBamei", uma.EigoBamei);
     }
-    return result;
+    return qb.getOne();
   }
 
   public getKyousouba(kyousouba: Kyousouba) {
@@ -74,22 +78,25 @@ export class UmaDao {
     return qb.getOne();
   }
 
-  public async saveUma(toBe: Uma) {
+  public async saveUma(toBe: Uma, update?: boolean) {
     if (toBe.Seibetsu === $U.Seibetsu.Senba) {
       toBe.Seibetsu = $U.Seibetsu.Boba;
     }
     const asIs = await this.getUma(toBe);
-    return await this.tool.saveOrUpdate(Uma, asIs, toBe);
+    if (!asIs || update) {
+      return await this.tool.saveOrUpdate(Uma, asIs, toBe);
+    } else {
+      return asIs;
+    }
   }
 
   public async saveKyousouba(toBe: Kyousouba) {
     const asIs = await this.getKyousouba(toBe);
     if (asIs) {
-      toBe = asIs;
+      return asIs;
     } else {
-      toBe = await this.kyousoubaRepository.save(toBe);
+      return await this.kyousoubaRepository.save(toBe);
     }
-    return toBe;
   }
 
 }

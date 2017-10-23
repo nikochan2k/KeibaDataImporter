@@ -32,7 +32,7 @@ export class KolUmaTool {
     uma.ChichiUmaId = chichiUmaId;
     uma.HahaUmaId = hahaUmaId;
 
-    return this.umaDao.saveUma(uma);
+    return this.umaDao.saveUma(uma, true);
   }
 
   public async saveOyaUmaOfKettou(buffer: Buffer, offset: number, seibetsu: $U.Seibetsu, chichiUmaId?: number, hahaUmaId?: number) {
@@ -57,7 +57,7 @@ export class KolUmaTool {
     uma.ChichiUmaId = chichiUmaId;
     uma.HahaUmaId = hahaUmaId;
 
-    return this.umaDao.saveUma(uma);
+    return this.umaDao.saveUma(uma, true);
   }
 
   public async saveOyaUma(buffer: Buffer, offset: number, seibetsu: $U.Seibetsu, chichiOffset?: number, hahaOffset?: number) {
@@ -82,7 +82,7 @@ export class KolUmaTool {
     }
     uma.Seibetsu = seibetsu;
 
-    return this.umaDao.saveUma(uma);
+    return this.umaDao.saveUma(uma, true);
   }
 
 }

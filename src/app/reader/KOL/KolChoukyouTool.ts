@@ -125,9 +125,10 @@ export class KolChoukyouTool {
       let execed = /^[\u30A1-\u30FC]+/.exec(awase);
       if (execed && 0 < execed.length) {
         const awaseUma = execed[0];
-        const uma = new Uma();
+        let uma = new Uma();
         uma.KanaBamei = awaseUma;
-        choukyou.AwaseUmaId = (await this.umaDao.saveUma(uma)).Id;
+        uma = await this.umaDao.saveUma(uma);
+        choukyou.AwaseUmaId = uma.Id;
       } else {
         reigai = true;
       }

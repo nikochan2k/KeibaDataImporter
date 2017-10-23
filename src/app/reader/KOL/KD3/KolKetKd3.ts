@@ -63,7 +63,7 @@ export class KolKetKd3 extends DataToImport {
     }
     uma.ChichiUmaId = c.Id;
     uma.HahaUmaId = h.Id;
-    await this.umaDao.saveUma(toBe);
+    await this.umaDao.saveUma(toBe, true);
   }
 
 }
