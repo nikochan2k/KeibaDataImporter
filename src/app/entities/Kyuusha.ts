@@ -12,28 +12,28 @@ export class Kyuusha {
   @PrimaryGeneratedColumn()
   public Id: number;
 
-  @Column("int", { nullable: true })
+  @Column("mediumint", { nullable: true })
   public KolKyuushaCode?: number;
 
-  @Column("int", { nullable: true })
+  @Column("mediumint", { nullable: true })
   public JrdbKyuushaCode?: number;
 
-  @Column("bigint", { nullable: true })
+  @Column("int", { nullable: true })
   public Seinengappi?: number;
 
   @Column("smallint", { nullable: true })
   public HatsuMenkyoNen?: number;
 
-  @Column("smallint", { nullable: true })
+  @Column("tinyint", { nullable: true })
   public TouzaiBetsu?: number;
 
-  @Column("smallint", { nullable: true })
+  @Column("tinyint", { nullable: true })
   public ShozokuBasho?: number;
 
   @Column("varchar", { length: 6, nullable: true })
   public ShozokuBashoMei?: string;
 
-  @Column("smallint", { nullable: true })
+  @Column("tinyint", { nullable: true })
   public RitsuHokuNanBetsu?: number;
 
   @Column("tinyint", { nullable: true })

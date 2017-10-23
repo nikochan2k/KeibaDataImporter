@@ -11,7 +11,7 @@ export class KishuComment {
   @PrimaryGeneratedColumn()
   public Id: number;
 
-  @Column("bigint")
+  @Column("mediumint")
   public KishuId: number;
 
   @Column("int")

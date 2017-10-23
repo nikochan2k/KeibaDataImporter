@@ -28,37 +28,37 @@ export class ShussoubaSeiseki {
   @Column("smallint", { nullable: true })
   public Zougen?: number;
 
-  @Column("int")
+  @Column("mediumint")
   public KishuId: number;
 
   @Column("int", { nullable: true })
   public KishuRirekiId: number;
 
-  @Column("smallint", { nullable: true })
+  @Column("tinyint", { nullable: true })
   public Norikawari?: number;
 
-  @Column("smallint", { nullable: true })
+  @Column("tinyint", { nullable: true })
   public KakuteiChakujun?: number;
 
-  @Column("smallint", { nullable: true })
+  @Column("tinyint", { nullable: true })
   public ChakujunFuka?: number;
 
-  @Column("smallint", { nullable: true })
+  @Column("tinyint", { nullable: true })
   public NyuusenChakujun?: number;
 
-  @Column("smallint", { nullable: true })
+  @Column("tinyint", { nullable: true })
   public TorikeshiShubetsu?: number;
 
-  @Column("smallint", { nullable: true })
+  @Column("tinyint", { nullable: true })
   public RecordNinshiki?: number;
 
   @Column("real", { nullable: true })
   public Time?: number;
 
-  @Column("smallint", { nullable: true })
+  @Column("tinyint", { nullable: true })
   public Chakusa1?: number;
 
-  @Column("smallint", { nullable: true })
+  @Column("tinyint", { nullable: true })
   public Chakusa2?: number;
 
   @Column("real", { nullable: true })
@@ -79,7 +79,7 @@ export class ShussoubaSeiseki {
   @Column("real", { nullable: true })
   public Agari3F?: number;
 
-  @Column("smallint", { nullable: true })
+  @Column("tinyint", { nullable: true })
   public YonCornerIchiDori?: number;
 
   /* KOL 騎手厩舎コメント／次走へのメモ */

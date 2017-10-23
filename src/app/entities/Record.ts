@@ -11,7 +11,7 @@ export class Record {
   @PrimaryGeneratedColumn()
   public Id: number;
 
-  @Column("bigint")
+  @Column("int")
   public Nengappi: number;
 
   @Column("real")
@@ -23,7 +23,7 @@ export class Record {
   @Column("real")
   public Kinryou: number;
 
-  @Column("bigint")
+  @Column("mediumint")
   public TanshukuKishuMeiId: number;
 
   @Column("tinyint")

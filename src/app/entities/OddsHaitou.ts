@@ -12,7 +12,7 @@ export class OddsHaitou {
   @PrimaryColumn("bigint")
   public Id: number;
 
-  @Column("bigint")
+  @Column("int")
   public RaceId: number;
 
   @Column("tinyint")

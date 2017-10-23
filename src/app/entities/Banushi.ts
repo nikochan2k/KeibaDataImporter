@@ -17,6 +17,6 @@ export class Banushi {
   @Column("varchar", { length: 30 })
   public TanshukuBanushiMei: string;
 
-  @Column("smallint", { nullable: true })
+  @Column("tinyint", { nullable: true })
   public BanushiKaiCode: number;
 }

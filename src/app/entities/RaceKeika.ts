@@ -11,15 +11,15 @@ export class RaceKeika {
   @PrimaryColumn("bigint")
   public Id: number;
 
-  @Column("bigint")
+  @Column("int")
   public RaceId: number;
 
   @Column("varchar", { length: 165 })
   public Keika: string;
 
-  @Column("smallint", { nullable: true })
+  @Column("tinyint", { nullable: true })
   public Midashi1?: number;
 
-  @Column("smallint", { nullable: true })
+  @Column("tinyint", { nullable: true })
   public Midashi2?: number;
 }

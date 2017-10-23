@@ -11,7 +11,7 @@ export class KishuRireki {
   @PrimaryGeneratedColumn()
   public Id: number;
 
-  @Column("bigint")
+  @Column("mediumint")
   public KishuId: number;
 
   @Column("tinyint")
@@ -23,7 +23,7 @@ export class KishuRireki {
   @Column("tinyint", { nullable: true })
   public KijouShikakuKubun?: number;
 
-  @Column("int", { nullable: true })
+  @Column("mediumint", { nullable: true })
   public KishuShozokuKyuushaId: number;
 
   @Column("tinyint")

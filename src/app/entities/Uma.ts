@@ -62,7 +62,7 @@ export class Uma {
   @Column("tinyint", { nullable: true })
   public MasshouFlag?: number;
 
-  @Column("bigint", { nullable: true })
+  @Column("int", { nullable: true })
   public MasshouNengappi?: number;
 
   @Column("varchar", { length: 9, nullable: true })

@@ -11,7 +11,7 @@ export class KyuushaComment {
   @PrimaryGeneratedColumn()
   public Id: number;
 
-  @Column("bigint")
+  @Column("mediumint")
   public KyuushaId: number;
 
   @Column("int")

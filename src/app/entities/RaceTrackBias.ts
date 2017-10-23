@@ -13,15 +13,15 @@ export class RaceTrackBias {
   @PrimaryColumn("bigint")
   public Id: number;
 
-  @Column("bigint")
+  @Column("int")
   public RaceId: number;
 
-  @Column("smallint")
+  @Column("tinyint")
   public Midashi: Midashi;
 
-  @Column("smallint")
+  @Column("tinyint")
   public Ichi: Ichi;
 
-  @Column("smallint")
+  @Column("tinyint")
   public TrackBias: number;
 }

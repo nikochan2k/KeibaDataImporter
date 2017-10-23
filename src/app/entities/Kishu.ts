@@ -12,13 +12,13 @@ export class Kishu {
   @PrimaryGeneratedColumn()
   public Id: number;
 
-  @Column("int", { nullable: true })
+  @Column("mediumint", { nullable: true })
   public KolKishuCode?: number;
 
-  @Column("int", { nullable: true })
+  @Column("mediumint", { nullable: true })
   public JrdbKishuCode?: number;
 
-  @Column("bigint", { nullable: true })
+  @Column("int", { nullable: true })
   public Seinengappi?: number;
 
   @Column("smallint", { nullable: true })

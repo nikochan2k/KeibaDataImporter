@@ -11,9 +11,9 @@ export class KishuMei {
   @PrimaryGeneratedColumn()
   public Id: number;
 
-  @Column("bigint")
+  @Column("mediumint")
   public KishuId: number;
 
-  @Column("bigint")
+  @Column("mediumint")
   public JinmeiId: number;
 }

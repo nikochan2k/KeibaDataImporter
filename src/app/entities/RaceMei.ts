@@ -11,9 +11,9 @@ export class RaceMei {
   @PrimaryGeneratedColumn()
   public Id: number;
 
-  @Column("bigint")
+  @Column("int")
   public RaceId: number;
 
-  @Column("bigint")
+  @Column("mediumint")
   public TokubetsuMeiId: number;
 }

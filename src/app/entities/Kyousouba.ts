@@ -20,10 +20,10 @@ export class Kyousouba {
   @Column("smallint")
   public UmaKigou: number;
 
-  @Column("int", { nullable: true })
+  @Column("mediumint", { nullable: true })
   public BanushiId?: number;
 
-  @Column("int", { nullable: true })
+  @Column("mediumint", { nullable: true })
   public KyuushaId?: number;
 
   @Column("varchar", { length: 12, nullable: true })

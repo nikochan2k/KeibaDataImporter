@@ -13,7 +13,7 @@ export class Shussouba {
   @PrimaryColumn("bigint")
   public Id: number;
 
-  @Column("bigint")
+  @Column("int")
   public RaceId: number;
 
   /* KOL 出馬表出走馬データ／競走成績出走馬データ */
@@ -33,10 +33,10 @@ export class Shussouba {
   @Column("real", { nullable: true })
   public Kinryou?: number;
 
-  @Column("int", { nullable: true })
+  @Column("mediumint", { nullable: true })
   public KishuId: number;
 
-  @Column("int", { nullable: true })
+  @Column("mediumint", { nullable: true })
   public KishuRirekiId: number;
 
   @Column("smallint", { nullable: true })

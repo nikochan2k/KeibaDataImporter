@@ -11,15 +11,15 @@ export class RaceYosouBaba {
   @PrimaryColumn("bigint")
   public Id: number;
 
-  @Column("bigint")
+  @Column("int")
   public RaceId: number;
 
-  @Column("smallint")
+  @Column("tinyint")
   public Midashi: number;
 
-  @Column("smallint")
+  @Column("tinyint")
   public Ichi: number;
 
-  @Column("smallint")
+  @Column("tinyint")
   public BabaJoutai: number;
 }
