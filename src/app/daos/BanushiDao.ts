@@ -16,18 +16,13 @@ export class BanushiDao {
   @Inject()
   private tool: Tool;
 
-  public findOneById(id: number) {
-    /* tslint:disable:triple-equals */
-    if (id == null) {
-      return null;
-    }
-    /* tslint:enable:triple-equals */
-    return this.repository.findOneById(id);
-  }
-
   public async save(toBe: Banushi) {
     const asIs = await this.repository.findOne({ BanushiMei: toBe.BanushiMei });
-    return await this.tool.saveOrUpdate(Banushi, asIs, toBe);
+    if (!asIs || asIs.TanshukuBanushiMei !== toBe.TanshukuBanushiMei || asIs.BanushiKaiCode !== toBe.BanushiKaiCode) {
+      return await this.tool.saveOrUpdate(Banushi, asIs, toBe);
+    } else {
+      return asIs;
+    }
   }
 
 }

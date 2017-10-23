@@ -27,7 +27,7 @@ export class JinmeiDao {
       jinmei = new Jinmei();
       jinmei.Kubun = kubun;
       jinmei.Name = name;
-      await this.repository.save(jinmei);
+      jinmei = await this.repository.save(jinmei);
     }
     return jinmei;
   }

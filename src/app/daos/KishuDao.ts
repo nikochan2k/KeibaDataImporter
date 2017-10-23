@@ -71,7 +71,11 @@ LIMIT
 
   public async saveKishu(toBe: Kishu, seimei?: string, tanshuku?: string, furigana?: string) {
     const asIs = await this.getKishu(toBe);
-    toBe = await this.tool.saveOrUpdate(Kishu, asIs, toBe);
+    if (!asIs || seimei && tanshuku && furigana) {
+      toBe = await this.tool.saveOrUpdate(Kishu, asIs, toBe);
+    } else {
+      return asIs;
+    }
     if (seimei) {
       await this.saveKishuMei(toBe, Kubun.Seimei, seimei);
     }

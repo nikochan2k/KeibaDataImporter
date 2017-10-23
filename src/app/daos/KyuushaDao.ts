@@ -54,7 +54,11 @@ export class KyuushaDao {
     } else {
       asIs = await this.getKyuushaWith(seimei);
     }
-    toBe = await this.tool.saveOrUpdate(Kyuusha, asIs, toBe);
+    if (!asIs || seimei && tanshuku && furigana) {
+      toBe = await this.tool.saveOrUpdate(Kyuusha, asIs, toBe);
+    } else {
+      return asIs;
+    }
     if (seimei) {
       await this.saveKyuushaMei(toBe, Kubun.Seimei, seimei);
     }
