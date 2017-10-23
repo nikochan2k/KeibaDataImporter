@@ -4,7 +4,7 @@ import * as $C from "../../converters/Common";
 import * as $R from "../../converters/Race";
 import { JinmeiDao } from "../../daos/JinmeiDao";
 import { UmaDao } from "../../daos/UmaDao";
-import { Kubun } from "../../entities/Jinmei";
+import { JinmeiKubun } from "../../entities/Jinmei";
 import { Race } from "../../entities/Race";
 import { RaceHassouJoukyou } from "../../entities/RaceHassouJoukyou";
 import { RaceLapTime } from "../../entities/RaceLapTime";
@@ -80,7 +80,7 @@ export class KolRaceTool extends RaceTool {
     record.UmaId = uma.Id;
     record.Kinryou = readDouble(buffer, offset + 42, 3, 0.1);
     const tanshukuKishuMei = readStrWithNoSpace(buffer, offset + 45, 8);
-    const jinmei = await this.jinmeiDao.save(Kubun.Tanshuku, tanshukuKishuMei);
+    const jinmei = await this.jinmeiDao.save(JinmeiKubun.Tanshuku, tanshukuKishuMei);
     record.TanshukuKishuMeiId = jinmei.Id;
     record.Basho = $C.basho.toCodeFromKol(buffer, bashoOffset, 2);
     return this.raceDao.saveRecord(record);

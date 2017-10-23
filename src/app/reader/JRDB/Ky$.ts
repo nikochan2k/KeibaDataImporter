@@ -15,7 +15,7 @@ import { UmaDao } from "../../daos/UmaDao";
 import { Kishu } from "../../entities/Kishu";
 import { Kyousouba } from "../../entities/Kyousouba";
 import { Kyuusha } from "../../entities/Kyuusha";
-import * as $M from "../../entities/Meishou";
+import { MeishouKubun } from "../../entities/Shoyuu";
 import { Shussouba } from "../../entities/Shussouba";
 import { Kubun } from "../../entities/ShussoubaJoutai";
 import { ShussoubaYosou } from "../../entities/ShussoubaYosou";
@@ -106,7 +106,7 @@ export abstract class Ky$ extends DataToImport {
       return null;
     }
     const banushiKaiCode = readInt(buffer, 444, 2);
-    this.banushiDao.save(shussoubaId, $M.Kubun.Full, banushiMei, banushiKaiCode);
+    this.banushiDao.save(shussoubaId, MeishouKubun.Full, banushiMei, banushiKaiCode);
   }
 
   protected async saveKyousouba(buffer: Buffer, info: ShussoubaInfo) {

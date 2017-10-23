@@ -5,7 +5,7 @@ import { JinmeiDao } from "./JinmeiDao";
 import { Kishu } from "../entities/Kishu";
 import { KishuMei } from "../entities/KishuMei";
 import { KishuRireki } from "../entities/KishuRireki";
-import { Kubun } from "../entities/Jinmei";
+import { JinmeiKubun } from "../entities/Jinmei";
 import { Tool } from "../reader/Tool";
 
 @Service()
@@ -77,23 +77,23 @@ LIMIT
       return asIs;
     }
     if (seimei) {
-      await this.saveKishuMei(toBe, Kubun.Seimei, seimei);
+      await this.saveKishuMei(toBe, JinmeiKubun.Seimei, seimei);
     }
     if (tanshuku) {
-      await this.saveKishuMei(toBe, Kubun.Tanshuku, tanshuku);
+      await this.saveKishuMei(toBe, JinmeiKubun.Tanshuku, tanshuku);
       if (3 < tanshuku.length) {
         tanshuku = tanshuku.substring(0, 3);
-        await this.saveKishuMei(toBe, Kubun.Tanshuku, tanshuku);
+        await this.saveKishuMei(toBe, JinmeiKubun.Tanshuku, tanshuku);
       }
     }
     if (furigana) {
-      await this.saveKishuMei(toBe, Kubun.Furigana, furigana);
+      await this.saveKishuMei(toBe, JinmeiKubun.Furigana, furigana);
     }
     return toBe;
   }
 
-  protected async saveKishuMei(kishu: Kishu, kubun: Kubun, name: string) {
-    const jinmei = await this.jinmeiDao.save(kubun, name);
+  protected async saveKishuMei(kishu: Kishu, kubun: JinmeiKubun, meishou: string) {
+    const jinmei = await this.jinmeiDao.save(kubun, meishou);
     let kishuMei = await this.kishuMeiRepository.findOne({ KishuId: kishu.Id, JinmeiId: jinmei.Id });
     if (!kishuMei) {
       kishuMei = new KishuMei();

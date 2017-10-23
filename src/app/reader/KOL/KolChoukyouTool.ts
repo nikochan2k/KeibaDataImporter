@@ -10,7 +10,7 @@ import { UmaDao } from "../../daos/UmaDao";
 import { ShussoubaChoukyou } from "../../entities/ShussoubaChoukyou";
 import { Choukyou } from "../../entities/Choukyou";
 import { ChoukyouTime } from "../../entities/ChoukyouTime";
-import { Kubun } from "../../entities/Jinmei";
+import { JinmeiKubun } from "../../entities/Jinmei";
 import { Uma } from "../../entities/Uma";
 import { getLogger } from "../../LogUtil";
 import {
@@ -93,7 +93,7 @@ export class KolChoukyouTool {
         choukyou.Noriyaku = $CH.Noriyaku.HonbanKishu; // 本番騎手
       } else {
         choukyou.Noriyaku = $CH.Noriyaku.ChoukyouKishu; // 調教騎手
-        const jinmei = await this.jinmeiDao.save(Kubun.Tanshuku, kijousha);
+        const jinmei = await this.jinmeiDao.save(JinmeiKubun.Tanshuku, kijousha);
         choukyou.TanshukuKishuMeiId = jinmei.Id;
       }
     }

@@ -33,8 +33,8 @@ export class RaceDao {
     return toBe;
   }
 
-  public async saveRaceMei(raceId: number, name: string) {
-    const tokubetsuMei = await this.tokubetsuMeiDao.save(name);
+  public async saveRaceMei(raceId: number, meishou: string) {
+    const tokubetsuMei = await this.tokubetsuMeiDao.save(meishou);
     let raceMei = await this.raceMeiRepository.findOne({ RaceId: raceId, TokubetsuMeiId: tokubetsuMei.Id });
     if (!raceMei) {
       raceMei = new RaceMei();

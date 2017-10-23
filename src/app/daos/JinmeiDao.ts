@@ -1,7 +1,7 @@
 import { Service } from "typedi";
 import { Repository } from "typeorm";
 import { OrmRepository } from "typeorm-typedi-extensions";
-import { Jinmei, Kubun } from "../entities/Jinmei";
+import { Jinmei, JinmeiKubun } from "../entities/Jinmei";
 
 @Service()
 export class JinmeiDao {
@@ -18,12 +18,12 @@ export class JinmeiDao {
     return this.repository.findOneById(id);
   }
 
-  public async save(kubun: Kubun, name: string) {
-    let jinmei = await this.repository.findOne({ Name: name });
+  public async save(kubun: JinmeiKubun, meishou: string) {
+    let jinmei = await this.repository.findOne({ Meishou: meishou });
     if (!jinmei) {
       jinmei = new Jinmei();
       jinmei.Kubun = kubun;
-      jinmei.Name = name;
+      jinmei.Meishou = meishou;
       jinmei = await this.repository.save(jinmei);
     }
     return jinmei;

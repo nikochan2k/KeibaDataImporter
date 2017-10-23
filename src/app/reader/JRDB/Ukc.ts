@@ -4,7 +4,7 @@ import * as $U from "../../converters/Uma";
 import { SeisanshaDao } from "../../daos/SeisanshaDao";
 import { UmaDao } from "../../daos/UmaDao";
 import { Kyousouba } from "../../entities/Kyousouba";
-import { Kubun } from "../../entities/Meishou";
+import { MeishouKubun } from "../../entities/Shoyuu";
 import { Uma } from "../../entities/Uma";
 import { Bridge } from "../Bridge";
 import { DataToImport } from "../DataToImport";
@@ -83,6 +83,6 @@ export class Ukc extends DataToImport {
     if (!seisanshaMei) {
       return;
     }
-    await this.seisanshaDao.save(umaId, Kubun.Full, seisanshaMei);
+    await this.seisanshaDao.save(umaId, MeishouKubun.Full, seisanshaMei);
   }
 }

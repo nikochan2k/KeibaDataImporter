@@ -9,11 +9,11 @@ export class TokubetsuMeiDao {
   @OrmRepository(TokubetsuMei)
   private repository: Repository<TokubetsuMei>;
 
-  public async save(name: string) {
-    let tokubetsuMei = await this.repository.findOne({ Name: name });
+  public async save(meishou: string) {
+    let tokubetsuMei = await this.repository.findOne({ Meishou: meishou });
     if (!tokubetsuMei) {
       tokubetsuMei = new TokubetsuMei();
-      tokubetsuMei.Name = name;
+      tokubetsuMei.Meishou = meishou;
       tokubetsuMei = await this.repository.save(tokubetsuMei);
     }
     return tokubetsuMei;

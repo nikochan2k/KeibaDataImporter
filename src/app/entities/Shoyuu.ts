@@ -5,22 +5,22 @@ import {
   PrimaryGeneratedColumn
 } from "typeorm";
 
-export enum Kubun {
+export enum MeishouKubun {
   Full,
   Tanshuku
 }
 
-@Entity("Meishou")
-@Index("IxMeishou", (m: Meishou) => [m.Name], { unique: true })
-export class Meishou {
+@Entity("Shoyuu")
+@Index("IxShoyuu", (m: Shoyuu) => [m.Meishou], { unique: true })
+export class Shoyuu {
   @PrimaryGeneratedColumn()
   public Id: number;
 
   @Column("tinyint")
-  public Kubun: Kubun;
+  public Kubun: MeishouKubun;
 
   @Column("varchar", { length: 60 })
-  public Name: string;
+  public Meishou: string;
 
   @Column("tinyint", { nullable: true })
   public BanushiKaiCode: number;

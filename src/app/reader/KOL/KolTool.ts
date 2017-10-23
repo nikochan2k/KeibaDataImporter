@@ -8,7 +8,7 @@ import { KishuDao } from "../../daos/KishuDao";
 import { KyuushaDao } from "../../daos/KyuushaDao";
 import { SeisanshaDao } from "../../daos/SeisanshaDao";
 import { UmaDao } from "../../daos/UmaDao";
-import { Kubun } from "../../entities/Meishou";
+import { MeishouKubun } from "../../entities/Shoyuu";
 import { Kishu } from "../../entities/Kishu";
 import { KishuRireki } from "../../entities/KishuRireki";
 import { Kyousouba } from "../../entities/Kyousouba";
@@ -65,11 +65,11 @@ export class KolTool {
   public async saveBanushi(buffer: Buffer, offset: number, shussoubaId: number) {
     const banushiMei = this.tool.normalizeHoujinMei(buffer, offset, 40);
     if (banushiMei) {
-      await this.banushiDao.save(shussoubaId, Kubun.Full, banushiMei);
+      await this.banushiDao.save(shussoubaId, MeishouKubun.Full, banushiMei);
     }
     const tanshukuBanushiMei = this.tool.normalizeTanshukuHoujinMei(buffer, offset + 40, 20);
     if (tanshukuBanushiMei) {
-      await this.banushiDao.save(shussoubaId, Kubun.Tanshuku, tanshukuBanushiMei);
+      await this.banushiDao.save(shussoubaId, MeishouKubun.Tanshuku, tanshukuBanushiMei);
     }
   }
 
@@ -98,11 +98,11 @@ export class KolTool {
   public async saveSeisansha(buffer: Buffer, offset: number, umaId: number) {
     const seisanshaMei = this.tool.normalizeHoujinMei(buffer, offset, 40);
     if (seisanshaMei) {
-      await this.seisanshaDao.save(umaId, Kubun.Full, seisanshaMei);
+      await this.seisanshaDao.save(umaId, MeishouKubun.Full, seisanshaMei);
     }
     const tanshukuSeisanshaMei = this.tool.normalizeTanshukuHoujinMei(buffer, offset + 40, 20);
     if (tanshukuSeisanshaMei) {
-      await this.seisanshaDao.save(umaId, Kubun.Tanshuku, tanshukuSeisanshaMei);
+      await this.seisanshaDao.save(umaId, MeishouKubun.Tanshuku, tanshukuSeisanshaMei);
     }
   }
 

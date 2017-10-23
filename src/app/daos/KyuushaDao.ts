@@ -1,7 +1,7 @@
 import { Service, Inject } from "typedi";
 import { EntityManager, Repository } from "typeorm";
 import { OrmManager, OrmRepository } from "typeorm-typedi-extensions";
-import { Kubun, Jinmei } from "../entities/Jinmei";
+import { JinmeiKubun, Jinmei } from "../entities/Jinmei";
 import { Kyuusha } from "../entities/Kyuusha";
 import { KyuushaMei } from "../entities/KyuushaMei";
 import { JinmeiDao } from "./JinmeiDao";
@@ -35,15 +35,15 @@ export class KyuushaDao {
     return result;
   }
 
-  protected async getKyuushaWith(name: string) {
+  protected async getKyuushaWith(meishou: string) {
     return this.entityManager
       .createQueryBuilder()
       .select("k.*")
       .from(Kyuusha, "k")
       .innerJoin(KyuushaMei, "km", "k.Id = km.KyuushaId")
       .innerJoin(Jinmei, "j", "j.Id = km.JinmeiId")
-      .where("j.Name = :name")
-      .setParameter("name", name)
+      .where("j.Meishou = :meishou")
+      .setParameter("meishou", meishou)
       .getOne();
   }
 
@@ -60,23 +60,23 @@ export class KyuushaDao {
       return asIs;
     }
     if (seimei) {
-      await this.saveKyuushaMei(toBe, Kubun.Seimei, seimei);
+      await this.saveKyuushaMei(toBe, JinmeiKubun.Seimei, seimei);
     }
     if (tanshuku) {
-      await this.saveKyuushaMei(toBe, Kubun.Tanshuku, tanshuku);
+      await this.saveKyuushaMei(toBe, JinmeiKubun.Tanshuku, tanshuku);
       if (3 < tanshuku.length) {
         tanshuku = tanshuku.substring(0, 3);
-        await this.saveKyuushaMei(toBe, Kubun.Tanshuku, tanshuku);
+        await this.saveKyuushaMei(toBe, JinmeiKubun.Tanshuku, tanshuku);
       }
     }
     if (furigana) {
-      await this.saveKyuushaMei(toBe, Kubun.Furigana, tanshuku);
+      await this.saveKyuushaMei(toBe, JinmeiKubun.Furigana, tanshuku);
     }
     return toBe;
   }
 
-  protected async saveKyuushaMei(kyuusha: Kyuusha, kubun: Kubun, name: string) {
-    const jinmei = await this.jinmeiDao.save(kubun, name);
+  protected async saveKyuushaMei(kyuusha: Kyuusha, kubun: JinmeiKubun, meishou: string) {
+    const jinmei = await this.jinmeiDao.save(kubun, meishou);
     let kyuushaMei = await this.kyuushaMeiRepository.findOne({ KyuushaId: kyuusha.Id, JinmeiId: jinmei.Id });
     if (!kyuushaMei) {
       kyuushaMei = new KyuushaMei();

@@ -5,21 +5,21 @@ import {
   PrimaryGeneratedColumn
 } from "typeorm";
 
-export enum Kubun {
+export enum JinmeiKubun {
   Seimei,
   Tanshuku,
   Furigana
 }
 
 @Entity("Jinmei")
-@Index("IxJinmei", (k: Jinmei) => [k.Name], { unique: true })
+@Index("IxJinmei", (k: Jinmei) => [k.Meishou], { unique: true })
 export class Jinmei {
   @PrimaryGeneratedColumn()
   public Id: number;
 
   @Column("tinyint")
-  public Kubun: Kubun;
+  public Kubun: JinmeiKubun;
 
   @Column("varchar", { length: 48 })
-  public Name: string;
+  public Meishou: string;
 }
