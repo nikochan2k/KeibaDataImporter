@@ -70,12 +70,11 @@ export class KolDen2Kd3 extends DataToImport {
   }
 
   protected async saveShussouba(buffer: Buffer, info: ShussoubaInfo, dataNengappi: number) {
-    const toBe = this.kolShussoubaTool.createShussouba(buffer, 23);
+    let toBe = this.kolShussoubaTool.createShussouba(buffer, 23);
     if (!toBe) {
       return null;
     }
 
-    const asIs = info.shussouba;
     toBe.Wakuban = readPositiveInt(buffer, 22, 1);
     const kyuusha = await this.kolTool.saveKyuusha(buffer, 206);
     const umaInfo = await this.kolTool.saveKyousouba(buffer, 25, kyuusha);
@@ -96,7 +95,9 @@ export class KolDen2Kd3 extends DataToImport {
 
     toBe.KolNengappi = dataNengappi;
 
-    return await this.tool.saveOrUpdate(Shussouba, asIs, toBe);
+    toBe = await this.tool.saveOrUpdate(Shussouba, info.shussouba, toBe);
+    await this.kolTool.saveBanushi(buffer, 67, toBe.Id);
+    return toBe;
   }
 
   protected async saveShussoubaJoutai(buffer: Buffer, shussouba: Shussouba) {

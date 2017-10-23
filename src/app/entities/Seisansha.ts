@@ -6,14 +6,15 @@ import {
 } from "typeorm";
 
 @Entity("Seisansha")
-@Index("IxSeisansha", (s: Seisansha) => [s.SeisanshaMei], { unique: true })
+@Index("IxSeisansha1", (s: Seisansha) => [s.UmaId, s.MeishouId], { unique: true })
+@Index("IxSeisansha2", (s: Seisansha) => [s.MeishouId])
 export class Seisansha {
   @PrimaryGeneratedColumn()
   public Id: number;
 
-  @Column("varchar", { length: 60 })
-  public SeisanshaMei: string;
+  @Column("int")
+  public UmaId: number;
 
-  @Column("varchar", { length: 30 })
-  public TanshukuSeisanshaMei: string;
+  @Column("mediumint")
+  public MeishouId: number;
 }

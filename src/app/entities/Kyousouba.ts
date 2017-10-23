@@ -21,9 +21,6 @@ export class Kyousouba {
   public UmaKigou: number;
 
   @Column("mediumint", { nullable: true })
-  public BanushiId?: number;
-
-  @Column("mediumint", { nullable: true })
   public KyuushaId?: number;
 
   @Column("varchar", { length: 12, nullable: true })

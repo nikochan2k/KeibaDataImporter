@@ -145,20 +145,17 @@ export class KolUmaKd3 extends DataToImport {
     uma.ChichiUmaId = chichiUma && chichiUma.Id;
     const hahaUma = await this.kolUmaTool.saveOyaUma(buffer, 138, $U.Seibetsu.Hinba, 179, 220);
     uma.HahaUmaId = hahaUma && hahaUma.Id;
-    const seisansha = await this.kolTool.saveSeisansha(buffer, 423);
-    uma.SeisanshaId = seisansha && seisansha.Id;
     uma.MasshouFlag = $C.masshouFlag.toCodeFromKol(buffer, 544, 1);
     uma.MasshouNengappi = readInt(buffer, 545, 8);
     uma.Jiyuu = readStr(buffer, 553, 6);
     uma.Ikisaki = readStr(buffer, 559, 10);
     uma = await this.umaDao.saveUma(uma, true);
+    await this.kolTool.saveSeisansha(buffer, 423, uma.Id);
 
     let kyousouba = new Kyousouba();
     kyousouba.UmaId = uma.Id;
     kyousouba.Seibetsu = seibetsu;
     kyousouba.UmaKigou = $U.umaKigou.toCodeFromKol(buffer, 92, 2);
-    const banushi = await this.kolTool.saveBanushi(buffer, 343);
-    kyousouba.BanushiId = banushi && banushi.Id;
     const kyuusha = await this.kolTool.saveKyuusha(buffer, 488);
     kyousouba.KyuushaId = kyuusha && kyuusha.Id;
     kyousouba.KoueiGaikokuKyuushaMei = readStr(buffer, 536, 8);
@@ -299,7 +296,8 @@ export class KolUmaKd3 extends DataToImport {
     toBe.Nenrei = this.tool.normalizeNenrei(nenrei, nen);
     toBe.KolNengappi = 0;
 
-    return await this.tool.saveOrUpdate(Shussouba, asIs, toBe);
+    const shussouba =  await this.tool.saveOrUpdate(Shussouba, asIs, toBe);
+    await this.kolTool.saveBanushi(buffer, 10, shussouba.Id);
   }
 
   protected async saveShussoubaJoutai(buffer: Buffer, shussouba: Shussouba) {
@@ -386,8 +384,6 @@ export class KolUmaKd3 extends DataToImport {
     kyousouba.UmaId = k.UmaId;
     kyousouba.Seibetsu = seibetsu || k.Seibetsu;
     kyousouba.UmaKigou = $U.umaKigou.toCodeFromKol(buffer, 5, 2) || k.UmaKigou;
-    const banushi = await this.kolTool.saveBanushi(buffer, 10);
-    kyousouba.BanushiId = banushi && banushi.Id || k.BanushiId;
     kyousouba.KyuushaId = kyuusha && kyuusha.Id || k.KyuushaId;
     kyousouba = await this.umaDao.saveKyousouba(kyousouba);
     return kyousouba;

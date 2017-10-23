@@ -12,10 +12,10 @@ import { BanushiDao } from "../../daos/BanushiDao";
 import { KishuDao } from "../../daos/KishuDao";
 import { KyuushaDao } from "../../daos/KyuushaDao";
 import { UmaDao } from "../../daos/UmaDao";
-import { Banushi } from "../../entities/Banushi";
 import { Kishu } from "../../entities/Kishu";
 import { Kyousouba } from "../../entities/Kyousouba";
 import { Kyuusha } from "../../entities/Kyuusha";
+import * as $M from "../../entities/Meishou";
 import { Shussouba } from "../../entities/Shussouba";
 import { Kubun } from "../../entities/ShussoubaJoutai";
 import { ShussoubaYosou } from "../../entities/ShussoubaYosou";
@@ -73,14 +73,16 @@ export abstract class Ky$ extends DataToImport {
 
   protected async saveShussouba(buffer: Buffer, info: ShussoubaInfo) {
     const toBe = this.jrdbShussoubaTool.createShussouba(buffer, 8);
-    if (toBe) {
+    if (!toBe) {
       return info.shussouba;
     }
     this.setShussouba(buffer, toBe, info);
     toBe.Jrdb = 1;
 
     const asIs = info.shussouba;
-    return await this.tool.saveOrUpdate(Shussouba, asIs, toBe);
+    const shussouba = await this.tool.saveOrUpdate(Shussouba, asIs, toBe);
+    await this.saveBanushi(buffer, shussouba.Id);
+    return shussouba;
   }
 
   protected async saveKishu(buffer: Buffer) {
@@ -98,15 +100,13 @@ export abstract class Ky$ extends DataToImport {
     return this.kyuushaDao.saveKyuusha(kyuusha, kyuushaMei);
   }
 
-  protected saveBanushi(buffer: Buffer) {
+  protected saveBanushi(buffer: Buffer, shussoubaId: number) {
     const banushiMei = this.tool.normalizeHoujinMei(buffer, 404, 40);
     if (!banushiMei) {
       return null;
     }
-    const banushi = new Banushi();
-    banushi.BanushiMei = banushiMei;
-    banushi.BanushiKaiCode = readInt(buffer, 444, 2);
-    return this.banushiDao.save(banushi);
+    const banushiKaiCode = readInt(buffer, 444, 2);
+    this.banushiDao.save(shussoubaId, $M.Kubun.Full, banushiMei, banushiKaiCode);
   }
 
   protected async saveKyousouba(buffer: Buffer, info: ShussoubaInfo) {
@@ -125,8 +125,6 @@ export abstract class Ky$ extends DataToImport {
     kyousouba.UmaId = uma.Id;
     kyousouba.Seibetsu = seibetsu;
     kyousouba.UmaKigou = $U.umaKigou.toCodeFromJrdb(buffer, 446, 2);
-    const banushi = await this.saveBanushi(buffer);
-    kyousouba.BanushiId = banushi && banushi.Id;
     const kyuusha = await this.saveKyuusha(buffer);
     kyousouba.KyuushaId = kyuusha && kyuusha.Id;
     kyousouba = await this.umaDao.saveKyousouba(kyousouba);

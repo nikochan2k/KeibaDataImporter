@@ -1,28 +1,29 @@
 import { Inject, Service } from "typedi";
-import { EntityManager, Repository } from "typeorm";
-import { OrmManager, OrmRepository } from "typeorm-typedi-extensions";
+import { Repository } from "typeorm";
+import { OrmRepository } from "typeorm-typedi-extensions";
+import { MeishouDao } from "../daos/MeishouDao";
+import { Kubun } from "../entities/Meishou";
 import { Banushi } from "../entities/Banushi";
-import { Tool } from "../reader/Tool";
 
 @Service()
 export class BanushiDao {
-
-  @OrmManager()
-  protected entityManager: EntityManager;
 
   @OrmRepository(Banushi)
   private repository: Repository<Banushi>;
 
   @Inject()
-  private tool: Tool;
+  private meishouDao: MeishouDao;
 
-  public async save(toBe: Banushi) {
-    const asIs = await this.repository.findOne({ BanushiMei: toBe.BanushiMei });
-    if (!asIs || asIs.TanshukuBanushiMei !== toBe.TanshukuBanushiMei || asIs.BanushiKaiCode !== toBe.BanushiKaiCode) {
-      return await this.tool.saveOrUpdate(Banushi, asIs, toBe);
-    } else {
-      return asIs;
+  public async save(shussoubaId: number, kubun: Kubun, name: string, banushiKaiCode?: number) {
+    const meishou = await this.meishouDao.save(kubun, name, banushiKaiCode);
+    let banushi = await this.repository.findOne({ ShussoubaId: shussoubaId, MeishouId: meishou.Id });
+    if (!banushi) {
+      banushi = new Banushi();
+      banushi.ShussoubaId = shussoubaId;
+      banushi.MeishouId = meishou.Id;
+      banushi = await this.repository.save(banushi);
     }
+    return banushi;
   }
 
 }

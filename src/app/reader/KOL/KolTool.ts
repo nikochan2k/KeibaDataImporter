@@ -8,12 +8,11 @@ import { KishuDao } from "../../daos/KishuDao";
 import { KyuushaDao } from "../../daos/KyuushaDao";
 import { SeisanshaDao } from "../../daos/SeisanshaDao";
 import { UmaDao } from "../../daos/UmaDao";
-import { Banushi } from "../../entities/Banushi";
+import { Kubun } from "../../entities/Meishou";
 import { Kishu } from "../../entities/Kishu";
 import { KishuRireki } from "../../entities/KishuRireki";
 import { Kyousouba } from "../../entities/Kyousouba";
 import { Kyuusha } from "../../entities/Kyuusha";
-import { Seisansha } from "../../entities/Seisansha";
 import { Uma } from "../../entities/Uma";
 import {
   readInt,
@@ -63,15 +62,15 @@ export class KolTool {
     return this.kishuDao.saveKishuRireki(kishuRireki);
   }
 
-  public saveBanushi(buffer: Buffer, offset: number) {
+  public async saveBanushi(buffer: Buffer, offset: number, shussoubaId: number) {
     const banushiMei = this.tool.normalizeHoujinMei(buffer, offset, 40);
-    if (!banushiMei) {
-      return null;
+    if (banushiMei) {
+      await this.banushiDao.save(shussoubaId, Kubun.Full, banushiMei);
     }
-    const banushi = new Banushi();
-    banushi.BanushiMei = banushiMei;
-    banushi.TanshukuBanushiMei = this.tool.normalizeTanshukuHoujinMei(buffer, offset + 40, 20);
-    return this.banushiDao.save(banushi);
+    const tanshukuBanushiMei = this.tool.normalizeTanshukuHoujinMei(buffer, offset + 40, 20);
+    if (tanshukuBanushiMei) {
+      await this.banushiDao.save(shussoubaId, Kubun.Tanshuku, tanshukuBanushiMei);
+    }
   }
 
   public async saveKyousouba(buffer: Buffer, offset: number, kyuusha: Kyuusha) {
@@ -86,26 +85,25 @@ export class KolTool {
     }
     uma.Seibetsu = seibetsu;
     uma = await this.umaDao.saveUma(uma);
+
     let kyousouba = new Kyousouba();
     kyousouba.UmaId = uma.Id;
     kyousouba.Seibetsu = seibetsu;
     kyousouba.UmaKigou = $U.umaKigou.toCodeFromKol(buffer, offset + 37, 2);
-    const banushi = await this.saveBanushi(buffer, offset + 42);
-    kyousouba.BanushiId = banushi && banushi.Id;
     kyousouba.KyuushaId = kyuusha && kyuusha.Id;
     kyousouba = await this.umaDao.saveKyousouba(kyousouba);
     return { Kyousouba: kyousouba, Uma: uma };
   }
 
-  public saveSeisansha(buffer: Buffer, offset: number) {
+  public async saveSeisansha(buffer: Buffer, offset: number, umaId: number) {
     const seisanshaMei = this.tool.normalizeHoujinMei(buffer, offset, 40);
-    if (!seisanshaMei) {
-      return null;
+    if (seisanshaMei) {
+      await this.seisanshaDao.save(umaId, Kubun.Full, seisanshaMei);
     }
-    const seisansha = new Seisansha();
-    seisansha.SeisanshaMei = seisanshaMei;
-    seisansha.TanshukuSeisanshaMei = this.tool.normalizeTanshukuHoujinMei(buffer, offset + 40, 20);
-    return this.seisanshaDao.saveSeisansha(seisansha);
+    const tanshukuSeisanshaMei = this.tool.normalizeTanshukuHoujinMei(buffer, offset + 40, 20);
+    if (tanshukuSeisanshaMei) {
+      await this.seisanshaDao.save(umaId, Kubun.Tanshuku, tanshukuSeisanshaMei);
+    }
   }
 
   public async saveShozokuKyuusha(buffer: Buffer, offset: number) {

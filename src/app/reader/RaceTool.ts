@@ -105,7 +105,7 @@ export abstract class RaceTool {
   public async saveRaceMei(buffer: Buffer, offset: number, length: number, race: Race) {
     const meishou = this.tool.normalizeTokubetsuMei(buffer, offset, length);
     if (meishou) {
-      await this.raceDao.saveRaceMei(race, meishou);
+      await this.raceDao.saveRaceMei(race.Id, meishou);
     }
   }
 }

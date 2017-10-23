@@ -1,13 +1,10 @@
 import { Service } from "typedi";
-import { EntityManager, Repository } from "typeorm";
-import { OrmManager, OrmRepository } from "typeorm-typedi-extensions";
-import { Kubun, Jinmei } from "../entities/Jinmei";
+import { Repository } from "typeorm";
+import { OrmRepository } from "typeorm-typedi-extensions";
+import { Jinmei, Kubun } from "../entities/Jinmei";
 
 @Service()
 export class JinmeiDao {
-
-  @OrmManager()
-  protected entityManager: EntityManager;
 
   @OrmRepository(Jinmei)
   private repository: Repository<Jinmei>;

@@ -72,6 +72,7 @@ export class KolSei2Kd3 extends DataToImport {
     }
 
     await this.saveShussoubaSeiseki(buffer, info, shussoubaSeiseki, dataNenggapi);
+    await this.saveShussoubaHyouka(buffer, info.shussouba);
     await this.saveShussoubaYosou(buffer, info.shussouba);
     await this.kolOddsHaitouTool.saveNinkiOdds(buffer, info.shussouba, 267, 269);
     await this.kolShussoubaTool.saveShussoubaTsuukaJuni(buffer, 298, info.shussouba);
@@ -79,7 +80,7 @@ export class KolSei2Kd3 extends DataToImport {
   }
 
   protected async saveShussouba(buffer: Buffer, info: ShussoubaInfo) {
-    const toBe = this.kolShussoubaTool.createShussouba(buffer, 23);
+    let toBe = this.kolShussoubaTool.createShussouba(buffer, 23);
     if (toBe) {
       return null;
     }
@@ -92,8 +93,9 @@ export class KolSei2Kd3 extends DataToImport {
     const nen = readInt(buffer, 2, 4);
     toBe.Nenrei = this.tool.normalizeNenrei(nenrei, nen);
 
-    const asIs = info.shussouba;
-    return await this.tool.saveOrUpdate(Shussouba, asIs, toBe);
+    toBe = await this.tool.saveOrUpdate(Shussouba, info.shussouba, toBe);
+    await this.kolTool.saveBanushi(buffer, 69, toBe.Id);
+    return toBe;
   }
 
   protected async saveShussoubaJoutai(buffer: Buffer, shussouba: Shussouba) {

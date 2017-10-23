@@ -56,9 +56,6 @@ export class Uma {
   @Column("int", { nullable: true })
   public HahaUmaId?: number;
 
-  @Column("int", { nullable: true })
-  public SeisanshaId?: number;
-
   @Column("tinyint", { nullable: true })
   public MasshouFlag?: number;
 

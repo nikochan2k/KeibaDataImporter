@@ -6,7 +6,8 @@ import {
 } from "typeorm";
 
 @Entity("KishuMei")
-@Index("IxKishuMei", (k: KishuMei) => [k.KishuId, k.JinmeiId], { unique: true })
+@Index("IxKishuMei1", (k: KishuMei) => [k.KishuId, k.JinmeiId], { unique: true })
+@Index("IxKishuMei2", (k: KishuMei) => [k.JinmeiId])
 export class KishuMei {
   @PrimaryGeneratedColumn()
   public Id: number;
