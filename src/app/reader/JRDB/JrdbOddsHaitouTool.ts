@@ -1,5 +1,6 @@
 import { Service } from "typedi";
 import * as $C from "../../converters/Common";
+import { OddsHaitou } from "../../entities/OddsHaitou";
 import { RaceShussoubaId } from "../ShussoubaTool";
 import { OddsHaitouTool } from "../OddsHaitouTool";
 import {
@@ -20,15 +21,14 @@ export interface OddsHaitouInfo {
 export class JrdbOddsHaitouTool extends OddsHaitouTool {
 
   public async saveOddsNinki(buffer: Buffer, rsId: RaceShussoubaId, info: OddsHaitouInfo) {
-    await this.saveOddsHaitou({
-      RaceId: rsId.raceId,
-      Kakutei: info.Kakutei,
-      Baken: info.Baken,
-      Bangou1: rsId.umaban,
-      Odds1: readDouble(buffer, info.OddsOffset, info.OddsLength),
-      Ninki: (info.NinkiOffset ? readPositiveInt(buffer, info.NinkiOffset, 2) : undefined),
-      Haitoukin: (info.HaitoukinOffset ? readPositiveInt(buffer, info.HaitoukinOffset, 7) : undefined)
-    });
+    const oddsHaitou = new OddsHaitou();
+    oddsHaitou.RaceId = rsId.raceId;
+    oddsHaitou.Kakutei = info.Kakutei;
+    oddsHaitou.Baken = info.Baken;
+    oddsHaitou.Bangou1 = rsId.umaban;
+    oddsHaitou.Odds1 = readDouble(buffer, info.OddsOffset, info.OddsLength);
+    oddsHaitou.Haitoukin = (info.HaitoukinOffset ? readPositiveInt(buffer, info.HaitoukinOffset, 7) : undefined);
+    await this.saveOddsHaitou(oddsHaitou);
   }
 
 }

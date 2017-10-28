@@ -1,5 +1,6 @@
 import { Service } from "typedi";
-import * as $C from "../../converters/Common";
+import { Kakutei, Baken } from "../../converters/Common";
+import { OddsHaitou } from "../../entities/OddsHaitou";
 import { Shussouba } from "../../entities/Shussouba";
 import { HaitouInfo, OddsHaitouTool } from "../OddsHaitouTool";
 import {
@@ -12,14 +13,14 @@ import {
 export class KolOddsHaitouTool extends OddsHaitouTool {
 
   public async saveNinkiOdds(buffer: Buffer, shussouba: Shussouba, ninkiOffset: number, oddsOffset: number) {
-    await this.saveOddsHaitou({
-      RaceId: shussouba.RaceId,
-      Kakutei: $C.Kakutei.Kakutei,
-      Baken: $C.Baken.Tanshou,
-      Bangou1: shussouba.Umaban,
-      Ninki: readPositiveInt(buffer, ninkiOffset, 2),
-      Odds1: readDouble(buffer, oddsOffset, 5, 0.1)
-    });
+    const oddsHaitou = new OddsHaitou();
+    oddsHaitou.RaceId = shussouba.RaceId;
+    oddsHaitou.Kakutei = Kakutei.Kakutei;
+    oddsHaitou.Baken = Baken.Tanshou;
+    oddsHaitou.Bangou1 = shussouba.Umaban;
+    oddsHaitou.Ninki = readPositiveInt(buffer, ninkiOffset, 2);
+    oddsHaitou.Odds1 = readDouble(buffer, oddsOffset, 5, 0.1);
+    await this.saveOddsHaitou(oddsHaitou);
   }
 
   protected getOdds(buffer: Buffer, offset: number, length: number) {
@@ -32,24 +33,24 @@ export class KolOddsHaitouTool extends OddsHaitouTool {
     return odds;
   }
 
-  public async saveTanshouOdds(buffer: Buffer, offset: number, raceId: number, kakutei: $C.Kakutei) {
+  public async saveTanshouOdds(buffer: Buffer, offset: number, raceId: number, kakutei: Kakutei) {
     for (let bangou = 1; bangou <= 18; bangou++) {
       const odds1 = this.getOdds(buffer, offset, 5);
       offset += 5;
       if (!odds1) {
         continue;
       }
-      await this.saveOddsHaitou({
-        RaceId: raceId,
-        Kakutei: kakutei,
-        Baken: $C.Baken.Tanshou,
-        Bangou1: bangou,
-        Odds1: odds1
-      });
+      const oddsHaitou = new OddsHaitou();
+      oddsHaitou.RaceId = raceId;
+      oddsHaitou.Kakutei = kakutei;
+      oddsHaitou.Baken = Baken.Tanshou;
+      oddsHaitou.Bangou1 = bangou;
+      oddsHaitou.Odds1 = odds1;
+      await this.saveOddsHaitou(oddsHaitou);
     }
   }
 
-  public async saveWakurenOdds(buffer: Buffer, offset: number, raceId: number, kakutei: $C.Kakutei) {
+  public async saveWakurenOdds(buffer: Buffer, offset: number, raceId: number, kakutei: Kakutei) {
     for (let bangou1 = 1; bangou1 <= 8; bangou1++) {
       for (let bangou2 = 1; bangou2 <= 8; bangou2++) {
         const odds1 = this.getOdds(buffer, offset, 5);
@@ -57,19 +58,19 @@ export class KolOddsHaitouTool extends OddsHaitouTool {
         if (!odds1) {
           continue;
         }
-        await this.saveOddsHaitou({
-          RaceId: raceId,
-          Kakutei: kakutei,
-          Baken: $C.Baken.Wakuren,
-          Bangou1: bangou1,
-          Bangou2: bangou2,
-          Odds1: odds1
-        });
+        const oddsHaitou = new OddsHaitou();
+        oddsHaitou.RaceId = raceId;
+        oddsHaitou.Kakutei = kakutei;
+        oddsHaitou.Baken = Baken.Wakuren;
+        oddsHaitou.Bangou1 = bangou1;
+        oddsHaitou.Bangou2 = bangou2;
+        oddsHaitou.Odds1 = odds1;
+        await this.saveOddsHaitou(oddsHaitou);
       }
     }
   }
 
-  public async saveUmarenOdds(buffer: Buffer, offset: number, raceId: number, kakutei: $C.Kakutei) {
+  public async saveUmarenOdds(buffer: Buffer, offset: number, raceId: number, kakutei: Kakutei) {
     for (let bangou1 = 1; bangou1 <= 17; bangou1++) {
       for (let bangou2 = bangou1 + 1; bangou2 <= 18; bangou2++) {
         const odds1 = this.getOdds(buffer, offset, 7);
@@ -77,19 +78,19 @@ export class KolOddsHaitouTool extends OddsHaitouTool {
         if (!odds1) {
           continue;
         }
-        await this.saveOddsHaitou({
-          RaceId: raceId,
-          Kakutei: kakutei,
-          Baken: $C.Baken.Umaren,
-          Bangou1: bangou1,
-          Bangou2: bangou2,
-          Odds1: odds1
-        });
+        const oddsHaitou = new OddsHaitou();
+        oddsHaitou.RaceId = raceId;
+        oddsHaitou.Kakutei = kakutei;
+        oddsHaitou.Baken = Baken.Umaren;
+        oddsHaitou.Bangou1 = bangou1;
+        oddsHaitou.Bangou2 = bangou2;
+        oddsHaitou.Odds1 = odds1;
+        await this.saveOddsHaitou(oddsHaitou);
       }
     }
   }
 
-  public async saveFukushouOdds(buffer: Buffer, offset: number, raceId: number, kakutei: $C.Kakutei) {
+  public async saveFukushouOdds(buffer: Buffer, offset: number, raceId: number, kakutei: Kakutei) {
     for (let bangou = 1; bangou <= 18; bangou++) {
       const odds1 = this.getOdds(buffer, offset, 3);
       offset += 3;
@@ -98,18 +99,18 @@ export class KolOddsHaitouTool extends OddsHaitouTool {
       if (!odds1 || !odds2) {
         continue;
       }
-      await this.saveOddsHaitou({
-        RaceId: raceId,
-        Kakutei: kakutei,
-        Baken: $C.Baken.Fukushou,
-        Bangou1: bangou,
-        Odds1: odds1,
-        Odds2: odds2
-      });
+      const oddsHaitou = new OddsHaitou();
+      oddsHaitou.RaceId = raceId;
+      oddsHaitou.Kakutei = kakutei;
+      oddsHaitou.Baken = Baken.Fukushou;
+      oddsHaitou.Bangou1 = bangou;
+      oddsHaitou.Odds1 = odds1;
+      oddsHaitou.Odds2 = odds2;
+      await this.saveOddsHaitou(oddsHaitou);
     }
   }
 
-  public async saveWideOdds(buffer: Buffer, offset: number, raceId: number, kakutei: $C.Kakutei) {
+  public async saveWideOdds(buffer: Buffer, offset: number, raceId: number, kakutei: Kakutei) {
     for (let bangou1 = 1; bangou1 <= 17; bangou1++) {
       for (let bangou2 = bangou1 + 1; bangou2 <= 18; bangou2++) {
         const odds1 = this.getOdds(buffer, offset, 5);
@@ -119,20 +120,19 @@ export class KolOddsHaitouTool extends OddsHaitouTool {
         if (!odds1 || !odds2) {
           continue;
         }
-        await this.saveOddsHaitou({
-          RaceId: raceId,
-          Kakutei: kakutei,
-          Baken: $C.Baken.Wide,
-          Bangou1: bangou1,
-          Bangou2: bangou2,
-          Odds1: odds1,
-          Odds2: odds2
-        });
+        const oddsHaitou = new OddsHaitou();
+        oddsHaitou.RaceId = raceId;
+        oddsHaitou.Kakutei = kakutei;
+        oddsHaitou.Baken = Baken.Wide;
+        oddsHaitou.Bangou1 = bangou1;
+        oddsHaitou.Bangou2 = bangou2;
+        oddsHaitou.Odds1 = odds1;
+        await this.saveOddsHaitou(oddsHaitou);
       }
     }
   }
 
-  public async saveUmatanOdds(buffer: Buffer, offset: number, raceId: number, kakutei: $C.Kakutei) {
+  public async saveUmatanOdds(buffer: Buffer, offset: number, raceId: number, kakutei: Kakutei) {
     for (let bangou1 = 1; bangou1 <= 18; bangou1++) {
       for (let bangou2 = 1; bangou2 <= 18; bangou2++) {
         if (bangou1 === bangou2) {
@@ -143,19 +143,19 @@ export class KolOddsHaitouTool extends OddsHaitouTool {
         if (!odds1) {
           continue;
         }
-        await this.saveOddsHaitou({
-          RaceId: raceId,
-          Kakutei: kakutei,
-          Baken: $C.Baken.Umatan,
-          Bangou1: bangou1,
-          Bangou2: bangou2,
-          Odds1: odds1
-        });
+        const oddsHaitou = new OddsHaitou();
+        oddsHaitou.RaceId = raceId;
+        oddsHaitou.Kakutei = kakutei;
+        oddsHaitou.Baken = Baken.Umatan;
+        oddsHaitou.Bangou1 = bangou1;
+        oddsHaitou.Bangou2 = bangou2;
+        oddsHaitou.Odds1 = odds1;
+        await this.saveOddsHaitou(oddsHaitou);
       }
     }
   }
 
-  public async saveSanrenpukuOdds(buffer: Buffer, offset: number, raceId: number, kakutei: $C.Kakutei) {
+  public async saveSanrenpukuOdds(buffer: Buffer, offset: number, raceId: number, kakutei: Kakutei) {
     for (let bangou1 = 1; bangou1 <= 16; bangou1++) {
       for (let bangou2 = bangou1 + 1; bangou2 <= 17; bangou2++) {
         for (let bangou3 = bangou2 + 1; bangou3 <= 18; bangou3++) {
@@ -164,21 +164,21 @@ export class KolOddsHaitouTool extends OddsHaitouTool {
           if (!odds1) {
             continue;
           }
-          await this.saveOddsHaitou({
-            RaceId: raceId,
-            Kakutei: kakutei,
-            Baken: $C.Baken.Sanrenpuku,
-            Bangou1: bangou1,
-            Bangou2: bangou2,
-            Bangou3: bangou3,
-            Odds1: odds1
-          });
+          const oddsHaitou = new OddsHaitou();
+          oddsHaitou.RaceId = raceId;
+          oddsHaitou.Kakutei = kakutei;
+          oddsHaitou.Baken = Baken.Sanrenpuku;
+          oddsHaitou.Bangou1 = bangou1;
+          oddsHaitou.Bangou2 = bangou2;
+          oddsHaitou.Bangou3 = bangou3;
+          oddsHaitou.Odds1 = odds1;
+          await this.saveOddsHaitou(oddsHaitou);
         }
       }
     }
   }
 
-  public async saveSanrentanOdds(buffer: Buffer, offset: number, raceId: number, kakutei: $C.Kakutei) {
+  public async saveSanrentanOdds(buffer: Buffer, offset: number, raceId: number, kakutei: Kakutei) {
     for (let bangou1 = 1; bangou1 <= 18; bangou1++) {
       for (let bangou2 = 1; bangou2 <= 18; bangou2++) {
         for (let bangou3 = 1; bangou3 <= 18; bangou3++) {
@@ -190,21 +190,21 @@ export class KolOddsHaitouTool extends OddsHaitouTool {
           if (!odds1) {
             continue;
           }
-          await this.saveOddsHaitou({
-            RaceId: raceId,
-            Kakutei: kakutei,
-            Baken: $C.Baken.Sanrentan,
-            Bangou1: bangou1,
-            Bangou2: bangou2,
-            Bangou3: bangou3,
-            Odds1: odds1
-          });
+          const oddsHaitou = new OddsHaitou();
+          oddsHaitou.RaceId = raceId;
+          oddsHaitou.Kakutei = kakutei;
+          oddsHaitou.Baken = Baken.Sanrentan;
+          oddsHaitou.Bangou1 = bangou1;
+          oddsHaitou.Bangou2 = bangou2;
+          oddsHaitou.Bangou3 = bangou3;
+          oddsHaitou.Odds1 = odds1;
+          await this.saveOddsHaitou(oddsHaitou);
         }
       }
     }
   }
 
-  public async saveRaceHaitou(buffer: Buffer, raceId: number, kakutei: $C.Kakutei, infos: HaitouInfo[]) {
+  public async saveRaceHaitou(buffer: Buffer, raceId: number, kakutei: Kakutei, infos: HaitouInfo[]) {
     for (let i = 0; i < infos.length; i++) {
       const info = infos[i];
       const bangou1 = readPositiveInt(buffer, info.bangou1, info.bangou1Len);
@@ -214,26 +214,27 @@ export class KolOddsHaitouTool extends OddsHaitouTool {
       let bangou2;
       if (info.bangou2) {
         bangou2 = readPositiveInt(buffer, info.bangou2, info.bangou2Len);
-        if (!bangou2 && [$C.Baken.Tanshou, $C.Baken.Fukushou].indexOf(info.baken) === -1) {
+        if (!bangou2 && [Baken.Tanshou, Baken.Fukushou].indexOf(info.baken) === -1) {
           continue;
         }
       }
       let bangou3;
       if (info.bangou3) {
         bangou3 = readPositiveInt(buffer, info.bangou3, info.bangou3Len);
-        if (!bangou3 && [$C.Baken.Sanrenpuku, $C.Baken.Sanrentan].indexOf(info.baken) !== -1) {
+        if (!bangou3 && [Baken.Sanrenpuku, Baken.Sanrentan].indexOf(info.baken) !== -1) {
           continue;
         }
       }
-      await this.saveOddsHaitou({
-        RaceId: raceId,
-        Kakutei: kakutei,
-        Baken: info.baken,
-        Bangou1: bangou1,
-        Bangou2: bangou2,
-        Bangou3: bangou3,
-        Haitoukin: readPositiveInt(buffer, info.haitou, info.haitouLen),
-        Ninki: (info.ninki ? readPositiveInt(buffer, info.ninki, info.ninkiLen) : undefined),
-      });
+      const oddsHaitou = new OddsHaitou();
+      oddsHaitou.RaceId = raceId;
+      oddsHaitou.Kakutei = kakutei;
+      oddsHaitou.Baken = Baken.Sanrentan;
+      oddsHaitou.Bangou1 = bangou1;
+      oddsHaitou.Bangou2 = bangou2;
+      oddsHaitou.Bangou3 = bangou3;
+      oddsHaitou.Haitoukin = readPositiveInt(buffer, info.haitou, info.haitouLen);
+      oddsHaitou.Ninki = (info.ninki ? readPositiveInt(buffer, info.ninki, info.ninkiLen) : undefined);
+      await this.saveOddsHaitou(oddsHaitou);
     }
-  }}
+  }
+}
