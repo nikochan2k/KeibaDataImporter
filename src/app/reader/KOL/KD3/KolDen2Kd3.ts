@@ -1,15 +1,16 @@
 import { Inject, Service } from "typedi";
 import * as $S from "../../../converters/Shussouba";
 import { Bagu } from "../../../converters/ShussoubaJoutai";
-import { ShussoubaChoukyou } from "../../../entities/ShussoubaChoukyou";
+import * as $SY from "../../../converters/ShussoubaYosou";
 import { Shussouba } from "../../../entities/Shussouba";
+import { ShussoubaChoukyou } from "../../../entities/ShussoubaChoukyou";
 import { Kubun } from "../../../entities/ShussoubaJoutai";
 import { ShussoubaYosou } from "../../../entities/ShussoubaYosou";
 import { Bridge } from "../../Bridge";
 import { DataToImport } from "../../DataToImport";
 import {
-  readInt,
   readDouble,
+  readInt,
   readPositiveInt,
   readStr,
   readStrWithNoSpace
@@ -110,8 +111,8 @@ export class KolDen2Kd3 extends DataToImport {
   protected async saveShussoubaYosou(buffer: Buffer, shussouba: Shussouba, bridge: KolBridge) {
     const toBe = new ShussoubaYosou();
     toBe.Id = shussouba.Id;
-    toBe.KolYosou1 = $S.yosou.toCodeFromKol(buffer, 254, 1);
-    toBe.KolYosou2 = $S.yosou.toCodeFromKol(buffer, 255, 1);
+    toBe.KolYosou1 = $SY.shirushi.toCodeFromKol(buffer, 254, 1);
+    toBe.KolYosou2 = $SY.shirushi.toCodeFromKol(buffer, 255, 1);
     toBe.Rating = readDouble(buffer, 739, 3, 0.1);
     toBe.Kyakushitsu = bridge.yosouKyakushitsuMap.get(toBe.Id);
 

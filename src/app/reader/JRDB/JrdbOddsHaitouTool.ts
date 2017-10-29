@@ -28,6 +28,7 @@ export class JrdbOddsHaitouTool extends OddsHaitouTool {
     oddsHaitou.Bangou1 = rsId.umaban;
     oddsHaitou.Odds1 = readDouble(buffer, info.OddsOffset, info.OddsLength);
     oddsHaitou.Haitoukin = (info.HaitoukinOffset ? readPositiveInt(buffer, info.HaitoukinOffset, 7) : undefined);
+    oddsHaitou.Ninki = (info.NinkiOffset ? readPositiveInt(buffer, info.NinkiOffset, 2) : undefined);
     await this.saveOddsHaitou(oddsHaitou);
   }
 

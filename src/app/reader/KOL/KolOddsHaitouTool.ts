@@ -12,7 +12,7 @@ import {
 @Service()
 export class KolOddsHaitouTool extends OddsHaitouTool {
 
-  public async saveNinkiOdds(buffer: Buffer, shussouba: Shussouba, ninkiOffset: number, oddsOffset: number) {
+  public async saveKakuteiNinkiOdds(buffer: Buffer, shussouba: Shussouba, ninkiOffset: number, oddsOffset: number) {
     const oddsHaitou = new OddsHaitou();
     oddsHaitou.RaceId = shussouba.RaceId;
     oddsHaitou.Kakutei = Kakutei.Kakutei;

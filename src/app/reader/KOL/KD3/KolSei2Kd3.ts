@@ -1,16 +1,16 @@
 import { Inject, Service } from "typedi";
 import * as $S from "../../../converters/Shussouba";
 import { Bagu } from "../../../converters/ShussoubaJoutai";
-import { ShussoubaChoukyou } from "../../../entities/ShussoubaChoukyou";
+import * as $SY from "../../../converters/ShussoubaYosou";
 import { Kyousouba } from "../../../entities/Kyousouba";
 import { Shussouba } from "../../../entities/Shussouba";
+import { ShussoubaChoukyou } from "../../../entities/ShussoubaChoukyou";
 import { ShussoubaHyouka } from "../../../entities/ShussoubaHyouka";
 import { Kubun } from "../../../entities/ShussoubaJoutai";
 import { ShussoubaSeiseki } from "../../../entities/ShussoubaSeiseki";
 import { ShussoubaYosou } from "../../../entities/ShussoubaYosou";
 import { Uma } from "../../../entities/Uma";
 import { DataToImport } from "../../DataToImport";
-import { ShussoubaInfo } from "../../ShussoubaTool";
 import {
   readDouble,
   readInt,
@@ -18,10 +18,11 @@ import {
   readStrWithNoSpace,
   readTime
 } from "../../Reader";
+import { ShussoubaInfo } from "../../ShussoubaTool";
 import { Tool } from "../../Tool";
 import { KolChoukyouTool } from "../KolChoukyouTool";
-import { KolShussoubaTool } from "../KolShussoubaTool";
 import { KolOddsHaitouTool } from "../KolOddsHaitouTool";
+import { KolShussoubaTool } from "../KolShussoubaTool";
 import { KolTool } from "../KolTool";
 
 @Service()
@@ -74,7 +75,7 @@ export class KolSei2Kd3 extends DataToImport {
     await this.saveShussoubaSeiseki(buffer, info, shussoubaSeiseki, dataNenggapi);
     await this.saveShussoubaHyouka(buffer, info.shussouba);
     await this.saveShussoubaYosou(buffer, info.shussouba);
-    await this.kolOddsHaitouTool.saveNinkiOdds(buffer, info.shussouba, 267, 269);
+    await this.kolOddsHaitouTool.saveKakuteiNinkiOdds(buffer, info.shussouba, 267, 269);
     await this.kolShussoubaTool.saveShussoubaTsuukaJuni(buffer, 298, info.shussouba);
     await this.saveChoukyou(buffer, info);
   }
@@ -148,8 +149,8 @@ export class KolSei2Kd3 extends DataToImport {
   protected async saveShussoubaYosou(buffer: Buffer, shussouba: Shussouba) {
     const toBe = new ShussoubaYosou();
     toBe.Id = shussouba.Id;
-    toBe.KolYosou1 = $S.yosou.toCodeFromKol(buffer, 265, 1);
-    toBe.KolYosou2 = $S.yosou.toCodeFromKol(buffer, 266, 1);
+    toBe.KolYosou1 = $SY.shirushi.toCodeFromKol(buffer, 265, 1);
+    toBe.KolYosou2 = $SY.shirushi.toCodeFromKol(buffer, 266, 1);
 
     const asIs = await this.entityManager.findOneById(ShussoubaYosou, shussouba.Id);
 

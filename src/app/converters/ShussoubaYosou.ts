@@ -1,5 +1,15 @@
 import { Codes } from "./Codes";
 
+export const shirushi = new Codes(
+  [
+    { code: 1, kol: "0", jrdb: "1", naiyou: "◎" },
+    { code: 2, kol: "1", jrdb: "2", naiyou: "○" },
+    { code: 3, kol: "2", jrdb: "3", naiyou: "▲" },
+    { code: 5, kol: "3", jrdb: /5|6/, naiyou: "△" },
+    { code: 6, kol: "4", jrdb: "4", naiyou: "×" }
+  ]
+);
+
 export const kyoriTekisei = new Codes(
   [
     { code: 1, jrdb: "1", naiyou: "短距離" },
@@ -91,6 +101,23 @@ export const yusouKubun = new Codes(
     { code: 3, jrdb: "3", naiyou: "遠征" },
     { code: 4, jrdb: "4", naiyou: "連闘" },
     { code: 0, jrdb: "5", naiyou: "不明" },
+  ]
+);
+
+export const baguHenkouJouhou = new Codes(
+  [
+    { code: 0, jrdb: "0", naiyou: "馬具変更なし", tanshuku: "" },
+    { code: 1, jrdb: "1", naiyou: "馬具変更（通常）", tanshuku: "通常" },
+    { code: 2, jrdb: "2", naiyou: "馬具変更（特注）", tanshuku: "特注" },
+  ]
+);
+
+export const ashimotoJouhou = new Codes(
+  [
+    { code: 0, jrdb: "0", naiyou: "平行線", tanshuku: "" },
+    { code: 1, jrdb: "1", naiyou: "良化", tanshuku: "!" },
+    { code: 2, jrdb: "2", naiyou: "疑問", tanshuku: "?" },
+    { code: 3, jrdb: "3", naiyou: "悪化", tanshuku: "X" },
   ]
 );
 

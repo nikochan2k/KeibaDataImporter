@@ -152,6 +152,7 @@ export enum Kakutei {
   Yosou,
   Zenjitsu,
   ToujitsuAM,
+  Chokuzen,
   Kakutei
 }
 

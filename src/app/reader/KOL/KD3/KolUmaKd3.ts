@@ -4,18 +4,19 @@ import * as $C from "../../../converters/Common";
 import * as $K from "../../../converters/Kaisai";
 import * as $R from "../../../converters/Race";
 import * as $S from "../../../converters/Shussouba";
-import * as $U from "../../../converters/Uma";
-import { Kubun } from "../../../entities/ShussoubaJoutai";
 import { Bagu } from "../../../converters/ShussoubaJoutai";
+import * as $SY from "../../../converters/ShussoubaYosou";
+import * as $U from "../../../converters/Uma";
 import { UmaDao } from "../../../daos/UmaDao";
-import { ShussoubaChoukyou } from "../../../entities/ShussoubaChoukyou";
 import { Kaisai } from "../../../entities/Kaisai";
 import { Kyousouba } from "../../../entities/Kyousouba";
 import { Kyuusha } from "../../../entities/Kyuusha";
 import { Race } from "../../../entities/Race";
 import { RaceSeiseki } from "../../../entities/RaceSeiseki";
 import { Shussouba } from "../../../entities/Shussouba";
+import { ShussoubaChoukyou } from "../../../entities/ShussoubaChoukyou";
 import { ShussoubaHyouka } from "../../../entities/ShussoubaHyouka";
+import { Kubun } from "../../../entities/ShussoubaJoutai";
 import { ShussoubaSeiseki } from "../../../entities/ShussoubaSeiseki";
 import { ShussoubaYosou } from "../../../entities/ShussoubaYosou";
 import { Uma } from "../../../entities/Uma";
@@ -30,13 +31,13 @@ import {
   readTime
 } from "../../Reader";
 import { Tool } from "../../Tool";
-import { KolTool } from "../KolTool";
 import { KolChoukyouTool } from "../KolChoukyouTool";
-import { KolRaceTool } from "../KolRaceTool";
 import { KolKaisaiTool } from "../KolKaisaiTool";
-import { KolShussoubaTool } from "../KolShussoubaTool";
-import { KolUmaTool } from "../KolUmaTool";
 import { KolOddsHaitouTool } from "../KolOddsHaitouTool";
+import { KolRaceTool } from "../KolRaceTool";
+import { KolShussoubaTool } from "../KolShussoubaTool";
+import { KolTool } from "../KolTool";
+import { KolUmaTool } from "../KolUmaTool";
 
 
 @Service()
@@ -117,7 +118,7 @@ export class KolUmaKd3 extends DataToImport {
         await this.saveShussoubaJoutai(shussoubaBuffer, shussouba);
         await this.saveShussoubaSeiseki(shussoubaBuffer, race, shussouba);
         await this.saveShussoubaYosou(shussoubaBuffer, shussouba);
-        await this.kolOddsHaitouTool.saveNinkiOdds(shussoubaBuffer, shussouba, 208, 210);
+        await this.kolOddsHaitouTool.saveKakuteiNinkiOdds(shussoubaBuffer, shussouba, 208, 210);
         await this.kolShussoubaTool.saveShussoubaTsuukaJuni(shussoubaBuffer, 239, shussouba);
         await this.saveChoukyou(shussoubaBuffer, shussouba, uma);
       }
@@ -296,7 +297,7 @@ export class KolUmaKd3 extends DataToImport {
     toBe.Nenrei = this.tool.normalizeNenrei(nenrei, nen);
     toBe.KolNengappi = 0;
 
-    const shussouba =  await this.tool.saveOrUpdate(Shussouba, asIs, toBe);
+    const shussouba = await this.tool.saveOrUpdate(Shussouba, asIs, toBe);
     await this.kolTool.saveBanushi(buffer, 10, shussouba.Id);
   }
 
@@ -352,8 +353,8 @@ export class KolUmaKd3 extends DataToImport {
   protected async saveShussoubaYosou(buffer: Buffer, shussouba: Shussouba) {
     const toBe = new ShussoubaYosou();
     toBe.Id = shussouba.Id;
-    toBe.KolYosou1 = $S.yosou.toCodeFromKol(buffer, 206, 1);
-    toBe.KolYosou2 = $S.yosou.toCodeFromKol(buffer, 207, 1);
+    toBe.KolYosou1 = $SY.shirushi.toCodeFromKol(buffer, 206, 1);
+    toBe.KolYosou2 = $SY.shirushi.toCodeFromKol(buffer, 207, 1);
 
     const asIs = await this.entityManager.findOneById(ShussoubaYosou, shussouba.Id);
 

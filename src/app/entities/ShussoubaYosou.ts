@@ -30,7 +30,20 @@ export class ShussoubaYosou {
   public JouhouShisuu?: number;
 
   @Column("real", { nullable: true })
+  public OddsShisuu?: number;
+
+  @Column("real", { nullable: true })
+  public PaddockShisuu?: number;
+
+  @Column("real", { nullable: true })
   public SougouShisuu?: number;
+
+
+  @Column("tinyint", { nullable: true })
+  public BaguHenkouJouhou: number;
+
+  @Column("tinyint", { nullable: true })
+  public Ashimoto: number;
 
 
   @Column("tinyint", { nullable: true })
@@ -131,6 +144,14 @@ export class ShussoubaYosou {
   @Column("tinyint", { nullable: true })
   public GekisouShirushi?: number;
 
+  @Column("tinyint", { nullable: true })
+  public OddsShirushi?: number;
+
+  @Column("tinyint", { nullable: true })
+  public PaddockShirushi?: number;
+
+  @Column("tinyint", { nullable: true })
+  public ChokuzenSougouShirushi?: number;
 
   @Column("tinyint", { nullable: true })
   public ShibaTekisei?: number;

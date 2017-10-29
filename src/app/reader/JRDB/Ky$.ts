@@ -9,10 +9,8 @@ import { Bagu } from "../../converters/ShussoubaJoutai";
 import * as $SY from "../../converters/ShussoubaYosou";
 import * as $U from "../../converters/Uma";
 import { BanushiDao } from "../../daos/BanushiDao";
-import { KishuDao } from "../../daos/KishuDao";
 import { KyuushaDao } from "../../daos/KyuushaDao";
 import { UmaDao } from "../../daos/UmaDao";
-import { Kishu } from "../../entities/Kishu";
 import { Kyousouba } from "../../entities/Kyousouba";
 import { Kyuusha } from "../../entities/Kyuusha";
 import { MeishouKubun } from "../../entities/Shoyuu";
@@ -51,9 +49,6 @@ export abstract class Ky$ extends DataToImport {
   @Inject()
   private banushiDao: BanushiDao;
 
-  @Inject()
-  private kishuDao: KishuDao;
-
   public async save(buffer: Buffer) {
     const info = await this.jrdbShussoubaTool.getShussoubaInfo(buffer, 8);
     if (!info) {
@@ -83,13 +78,6 @@ export abstract class Ky$ extends DataToImport {
     const shussouba = await this.tool.saveOrUpdate(Shussouba, asIs, toBe);
     await this.saveBanushi(buffer, shussouba.Id);
     return shussouba;
-  }
-
-  protected async saveKishu(buffer: Buffer) {
-    const kishu = new Kishu();
-    const kishuMei = readStrWithNoSpace(buffer, 171, 12);
-    kishu.JrdbKishuCode = readInt(buffer, 335, 5);
-    return this.kishuDao.saveKishu(kishu, kishuMei);
   }
 
   protected saveKyuusha(buffer: Buffer) {
@@ -132,7 +120,8 @@ export abstract class Ky$ extends DataToImport {
   }
 
   protected async setShussouba(buffer: Buffer, toBe: Shussouba, info: ShussoubaInfo) {
-    toBe.KishuId = (await this.saveKishu(buffer)).Id;
+    const kishu = await this.jrdbShussoubaTool.saveKishu(buffer, 335, 171);
+    toBe.KishuId = kishu.Id;
     toBe.Kinryou = readDouble(buffer, 183, 3, 0.1);
     // toBe.MinaraiKubun = $S.minaraiKubun.toCodeFromJrdb(buffer, 186, 1);
     if (info.uma.Seinen) {
@@ -192,13 +181,13 @@ export abstract class Ky$ extends DataToImport {
     toBe.HidumeCode = $SY.hidumeCode.toCodeFromJrdb(buffer, 163, 2);
     toBe.OmoTekisei = $C.hyouka.toCodeFromJrdb(buffer, 165, 1);
     toBe.ClassCode = $S.classCode.toCodeFromJrdb(buffer, 166, 2);
-    toBe.SougouShirushi = $S.yosou.toCodeFromJrdb(buffer, 326, 1);
-    toBe.IdmShirushi = $S.yosou.toCodeFromJrdb(buffer, 327, 1);
-    toBe.JouhouShirushi = $S.yosou.toCodeFromJrdb(buffer, 328, 1);
-    toBe.KishuShirushi = $S.yosou.toCodeFromJrdb(buffer, 329, 1);
-    toBe.KyuushaShirushi = $S.yosou.toCodeFromJrdb(buffer, 330, 1);
-    toBe.ChoukyouShirushi = $S.yosou.toCodeFromJrdb(buffer, 331, 1);
-    toBe.GekisouShirushi = $S.yosou.toCodeFromJrdb(buffer, 332, 1);
+    toBe.SougouShirushi = $SY.shirushi.toCodeFromJrdb(buffer, 326, 1);
+    toBe.IdmShirushi = $SY.shirushi.toCodeFromJrdb(buffer, 327, 1);
+    toBe.JouhouShirushi = $SY.shirushi.toCodeFromJrdb(buffer, 328, 1);
+    toBe.KishuShirushi = $SY.shirushi.toCodeFromJrdb(buffer, 329, 1);
+    toBe.KyuushaShirushi = $SY.shirushi.toCodeFromJrdb(buffer, 330, 1);
+    toBe.ChoukyouShirushi = $SY.shirushi.toCodeFromJrdb(buffer, 331, 1);
+    toBe.GekisouShirushi = $SY.shirushi.toCodeFromJrdb(buffer, 332, 1);
     toBe.ShibaTekisei = $C.hyouka.toCodeFromJrdb(buffer, 333, 1);
     toBe.DirtTekisei = $C.hyouka.toCodeFromJrdb(buffer, 334, 1);
     toBe.KakutokuShoukin = readInt(buffer, 346, 6, 10000);
@@ -255,7 +244,7 @@ export abstract class Ky$ extends DataToImport {
     toBe.StartShisuu = readDouble(buffer, 519, 4);
     toBe.DeokureRitsu = readDouble(buffer, 523, 4);
     toBe.MankenShisuu = readInt(buffer, 534, 3);
-    toBe.MankenShirushi = $S.yosou.toCodeFromJrdb(buffer, 537, 1);
+    toBe.MankenShirushi = $SY.shirushi.toCodeFromJrdb(buffer, 537, 1);
   }
 
   protected async saveShussoubaJoutaiSeries(buffer: Buffer, shussouba: Shussouba) {
