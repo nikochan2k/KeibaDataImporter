@@ -36,6 +36,8 @@ import { KolKod2Kd3 } from "./reader/KOL/KD3/KolKod2Kd3";
 import { KolKod3Kd3 } from "./reader/KOL/KD3/KolKod3Kd3";
 import { KolKodKd3 } from "./reader/KOL/KD3/KolKodKd3";
 import { KolKyuKd3 } from "./reader/KOL/KD3/KolKyuKd3";
+import { KolOdsKd3 } from "./reader/KOL/KD3/KolOdsKd3";
+import { KolOds2Kd3 } from "./reader/KOL/KD3/KolOds2Kd3";
 import { KolSei1Kd3 } from "./reader/KOL/KD3/KolSei1Kd3";
 import { KolSei2Kd3 } from "./reader/KOL/KD3/KolSei2Kd3";
 import { KolSei3Kd3 } from "./reader/KOL/KD3/KolSei3Kd3";
@@ -109,9 +111,9 @@ export class Importer {
       // JRDB 直前情報データ
       { pattern: /tyb\d+\.txt$/i, dataToImport: Container.get(Tyb) },
       // KD3 予想オッズ（単勝・枠連・馬連）
-      // kol_ods.kd3
+      { pattern: /kol_ods\.kd3/, dataToImport: Container.get(KolOdsKd3) },
       // KD3 予想オッズ２（馬単・３連複）
-      // kol_ods2.kd3
+      { pattern: /kol_ods2\.kd3/, dataToImport: Container.get(KolOds2Kd3) },
       // JRDB 基準オッズデータ
       // oz
       // JRDB ワイド基準オッズデータ
