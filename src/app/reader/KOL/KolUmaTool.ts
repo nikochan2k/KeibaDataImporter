@@ -14,28 +14,50 @@ export class KolUmaTool {
   @Inject()
   private umaDao: UmaDao;
 
-  public async saveSosenbaOfKettou(buffer: Buffer, offset: number, seibetsu: $U.Seibetsu, chichiUmaId?: number, hahaUmaId?: number) {
-    const bamei = readStr(buffer, offset + 8, 34);
-    if (!bamei) {
+  public async saveSosenba123(buffer: Buffer, offset: number, seibetsu: $U.Seibetsu, chichiUmaId?: number, hahaUmaId?: number) {
+    const kanaBamei = readStr(buffer, offset + 7, 40);
+    const eigoBamei = readStr(buffer, offset + 47, 40);
+    if (!kanaBamei && !eigoBamei) {
       return null;
     }
 
     const uma = new Uma();
     uma.Seibetsu = seibetsu;
-    uma.YunyuubaFlag = $U.yunyuubaFlag.toCodeFromKol(buffer, offset, 1);
-    uma.KolUmaCode = readInt(buffer, offset + 1, 7);
-    if (this.tool.isEnglish(bamei)) {
-      uma.EigoBamei = bamei;
-    } else {
-      uma.KanaBamei = bamei;
-    }
+    uma.KolUmaCode = readInt(buffer, offset, 7);
+    uma.KanaBamei = kanaBamei;
+    uma.EigoBamei = eigoBamei;
+    uma.Seinen = readInt(buffer, offset + 87, 4);
+    uma.Keiro = $U.keiro.toCodeFromKol(buffer, offset + 91, 2);
+    uma.Kesshu = $U.keiro.toCodeFromKol(buffer, offset + 93, 2);
+    uma.SanchiCode = readStr(buffer, offset + 95, 3);
     uma.ChichiUmaId = chichiUmaId;
     uma.HahaUmaId = hahaUmaId;
 
     return this.umaDao.saveUma(uma, true);
   }
 
-  public async saveOyaUmaOfKettou(buffer: Buffer, offset: number, seibetsu: $U.Seibetsu, chichiUmaId?: number, hahaUmaId?: number) {
+  public async saveSosenba45(buffer: Buffer, offset: number, seibetsu: $U.Seibetsu, chichiUmaId?: number, hahaUmaId?: number) {
+    const bamei = readStr(buffer, offset + 7, 40);
+    if (!bamei) {
+      return null;
+    }
+
+    const uma = new Uma();
+    uma.Seibetsu = seibetsu;
+    uma.KolUmaCode = readInt(buffer, offset, 7);
+    if (this.tool.isEnglish(bamei)) {
+      uma.EigoBamei = bamei;
+    } else {
+      uma.KanaBamei = bamei;
+    }
+    uma.SanchiCode = readStr(buffer, offset + 47, 3);
+    uma.ChichiUmaId = chichiUmaId;
+    uma.HahaUmaId = hahaUmaId;
+
+    return this.umaDao.saveUma(uma, true);
+  }
+
+  public async saveSosenba1(buffer: Buffer, offset: number, seibetsu: $U.Seibetsu, chichiUmaId?: number, hahaUmaId?: number) {
     const bamei = readStr(buffer, offset + 8, 34);
     if (!bamei) {
       return null;
@@ -54,6 +76,27 @@ export class KolUmaTool {
     uma.Seinen = readInt(buffer, offset + 76, 4);
     uma.Keiro = $U.keiro.toCodeFromKol(buffer, offset + 80, 2);
     uma.Kesshu = $U.keiro.toCodeFromKol(buffer, offset + 82, 2);
+    uma.ChichiUmaId = chichiUmaId;
+    uma.HahaUmaId = hahaUmaId;
+
+    return this.umaDao.saveUma(uma, true);
+  }
+
+  public async saveSosenba23(buffer: Buffer, offset: number, seibetsu: $U.Seibetsu, chichiUmaId?: number, hahaUmaId?: number) {
+    const bamei = readStr(buffer, offset + 8, 34);
+    if (!bamei) {
+      return null;
+    }
+
+    const uma = new Uma();
+    uma.Seibetsu = seibetsu;
+    uma.YunyuubaFlag = $U.yunyuubaFlag.toCodeFromKol(buffer, offset, 1);
+    uma.KolUmaCode = readInt(buffer, offset + 1, 7);
+    if (this.tool.isEnglish(bamei)) {
+      uma.EigoBamei = bamei;
+    } else {
+      uma.KanaBamei = bamei;
+    }
     uma.ChichiUmaId = chichiUmaId;
     uma.HahaUmaId = hahaUmaId;
 

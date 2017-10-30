@@ -20,6 +20,9 @@ export class Uma {
   @Column("varchar", { length: 8, nullable: true })
   public KettouTourokuBangou?: string;
 
+  @Column("varchar", { length: 3, nullable: true })
+  public FamilyNumber?: string;
+
   @Column("varchar", { length: 54, nullable: true })
   public KanaBamei?: string;
 
@@ -40,6 +43,9 @@ export class Uma {
 
   @Column("tinyint", { nullable: true })
   public Kesshu?: number;
+
+  @Column("varchar", { length: 3, nullable: true })
+  public SanchiCode?: string;
 
   @Column("smallint", { nullable: true })
   public Sanchi?: number;
