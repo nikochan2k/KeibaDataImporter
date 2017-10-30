@@ -9,7 +9,7 @@ import { readStr } from "../Reader";
 import { Tool } from "../Tool";
 import { JrdbShussoubaTool } from "./JrdbShussoubaTool";
 
-export abstract class Skb extends DataToImport {
+export class Skb extends DataToImport {
 
   @OrmManager()
   protected entityManager: EntityManager;
@@ -19,6 +19,10 @@ export abstract class Skb extends DataToImport {
 
   @Inject()
   protected jrdbShussoubaTool: JrdbShussoubaTool;
+
+  protected getBufferLength() {
+    return 304;
+  }
 
   public async save(buffer: Buffer, bridge: Bridge) {
     const rsId = this.jrdbShussoubaTool.getRaceShussoubaId(buffer, 8);

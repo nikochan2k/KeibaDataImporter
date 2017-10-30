@@ -9,9 +9,9 @@ import { Bac } from "./reader/JRDB/Bac";
 import { Cha } from "./reader/JRDB/Cha";
 import { Cya } from "./reader/JRDB/Cya";
 import { Cyb } from "./reader/JRDB/Cyb";
-import { Joa } from "./reader/JRDB/Joa";
 import { Hja } from "./reader/JRDB/Hja";
 import { Hjc } from "./reader/JRDB/Hjc";
+import { Joa } from "./reader/JRDB/Joa";
 import { Kaa } from "./reader/JRDB/Kaa";
 import { Kab } from "./reader/JRDB/Kab";
 import { Kyg } from "./reader/JRDB/Kyg";
@@ -24,11 +24,13 @@ import { Sra } from "./reader/JRDB/Sra";
 import { Srb } from "./reader/JRDB/Srb";
 import { Tyb } from "./reader/JRDB/Tyb";
 import { Ukc } from "./reader/JRDB/Ukc";
+import { Zec } from "./reader/JRDB/Zec";
+import { Zkb } from "./reader/JRDB/Zkb";
 import { KolCom1Kd3 } from "./reader/KOL/KD3/KolCom1Kd3";
 import { KolDen1Kd3 } from "./reader/KOL/KD3/KolDen1Kd3";
 import { KolDen2Kd3 } from "./reader/KOL/KD3/KolDen2Kd3";
-import { KolKetKd3 } from "./reader/KOL/KD3/KolKetKd3";
 import { KolKet5Kd3 } from "./reader/KOL/KD3/KolKet5Kd3";
+import { KolKetKd3 } from "./reader/KOL/KD3/KolKetKd3";
 import { KolKisKd3 } from "./reader/KOL/KD3/KolKisKd3";
 import { KolKod2Kd3 } from "./reader/KOL/KD3/KolKod2Kd3";
 import { KolKod3Kd3 } from "./reader/KOL/KD3/KolKod3Kd3";
@@ -81,8 +83,6 @@ export class Importer {
       { pattern: /kol_ket5\.kd3/, dataToImport: Container.get(KolKet5Kd3) },
       // KD3 出走馬レースデータ
       { pattern: /kol_den1\.kd3/, dataToImport: Container.get(KolDen1Kd3) },
-      // KD3 特別登録レースデータ
-      // kol_tok1.kd3
       // JRDB 開催データ
       { pattern: /kaa\d+\.txt$/i, dataToImport: Container.get(Kaa) },
       { pattern: /kab\d+\.txt$/i, dataToImport: Container.get(Kab) },
@@ -90,13 +90,11 @@ export class Importer {
       { pattern: /bab\d+\.txt$/i, dataToImport: Container.get(Bab) },
       { pattern: /bac\d+\.txt$/i, dataToImport: Container.get(Bac) },
       // JRDB 前走データ
-      // zec
+      { pattern: /zec\d+\.txt$/i, dataToImport: Container.get(Zec) },
       // JRDB 前走拡張データ
-      // zkb
+      { pattern: /zkb\d+\.txt$/i, dataToImport: Container.get(Zkb) },
       // KD3 出馬表出走馬データ
       { pattern: /kol_den2\.kd3/, dataToImport: Container.get(KolDen2Kd3) },
-      // KD3 特別登録出走予定馬データ
-      // kol_tok2.kd3
       // JRDB 競走馬データ
       { pattern: /kyg\d+\.txt$/i, dataToImport: Container.get(Kyg) },
       { pattern: /kyh\d+\.txt$/i, dataToImport: Container.get(Kyh) },
@@ -132,15 +130,15 @@ export class Importer {
       // KD3 競走成績出走馬データ
       { pattern: /kol_sei2\.kd3/, dataToImport: Container.get(KolSei2Kd3) },
       // JRDB 成績データ
-      { pattern: /sec\d+\.txt$3/, dataToImport: Container.get(Sec) },
-      { pattern: /sed\d+\.txt$3/, dataToImport: Container.get(Sed) },
+      { pattern: /sec\d+\.txt$/, dataToImport: Container.get(Sec) },
+      { pattern: /sed\d+\.txt$/, dataToImport: Container.get(Sed) },
       // KD3 制裁その他データ
       { pattern: /kol_sei3\.kd3/, dataToImport: Container.get(KolSei3Kd3) },
       // JRDB 成績拡張データ
-      { pattern: /seb\d+\.txt$3/, dataToImport: Container.get(Skb) },
+      { pattern: /seb\d+\.txt$/, dataToImport: Container.get(Skb) },
       // JRDB 払戻情報データ
-      { pattern: /hja\d+\.txt$3/, dataToImport: Container.get(Hja) },
-      { pattern: /hjc\d+\.txt$3/, dataToImport: Container.get(Hjc) },
+      { pattern: /hja\d+\.txt$/, dataToImport: Container.get(Hja) },
+      { pattern: /hjc\d+\.txt$/, dataToImport: Container.get(Hjc) },
       // KD3 騎手厩舎コメント／次走へのメモ
       { pattern: /kol_com1\.kd3/, dataToImport: Container.get(KolCom1Kd3) },
       // KD3 確定オッズ（単勝・枠連・馬連）

@@ -84,7 +84,7 @@ export class KolKet5Kd3 extends DataToImport {
 
     const hhcch = await this.kolUmaTool.saveSosenba45(buffer, 3472, $U.Seibetsu.Hinba);
     const hhccc = await this.kolUmaTool.saveSosenba45(buffer, 3422, $U.Seibetsu.Boba);
-    const hhcc = await this.kolUmaTool.saveSosenba45(buffer, 2022, $U.Seibetsu.Hinba, hhccc.Id, hhcch.Id);
+    const hhcc = await this.kolUmaTool.saveSosenba45(buffer, 2022, $U.Seibetsu.Boba, hhccc.Id, hhcch.Id);
 
     return this.kolUmaTool.saveSosenba123(buffer, 1226, $U.Seibetsu.Hinba, hhcc.Id, hhch.Id);
   }
@@ -96,7 +96,7 @@ export class KolKet5Kd3 extends DataToImport {
 
     const hchch = await this.kolUmaTool.saveSosenba45(buffer, 3272, $U.Seibetsu.Hinba);
     const hchcc = await this.kolUmaTool.saveSosenba45(buffer, 3222, $U.Seibetsu.Boba);
-    const hchc = await this.kolUmaTool.saveSosenba45(buffer, 1922, $U.Seibetsu.Hinba, hchcc.Id, hchch.Id);
+    const hchc = await this.kolUmaTool.saveSosenba45(buffer, 1922, $U.Seibetsu.Boba, hchcc.Id, hchch.Id);
 
     return this.kolUmaTool.saveSosenba123(buffer, 1128, $U.Seibetsu.Hinba, hchh.Id, hchc.Id);
   }
@@ -108,7 +108,7 @@ export class KolKet5Kd3 extends DataToImport {
 
     const hccch = await this.kolUmaTool.saveSosenba45(buffer, 3072, $U.Seibetsu.Hinba);
     const hcccc = await this.kolUmaTool.saveSosenba45(buffer, 3022, $U.Seibetsu.Boba);
-    const hccc = await this.kolUmaTool.saveSosenba45(buffer, 1822, $U.Seibetsu.Hinba, hcccc.Id, hccch.Id);
+    const hccc = await this.kolUmaTool.saveSosenba45(buffer, 1822, $U.Seibetsu.Boba, hcccc.Id, hccch.Id);
 
     return this.kolUmaTool.saveSosenba123(buffer, 1030, $U.Seibetsu.Hinba, hccc.Id, hcch.Id);
   }
