@@ -21,11 +21,11 @@ export class KolKyuKd3 extends DataToImport {
   private kyuushaDao: KyuushaDao;
 
   protected getBufferLength() {
-    return 1729;
+    return 1248;
   }
 
   public async save(buffer: Buffer) {
-    let kyuusha = new Kyuusha();
+    const kyuusha = new Kyuusha();
     kyuusha.KolKyuushaCode = readInt(buffer, 0, 5);
     kyuusha.Seinengappi = readInt(buffer, 93, 8);
     kyuusha.HatsuMenkyoNen = readInt(buffer, 101, 4);
@@ -36,7 +36,7 @@ export class KolKyuKd3 extends DataToImport {
     const kishuMei = readStr(buffer, 5, 32);
     const tanshukuKishuMei = readStr(buffer, 37, 8);
     const furigana = readStr(buffer, 45, 48);
-    kyuusha = await this.kyuushaDao.saveKyuusha(kyuusha, kishuMei, tanshukuKishuMei, furigana);
+    await this.kyuushaDao.saveKyuusha(kyuusha, kishuMei, tanshukuKishuMei, furigana);
   }
 
 }

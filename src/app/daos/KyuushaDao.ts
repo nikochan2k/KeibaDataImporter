@@ -70,7 +70,7 @@ export class KyuushaDao {
       }
     }
     if (furigana) {
-      await this.saveKyuushaMei(toBe, JinmeiKubun.Furigana, tanshuku);
+      await this.saveKyuushaMei(toBe, JinmeiKubun.Furigana, furigana);
     }
     return toBe;
   }

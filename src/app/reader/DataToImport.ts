@@ -9,6 +9,12 @@ export abstract class DataToImport {
 
   protected logger: log4js.Logger;
 
+  private buf: Buffer;
+
+  private bufBegin: number;
+
+  private bufEnd: number;
+
   constructor() {
     this.logger = getLogger(this);
   }
@@ -38,17 +44,29 @@ export abstract class DataToImport {
       const size = fs.readSync(fd, buf, 0, length, null);
       return size === 0 ? null : buf;
     } else {
-      const buffer = new Buffer(65536);
-      const buf = new Buffer(1);
-      let offset;
-      for (offset = 0; 0 < fs.readSync(fd, buf, 0, 1, null); offset++) {
-        const ch = buf.readUInt8(0);
-        buffer.writeUInt8(ch, offset);
+      if (!this.buf) {
+        this.buf = new Buffer(65536);
+        this.bufBegin = 0;
+        this.bufEnd = fs.readSync(fd, this.buf, 0, this.buf.length, null);
+      }
+      for (let index = this.bufBegin; index < this.bufEnd;) {
+        const ch = this.buf.readUInt8(index);
+        index++;
         if (ch === 0x0a) {
-          break;
+          const line = this.buf.slice(this.bufBegin, index);
+          this.bufBegin = index;
+          return line;
+        }
+        if (this.bufEnd <= index) { // 最後まできたら
+          const temp = this.buf;
+          this.buf = new Buffer(this.buf.length);
+          const offset = temp.copy(this.buf, 0, this.bufBegin, this.bufEnd);
+          const length = this.buf.length - offset;
+          this.bufEnd = fs.readSync(fd, this.buf, offset, length, null) + offset;
+          this.bufBegin = index = 0;
         }
       }
-      return buffer.slice(0, offset);
+      return null;
     }
   }
 

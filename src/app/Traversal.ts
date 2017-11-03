@@ -129,6 +129,8 @@ export class Traversal {
     { pattern: /kol_kod2.kd3$/, priority: 50 },
     // KD3確定オッズ３（３連単）
     { pattern: /kol_kod3.kd3$/, priority: 51 },
+    // 不明なlzhファイル
+    { pattern: /\.lzh$/i, priority: 99 },
   ];
 
   constructor() {
