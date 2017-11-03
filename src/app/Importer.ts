@@ -17,6 +17,11 @@ import { Kab } from "./reader/JRDB/Kab";
 import { Kyg } from "./reader/JRDB/Kyg";
 import { Kyh } from "./reader/JRDB/Kyh";
 import { Kyi } from "./reader/JRDB/Kyi";
+import { Ot } from "./reader/JRDB/Ot";
+import { Ou } from "./reader/JRDB/Ou";
+import { Ov } from "./reader/JRDB/Ov";
+import { Ow } from "./reader/JRDB/Ow";
+import { Oz } from "./reader/JRDB/Oz";
 import { Sec } from "./reader/JRDB/Sec";
 import { Sed } from "./reader/JRDB/Sed";
 import { Skb } from "./reader/JRDB/Skb";
@@ -36,8 +41,8 @@ import { KolKod2Kd3 } from "./reader/KOL/KD3/KolKod2Kd3";
 import { KolKod3Kd3 } from "./reader/KOL/KD3/KolKod3Kd3";
 import { KolKodKd3 } from "./reader/KOL/KD3/KolKodKd3";
 import { KolKyuKd3 } from "./reader/KOL/KD3/KolKyuKd3";
-import { KolOdsKd3 } from "./reader/KOL/KD3/KolOdsKd3";
 import { KolOds2Kd3 } from "./reader/KOL/KD3/KolOds2Kd3";
+import { KolOdsKd3 } from "./reader/KOL/KD3/KolOdsKd3";
 import { KolSei1Kd3 } from "./reader/KOL/KD3/KolSei1Kd3";
 import { KolSei2Kd3 } from "./reader/KOL/KD3/KolSei2Kd3";
 import { KolSei3Kd3 } from "./reader/KOL/KD3/KolSei3Kd3";
@@ -115,15 +120,16 @@ export class Importer {
       // KD3 予想オッズ２（馬単・３連複）
       { pattern: /kol_ods2\.kd3/, dataToImport: Container.get(KolOds2Kd3) },
       // JRDB 基準オッズデータ
-      // oz
+      { pattern: /oz\d+\.txt$/i, dataToImport: Container.get(Oz) },
       // JRDB ワイド基準オッズデータ
-      // ow
+      { pattern: /ow\d+\.txt$/i, dataToImport: Container.get(Ow) },
       // JRDB 馬単基準オッズデータ
-      // ou
+      { pattern: /ou\d+\.txt$/i, dataToImport: Container.get(Ou) },
       // JRDB 3連複基準オッズデータ
-      // ot
+      { pattern: /ot\d+\.txt$/i, dataToImport: Container.get(Ot) },
       // JRDB 3連単基準オッズデータ
-      // ov
+
+      { pattern: /ov\d+\.txt$/i, dataToImport: Container.get(Ov) },
       // KD3 競走成績レースデータ
       { pattern: /kol_sei1\.kd3/, dataToImport: Container.get(KolSei1Kd3) },
       // JRDB 成績レースデータ
