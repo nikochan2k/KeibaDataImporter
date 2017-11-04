@@ -33,7 +33,7 @@ export class KolShuKd3 extends DataToImport {
   }
 
   public async save(buffer: Buffer) {
-    let uma = new Uma();
+    const uma = new Uma();
     const bamei = readStr(buffer, 7, 34);
     if (this.tool.isEnglish(bamei)) {
       uma.EigoBamei = bamei;
@@ -53,7 +53,7 @@ export class KolShuKd3 extends DataToImport {
     uma.OmoKousetsu = $C.hyouka.toCodeFromKol(buffer, 134, 1);
     uma.DirtKousetsu = $C.hyouka.toCodeFromKol(buffer, 135, 1);
     uma.ShibouNen = readPositiveInt(buffer, 136, 4);
-    uma = await this.umaDao.saveUma(uma, true);
+    await this.umaDao.saveUma(uma, true);
   }
 
 }

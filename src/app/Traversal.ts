@@ -45,20 +45,20 @@ export class Traversal {
     // KD3種牡馬データ
     { pattern: /gsyu.*\.lzh$/i, priority: 7 },
     { pattern: /kol_syu.kd3$/, priority: 8 },
-    // KD3 出馬表＋馬（１日）
-    { pattern: /hb.*\.lzh$/i, priority: 9 },
-    // KD3 日曜重賞付出馬表＋馬（１日）
-    { pattern: /hz.*\.lzh$/i, priority: 10 },
-    // KD3競走馬データ
-    { pattern: /kol_uma.kd3$/, priority: 11 },
-    // JRDB馬基本データ
-    { pattern: /ukc.*\.txt$/i, priority: 12 },
     // KD3 3代血統図
-    { pattern: /fket.*\.lzh$/i, priority: 13 },
-    { pattern: /kol_ket.kd3$/, priority: 14 },
+    { pattern: /fket.*\.lzh$/i, priority: 9 },
+    { pattern: /kol_ket.kd3$/, priority: 10 },
     // KD3 5代血統図
-    { pattern: /fket5.*\.lzh$/i, priority: 15 },
-    { pattern: /kol_ket5.kd3$/, priority: 16 },
+    { pattern: /fket5.*\.lzh$/i, priority: 11 },
+    { pattern: /kol_ket5.kd3$/, priority: 12 },
+    // KD3 出馬表＋馬（１日）
+    { pattern: /hb.*\.lzh$/i, priority: 13 },
+    // KD3 日曜重賞付出馬表＋馬（１日）
+    { pattern: /hz.*\.lzh$/i, priority: 14 },
+    // KD3競走馬データ
+    { pattern: /kol_uma.kd3$/, priority: 15 },
+    // JRDB馬基本データ
+    { pattern: /ukc.*\.txt$/i, priority: 16 },
     // KD3出走馬レースデータ
     { pattern: /kol_den1.kd3$/, priority: 17 },
     // JRDB開催データ

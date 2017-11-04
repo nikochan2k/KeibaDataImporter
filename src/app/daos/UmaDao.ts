@@ -24,7 +24,7 @@ export class UmaDao {
   protected async getUma(uma: Uma) {
     const qb = this.umaRepository
       .createQueryBuilder("u")
-      .where("0 = 0");
+      .where("0 = 1");
     if (uma.KolUmaCode) {
       qb.orWhere("u.KolUmaCode = :kolUmaCode")
         .setParameter("kolUmaCode", uma.KolUmaCode);
