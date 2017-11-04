@@ -28,7 +28,7 @@ export class KolOddsHaitouTool extends OddsHaitouTool {
     if (readStr(buffer, offset, length) !== "*") {
       odds = readDouble(buffer, offset, length, 0.1);
     } else {
-      odds = 10 ** length;
+      odds = 10 ** (length - 2);
     }
     return odds;
   }
