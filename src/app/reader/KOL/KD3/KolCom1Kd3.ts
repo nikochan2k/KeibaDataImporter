@@ -18,14 +18,13 @@ export class KolCom1Kd3 extends DataToImport {
 
   public async save(buffer: Buffer) {
     const info = await this.kolShussoubaTool.getShussoubaInfo(buffer, 70);
-    if (!info) {
+    if (!info || !info.shussouba) {
       return;
     }
     const shussouba = info.shussouba;
     const kishuKyuushaComment = readStr(buffer, 91, 960);
     const jisouhenoMemo = readStr(buffer, 1051, 960);
     if (!kishuKyuushaComment && !jisouhenoMemo) {
-      this.logger.warn("騎手調教コメントも次走へのメモもありません: " + shussouba.Id);
       return;
     }
     const updateSet: any = {};

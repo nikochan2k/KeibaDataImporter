@@ -1,5 +1,4 @@
 import { crc16 } from "crc";
-import { Logger } from "log4js";
 import { Inject, Service } from "typedi";
 import { EntityManager } from "typeorm";
 import { OrmManager } from "typeorm-typedi-extensions";
@@ -12,7 +11,6 @@ import { Choukyou } from "../../entities/Choukyou";
 import { ChoukyouTime } from "../../entities/ChoukyouTime";
 import { JinmeiKubun } from "../../entities/Jinmei";
 import { Uma } from "../../entities/Uma";
-import { getLogger } from "../../LogUtil";
 import {
   readInt,
   readPositiveInt,
@@ -46,8 +44,6 @@ export class KolChoukyouTool {
     { f: 1, offset: 63 }
   ];
 
-  private logger: Logger;
-
   @OrmManager()
   private entityManager: EntityManager;
 
@@ -62,10 +58,6 @@ export class KolChoukyouTool {
 
   @Inject()
   private choukyouDao: ChoukyouDao;
-
-  constructor() {
-    this.logger = getLogger(this);
-  }
 
   public async saveShussoubaChoukyou(sc: ShussoubaChoukyou) {
     this.choukyouDao.save(sc);

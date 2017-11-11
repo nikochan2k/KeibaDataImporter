@@ -54,10 +54,9 @@ export abstract class KaisaiTool {
   }
 
   protected generateKaisaiKey(info: KaisaiInfo) {
-    if (!info.kaiji || !info.nichiji) {
-      return null;
-    }
-    return this.generateKaisaiKeyWith(info.nen, info.kaiji, info.nichiji);
+    const kaiji = info.kaiji || 0;
+    const nichiji = info.nichiji || 0;
+    return this.generateKaisaiKeyWith(info.nen, kaiji, nichiji);
   }
 
   public getKaisaiId(buffer: Buffer) {
