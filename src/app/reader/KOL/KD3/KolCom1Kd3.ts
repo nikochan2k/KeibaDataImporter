@@ -1,13 +1,23 @@
 import { Inject, Service } from "typedi";
 import { DataToImport } from "../../DataToImport";
-import { Shussouba } from "../../../entities/Shussouba";
+import { EntityManager } from "typeorm";
+import { OrmManager } from "typeorm-typedi-extensions";
+import { ShussoubaSeiseki } from "../../../entities/ShussoubaSeiseki";
+import { Bridge } from "../../Bridge";
+import { Tool } from "../../Tool";
 import {
-  readStr,
+  readStr
 } from "../../Reader";
 import { KolShussoubaTool } from "../KolShussoubaTool";
 
 @Service()
 export class KolCom1Kd3 extends DataToImport {
+
+  @OrmManager()
+  protected entityManager: EntityManager;
+
+  @Inject()
+  private tool: Tool;
 
   @Inject()
   private kolShussoubaTool: KolShussoubaTool;
@@ -16,31 +26,16 @@ export class KolCom1Kd3 extends DataToImport {
     return 3010;
   }
 
-  public async save(buffer: Buffer) {
-    const info = await this.kolShussoubaTool.getShussoubaInfo(buffer, 70);
-    if (!info || !info.shussouba) {
+  public async save(buffer: Buffer, bridge: Bridge) {
+    const rs = this.kolShussoubaTool.getRaceShussoubaId(buffer, 70);
+    const asIs = await this.entityManager.findOneById(ShussoubaSeiseki, rs.shussoubaId);
+    if (!asIs) {
       return;
     }
-    const shussouba = info.shussouba;
-    const kishuKyuushaComment = readStr(buffer, 91, 960);
-    const jisouhenoMemo = readStr(buffer, 1051, 960);
-    if (!kishuKyuushaComment && !jisouhenoMemo) {
-      return;
-    }
-    const updateSet: any = {};
-    if (!shussouba.KishuKyuushaComment && kishuKyuushaComment) {
-      updateSet.KishuChoukyouComment = kishuKyuushaComment;
-    }
-    if (!shussouba.JisouhenoMemo && jisouhenoMemo) {
-      updateSet.JisouhenoMemo = jisouhenoMemo;
-    }
-    if (0 < Object.keys(updateSet).length) {
-      await this.entityManager
-        .createQueryBuilder()
-        .update(Shussouba, updateSet)
-        .where("Id = :id")
-        .setParameter("id", shussouba.Id)
-        .execute();
-    }
+    const toBe = new ShussoubaSeiseki();
+    toBe.Id = asIs.Id;
+    toBe.KishuKyuushaComment = readStr(buffer, 91, 960);
+    toBe.JisouhenoMemo = readStr(buffer, 1051, 960);
+    await this.tool.saveOrUpdate(ShussoubaSeiseki, asIs, toBe);
   }
 }

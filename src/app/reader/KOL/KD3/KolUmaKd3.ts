@@ -299,6 +299,7 @@ export class KolUmaKd3 extends DataToImport {
 
     const shussouba = await this.tool.saveOrUpdate(Shussouba, asIs, toBe);
     await this.kolTool.saveBanushi(buffer, 10, shussouba.Id);
+    return shussouba;
   }
 
   protected async saveShussoubaJoutai(buffer: Buffer, shussouba: Shussouba) {

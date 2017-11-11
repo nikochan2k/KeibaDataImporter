@@ -61,14 +61,6 @@ export class Shussouba {
   @Column("varchar", { length: 90, nullable: true })
   public KyuuyouRiyuu?: string;
 
-  /* KOL 騎手厩舎コメント／次走へのメモ */
-
-  @Column("text", { nullable: true })
-  public KishuKyuushaComment: string;
-
-  @Column("text", { nullable: true })
-  public JisouhenoMemo: string;
-
 
   @Column("int", { nullable: true })
   public KolNengappi: number;

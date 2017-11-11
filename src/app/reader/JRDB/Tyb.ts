@@ -6,7 +6,6 @@ import { JrdbShussoubaTool } from "./JrdbShussoubaTool";
 import * as $C from "../../converters/Common";
 import * as $S from "../../converters/Shussouba";
 import * as $SY from "../../converters/ShussoubaYosou";
-import { Shussouba } from "../../entities/Shussouba";
 import { ShussoubaSeiseki } from "../../entities/ShussoubaSeiseki";
 import { ShussoubaYosou } from "../../entities/ShussoubaYosou";
 import { Bridge } from "../Bridge";
@@ -75,7 +74,7 @@ export class Tyb extends DataToImport {
   }
 
   protected async saveShussoubaSeiseki(buffer: Buffer, shussoubaId: number) {
-    const asIs = await this.entityManager.findOneById(Shussouba, shussoubaId);
+    const asIs = await this.entityManager.findOneById(ShussoubaSeiseki, shussoubaId);
 
     const toBe = new ShussoubaSeiseki();
     toBe.Id = shussoubaId;
