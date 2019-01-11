@@ -26,7 +26,7 @@ export class Srb extends Sr$ {
     toBe.PaceUpNokoriFalon = readPositiveInt(buffer, 318, 2, 200);
     toBe.RaceComment = readStr(buffer, 342, 500);
 
-    const asIs = await this.entityManager.findOneById(RaceSeiseki, toBe.Id);
+    const asIs = await this.entityManager.findOne(RaceSeiseki, toBe.Id);
 
     await this.tool.saveOrUpdate(RaceSeiseki, asIs, toBe);
   }

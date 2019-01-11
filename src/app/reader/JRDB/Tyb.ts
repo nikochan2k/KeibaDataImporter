@@ -40,7 +40,7 @@ export class Tyb extends DataToImport {
   }
 
   protected async saveShussoubaYosou(buffer: Buffer, shussoubaId: number) {
-    const asIs = await this.entityManager.findOneById(ShussoubaYosou, shussoubaId);
+    const asIs = await this.entityManager.findOne(ShussoubaYosou, shussoubaId);
 
     const toBe = new ShussoubaYosou();
     toBe.Id = shussoubaId;
@@ -74,7 +74,7 @@ export class Tyb extends DataToImport {
   }
 
   protected async saveShussoubaSeiseki(buffer: Buffer, shussoubaId: number) {
-    const asIs = await this.entityManager.findOneById(ShussoubaSeiseki, shussoubaId);
+    const asIs = await this.entityManager.findOne(ShussoubaSeiseki, shussoubaId);
 
     const toBe = new ShussoubaSeiseki();
     toBe.Id = shussoubaId;

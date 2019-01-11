@@ -78,7 +78,7 @@ export abstract class KaisaiTool {
 
   public getKaisaiWithId(buffer: Buffer) {
     const id = this.getKaisaiId(buffer);
-    return this.entityManager.findOneById(Kaisai, id);
+    return this.entityManager.findOne(Kaisai, id);
   }
 
   public getKaisaiWithKey(buffer: Buffer) {

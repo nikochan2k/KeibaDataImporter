@@ -13,17 +13,17 @@ export class ChoukyouDao {
   @Inject()
   private tool: Tool;
 
-  public findOneById(id: number) {
+  public findOne(id: number) {
     /* tslint:disable:triple-equals */
     if (id == null) {
       return null;
     }
     /* tslint:enable:triple-equals */
-    return this.repository.findOneById(id);
+    return this.repository.findOne(id);
   }
 
   public async save(toBe: ShussoubaChoukyou) {
-    const asIs = await this.findOneById(toBe.Id);
+    const asIs = await this.findOne(toBe.Id);
     return await this.tool.saveOrUpdate(ShussoubaChoukyou, asIs, toBe);
   }
 

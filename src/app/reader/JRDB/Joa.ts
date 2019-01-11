@@ -9,7 +9,7 @@ import { DataToImport } from "../DataToImport";
 import { readDouble, readInt } from "../Reader";
 import { Tool } from "../Tool";
 
-export abstract class Joa extends DataToImport {
+export class Joa extends DataToImport {
 
   @OrmManager()
   protected entityManager: EntityManager;
@@ -20,9 +20,13 @@ export abstract class Joa extends DataToImport {
   @Inject()
   protected jrdbShussoubaTool: JrdbShussoubaTool;
 
+  protected getBufferLength() {
+    return 116;
+  }
+
   public async save(buffer: Buffer, bridge: Bridge) {
     const rsId = this.jrdbShussoubaTool.getRaceShussoubaId(buffer, 8);
-    const asIs = await this.entityManager.findOneById(ShussoubaYosou, rsId.shussoubaId);
+    const asIs = await this.entityManager.findOne(ShussoubaYosou, rsId.shussoubaId);
 
     const toBe = new ShussoubaYosou();
     toBe.Id = rsId.shussoubaId;

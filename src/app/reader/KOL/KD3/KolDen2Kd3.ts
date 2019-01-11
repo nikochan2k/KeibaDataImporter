@@ -116,7 +116,7 @@ export class KolDen2Kd3 extends DataToImport {
     toBe.Rating = readDouble(buffer, 739, 3, 0.1);
     toBe.Kyakushitsu = bridge.yosouKyakushitsuMap.get(toBe.Id);
 
-    const asIs = await this.entityManager.findOneById(ShussoubaYosou, shussouba.Id);
+    const asIs = await this.entityManager.findOne(ShussoubaYosou, shussouba.Id);
 
     return await this.tool.saveOrUpdate(ShussoubaYosou, asIs, toBe);
   }

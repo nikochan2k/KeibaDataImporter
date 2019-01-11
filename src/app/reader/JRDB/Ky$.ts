@@ -148,7 +148,7 @@ export abstract class Ky$ extends DataToImport {
     toBe.Id = shussouba.Id;
     this.setShussoubaYosou(buffer, toBe);
 
-    const asIs = await this.entityManager.findOneById(ShussoubaYosou, shussouba.Id);
+    const asIs = await this.entityManager.findOne(ShussoubaYosou, shussouba.Id);
     await this.tool.saveOrUpdate(ShussoubaYosou, asIs, toBe);
   }
 

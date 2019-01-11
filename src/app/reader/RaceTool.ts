@@ -63,7 +63,7 @@ export abstract class RaceTool {
     if (!id) {
       return null;
     }
-    return this.entityManager.findOneById(Race, id);
+    return this.entityManager.findOne(Race, id);
   }
 
   public createRace(buffer: Buffer, kaisaiId: number) {

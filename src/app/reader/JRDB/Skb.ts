@@ -38,7 +38,7 @@ export class Skb extends DataToImport {
     toBe.BaguSonotaComment = readStr(buffer, 193, 40);
     toBe.RaceComment = readStr(buffer, 233, 40);
 
-    const asIs = await this.entityManager.findOneById(ShussoubaHyouka, id);
+    const asIs = await this.entityManager.findOne(ShussoubaHyouka, id);
     await this.tool.saveOrUpdate(ShussoubaHyouka, asIs, toBe);
   }
 

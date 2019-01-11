@@ -48,7 +48,7 @@ export abstract class Ka$ extends DataToImport {
     }
     this.setKaisaiYosou(buffer, toBe);
 
-    const asIs = await this.entityManager.findOneById(KaisaiYosou, toBe.Id);
+    const asIs = await this.entityManager.findOne(KaisaiYosou, toBe.Id);
     await this.tool.saveOrUpdate(KaisaiYosou, asIs, toBe);
   }
 

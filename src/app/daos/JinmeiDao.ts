@@ -9,13 +9,13 @@ export class JinmeiDao {
   @OrmRepository(Jinmei)
   private repository: Repository<Jinmei>;
 
-  public findOneById(id: number) {
+  public findOne(id: number) {
     /* tslint:disable:triple-equals */
     if (id == null) {
       return null;
     }
     /* tslint:enable:triple-equals */
-    return this.repository.findOneById(id);
+    return this.repository.findOne(id);
   }
 
   public async save(kubun: JinmeiKubun, meishou: string) {

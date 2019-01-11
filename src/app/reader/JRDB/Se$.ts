@@ -47,7 +47,7 @@ export abstract class Se$ extends DataToImport {
   public async save(buffer: Buffer) {
     const rsId = this.jrdbShussoubaTool.getRaceShussoubaId(buffer, 8);
 
-    const raceSeiseki = await this.entityManager.findOneById(RaceSeiseki, rsId.raceId);
+    const raceSeiseki = await this.entityManager.findOne(RaceSeiseki, rsId.raceId);
     if (raceSeiseki && raceSeiseki.Jrdb) {
       // 既に成績データが格納されている場合
       return;
@@ -80,7 +80,7 @@ export abstract class Se$ extends DataToImport {
     const toBe = new ShussoubaSeiseki();
     toBe.Id = shussoubaId;
     this.setShussoubaSeiseki(buffer, toBe);
-    const asIs = await this.entityManager.findOneById(ShussoubaSeiseki, toBe.Id);
+    const asIs = await this.entityManager.findOne(ShussoubaSeiseki, toBe.Id);
     await this.tool.saveOrUpdate(ShussoubaSeiseki, asIs, toBe);
   }
 
@@ -112,7 +112,7 @@ export abstract class Se$ extends DataToImport {
     toBe.Id = shussoubaId;
     this.setShussoubaHyouka(buffer, toBe);
 
-    const asIs = await this.entityManager.findOneById(ShussoubaHyouka, shussoubaId);
+    const asIs = await this.entityManager.findOne(ShussoubaHyouka, shussoubaId);
     await this.tool.saveOrUpdate(ShussoubaHyouka, asIs, toBe);
   }
 

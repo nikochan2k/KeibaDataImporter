@@ -81,7 +81,7 @@ export abstract class ShussoubaTool {
     if (!rsId) {
       return null;
     }
-    return this.entityManager.findOneById(Shussouba, rsId.shussoubaId);
+    return this.entityManager.findOne(Shussouba, rsId.shussoubaId);
   }
 
   public createShussouba(buffer: Buffer, umabanOffset: number) {
@@ -102,13 +102,13 @@ export abstract class ShussoubaTool {
       return null;
     }
 
-    const race = await this.entityManager.findOneById(Race, rsId.raceId);
+    const race = await this.entityManager.findOne(Race, rsId.raceId);
     if (!race) {
       return null;
     }
 
     const id = rsId.raceId * (2 ** 6) + rsId.umaban;
-    const shussouba = await this.entityManager.findOneById(Shussouba, id);
+    const shussouba = await this.entityManager.findOne(Shussouba, id);
     return { race: race, shussouba: shussouba };
   }
 
@@ -120,7 +120,7 @@ export abstract class ShussoubaTool {
     toBe.Kubun = kubun;
     toBe.Code = code;
 
-    const asIs = await this.entityManager.findOneById(ShussoubaJoutai, id);
+    const asIs = await this.entityManager.findOne(ShussoubaJoutai, id);
     if (asIs) {
       return;
     }

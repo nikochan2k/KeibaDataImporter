@@ -28,7 +28,7 @@ export class KolCom1Kd3 extends DataToImport {
 
   public async save(buffer: Buffer, bridge: Bridge) {
     const rs = this.kolShussoubaTool.getRaceShussoubaId(buffer, 70);
-    const asIs = await this.entityManager.findOneById(ShussoubaSeiseki, rs.shussoubaId);
+    const asIs = await this.entityManager.findOne(ShussoubaSeiseki, rs.shussoubaId);
     if (!asIs) {
       return;
     }

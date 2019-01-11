@@ -58,7 +58,7 @@ export abstract class OddsHaitouTool {
     toBe.Id = this.calculateOddsHaitouId(toBe);
     const asIs = await this.entityManager
       .getRepository(OddsHaitou)
-      .findOneById(toBe.Id);
+      .findOne(toBe.Id);
     if (asIs) {
       toBe = await this.tool.saveOrUpdate(OddsHaitou, toBe, asIs);
     } else {
