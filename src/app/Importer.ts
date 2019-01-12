@@ -184,7 +184,7 @@ export class Importer {
       try {
         fd = fs.openSync(dataFile, "r");
         if (this.logger.isLevelEnabled("debug")) {
-          this.logger.debug('"' + entry.basename + '"を取り込んでいます');
+          this.logger.info('"' + entry.basename + '"を取り込んでいます');
         }
         await dataToImport.readAll(fd, bridge);
       } catch (e) {
