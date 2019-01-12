@@ -40,7 +40,7 @@ function normalize(str: string) {
 }
 
 export function readRaw(buffer: Buffer, offset: number, length: number) {
-  const chunk = new Buffer(length);
+  const chunk = Buffer.alloc(length);
   buffer.copy(chunk, 0, offset, offset + length);
   const raw = iconv.decode(chunk, "Windows932");
   return raw;

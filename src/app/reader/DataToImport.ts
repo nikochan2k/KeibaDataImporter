@@ -40,12 +40,12 @@ export abstract class DataToImport {
 
   protected readLine(fd: number, length: number): Buffer {
     if (0 < length) {
-      const buf = new Buffer(length);
+      const buf = Buffer.alloc(length);
       const size = fs.readSync(fd, buf, 0, length, null);
       return size === 0 ? null : buf;
     } else {
       if (!this.buf) {
-        this.buf = new Buffer(65536);
+        this.buf = Buffer.alloc(65536);
         this.bufBegin = 0;
         this.bufEnd = fs.readSync(fd, this.buf, 0, this.buf.length, null);
       }
@@ -59,7 +59,7 @@ export abstract class DataToImport {
         }
         if (this.bufEnd <= index) { // 最後まできたら
           const temp = this.buf;
-          this.buf = new Buffer(this.buf.length);
+          this.buf = Buffer.alloc(this.buf.length);
           const offset = temp.copy(this.buf, 0, this.bufBegin, this.bufEnd);
           const length = this.buf.length - offset;
           this.bufEnd = fs.readSync(fd, this.buf, offset, length, null) + offset;
