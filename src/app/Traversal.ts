@@ -1,4 +1,3 @@
-import { execSync } from "child_process";
 import * as fs from "fs";
 import * as glob from "glob";
 import { Logger } from "log4js";
@@ -10,6 +9,8 @@ import * as tmp from "tmp";
 import { Inject, Service } from "typedi";
 import { Entries, Importer } from "./Importer";
 import { getLogger } from "./LogUtil";
+import * as ioutil from "./util/IOUtil";
+import { LhaReader } from "./util/LHA";
 
 interface ImportFile {
   key: number;
@@ -211,7 +212,7 @@ export class Traversal {
       const filepath = importFile.path;
       const basename = importFile.basename;
       if (this.logger.isLevelEnabled("info")) {
-        this.logger.info('"' + basename + '"を取り込んでいます');
+        this.logger.info('"' + basename + '"を解凍しています。');
       }
       if (/\.lzh$/i.test(basename)) {
         await this.uncompressLzhFile(importFile.path);
@@ -229,8 +230,16 @@ export class Traversal {
 
   protected async uncompressLzhFile(lzhFile: string) {
     const dataDir = tmp.dirSync();
-    const cmd = 'lha xw="' + dataDir.name + '" "' + lzhFile + '"';
-    execSync(cmd);
+    const buf = fs.readFileSync(lzhFile);
+    const view = ioutil.toUint8Array(buf);
+    const lhaReader = new LhaReader(view);
+    for (const key in lhaReader.entries) {
+      const header = lhaReader.entries[key];
+      const bytes = lhaReader.extractSync(key);
+      const buffer = ioutil.toBuffer(bytes);
+      const filepath = path.join(dataDir.name, header.filename);
+      fs.writeFileSync(filepath, buffer);
+    }
     await this.traverseDataDir(dataDir.name);
   }
 

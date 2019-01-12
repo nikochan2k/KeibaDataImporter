@@ -14,7 +14,7 @@ if (3 <= process.argv.length) {
 useContainer(Container);
 createConnection({
   type: "sqlite",
-  database: "test.sqlite",
+  database: "keiba.sqlite",
   entities: [
     __dirname + "/entities/*.js"
   ],
