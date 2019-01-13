@@ -3,7 +3,7 @@ import { Codes } from "./Codes";
 export const ippanTokubetsu = new Codes(
   [
     { code: 1, kol: "1", jrdb: "5", naiyou: "特別" },
-    { code: 2, kol: "2", naiyou: "準重賞" },
+    { code: 2, kol: "2", jrdb: "6", naiyou: "準重賞" },
     { code: 3, kol: "3", jrdb: /1|2|3|4/, naiyou: "重賞" },
     { code: 0, kol: "0", jrdb: /./, naiyou: "一般" },
   ]
@@ -26,6 +26,7 @@ export const grade = new Codes(
     { code: 1, kol: /0|3/, jrdb: "1", naiyou: "G1" },
     { code: 2, kol: /1|4/, jrdb: "2", naiyou: "G2" },
     { code: 3, kol: /2|5/, jrdb: "3", naiyou: "G3" },
+    { code: 4, jrdb: "6", naiyou: "L" },
   ]
 );
 
