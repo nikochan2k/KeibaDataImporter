@@ -101,7 +101,7 @@ export const basho = new Codes(
     { code: 73, kol: /亜国/, naiyou: "アルゼンチン", tanshuku: "亜国" },
     { code: 74, kol: /伯国/, naiyou: "ブラジル", tanshuku: "伯国" },
     { code: 75, kol: /新嘉坡/, naiyou: "シンガポール", tanshuku: "星国" },
-    { code: 76, kol: /瑞典/, naiyou: "スウェーデン", tanshuku: "瑞国" },
+    { code: 76, kol: /瑞典/, naiyou: "スウェーデン", tanshuku: "典国" },
     { code: 77, kol: /西班牙/, naiyou: "スペイン", tanshuku: "西国" },
     { code: 78, kol: /瑞西/, naiyou: "スイス", tanshuku: "スイス" },
     { code: 79, kol: /白耳義/, naiyou: "ベルギー", tanshuku: "白国" },

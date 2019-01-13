@@ -250,7 +250,7 @@ export const sanch = new Codes(
     { code: 81, kol: "081", jrdb: /豪|オーストラリア/, naiyou: "オーストラリア", tanshuku: "豪州" },
     { code: 85, kol: "085", jrdb: /亜|アルゼ/, naiyou: "アルゼンチン", tanshuku: "亜国" },
     { code: 86, kol: "086", jrdb: /白|ベルギー/, naiyou: "ベルギー", tanshuku: "白国" },
-    { code: 87, kol: "087", jrdb: /瑞|スウェ/, naiyou: "スウェーデン", tanshuku: "瑞国" },
+    { code: 87, kol: "087", jrdb: /瑞|典|スウェ/, naiyou: "スウェーデン", tanshuku: "典国" },
     { code: 114, kol: "114", jrdb: /比|フィリ/, naiyou: "フィリピン", tanshuku: "比国" },
     { code: 115, kol: /115|241/, jrdb: /星|新嘉|シンガ/, naiyou: "シンガポール", tanshuku: "星国" },
     { code: 104, kol: "104", jrdb: /伯|ブラジ/, naiyou: "ブラジル", tanshuku: "伯国" },
