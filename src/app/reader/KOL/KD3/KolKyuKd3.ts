@@ -1,10 +1,10 @@
 import { Inject, Service } from "typedi";
 import { EntityManager } from "typeorm";
 import { OrmManager } from "typeorm-typedi-extensions";
+import * as $CK from "../../../converters/Choukyoushi";
 import * as $C from "../../../converters/Common";
-import * as $K from "../../../converters/Kyuusha";
-import { KyuushaDao } from "../../../daos/KyuushaDao";
-import { Kyuusha } from "../../../entities/Kyuusha";
+import { ChoukyoushiDao } from "../../../daos/ChoukyoushiDao";
+import { Choukyoushi } from "../../../entities/Choukyoushi";
 import { DataToImport } from "../../DataToImport";
 import {
   readInt,
@@ -18,25 +18,25 @@ export class KolKyuKd3 extends DataToImport {
   protected entityManager: EntityManager;
 
   @Inject()
-  private kyuushaDao: KyuushaDao;
+  private choukyoushiDao: ChoukyoushiDao;
 
   protected getBufferLength() {
     return 1248;
   }
 
   public async save(buffer: Buffer) {
-    const kyuusha = new Kyuusha();
-    kyuusha.KolKyuushaCode = readInt(buffer, 0, 5);
-    kyuusha.Seinengappi = readInt(buffer, 93, 8);
-    kyuusha.HatsuMenkyoNen = readInt(buffer, 101, 4);
-    kyuusha.TouzaiBetsu = $C.touzaiBetsu.toCodeFromKol(buffer, 105, 1);
-    kyuusha.ShozokuBasho = $C.basho.toCodeFromKol(buffer, 106, 2);
-    kyuusha.RitsuHokuNanBetsu = $K.ritsuHokuNanBetsu.toCodeFromKol(buffer, 108, 1);
-    kyuusha.TourokuMasshouFlag = $C.masshouFlag.toCodeFromKol(buffer, 109, 1);
-    const kishuMei = readStr(buffer, 5, 32);
-    const tanshukuKishuMei = readStr(buffer, 37, 8);
+    const choukyoushi = new Choukyoushi();
+    choukyoushi.KolKyuushaCode = readInt(buffer, 0, 5);
+    choukyoushi.Seinengappi = readInt(buffer, 93, 8);
+    choukyoushi.HatsuMenkyoNen = readInt(buffer, 101, 4);
+    choukyoushi.TouzaiBetsu = $C.touzaiBetsu.toCodeFromKol(buffer, 105, 1);
+    choukyoushi.ShozokuBasho = $C.basho.toCodeFromKol(buffer, 106, 2);
+    choukyoushi.RitsuHokuNanBetsu = $CK.ritsuHokuNanBetsu.toCodeFromKol(buffer, 108, 1);
+    choukyoushi.TourokuMasshouFlag = $C.masshouFlag.toCodeFromKol(buffer, 109, 1);
+    const choukyoushiMei = readStr(buffer, 5, 32);
+    const tanshuku = readStr(buffer, 37, 8);
     const furigana = readStr(buffer, 45, 48);
-    await this.kyuushaDao.saveKyuusha(kyuusha, kishuMei, tanshukuKishuMei, furigana);
+    await this.choukyoushiDao.saveChoukyoushi(choukyoushi, choukyoushiMei, tanshuku, furigana);
   }
 
 }

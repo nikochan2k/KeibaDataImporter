@@ -5,14 +5,14 @@ import {
   PrimaryGeneratedColumn
 } from "typeorm";
 
-@Entity("KyuushaComment")
-@Index("IxKyuushaComment", (k: KyuushaComment) => [k.KyuushaId, k.CommentNyuuryokuNengappi], { unique: true })
-export class KyuushaComment {
+@Entity("ChoukyoushiComment")
+@Index("IxChoukyoushiComment", (k: ChoukyoushiComment) => [k.ChoukyoushiId, k.CommentNyuuryokuNengappi], { unique: true })
+export class ChoukyoushiComment {
   @PrimaryGeneratedColumn()
   public Id: number;
 
   @Column("mediumint")
-  public KyuushaId: number;
+  public ChoukyoushiId: number;
 
   @Column("int")
   public CommentNyuuryokuNengappi: number;

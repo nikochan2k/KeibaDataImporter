@@ -88,8 +88,8 @@ export class KolSei2Kd3 extends DataToImport {
       return null;
     }
     toBe.Wakuban = readPositiveInt(buffer, 22, 1);
-    const kyuusha = await this.kolTool.saveKyuusha(buffer, 217);
-    const umaInfo = await this.kolTool.saveKyousouba(buffer, 27, kyuusha);
+    const choukyoushi = await this.kolTool.saveChoukyoushi(buffer, 217);
+    const umaInfo = await this.kolTool.saveKyousouba(buffer, 27, choukyoushi);
     info.uma = umaInfo.Uma;
     toBe.KyousoubaId = umaInfo.Kyousouba.Id;
     const nenrei = readPositiveInt(buffer, 67, 2);
@@ -119,7 +119,7 @@ export class KolSei2Kd3 extends DataToImport {
     toBe.KishuId = kishu.Id;
     toBe.KishuTouzaiBetsu = $C.touzaiBetsu.toCodeFromKol(buffer, 207, 1);
     toBe.KishuShozokuBasho = $C.basho.toCodeFromKol(buffer, 208, 2);
-    toBe.KishuShozokuKyuushaId = await this.kolTool.saveShozokuKyuusha(buffer, 210);
+    toBe.KishuShozokuChoukyoushiId = await this.kolTool.saveShozokuChoukyoushi(buffer, 210);
     toBe.MinaraiKubun = $K.minaraiKubun.toCodeFromKol(buffer, 215, 1);
     toBe.Norikawari = $S.norikawari.toCodeFromKol(buffer, 216, 1);
     toBe.KakuteiChakujun = this.tool.getChakujun(buffer, 274, 2);

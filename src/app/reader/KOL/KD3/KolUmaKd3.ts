@@ -8,9 +8,9 @@ import { Bagu } from "../../../converters/ShussoubaJoutai";
 import * as $SY from "../../../converters/ShussoubaYosou";
 import * as $U from "../../../converters/Uma";
 import { UmaDao } from "../../../daos/UmaDao";
+import { Choukyoushi } from "../../../entities/Choukyoushi";
 import { Kaisai } from "../../../entities/Kaisai";
 import { Kyousouba } from "../../../entities/Kyousouba";
-import { Kyuusha } from "../../../entities/Kyuusha";
 import { Race } from "../../../entities/Race";
 import { RaceSeiseki } from "../../../entities/RaceSeiseki";
 import { Shussouba } from "../../../entities/Shussouba";
@@ -38,7 +38,6 @@ import { KolRaceTool } from "../KolRaceTool";
 import { KolShussoubaTool } from "../KolShussoubaTool";
 import { KolTool } from "../KolTool";
 import { KolUmaTool } from "../KolUmaTool";
-
 
 @Service()
 export class KolUmaKd3 extends DataToImport {
@@ -157,9 +156,9 @@ export class KolUmaKd3 extends DataToImport {
     kyousouba.UmaId = uma.Id;
     kyousouba.Seibetsu = seibetsu;
     kyousouba.UmaKigou = $U.umaKigou.toCodeFromKol(buffer, 92, 2);
-    const kyuusha = await this.kolTool.saveKyuusha(buffer, 488);
-    kyousouba.KyuushaId = kyuusha && kyuusha.Id;
-    kyousouba.KoueiGaikokuKyuushaMei = readStr(buffer, 536, 8);
+    const choukyoushi = await this.kolTool.saveChoukyoushi(buffer, 488);
+    kyousouba.ChoukyoushiId = choukyoushi && choukyoushi.Id;
+    kyousouba.KoueiGaikokuChoukyoushiMei = readStr(buffer, 536, 8);
     kyousouba = await this.umaDao.saveKyousouba(kyousouba);
 
     return { Kyousouba: kyousouba, Uma: uma };
@@ -290,8 +289,8 @@ export class KolUmaKd3 extends DataToImport {
     toBe.RaceId = race.Id;
     toBe.Wakuban = readPositiveInt(buffer, 0, 1);
     toBe.Umaban = umaban;
-    const kyuusha = await this.kolTool.saveKyuusha(buffer, 158);
-    kyousouba = await this.saveKyousoubaOfRace(buffer, kyousouba, kyuusha);
+    const choukyoushi = await this.kolTool.saveChoukyoushi(buffer, 158);
+    kyousouba = await this.saveKyousoubaOfRace(buffer, kyousouba, choukyoushi);
     toBe.KyousoubaId = kyousouba.Id;
     const nenrei = readPositiveInt(buffer, 8, 2);
     toBe.Nenrei = this.tool.normalizeNenrei(nenrei, nen);
@@ -378,13 +377,13 @@ export class KolUmaKd3 extends DataToImport {
     await this.kolChoukyouTool.saveChoukyou(buffer, 248, uma.Id, tanshukuKishuMei);
   }
 
-  public async saveKyousoubaOfRace(buffer: Buffer, k: Kyousouba, kyuusha: Kyuusha) {
+  public async saveKyousoubaOfRace(buffer: Buffer, k: Kyousouba, choukyoushi: Choukyoushi) {
     const seibetsu = $U.seibetsu.toCodeFromKol(buffer, 7, 1);
     let kyousouba = new Kyousouba();
     kyousouba.UmaId = k.UmaId;
     kyousouba.Seibetsu = seibetsu || k.Seibetsu;
     kyousouba.UmaKigou = $U.umaKigou.toCodeFromKol(buffer, 5, 2) || k.UmaKigou;
-    kyousouba.KyuushaId = kyuusha && kyuusha.Id || k.KyuushaId;
+    kyousouba.ChoukyoushiId = choukyoushi && choukyoushi.Id || k.ChoukyoushiId;
     kyousouba = await this.umaDao.saveKyousouba(kyousouba);
     return kyousouba;
   }

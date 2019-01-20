@@ -5,10 +5,10 @@ import {
   PrimaryGeneratedColumn
 } from "typeorm";
 
-@Entity("Kyuusha")
-@Index("IxKyuusha1", (k: Kyuusha) => [k.KolKyuushaCode], { unique: true })
-@Index("IxKyuusha2", (k: Kyuusha) => [k.JrdbKyuushaCode], { unique: true })
-export class Kyuusha {
+@Entity("Choukyoushi")
+@Index("IxChoukyoushi1", (c: Choukyoushi) => [c.KolKyuushaCode], { unique: true })
+@Index("IxChoukyoushi2", (c: Choukyoushi) => [c.JrdbChoukyoushiCode], { unique: true })
+export class Choukyoushi {
   @PrimaryGeneratedColumn()
   public Id: number;
 
@@ -16,7 +16,7 @@ export class Kyuusha {
   public KolKyuushaCode?: number;
 
   @Column("mediumint", { nullable: true })
-  public JrdbKyuushaCode?: number;
+  public JrdbChoukyoushiCode?: number;
 
   @Column("int", { nullable: true })
   public Seinengappi?: number;

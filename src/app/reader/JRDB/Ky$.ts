@@ -1,18 +1,18 @@
 import { Inject } from "typedi";
 import { JrdbOddsHaitouTool } from "./JrdbOddsHaitouTool";
 import { JrdbShussoubaTool } from "./JrdbShussoubaTool";
+import * as $CK from "../../converters/Choukyoushi";
 import * as $C from "../../converters/Common";
-import * as $KY from "../../converters/Kyuusha";
 import * as $R from "../../converters/Race";
 import * as $S from "../../converters/Shussouba";
 import { Bagu } from "../../converters/ShussoubaJoutai";
 import * as $SY from "../../converters/ShussoubaYosou";
 import * as $U from "../../converters/Uma";
 import { BanushiDao } from "../../daos/BanushiDao";
-import { KyuushaDao } from "../../daos/KyuushaDao";
+import { ChoukyoushiDao } from "../../daos/ChoukyoushiDao";
 import { UmaDao } from "../../daos/UmaDao";
+import { Choukyoushi } from "../../entities/Choukyoushi";
 import { Kyousouba } from "../../entities/Kyousouba";
-import { Kyuusha } from "../../entities/Kyuusha";
 import { MeishouKubun } from "../../entities/Shoyuu";
 import { Shussouba } from "../../entities/Shussouba";
 import { Kubun } from "../../entities/ShussoubaJoutai";
@@ -41,7 +41,7 @@ export abstract class Ky$ extends DataToImport {
   protected jrdbOddsHaitouTool: JrdbOddsHaitouTool;
 
   @Inject()
-  private kyuushaDao: KyuushaDao;
+  private choukyoushiDao: ChoukyoushiDao;
 
   @Inject()
   private umaDao: UmaDao;
@@ -80,12 +80,12 @@ export abstract class Ky$ extends DataToImport {
     return shussouba;
   }
 
-  protected saveKyuusha(buffer: Buffer) {
-    const kyuusha = new Kyuusha();
-    kyuusha.JrdbKyuushaCode = readPositiveInt(buffer, 340, 5);
-    const kyuushaMei = readStrWithNoSpace(buffer, 187, 12);
-    kyuusha.TouzaiBetsu = $KY.touzaiBetsu.toCodeFromJrdb(buffer, 199, 4);
-    return this.kyuushaDao.saveKyuusha(kyuusha, kyuushaMei);
+  protected saveChoukyoushi(buffer: Buffer) {
+    const choukyoushi = new Choukyoushi();
+    choukyoushi.JrdbChoukyoushiCode = readPositiveInt(buffer, 340, 5);
+    const choukyoushiMei = readStrWithNoSpace(buffer, 187, 12);
+    choukyoushi.TouzaiBetsu = $CK.touzaiBetsu.toCodeFromJrdb(buffer, 199, 4);
+    return this.choukyoushiDao.saveChoukyoushi(choukyoushi, choukyoushiMei);
   }
 
   protected saveBanushi(buffer: Buffer, shussoubaId: number) {
@@ -113,8 +113,8 @@ export abstract class Ky$ extends DataToImport {
     kyousouba.UmaId = uma.Id;
     kyousouba.Seibetsu = seibetsu;
     kyousouba.UmaKigou = $U.umaKigou.toCodeFromJrdb(buffer, 446, 2);
-    const kyuusha = await this.saveKyuusha(buffer);
-    kyousouba.KyuushaId = kyuusha && kyuusha.Id;
+    const choukyoushi = await this.saveChoukyoushi(buffer);
+    kyousouba.ChoukyoushiId = choukyoushi && choukyoushi.Id;
     kyousouba = await this.umaDao.saveKyousouba(kyousouba);
     return kyousouba;
   }

@@ -1,0 +1,1 @@
+* JRDB、KOL、JRAVAN、JVDATAの優先度を決める

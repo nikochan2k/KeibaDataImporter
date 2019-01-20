@@ -57,17 +57,17 @@ export class UmaDao {
       qb.andWhere("k.UmaKigou = :umaKigou")
         .setParameter("umaKigou", kyousouba.UmaKigou);
     }
-    if (kyousouba.KyuushaId) {
-      qb.andWhere("k.KyuushaId = :kyuushaId")
-        .setParameter("kyuushaId", kyousouba.KyuushaId);
+    if (kyousouba.ChoukyoushiId) {
+      qb.andWhere("k.ChoukyoushiId = :choukyoushiId")
+        .setParameter("choukyoushiId", kyousouba.ChoukyoushiId);
     } else {
-      qb.andWhere("k.KyuushaId IS NULL");
+      qb.andWhere("k.ChoukyoushiId IS NULL");
     }
-    if (kyousouba.KoueiGaikokuKyuushaMei) {
-      qb.andWhere("k.KoueiGaikokuKyuushaMei = :koueiGaikokuKyuushaMei")
-        .setParameter("koueiGaikokuKyuushaMei", kyousouba.KoueiGaikokuKyuushaMei);
+    if (kyousouba.KoueiGaikokuChoukyoushiMei) {
+      qb.andWhere("k.KoueiGaikokuChoukyoushiMei = :koueiGaikokuChoukyoushiMei")
+        .setParameter("koueiGaikokuChoukyoushiMei", kyousouba.KoueiGaikokuChoukyoushiMei);
     } else {
-      qb.andWhere("k.KoueiGaikokuKyuushaMei IS NULL");
+      qb.andWhere("k.KoueiGaikokuChoukyoushiMei IS NULL");
     }
     return qb.getOne();
   }

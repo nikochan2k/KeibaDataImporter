@@ -79,8 +79,8 @@ export class KolDen2Kd3 extends DataToImport {
     }
 
     toBe.Wakuban = readPositiveInt(buffer, 22, 1);
-    const kyuusha = await this.kolTool.saveKyuusha(buffer, 206);
-    const umaInfo = await this.kolTool.saveKyousouba(buffer, 25, kyuusha);
+    const choukyoushi = await this.kolTool.saveChoukyoushi(buffer, 206);
+    const umaInfo = await this.kolTool.saveKyousouba(buffer, 25, choukyoushi);
     info.uma = umaInfo.Uma;
     toBe.KyousoubaId = umaInfo.Kyousouba.Id;
     const nenrei = readPositiveInt(buffer, 65, 2);
@@ -91,7 +91,7 @@ export class KolDen2Kd3 extends DataToImport {
     toBe.KishuId = kishu.Id;
     toBe.KishuTouzaiBetsu = $C.touzaiBetsu.toCodeFromKol(buffer, 196, 1);
     toBe.KishuShozokuBasho = $C.basho.toCodeFromKol(buffer, 197, 2);
-    toBe.KishuShozokuKyuushaId = await this.kolTool.saveShozokuKyuusha(buffer, 199);
+    toBe.KishuShozokuChoukyoushiId = await this.kolTool.saveShozokuChoukyoushi(buffer, 199);
     toBe.MinaraiKubun = $K.minaraiKubun.toCodeFromKol(buffer, 204, 1);
     toBe.Norikawari = $S.norikawari.toCodeFromKol(buffer, 205, 1);
     toBe.TorikeshiShubetsu = $S.torikeshiShubetsu.toCodeFromKol(buffer, 254, 1) || $S.torikeshiShubetsu.toCodeFromKol(buffer, 255, 1);

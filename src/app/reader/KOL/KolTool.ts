@@ -1,16 +1,16 @@
 import { Inject, Service } from "typedi";
+import * as $KY from "../../converters/Choukyoushi";
 import * as $C from "../../converters/Common";
-import * as $KY from "../../converters/Kyuusha";
 import * as $U from "../../converters/Uma";
 import { BanushiDao } from "../../daos/BanushiDao";
+import { ChoukyoushiDao } from "../../daos/ChoukyoushiDao";
 import { KishuDao } from "../../daos/KishuDao";
-import { KyuushaDao } from "../../daos/KyuushaDao";
 import { SeisanshaDao } from "../../daos/SeisanshaDao";
 import { UmaDao } from "../../daos/UmaDao";
-import { MeishouKubun } from "../../entities/Shoyuu";
+import { Choukyoushi } from "../../entities/Choukyoushi";
 import { Kishu } from "../../entities/Kishu";
 import { Kyousouba } from "../../entities/Kyousouba";
-import { Kyuusha } from "../../entities/Kyuusha";
+import { MeishouKubun } from "../../entities/Shoyuu";
 import { Uma } from "../../entities/Uma";
 import {
   readInt,
@@ -27,7 +27,7 @@ export class KolTool {
   private tool: Tool;
 
   @Inject()
-  private kyuushaDao: KyuushaDao;
+  private choukyoushiDao: ChoukyoushiDao;
 
   @Inject()
   private seisanshaDao: SeisanshaDao;
@@ -60,7 +60,7 @@ export class KolTool {
     }
   }
 
-  public async saveKyousouba(buffer: Buffer, offset: number, kyuusha: Kyuusha) {
+  public async saveKyousouba(buffer: Buffer, offset: number, choukyoushi: Choukyoushi) {
     const seibetsu = $U.seibetsu.toCodeFromKol(buffer, offset + 39, 1);
     let uma = new Uma();
     uma.KolUmaCode = readInt(buffer, offset, 7);
@@ -77,7 +77,7 @@ export class KolTool {
     kyousouba.UmaId = uma.Id;
     kyousouba.Seibetsu = seibetsu;
     kyousouba.UmaKigou = $U.umaKigou.toCodeFromKol(buffer, offset + 37, 2);
-    kyousouba.KyuushaId = kyuusha && kyuusha.Id;
+    kyousouba.ChoukyoushiId = choukyoushi && choukyoushi.Id;
     kyousouba = await this.umaDao.saveKyousouba(kyousouba);
     return { Kyousouba: kyousouba, Uma: uma };
   }
@@ -93,30 +93,30 @@ export class KolTool {
     }
   }
 
-  public async saveShozokuKyuusha(buffer: Buffer, offset: number) {
+  public async saveShozokuChoukyoushi(buffer: Buffer, offset: number) {
     const kolKyuushaCode = readPositiveInt(buffer, offset, 5);
     if (!kolKyuushaCode) {
       return null;
     }
-    let kyuusha = new Kyuusha();
-    kyuusha.KolKyuushaCode = kolKyuushaCode;
-    kyuusha = await this.kyuushaDao.saveKyuusha(kyuusha);
-    return kyuusha.Id;
+    let choukyoushi = new Choukyoushi();
+    choukyoushi.KolKyuushaCode = kolKyuushaCode;
+    choukyoushi = await this.choukyoushiDao.saveChoukyoushi(choukyoushi);
+    return choukyoushi.Id;
   }
 
-  public saveKyuusha(buffer: Buffer, offset: number) {
-    const kyuushaMei = readStrWithNoSpace(buffer, offset + 5, 32);
-    if (!kyuushaMei) {
+  public saveChoukyoushi(buffer: Buffer, offset: number) {
+    const choukyoushiMei = readStrWithNoSpace(buffer, offset + 5, 32);
+    if (!choukyoushiMei) {
       return null;
     }
-    const kyuusha = new Kyuusha();
+    const choukyoushi = new Choukyoushi();
     const kolKyuushaCode = readPositiveInt(buffer, offset, 5);
-    kyuusha.KolKyuushaCode = kolKyuushaCode;
-    const tanshukuKyuushaMei = readStrWithNoSpace(buffer, offset + 37, 8);
-    kyuusha.ShozokuBasho = $C.basho.toCodeFromKol(buffer, offset + 45, 2);
-    kyuusha.TouzaiBetsu = $KY.touzaiBetsu.toCodeFromKol(buffer, offset + 47, 1);
-    kyuusha.RitsuHokuNanBetsu = $KY.ritsuHokuNanBetsu.toCodeFromKol(buffer, offset + 47, 1);
-    return this.kyuushaDao.saveKyuusha(kyuusha, kyuushaMei, tanshukuKyuushaMei);
+    choukyoushi.KolKyuushaCode = kolKyuushaCode;
+    const tanshuku = readStrWithNoSpace(buffer, offset + 37, 8);
+    choukyoushi.ShozokuBasho = $C.basho.toCodeFromKol(buffer, offset + 45, 2);
+    choukyoushi.TouzaiBetsu = $KY.touzaiBetsu.toCodeFromKol(buffer, offset + 47, 1);
+    choukyoushi.RitsuHokuNanBetsu = $KY.ritsuHokuNanBetsu.toCodeFromKol(buffer, offset + 47, 1);
+    return this.choukyoushiDao.saveChoukyoushi(choukyoushi, choukyoushiMei, tanshuku);
   }
 
 }

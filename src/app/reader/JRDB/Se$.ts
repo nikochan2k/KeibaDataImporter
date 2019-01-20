@@ -5,9 +5,9 @@ import { JrdbShussoubaTool } from "./JrdbShussoubaTool";
 import * as $C from "../../converters/Common";
 import * as $R from "../../converters/Race";
 import * as $S from "../../converters/Shussouba";
+import { ChoukyoushiDao } from "../../daos/ChoukyoushiDao";
 import { JinmeiDao } from "../../daos/JinmeiDao";
 import { KishuDao } from "../../daos/KishuDao";
-import { KyuushaDao } from "../../daos/KyuushaDao";
 import { UmaDao } from "../../daos/UmaDao";
 import { RaceSeiseki } from "../../entities/RaceSeiseki";
 import { ShussoubaHyouka } from "../../entities/ShussoubaHyouka";
@@ -42,7 +42,7 @@ export abstract class Se$ extends DataToImport {
   protected umaDao: UmaDao;
 
   @Inject()
-  protected kyuushaDao: KyuushaDao;
+  protected choukyoushiDao: ChoukyoushiDao;
 
   public async save(buffer: Buffer) {
     const rsId = this.jrdbShussoubaTool.getRaceShussoubaId(buffer, 8);

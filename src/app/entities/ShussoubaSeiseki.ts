@@ -38,7 +38,7 @@ export class ShussoubaSeiseki {
   public KishuShozokuBasho?: number;
 
   @Column("mediumint", { nullable: true })
-  public KishuShozokuKyuushaId: number;
+  public KishuShozokuChoukyoushiId: number;
 
   @Column("tinyint", { nullable: true })
   public MinaraiKubun: number;
