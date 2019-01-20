@@ -36,8 +36,17 @@ export class Shussouba {
   @Column("mediumint", { nullable: true })
   public KishuId: number;
 
+  @Column("tinyint", { nullable: true })
+  public KishuTouzaiBetsu: number;
+
+  @Column("tinyint", { nullable: true })
+  public KishuShozokuBasho?: number;
+
   @Column("mediumint", { nullable: true })
-  public KishuRirekiId: number;
+  public KishuShozokuKyuushaId: number;
+
+  @Column("tinyint", { nullable: true })
+  public MinaraiKubun: number;
 
   @Column("smallint", { nullable: true })
   public Norikawari?: number;

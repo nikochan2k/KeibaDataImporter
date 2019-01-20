@@ -1,4 +1,6 @@
 import { Inject, Service } from "typedi";
+import * as $C from "../../../converters/Common";
+import * as $K from "../../../converters/Kishu";
 import * as $S from "../../../converters/Shussouba";
 import { Bagu } from "../../../converters/ShussoubaJoutai";
 import * as $SY from "../../../converters/ShussoubaYosou";
@@ -87,8 +89,10 @@ export class KolDen2Kd3 extends DataToImport {
     toBe.Kinryou = readDouble(buffer, 148, 3, 0.1);
     const kishu = await this.kolTool.saveKishu(buffer, 151);
     toBe.KishuId = kishu.Id;
-    const kishuRireki = await this.kolTool.saveKishuRireki(buffer, 196, kishu);
-    toBe.KishuRirekiId = kishuRireki.Id;
+    toBe.KishuTouzaiBetsu = $C.touzaiBetsu.toCodeFromKol(buffer, 196, 1);
+    toBe.KishuShozokuBasho = $C.basho.toCodeFromKol(buffer, 197, 2);
+    toBe.KishuShozokuKyuushaId = await this.kolTool.saveShozokuKyuusha(buffer, 199);
+    toBe.MinaraiKubun = $K.minaraiKubun.toCodeFromKol(buffer, 204, 1);
     toBe.Norikawari = $S.norikawari.toCodeFromKol(buffer, 205, 1);
     toBe.TorikeshiShubetsu = $S.torikeshiShubetsu.toCodeFromKol(buffer, 254, 1) || $S.torikeshiShubetsu.toCodeFromKol(buffer, 255, 1);
     toBe.KyuuyouRiyuu = readStr(buffer, 783, 60);

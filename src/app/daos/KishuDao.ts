@@ -4,7 +4,6 @@ import { OrmManager, OrmRepository } from "typeorm-typedi-extensions";
 import { JinmeiDao } from "./JinmeiDao";
 import { Kishu } from "../entities/Kishu";
 import { KishuMei } from "../entities/KishuMei";
-import { KishuRireki } from "../entities/KishuRireki";
 import { JinmeiKubun } from "../entities/Jinmei";
 import { Tool } from "../reader/Tool";
 
@@ -19,9 +18,6 @@ export class KishuDao {
 
   @OrmRepository(KishuMei)
   private kishuMeiRepository: Repository<KishuMei>;
-
-  @OrmRepository(KishuRireki)
-  private kishuRirekiRepository: Repository<KishuRireki>;
 
   @Inject()
   private jinmeiDao: JinmeiDao;
@@ -101,43 +97,6 @@ LIMIT
       kishuMei.JinmeiId = jinmei.Id;
       await this.kishuMeiRepository.save(kishuMei);
     }
-  }
-
-  protected async getKishuRireki(kishuRireki: KishuRireki) {
-    const qb = this.kishuRirekiRepository
-      .createQueryBuilder("kr")
-      .where("kr.KishuId = :kishuId")
-      .setParameter("kishuId", kishuRireki.KishuId)
-      .andWhere("kr.MinaraiKubun = :minaraiKubun")
-      .setParameter("minaraiKubun", kishuRireki.MinaraiKubun)
-      .andWhere("kr.tourokuMasshouFlag = :tourokuMasshouFlag")
-      .setParameter("tourokuMasshouFlag", kishuRireki.TourokuMasshouFlag);
-    /* tslint:disable:triple-equals */
-    if (kishuRireki.KishuShozokuBasho != null) {
-      qb.andWhere("kr.KishuShozokuBasho = :kishuShozokuBasho")
-        .setParameter("kishuShozokuBasho", kishuRireki.KishuShozokuBasho);
-    } else {
-      qb.andWhere("kr.KishuShozokuBasho IS NULL");
-    }
-    if (kishuRireki.KijouShikakuKubun != null) {
-      qb.andWhere("kr.KijouShikakuKubun = :kijouShikakuKubun")
-        .setParameter("kijouShikakuKubun", kishuRireki.KijouShikakuKubun);
-    }
-    /* tslint:enable:triple-equals */
-    if (kishuRireki.KishuShozokuKyuushaId) {
-      qb.andWhere("kr.KishuShozokuKyuushaId = :kishuShozokuKyuushaId")
-        .setParameter("kishuShozokuKyuushaId", kishuRireki.KishuShozokuKyuushaId);
-    } else {
-      qb.andWhere("kr.KishuShozokuKyuushaId IS NULL");
-    }
-    qb.orderBy("kr.KijouShikakuKubun", "DESC");
-    return qb.getOne();
-  }
-
-  public async saveKishuRireki(toBe: KishuRireki) {
-    const asIs = await this.getKishuRireki(toBe);
-    toBe = await this.tool.saveOrUpdate(KishuRireki, asIs, toBe);
-    return toBe;
   }
 
 }

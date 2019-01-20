@@ -5,6 +5,7 @@ interface Code {
   kol?: string | RegExp | ((str: string) => number);
   jrdb?: string | RegExp | ((str: string) => number);
   jravan?: string | RegExp | ((str: string) => number);
+  jvdata?: string | RegExp | ((str: string) => number);
   naiyou?: string | ((code: number) => string);
   tanshuku?: string | ((code: number) => string);
 }
@@ -39,6 +40,11 @@ export class Codes {
   public toCodeFromJravan(buffer: Buffer | string, offset?: number, length?: number) {
     const str = this.getStr(buffer, offset, length);
     return this.toCodeFrom("jravan", str);
+  }
+
+  public toCodeFromJvData(buffer: Buffer | string, offset?: number, length?: number) {
+    const str = this.getStr(buffer, offset, length);
+    return this.toCodeFrom("jvdata", str);
   }
 
   protected toCodeFrom(key: string, str: string) {

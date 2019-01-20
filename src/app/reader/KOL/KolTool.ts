@@ -1,6 +1,5 @@
 import { Inject, Service } from "typedi";
 import * as $C from "../../converters/Common";
-import * as $K from "../../converters/Kishu";
 import * as $KY from "../../converters/Kyuusha";
 import * as $U from "../../converters/Uma";
 import { BanushiDao } from "../../daos/BanushiDao";
@@ -10,7 +9,6 @@ import { SeisanshaDao } from "../../daos/SeisanshaDao";
 import { UmaDao } from "../../daos/UmaDao";
 import { MeishouKubun } from "../../entities/Shoyuu";
 import { Kishu } from "../../entities/Kishu";
-import { KishuRireki } from "../../entities/KishuRireki";
 import { Kyousouba } from "../../entities/Kyousouba";
 import { Kyuusha } from "../../entities/Kyuusha";
 import { Uma } from "../../entities/Uma";
@@ -49,17 +47,6 @@ export class KolTool {
     const kishuMei = readStrWithNoSpace(buffer, offset + 5, 32);
     const tanshukuKishuMei = readStrWithNoSpace(buffer, offset + 37, 8);
     return this.kishuDao.saveKishu(kishu, kishuMei, tanshukuKishuMei);
-  }
-
-  public async saveKishuRireki(buffer: Buffer, offset: number, kishu: Kishu) {
-    const kishuRireki = new KishuRireki();
-    kishuRireki.KishuId = kishu.Id;
-    kishuRireki.KishuTouzaiBetsu = $C.touzaiBetsu.toCodeFromKol(buffer, offset, 1);
-    kishuRireki.KishuShozokuBasho = $C.basho.toCodeFromKol(buffer, offset + 1, 2);
-    kishuRireki.KishuShozokuKyuushaId = await this.saveShozokuKyuusha(buffer, offset + 3);
-    kishuRireki.MinaraiKubun = $K.minaraiKubun.toCodeFromKol(buffer, offset + 8, 1);
-    kishuRireki.TourokuMasshouFlag = $C.MasshouFlag.Geneki;
-    return this.kishuDao.saveKishuRireki(kishuRireki);
   }
 
   public async saveBanushi(buffer: Buffer, offset: number, shussoubaId: number) {

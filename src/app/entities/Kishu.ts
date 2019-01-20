@@ -18,9 +18,18 @@ export class Kishu {
   @Column("mediumint", { nullable: true })
   public JrdbKishuCode?: number;
 
+  @Column("varchar", { length: 5, nullable: true })
+  public JvDataCode?: string;
+
   @Column("int", { nullable: true })
   public Seinengappi?: number;
 
-  @Column("smallint", { nullable: true })
-  public HatsuMenkyoNen?: number;
+  @Column("tinyint", { nullable: true })
+  public Seibetsu?: number;
+
+  @Column("int", { nullable: true })
+  public MenkyoKoufuNengappi?: number;
+
+  @Column("int", { nullable: true })
+  public MenkyoMasshouNengappi?: number;
 }

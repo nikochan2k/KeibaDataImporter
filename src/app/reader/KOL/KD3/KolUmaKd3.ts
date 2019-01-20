@@ -318,8 +318,6 @@ export class KolUmaKd3 extends DataToImport {
     toBe.Zougen = readInt(buffer, 97, 3);
     const kishu = await this.kolTool.saveKishu(buffer, 103);
     toBe.KishuId = kishu.Id;
-    const kishuRireki = await this.kolTool.saveKishuRireki(buffer, 148, kishu);
-    toBe.KishuRirekiId = kishuRireki.Id;
     toBe.Norikawari = $S.norikawari.toCodeFromKol(buffer, 157, 1);
     toBe.KakuteiChakujun = this.tool.getChakujun(buffer, 215, 2);
     toBe.ChakujunFuka = $S.chakujunFuka.toCodeFromKol(buffer, 217, 2);
