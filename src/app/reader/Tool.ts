@@ -85,28 +85,16 @@ export class Tool {
     return this.getDaysFrom1970With(nen, gatsu, nichi);
   }
 
-  public normalizeHoujinMei(buffer, offset, length) {
+  public normalizeHoujinMei(buffer: Buffer, offset: number, length: number) {
     let meishou = readStrWithNoSpace(buffer, offset, length);
     if (!meishou) {
       return meishou;
     }
-    meishou = meishou.replace(/(株)|㈱/, "株式会社");
-    meishou = meishou.replace(/(有)|㈲/, "有限会社");
+    meishou = meishou.replace(/¥(株¥)|㈱|株式会社/, "");
+    meishou = meishou.replace(/¥(有¥)|㈲|有限会社/, "");
     meishou = meishou.replace(/・/g, "");
     meishou = meishou.replace(/氏$/, "");
     return meishou;
-  }
-
-  public normalizeTanshukuHoujinMei(buffer, offset, length) {
-    let tanshukuMei = readStrWithNoSpace(buffer, offset, length);
-    if (!tanshukuMei) {
-      return tanshukuMei;
-    }
-    tanshukuMei = tanshukuMei.replace(/¥(株¥)|㈱/, "");
-    tanshukuMei = tanshukuMei.replace(/¥(有¥)|㈲/, "");
-    tanshukuMei = tanshukuMei.replace(/・/g, "");
-    tanshukuMei = tanshukuMei.replace(/氏$/, "");
-    return tanshukuMei;
   }
 
   public normalizeTokubetsuMei(buffer, offset, length) {

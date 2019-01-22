@@ -54,7 +54,7 @@ export class KolTool {
     if (banushiMei) {
       await this.banushiDao.save(shussoubaId, MeishouKubun.Full, banushiMei);
     }
-    const tanshukuBanushiMei = this.tool.normalizeTanshukuHoujinMei(buffer, offset + 40, 20);
+    const tanshukuBanushiMei = this.tool.normalizeHoujinMei(buffer, offset + 40, 20);
     if (tanshukuBanushiMei) {
       await this.banushiDao.save(shussoubaId, MeishouKubun.Tanshuku, tanshukuBanushiMei);
     }
@@ -87,7 +87,7 @@ export class KolTool {
     if (seisanshaMei) {
       await this.seisanshaDao.save(umaId, MeishouKubun.Full, seisanshaMei);
     }
-    const tanshukuSeisanshaMei = this.tool.normalizeTanshukuHoujinMei(buffer, offset + 40, 20);
+    const tanshukuSeisanshaMei = this.tool.normalizeHoujinMei(buffer, offset + 40, 20);
     if (tanshukuSeisanshaMei) {
       await this.seisanshaDao.save(umaId, MeishouKubun.Tanshuku, tanshukuSeisanshaMei);
     }

@@ -32,7 +32,6 @@ export class KolKyuKd3 extends DataToImport {
     choukyoushi.TouzaiBetsu = $C.touzaiBetsu.toCodeFromKol(buffer, 105, 1);
     choukyoushi.ShozokuBasho = $C.basho.toCodeFromKol(buffer, 106, 2);
     choukyoushi.RitsuHokuNanBetsu = $CK.ritsuHokuNanBetsu.toCodeFromKol(buffer, 108, 1);
-    choukyoushi.TourokuMasshouFlag = $C.masshouFlag.toCodeFromKol(buffer, 109, 1);
     const choukyoushiMei = readStr(buffer, 5, 32);
     const tanshuku = readStr(buffer, 37, 8);
     const furigana = readStr(buffer, 45, 48);

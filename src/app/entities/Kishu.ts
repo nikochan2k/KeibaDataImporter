@@ -8,6 +8,7 @@ import {
 @Entity("Kishu")
 @Index("IxKishu1", (k: Kishu) => [k.KolKishuCode], { unique: true })
 @Index("IxKishu2", (k: Kishu) => [k.JrdbKishuCode], { unique: true })
+@Index("IxKishu4", (k: Kishu) => [k.JvDataKishuCode], { unique: true })
 export class Kishu {
   @PrimaryGeneratedColumn()
   public Id: number;
@@ -19,7 +20,7 @@ export class Kishu {
   public JrdbKishuCode?: number;
 
   @Column("varchar", { length: 5, nullable: true })
-  public JvDataCode?: string;
+  public JvDataKishuCode?: string;
 
   @Column("int", { nullable: true })
   public Seinengappi?: number;

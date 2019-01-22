@@ -20,8 +20,7 @@ export abstract class C$$ extends DataToImport {
   public async save(buffer: Buffer, bridge: Bridge) {
     const toBe = new Choukyoushi();
     toBe.JrdbChoukyoushiCode = readInt(buffer, 0, 5);
-    toBe.TourokuMasshouFlag = $C.masshouFlag.toCodeFromJrdb(buffer, 5, 1);
-    toBe.TourokuMasshouNengappi = readInt(buffer, 6, 8);
+    toBe.MenkyoMasshouNengappi = readInt(buffer, 6, 8);
     const choukyoushiMei = readStr(buffer, 14, 12);
     const furigana = readStr(buffer, 26, 30);
     const tanshuku = readStr(buffer, 56, 6);

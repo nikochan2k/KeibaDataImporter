@@ -17,10 +17,3 @@ export const kijouShikakuKubun = new Codes(
     { code: 4, kol: "1", jrdb: "1", jvdata: "1", naiyou: "平地・障害", tanshuku: "平・障" },
   ]
 );
-
-export const seibetsu = new Codes(
-  [
-    { code: 1, jvdata: "1", naiyou: "男性" },
-    { code: 2, jvdata: "2", naiyou: "女性" },
-  ]
-);

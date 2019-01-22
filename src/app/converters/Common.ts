@@ -167,3 +167,10 @@ export const hyouka = new Codes(
     { code: 3, kol: "3", jrdb: "3", naiyou: "△" },
   ]
 );
+
+export const seibetsu = new Codes(
+  [
+    { code: 1, jvdata: "1", naiyou: "男性" },
+    { code: 2, jvdata: "2", naiyou: "女性" },
+  ]
+);
