@@ -17,14 +17,14 @@ export const norikawari = new Codes(
 export const chakujunFuka = new Codes(
   [
     { code: 1, kol: "31", naiyou: "落馬" },
-    { code: 2, kol: "32", jrdb: "4", naiyou: "失格" },
-    { code: 3, kol: "33", jrdb: "3", naiyou: "中止" },
-    { code: 4, kol: "34", jrdb: "1", naiyou: "取消" },
-    { code: 5, kol: "35", jrdb: "2", naiyou: "除外" },
-    { code: 6, kol: "36", jrdb: "5", naiyou: "降着" },
+    { code: 2, kol: "32", jrdb: "4", jvdata:"5", naiyou: "失格" },
+    { code: 3, kol: "33", jrdb: "3", jvdata:"4", naiyou: "競走中止", tanshuku: "中止" },
+    { code: 4, kol: "34", jrdb: "1", jvdata:"1", naiyou: "出走取消", tanshuku: "取消" },
+    { code: 5, kol: "35", jrdb: "2", jvdata:/2|3/, naiyou: "除外" },
+    { code: 6, kol: "36", jrdb: "5", jvdata:"7", naiyou: "降着" },
     { code: 7, kol: "37", naiyou: "繰上" },
     { code: 10, kol: "40", naiyou: "不利" },
-    { code: 11, jrdb: "6", naiyou: "再騎乗" }
+    { code: 11, jrdb: "6", jvdata:"6", naiyou: "落馬再騎乗", tanshuku: "再騎乗" }
   ]
 );
 
@@ -47,14 +47,14 @@ export const recordNinshiki = new Codes(
 
 export const chakura2 = new Codes(
   [
-    { code: 0, kol: "0", naiyou: "ハナ" },
-    { code: 1, kol: "1", naiyou: "アタマ" },
-    { code: 2, kol: "2", naiyou: "クビ" },
-    { code: 3, kol: "3", naiyou: "1/2" },
-    { code: 4, kol: "4", naiyou: "1/4" },
-    { code: 5, kol: "5", naiyou: "3/4" },
-    { code: 7, kol: "7", naiyou: "大差" },
-    { code: 8, kol: "8", naiyou: "同着" }
+    { code: 0, kol: "0", jvdata:/H../, naiyou: "ハナ" },
+    { code: 1, kol: "1", jvdata:/A../, naiyou: "アタマ" },
+    { code: 2, kol: "2", jvdata:/K../, naiyou: "クビ" },
+    { code: 3, kol: "3", jvdata:/.12/, naiyou: "1/2" },
+    { code: 4, kol: "4", jvdata:/.14/, naiyou: "1/4" },
+    { code: 5, kol: "5", jvdata:/.34/, naiyou: "3/4" },
+    { code: 7, kol: "7", jvdata:/T../, naiyou: "大差" },
+    { code: 8, kol: "8", jvdata:/D../, naiyou: "同着" }
   ]
 );
 

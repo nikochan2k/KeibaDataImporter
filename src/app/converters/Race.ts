@@ -2,10 +2,10 @@ import { Codes } from "./Codes";
 
 export const ippanTokubetsu = new Codes(
   [
-    { code: 1, kol: "1", jrdb: "5", naiyou: "特別" },
-    { code: 2, kol: "2", jrdb: "6", naiyou: "準重賞" },
-    { code: 3, kol: "3", jrdb: /1|2|3|4/, naiyou: "重賞" },
-    { code: 0, kol: "0", jrdb: /./, naiyou: "一般" },
+    { code: 1, kol: "1", jrdb: "5", jvdata: "E", naiyou: "特別" },
+    { code: 2, kol: "2", jrdb: "6", jvdata: "D", naiyou: "準重賞" },
+    { code: 3, kol: "3", jrdb: /1|2|3|4/, jvdata: /A|B|C|F|G|H/, naiyou: "重賞" },
+    { code: 0, kol: "0", jrdb: /./, jvdata: /./, naiyou: "一般" },
   ]
 );
 
@@ -16,17 +16,17 @@ export enum HeichiShougai {
 
 export const heichiShougai = new Codes(
   [
-    { code: HeichiShougai.Heichi, kol: "0", jrdb: /1|2/, naiyou: "平地" },
-    { code: HeichiShougai.Shougai, kol: "1", jrdb: "3", naiyou: "障害" }
+    { code: HeichiShougai.Heichi, kol: "0", jrdb: /1|2/, jvdata:/[12]./, naiyou: "平地" },
+    { code: HeichiShougai.Shougai, kol: "1", jrdb: "3", jvdata:/5./, naiyou: "障害" }
   ]
 );
 
 export const grade = new Codes(
   [
-    { code: 1, kol: /0|3/, jrdb: "1", naiyou: "G1" },
-    { code: 2, kol: /1|4/, jrdb: "2", naiyou: "G2" },
-    { code: 3, kol: /2|5/, jrdb: "3", naiyou: "G3" },
-    { code: 4, jrdb: "6", naiyou: "L" },
+    { code: 1, kol: /0|3/, jrdb: "1", jvdata: /A|F/, naiyou: "G1" },
+    { code: 2, kol: /1|4/, jrdb: "2", jvdata: /B|G/, naiyou: "G2" },
+    { code: 3, kol: /2|5/, jrdb: "3", jvdata: /C|H/, naiyou: "G3" },
+    { code: 4, jrdb: "6", naiyou: "L", jvdata: "D" },
   ]
 );
 
@@ -38,101 +38,101 @@ export const jpnFlag = new Codes(
 
 export const betteiBareiHandi = new Codes(
   [
-    { code: 0, kol: /^(00|別定)$/, jrdb: "2", naiyou: "別定" },
-    { code: 1, kol: /^(01|馬齢)$/, jrdb: "3", naiyou: "馬齢" },
-    { code: 2, kol: /^(02|ハンデ)$/, jrdb: "1", naiyou: "ハンデ" },
-    { code: 3, kol: /^(03|定量)$/, jrdb: "4", naiyou: "定量" },
+    { code: 0, kol: /^(00|別定)$/, jrdb: "2", jvdata:"2", naiyou: "別定" },
+    { code: 1, kol: /^(01|馬齢)$/, jrdb: "3", jvdata:"3", naiyou: "馬齢" },
+    { code: 2, kol: /^(02|ハンデ)$/, jrdb: "1", jvdata:"1", naiyou: "ハンデ" },
+    { code: 3, kol: /^(03|定量)$/, jrdb: "4", jvdata:"4", naiyou: "定量" },
     { code: 4, kol: /^(90|規定)$/, naiyou: "規定" }
   ]
 );
 
 export const joukenSaraKei = new Codes(
   [
-    { code: 1, kol: /0|1|2|3|4|8|9|B|K/, naiyou: "サラ系" },
+    { code: 1, kol: /0|1|2|3|4|8|9|B|K/, jrdb: /11|12|13|14|18|19/, naiyou: "サラ系" },
   ]
 );
 
 export const joukenAraKei = new Codes(
   [
-    { code: 1, kol: /5|6|7|A|C/, naiyou: "アラブ系" },
+    { code: 1, kol: /5|6|7|A|C/, jrdb: /21|22|23|24/, naiyou: "アラブ系" },
   ]
 );
 
 export const joukenBoba = new Codes(
   [
-    { code: 1, kol: /24|27|28|33|38|40/, jrdb: /.[134]./, naiyou: "牡" },
+    { code: 1, kol: /24|27|28|33|38|40/, jrdb: /.[134]./, jvdata: /.[134]./, naiyou: "牡" },
   ]
 );
 
 export const joukenHinba = new Codes(
   [
-    { code: 1, kol: /03|10|33|35|38|40/, jrdb: /.[24]./, naiyou: "牝" },
+    { code: 1, kol: /03|10|33|35|38|40/, jrdb: /.[24]./, jvdata: /.[24]./, naiyou: "牝" },
   ]
 );
 
 export const joukenSenba = new Codes(
   [
-    { code: 1, kol: /24|27|28/, jrdb: /.3./, naiyou: "せん" },
+    { code: 1, kol: /24|27|28/, jrdb: /.3./, jvdata: /.3./, naiyou: "せん" },
   ]
 );
 
 export const joukenMaruKon = new Codes(
   [
-    { code: 1, kol: /04|08|10|13|27|38/, jrdb: /1../, naiyou: "○混" },
+    { code: 1, kol: /04|08|10|13|27|38/, jrdb: /1../, jvdata: /A../, naiyou: "(混)" },
   ]
 );
 
 export const joukenMaruChichi = new Codes(
   [
-    { code: 1, kol: "05", jrdb: /2../, naiyou: "○父" },
+    { code: 1, kol: "05", jrdb: /2../, jvdata: /B../, naiyou: "(父)" },
   ]
 );
 
 export const joukenMaruIchi = new Codes(
   [
-    { code: 1, kol: /07|11|19|20/, jrdb: /3../, naiyou: "○市" },
+    { code: 1, kol: /07|11|19|20/, jrdb: /3../, jvdata: /[CFKL]../, naiyou: "(市)" },
   ]
 );
 
 export const joukenMaruChuu = new Codes(
   [
-    { code: 1, kol: /09|14|15|16|19|20/, jrdb: /3../, naiyou: "○抽" },
+    { code: 1, kol: /09|14|15|16|19|20/, jrdb: /3../, jvdata: /[DFGHKL]../, naiyou: "(抽)" },
   ]
 );
 
 export const joukenKakuChuu = new Codes(
   [
-    { code: 1, kol: /06|07|17|18/, naiyou: "□抽" },
+    { code: 1, kol: /06|07|17|18/, jvdata: /[EIJ]../, naiyou: "[抽]" },
   ]
 );
 
 export const joukenMaruKokusai = new Codes(
   [
-    { code: 1, kol: /29|35|40/, jrdb: /5../, naiyou: "○国際" },
+    { code: 1, kol: /29|35|40/, jrdb: /5../, jvdata: /N../, naiyou: "(国際)" },
   ]
 );
 
 export const joukenMaruShou = new Codes(
   [
-    { code: 1, kol: "12", naiyou: "○招" },
+    { code: 1, kol: "12", naiyou: "(招)" },
   ]
 );
 
 export const joukenMaruShi = new Codes(
   [
-    { code: 1, kol: /^(13|21|30|1|4)$/, jrdb: /..1/, naiyou: "○指" },
+    { code: 1, kol: /^(13|21|30|1|4)$/, jrdb: /..1/, jvdata: /..1/, naiyou: "(指)" },
   ]
 );
 
 export const joukenMaruTokuShi = new Codes(
   [
-    { code: 1, kol: /^(31|2)$/, jrdb: /..3/, naiyou: "○特指" },
+    { code: 1, kol: /^(31|2)$/, jrdb: /..3/, jvdata: /..4/, naiyou: "(特指)" },
   ]
 );
 
 export const joukenKakuShi = new Codes(
   [
-    { code: 1, kol: /^(32|3)$/, jrdb: /..2/, naiyou: "□指" },
+    { code: 1, kol: /^(32|3)$/, jrdb: /..2/, jvdata: /..3/, naiyou: "[指]" },
   ]
 );
 
@@ -156,13 +156,13 @@ export const joukenKouryuu = new Codes(
 
 export const joukenWakate = new Codes(
   [
-    { code: 1, jrdb: /..4/, naiyou: "若手" },
+    { code: 1, jrdb: /..4/, jvdata: /..2/, naiyou: "若手" },
   ]
 );
 
 export const joukenKyuushuusan = new Codes(
   [
-    { code: 1, kol: "01", jrdb: /4../, naiyou: "九州産" },
+    { code: 1, kol: "01", jrdb: /4../, jvdata: /M../, naiyou: "九州産" },
   ]
 );
 
@@ -174,13 +174,13 @@ export const joukenChibasan = new Codes(
 
 export const joukenKansaiHaifuba = new Codes(
   [
-    { code: 1, kol: /15|17|19/, naiyou: "関西配布馬" },
+    { code: 1, kol: /15|17|19/, jvdata: /[GIK]../, naiyou: "関西配布馬" },
   ]
 );
 
 export const joukenKantouHaifuba = new Codes(
   [
-    { code: 1, kol: /16|18|20/, naiyou: "関東配布馬" },
+    { code: 1, kol: /16|18|20/, jvdata: /[HJL]../, naiyou: "関東配布馬" },
   ]
 );
 
@@ -284,17 +284,17 @@ export const jouken = new Codes(
     { code: 44, kol: "00044", naiyou: "D4" },
     { code: 93, kol: "00093", naiyou: "調教試験" },
     { code: 94, kol: "00094", naiyou: "能力試験" },
-    { code: 4000, kol: "04000", jrdb: "04", naiyou: "400万" },
-    { code: 5000, kol: "05000", jrdb: "05", naiyou: "500万" },
-    { code: 8000, kol: "08000", jrdb: "08", naiyou: "800万" },
-    { code: 9000, kol: "09000", jrdb: "09", naiyou: "900万" },
-    { code: 10000, kol: "10000", jrdb: "10", naiyou: "1000万" },
-    { code: 15000, kol: "15000", jrdb: "15", naiyou: "1500万" },
-    { code: 16000, kol: "16000", jrdb: "16", naiyou: "1600万" },
-    { code: -13, kol: "-0013", naiyou: "未出" },
-    { code: -14, kol: "-0014", naiyou: "未勝" },
-    { code: -15, kol: "-0015", naiyou: "新馬" },
-    { code: -16, kol: "-0016", naiyou: "オープン" },
+    { code: 400, kol: "04000", jrdb: "04", jvdata:"004", naiyou: "400万" },
+    { code: 500, kol: "05000", jrdb: "05", jvdata:"005", naiyou: "500万" },
+    { code: 800, kol: "08000", jrdb: "08", jvdata:"008", naiyou: "800万" },
+    { code: 900, kol: "09000", jrdb: "09", jvdata:"009", naiyou: "900万" },
+    { code: 1000, kol: "10000", jrdb: "10", jvdata:"010", naiyou: "1000万" },
+    { code: 1500, kol: "15000", jrdb: "15", jvdata:"015", naiyou: "1500万" },
+    { code: 1600, kol: "16000", jrdb: "16", jvdata:"016", naiyou: "1600万" },
+    { code: -13, kol: "-0013", jrdb: "A2", jvdata:"702", naiyou: "未出" },
+    { code: -14, kol: "-0014", jrdb: "A3", jvdata:"703", naiyou: "未勝" },
+    { code: -15, kol: "-0015", jrdb: "A1", jvdata:"701", naiyou: "新馬" },
+    { code: -16, kol: "-0016", jrdb: "OP", jvdata:"999", naiyou: "オープン" },
     { code: -42, kol: "-0042", naiyou: "3才" },
     { code: -43, kol: "-0043", naiyou: "4才" },
     { code: -44, kol: "-0044", naiyou: "能検" },
@@ -317,11 +317,21 @@ export const jouken = new Codes(
     {
       kol: (str: string) => {
         const num = parseInt(str);
-        if (100 <= num) return num;
+        if (100 <= num) return num / 10;
+        return null;
+      },
+      jrdb: (str: string) => {
+        const num = parseInt(str);
+        if (num <= 100) return num * 100;
+        return null;
+      },
+      jvdata: (str: string) => {
+        const num = parseInt(str);
+        if (num <= 100) return num * 100;
         return null;
       },
       naiyou: (code: number) => {
-        if (100 <= code) return (code / 10) + "万";
+        if (100 <= code) return code + "万";
         return null;
       }
     }
@@ -348,8 +358,8 @@ export enum DirtShiba {
 
 export const dirtShiba = new Codes(
   [
-    { code: DirtShiba.Dirt, kol: "0", jrdb: "2", naiyou: "ダート" },
-    { code: DirtShiba.Shiba, kol: "1", jrdb: "1", naiyou: "芝" }
+    { code: DirtShiba.Dirt, kol: "0", jrdb: "2", jvdata:/2[3-9]/, naiyou: "ダート" },
+    { code: DirtShiba.Shiba, kol: "1", jrdb: "1", jvdata:/(1[0-9])|(2[0-2])|(5[1-9])/, naiyou: "芝" }
   ]
 );
 
@@ -409,22 +419,22 @@ export const pace = new Codes(
 
 export const tenki = new Codes(
   [
-    { code: 0, kol: "0", jrdb: "1", naiyou: "晴" },
-    { code: 1, kol: "1", jrdb: "2", naiyou: "曇" },
-    { code: 2, kol: "2", jrdb: "4", naiyou: "雨" },
-    { code: 3, kol: "3", jrdb: "3", naiyou: "小雨" },
-    { code: 4, kol: "4", jrdb: "6", naiyou: "雪" },
+    { code: 0, kol: "0", jrdb: "1", jvdata:"1", naiyou: "晴" },
+    { code: 1, kol: "1", jrdb: "2", jvdata:"2", naiyou: "曇" },
+    { code: 2, kol: "2", jrdb: "4", jvdata:"3", naiyou: "雨" },
+    { code: 3, kol: "3", jrdb: "3", jvdata:"4", naiyou: "小雨" },
+    { code: 4, kol: "4", jrdb: "6", jvdata:"5", naiyou: "雪" },
     { code: 5, kol: "5", naiyou: "風" },
-    { code: 6, kol: "6", jrdb: "5", naiyou: "小雪" }
+    { code: 6, kol: "6", jrdb: "5", jvdata:"6", naiyou: "小雪" }
   ]
 );
 
 export const baba = new Codes(
   [
-    { code: 0, kol: "0", naiyou: "良" },
-    { code: 1, kol: "1", naiyou: "稍重" },
-    { code: 2, kol: "2", naiyou: "重" },
-    { code: 3, kol: "3", naiyou: "不良" }
+    { code: 0, kol: "0", jvdata:"1", naiyou: "良" },
+    { code: 1, kol: "1", jvdata:"2", naiyou: "稍重" },
+    { code: 2, kol: "2", jvdata:"3", naiyou: "重" },
+    { code: 3, kol: "3", jvdata:"4", naiyou: "不良" }
   ]
 );
 

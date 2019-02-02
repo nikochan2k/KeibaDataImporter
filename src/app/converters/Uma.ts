@@ -41,25 +41,25 @@ export enum Seibetsu {
 
 export const seibetsu = new Codes(
   [
-    { code: Seibetsu.Boba, kol: "0", jrdb: "1", naiyou: "牡" },
-    { code: Seibetsu.Hinba, kol: "1", jrdb: "2", naiyou: "牝" },
-    { code: Seibetsu.Senba, kol: "2", jrdb: "3", naiyou: "せん" }
+    { code: Seibetsu.Boba, kol: "0", jrdb: "1", jvdata:"1", naiyou: "牡" },
+    { code: Seibetsu.Hinba, kol: "1", jrdb: "2", jvdata:"2", naiyou: "牝" },
+    { code: Seibetsu.Senba, kol: "2", jrdb: "3", jvdata:"3", naiyou: "せん" }
   ]
 );
 
 export const keiro = new Codes(
   [
-    { code: 1, kol: "01", jrdb: "01", naiyou: "栗" },
-    { code: 2, kol: "02", jrdb: "02", naiyou: "栃栗" },
-    { code: 3, kol: /03|23|28|30/, jrdb: "03", naiyou: "鹿" },
-    { code: 4, kol: /04|20|24|31|32|33|34|35/, jrdb: "04", naiyou: "黒鹿" },
-    { code: 5, kol: "05", jrdb: "05", naiyou: "青鹿" },
-    { code: 6, kol: "06", jrdb: "06", naiyou: "青" },
-    { code: 7, kol: /07|21|22|25|26|27|29/, jrdb: "07", naiyou: "芦" },
-    { code: 8, kol: "08", jrdb: "08", naiyou: "栗粕" },
-    { code: 9, kol: "09", jrdb: "09", naiyou: "鹿粕" },
-    { code: 10, kol: "10", jrdb: "10", naiyou: "青粕" },
-    { code: 11, kol: "11", jrdb: "11", naiyou: "白" },
+    { code: 1, kol: "01", jrdb: "01", jvdata:"01", naiyou: "栗" },
+    { code: 2, kol: "02", jrdb: "02", jvdata:"02", naiyou: "栃栗" },
+    { code: 3, kol: /03|23|28|30/, jrdb: "03", jvdata:"03", naiyou: "鹿" },
+    { code: 4, kol: /04|20|24|31|32|33|34|35/, jrdb: "04", jvdata:"04", naiyou: "黒鹿" },
+    { code: 5, kol: "05", jrdb: "05", jvdata:"05", naiyou: "青鹿" },
+    { code: 6, kol: "06", jrdb: "06", jvdata:"06", naiyou: "青" },
+    { code: 7, kol: /07|21|22|25|26|27|29/, jrdb: "07", jvdata:"07", naiyou: "芦" },
+    { code: 8, kol: "08", jrdb: "08", jvdata:"08", naiyou: "栗粕" },
+    { code: 9, kol: "09", jrdb: "09", jvdata:"09", naiyou: "鹿粕" },
+    { code: 10, kol: "10", jrdb: "10", jvdata:"10", naiyou: "青粕" },
+    { code: 11, kol: "11", jrdb: "11", jvdata:"11", naiyou: "白" },
     { code: 12, kol: "12", naiyou: "芦鹿" },
     { code: 13, kol: "13", naiyou: "粕" }
   ]
@@ -67,24 +67,24 @@ export const keiro = new Codes(
 
 export const kesshu = new Codes(
   [
-    { code: 1, kol: "01", naiyou: "サラ" },
-    { code: 2, kol: "02", naiyou: "アラ" },
-    { code: 3, kol: "03", naiyou: "アア" },
-    { code: 4, kol: /04|50/, naiyou: "サラ系" },
-    { code: 5, kol: "05", naiyou: "アラ系" },
-    { code: 7, kol: "07", naiyou: "軽半" },
-    { code: 8, kol: "08", naiyou: "中半" },
-    { code: 10, kol: "10", naiyou: "重半" },
-    { code: 11, kol: "11", naiyou: "アノ" },
-    { code: 12, kol: "12", naiyou: "アノ系" },
-    { code: 13, kol: "13", naiyou: "クリ" },
-    { code: 14, kol: "14", naiyou: "クリ系" },
-    { code: 15, kol: "15", naiyou: "トロ" },
-    { code: 16, kol: "16", naiyou: "トロ系" },
-    { code: 17, kol: "17", naiyou: "ノニ" },
-    { code: 18, kol: "18", naiyou: "ノニ系" },
-    { code: 19, kol: "19", naiyou: "ハク" },
-    { code: 20, kol: "20", naiyou: "ハク系" }
+    { code: 1, kol: "01", jvdata:"1", naiyou:"サラブレッド", tanshuku: "サラ" },
+    { code: 2, kol: "02", jvdata:"7", naiyou:"アラブ", tanshuku: "アラ" },
+    { code: 3, kol: "03", jvdata:"5", naiyou:"アングロアラブ", tanshuku: "アア" },
+    { code: 4, kol: /04|50/, jvdata:/2|3/, naiyou:"サラブレッド系種", tanshuku: "サラ系" },
+    { code: 5, kol: "05", jvdata:"6", naiyou:"アラブ系種", tanshuku: "アラ系" },
+    { code: 7, kol: "07", jvdata:"4", naiyou:"軽半血種", tanshuku: "軽半" },
+    { code: 8, kol: "08", jvdata:"8", naiyou:"中半血種", tanshuku: "中半" },
+    { code: 10, kol: "10", tanshuku: "重半" },
+    { code: 11, kol: "11", tanshuku: "アノ" },
+    { code: 12, kol: "12", tanshuku: "アノ系" },
+    { code: 13, kol: "13", tanshuku: "クリ" },
+    { code: 14, kol: "14", tanshuku: "クリ系" },
+    { code: 15, kol: "15", tanshuku: "トロ" },
+    { code: 16, kol: "16", tanshuku: "トロ系" },
+    { code: 17, kol: "17", tanshuku: "ノニ" },
+    { code: 18, kol: "18", tanshuku: "ノニ系" },
+    { code: 19, kol: "19", tanshuku: "ハク" },
+    { code: 20, kol: "20", tanshuku: "ハク系" }
   ]
 );
 
