@@ -23,6 +23,7 @@ export class Srb extends Sr$ {
   protected async saveRaceSeiseki(buffer: Buffer, race: Race) {
     const toBe = new RaceSeiseki();
     toBe.Id = race.Id;
+    this.setRaceSeiseki(buffer, toBe);
     toBe.PaceUpNokoriFalon = readPositiveInt(buffer, 318, 2, 200);
     toBe.RaceComment = readStr(buffer, 342, 500);
 

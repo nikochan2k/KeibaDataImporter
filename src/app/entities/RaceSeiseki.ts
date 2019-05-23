@@ -33,6 +33,18 @@ export class RaceSeiseki {
   @Column("tinyint", { nullable: true })
   public BabaSokudo?: number; // 0:普通 1:速い 2:遅い
 
+  @Column("text", { nullable: true })
+  public Ichidori1Corner?: string;
+
+  @Column("text", { nullable: true })
+  public Ichidori2Corner?: string;
+
+  @Column("text", { nullable: true })
+  public Ichidori3Corner?: string;
+
+  @Column("text", { nullable: true })
+  public Ichidori4Corner?: string;
+
   @Column("real", { nullable: true })
   public ShougaiHeikin1F?: number;
 

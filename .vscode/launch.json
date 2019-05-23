@@ -6,7 +6,8 @@
       "type": "node",
       "request": "launch",
       "program": "${workspaceRoot}/build/app/main.js",
-      "stopOnEntry": false,
+      "args": ["lzh/jrdb"],
+      "stopOnEntry": true,
       "cwd": "${workspaceRoot}",
       "env": {
         "NODE_ENV": "development"

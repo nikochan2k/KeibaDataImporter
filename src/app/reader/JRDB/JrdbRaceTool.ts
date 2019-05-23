@@ -9,20 +9,24 @@ export class JrdbRaceTool extends RaceTool {
   @Inject()
   private jrdbKaisaiTool: JrdbKaisaiTool;
 
+  protected getKaisaiTool() {
+    return this.jrdbKaisaiTool;
+  }
+
   public getRace(buffer: Buffer, kaisaiId?: number) {
     if (!kaisaiId) {
-      kaisaiId = this.jrdbKaisaiTool.getKaisaiId(buffer);
+      kaisaiId = this.getKaisaiTool().getKaisaiId(buffer);
     }
     return super.getRace(buffer, kaisaiId);
   }
 
   public getRaceId(buffer: Buffer) {
-    const kaisaiId = this.jrdbKaisaiTool.getKaisaiId(buffer);
+    const kaisaiId = this.getKaisaiTool().getKaisaiId(buffer);
     return super.getRaceId(buffer, kaisaiId);
   }
 
   protected getRaceBangou(buffer: Buffer) {
-    const raceBangou = readPositiveInt(buffer, 8, 2);
+    const raceBangou = readPositiveInt(buffer, 6, 2);
     return raceBangou;
   }
 
