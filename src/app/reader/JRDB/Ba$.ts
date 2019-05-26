@@ -1,11 +1,21 @@
+import { Inject } from "typedi";
 import { RaceData } from "./RaceData";
 import * as $K from "../../converters/Kaisai";
 import * as $R from "../../converters/Race";
 import { Kaisai } from "../../entities/Kaisai";
 import { Race } from "../../entities/Race";
+import { KaisaiTool } from "../KaisaiTool";
 import { readPositiveInt, readStr } from "../Reader";
+import { Ba$KaisaiTool } from './Ba$KaisaiTool';
 
 export abstract class Ba$ extends RaceData {
+
+  @Inject()
+  private ba$KaisaiTool: Ba$KaisaiTool;
+
+  protected getKaisaiTool(): KaisaiTool {
+    return this.ba$KaisaiTool;
+  }
 
   protected setKaisai(buffer: Buffer, toBe: Kaisai) {
     toBe.KaisaiKubun = $K.kaisaiKubun.toCodeFromJrdb(buffer, 97, 1);
@@ -62,6 +72,7 @@ export abstract class Ba$ extends RaceData {
 
   protected async saveRaceRelated(buffer: Buffer, race: Race) {
     await this.saveRaceMei(buffer, race);
+    
   }
 
   protected async saveRaceMei(buffer: Buffer, race: Race) {

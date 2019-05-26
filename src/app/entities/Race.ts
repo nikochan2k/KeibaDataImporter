@@ -206,6 +206,33 @@ export class Race {
   @Column("int", { nullable: true })
   public FukaShou?: number;
 
+  @Column("tinyint", { nullable: true })
+  public BakenHatsubaiFlagTanshou: number;
+
+  @Column("tinyint", { nullable: true })
+  public BakenHatsubaiFlagFukushou: number;
+
+  @Column("tinyint", { nullable: true })
+  public BakenHatsubaiFlagWakuren: number;
+
+  @Column("tinyint", { nullable: true })
+  public BakenHatsubaiFlagUmaren: number;
+
+  @Column("tinyint", { nullable: true })
+  public BakenHatsubaiFlagUmatan: number;
+
+  @Column("tinyint", { nullable: true })
+  public BakenHatsubaiFlagWide: number;
+
+  @Column("tinyint", { nullable: true })
+  public BakenHatsubaiFlagSanrenpuku: number;
+
+  @Column("tinyint", { nullable: true })
+  public BakenHatsubaiFlagSanrentan: number;
+
+  @Column("tinyint", { nullable: true })
+  public WinsFlag: number;
+
   @Column("real", { nullable: true })
   public SuiteiTimeRyou?: number;
 
