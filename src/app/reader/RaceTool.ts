@@ -79,23 +79,18 @@ export abstract class RaceTool {
   }
 
   public async saveRaceLapTime(buffer: Buffer, offset: number, race: Race) {
-    if (!race.Kyori) {
-      this.logger.warn("距離が不明です: " + race.Id);
-      return;
-    }
-    const end = Math.ceil(race.Kyori / 200.0);
-    const odd = (race.Kyori % 200 !== 0);
-    let shuuryouKyori = 0;
-    for (let i = 0; i < end; i++ , offset += 3) {
-      const lapTime = readDouble(buffer, offset, 3, 0.1);
+    let lapTime = readDouble(buffer, offset, 3, 0.1);
+    let kaishiKyori = 0;
+    let shuuryouKyori = (lapTime < 10.0 ? 100 : 200);
+    for (let i = 0; i < 18; i++ , offset += 3, kaishiKyori += 200, shuuryouKyori += 200) {
+      lapTime = readDouble(buffer, offset, 3, 0.1);
       if (!lapTime) {
-        continue;
+        break;
       }
       const raceLapTime = new RaceLapTime();
       raceLapTime.Id = race.Id * (2 ** 5) + i;
       raceLapTime.RaceId = race.Id;
-      raceLapTime.KaishiKyori = shuuryouKyori;
-      shuuryouKyori = (i === 0 && odd) ? (race.Kyori % 200) : (shuuryouKyori + 200);
+      raceLapTime.KaishiKyori = kaishiKyori;
       raceLapTime.ShuuryouKyori = shuuryouKyori;
       raceLapTime.LapTime = lapTime;
       await this.entityManager.save(raceLapTime);
