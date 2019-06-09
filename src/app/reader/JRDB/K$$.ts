@@ -34,6 +34,9 @@ export abstract class K$$ extends DataToImport {
 
   public async saveKishuComment(buffer: Buffer, kishu: Kishu) {
     const commentNyuuryokuNengappi = readInt(buffer, 125, 8);
+    if (commentNyuuryokuNengappi === null) {
+      return;
+    }
     const asIs = await this.repository
       .createQueryBuilder("kc")
       .where("kc.KishuId = :kishuId")
@@ -45,6 +48,7 @@ export abstract class K$$ extends DataToImport {
       return;
     }
     const toBe = new KishuComment();
+    toBe.KishuId = kishu.Id;
     toBe.Comment = readStr(buffer, 85, 40);
     toBe.CommentNyuuryokuNengappi = commentNyuuryokuNengappi;
     await this.repository.save(toBe);

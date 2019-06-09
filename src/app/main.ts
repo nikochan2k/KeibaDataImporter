@@ -20,10 +20,11 @@ createConnection({
   ],
   logging: ["error", "warn"]
 }).then(async (con) => {
-  await con.query("PRAGMA journal_mode = WAL");
+  // await con.query("PRAGMA journal_mode = WAL");
   await con.synchronize(false);
   const traversal = Container.get(Traversal);
   await traversal.traverse(dirName);
+  await con.close();
 }).catch((reason) => {
   logger.fatal(reason);
 });
