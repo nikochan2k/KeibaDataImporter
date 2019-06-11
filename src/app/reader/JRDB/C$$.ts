@@ -1,10 +1,7 @@
 import { Inject } from "typedi";
-import { Repository } from "typeorm";
-import { OrmRepository } from "typeorm-typedi-extensions";
 import * as $C from "../../converters/Common";
 import { ChoukyoushiDao } from "../../daos/ChoukyoushiDao";
 import { Choukyoushi } from "../../entities/Choukyoushi";
-import { ChoukyoushiComment } from "../../entities/ChoukyoushiComment";
 import { Bridge } from "../Bridge";
 import { DataToImport } from "../DataToImport";
 import { readInt, readPositiveInt, readStr } from "../Reader";
@@ -13,9 +10,6 @@ export abstract class C$$ extends DataToImport {
 
   @Inject()
   private choukyoushiDao: ChoukyoushiDao;
-
-  @OrmRepository(ChoukyoushiComment)
-  private repository: Repository<ChoukyoushiComment>;
 
   public async save(buffer: Buffer, bridge: Bridge) {
     const toBe = new Choukyoushi();
@@ -31,26 +25,7 @@ export abstract class C$$ extends DataToImport {
     }
     toBe.Seinengappi = readPositiveInt(buffer, 67, 8);
     toBe.HatsuMenkyoNen = readPositiveInt(buffer, 75, 4);
-    const choukyoushi = await this.choukyoushiDao.saveChoukyoushi(toBe, choukyoushiMei, tanshuku, furigana);
-    await this.saveChoukyoushiComment(buffer, choukyoushi);
-  }
-
-  public async saveChoukyoushiComment(buffer: Buffer, choukyoushi: Choukyoushi) {
-    const commentNyuuryokuNengappi = readInt(buffer, 119, 8);
-    const asIs = await this.repository
-      .createQueryBuilder("cc")
-      .where("cc.ChoukyoushiId = :choukyoushiId")
-      .setParameter("ChoukyoushiId", choukyoushi.Id)
-      .where("cc.CommentNyuuryokuNengappi = :commentNyuuryokuNengappi")
-      .setParameter("commentNyuuryokuNengappi", commentNyuuryokuNengappi)
-      .getOne();
-    if (asIs) {
-      return;
-    }
-    const toBe = new ChoukyoushiComment();
-    toBe.Comment = readStr(buffer, 79, 40);
-    toBe.CommentNyuuryokuNengappi = commentNyuuryokuNengappi;
-    await this.repository.save(toBe);
+    await this.choukyoushiDao.saveChoukyoushi(toBe, choukyoushiMei, tanshuku, furigana);
   }
 
 }

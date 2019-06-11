@@ -35,103 +35,104 @@ export class Traversal {
   private fileInfos: FileInfo[] = [
     // KD3厩舎データ
     { pattern: /ekyu.*\.lzh$/i, priority: 1 },
-    { pattern: /kol_kyu.kd3$/, priority: 2 },
+    { pattern: /kol_kyu.kd3$/i, priority: 2 },
     // JRDB調教師データ
-    { pattern: /c[zs]a.*\.txt$/i, priority: 3 },
+    { pattern: /cza.*\.(txt|lzh|zip)$/i, priority: 3 },
+    { pattern: /csa.*\.(txt|lzh|zip)$/i, priority: 4 },
     // KD3 騎手
-    { pattern: /dkis.*\.lzh$/i, priority: 4 },
+    { pattern: /dkis.*\.lzh$/i, priority: 5 },
     // KD3騎手データ
-    { pattern: /kol_kis.kd3$/, priority: 5 },
+    { pattern: /kol_kis.kd3$/i, priority: 6 },
     // JRDB騎手データ
-    { pattern: /kza.*\.txt$/i, priority: 6 },
-    { pattern: /ksa.*\.txt$/i, priority: 7 },
+    { pattern: /kza.*\.(txt|lzh|zip)$/i, priority: 7 },
+    { pattern: /ksa.*\.(txt|lzh|zip)$/i, priority: 8 },
     // KD3種牡馬データ
-    { pattern: /gsyu.*\.lzh$/i, priority: 8 },
-    { pattern: /kol_syu.kd3$/, priority: 9 },
+    { pattern: /gsyu.*\.lzh$/i, priority: 9 },
+    { pattern: /kol_syu.kd3$/, priority: 10 },
     // KD3 3代血統図
-    { pattern: /fket.*\.lzh$/i, priority: 10 },
-    { pattern: /kol_ket.kd3$/, priority: 11 },
+    { pattern: /fket.*\.lzh$/i, priority: 11 },
+    { pattern: /kol_ket.kd3$/, priority: 12 },
     // KD3 5代血統図
-    { pattern: /fket5.*\.lzh$/i, priority: 12 },
-    { pattern: /kol_ket5.kd3$/, priority: 13 },
+    { pattern: /fket5.*\.lzh$/i, priority: 13 },
+    { pattern: /kol_ket5.kd3$/i, priority: 14 },
     // KD3 出馬表＋馬（１日）
-    { pattern: /hb.*\.lzh$/i, priority: 14 },
+    { pattern: /hb.*\.lzh$/i, priority: 15 },
     // KD3 日曜重賞付出馬表＋馬（１日）
-    { pattern: /hz.*\.lzh$/i, priority: 15 },
+    { pattern: /hz.*\.lzh$/i, priority: 16 },
     // KD3競走馬データ
-    { pattern: /kol_uma.kd3$/, priority: 16 },
+    { pattern: /kol_uma.kd3$/i, priority: 17 },
     // JRDB馬基本データ
-    { pattern: /ukc.*\.txt$/i, priority: 17 },
+    { pattern: /ukc.*\.(txt|lzh|zip)$/i, priority: 18 },
     // KD3出走馬レースデータ
-    { pattern: /kol_den1.kd3$/, priority: 18 },
+    { pattern: /kol_den1.kd3$/i, priority: 19 },
     // JRDB開催データ
-    { pattern: /ka[ab].*\.txt$/i, priority: 19 },
+    { pattern: /ka[ab].*\.(txt|lzh|zip)$/i, priority: 20 },
     // JRDB番組データ
-    { pattern: /ba[bc].*\.txt$/i, priority: 20 },
+    { pattern: /ba[bc].*\.(txt|lzh|zip)$/i, priority: 21 },
     // JRDB前走データ
-    { pattern: /zec.*\.txt$/i, priority: 21 },
+    { pattern: /zec.*\.(txt|lzh|zip)$/i, priority: 22 },
     // JRDB前走拡張データ
-    { pattern: /zkb.*\.txt$/i, priority: 22 },
+    { pattern: /zkb.*\.(txt|lzh|zip)$/i, priority: 23 },
     // KOL出馬表出走馬データ
-    { pattern: /kol_den2.kd3$/, priority: 23 },
+    { pattern: /kol_den2.kd3$/i, priority: 24 },
     // KD3 コメントデータ（出馬用）
-    { pattern: /mb.*\.lzh$/i, priority: 24 },
+    { pattern: /mb.*\.lzh$/i, priority: 25 },
     // JRDB競走馬データ
-    { pattern: /ky[ghi].*\.txt$/i, priority: 25 },
+    { pattern: /ky[ghi].*\.(txt|lzh|zip)$/i, priority: 26 },
     // JRDB競走馬拡張データ
-    { pattern: /kka.*\.txt$/i, priority: 26 },
+    { pattern: /kka.*\.(txt|lzh|zip)$/i, priority: 27 },
     // JRDB情報データ
-    { pattern: /joa.*\.txt$/i, priority: 27 },
+    { pattern: /joa.*\.(txt|lzh|zip)$/i, priority: 28 },
     // JRDB調教分析データ
-    { pattern: /cy[ab].*\.txt$/i, priority: 28 },
+    { pattern: /cy[ab].*\.(txt|lzh|zip)$/i, priority: 29 },
     // JRDB調教本追切データ
-    { pattern: /cha.*\.txt$/i, priority: 29 },
+    { pattern: /cha.*\.(txt|lzh|zip)$/i, priority: 30 },
     // JRDB直前情報データ
-    { pattern: /tyb.*\.txt$/i, priority: 30 },
+    { pattern: /tyb.*\.(txt|lzh|zip)$/i, priority: 31 },
     // KD3 予想（前売り）オッズ（１日）
-    { pattern: /jb.*\.lzh$/i, priority: 31 },
+    { pattern: /jb.*\.lzh$/i, priority: 32 },
     // KOL予想オッズ（単勝・枠連・馬連）
-    { pattern: /kol_ods.kd3$/, priority: 32 },
+    { pattern: /kol_ods.kd3$/i, priority: 33 },
     // KOL予想オッズ２（馬単・３連複）
-    { pattern: /kol_ods2.kd3$/, priority: 33 },
+    { pattern: /kol_ods2.kd3$/i, priority: 34 },
     // JRDB基準オッズデータ
-    { pattern: /oz.*\.txt$/i, priority: 34 },
+    { pattern: /oz.*\.(txt|lzh|zip)$/i, priority: 35 },
     // JRDBワイド基準オッズデータ
-    { pattern: /ow.*\.txt$/i, priority: 35 },
+    { pattern: /ow.*\.(txt|lzh|zip)$/i, priority: 36 },
     // JRDB馬単基準オッズデータ
-    { pattern: /ou.*\.txt$/i, priority: 36 },
+    { pattern: /ou.*\.(txt|lzh|zip)$/i, priority: 37 },
     // 3連複基準オッズデータ
-    { pattern: /ot.*\.txt$/i, priority: 37 },
+    { pattern: /ot.*\.(txt|lzh|zip)$/i, priority: 38 },
     // 3連単基準オッズデータ
-    { pattern: /ov.*\.txt$/i, priority: 38 },
+    { pattern: /ov.*\.(txt|lzh|zip)$/i, priority: 39 },
     // KD3 成績＋馬（１日）
-    { pattern: /ib.*\.lzh$/i, priority: 39 },
+    { pattern: /ib.*\.lzh$/i, priority: 40 },
     // KD3競走成績レースデータ
-    { pattern: /kol_sei1.kd3$/, priority: 40 },
+    { pattern: /kol_sei1.kd3$/i, priority: 41 },
     // JRDB成績レースデータ
-    { pattern: /sr[ab].*\.txt$/i, priority: 41 },
+    { pattern: /sr[ab].*\.(txt|lzh|zip)$/i, priority: 42 },
     // KD3競走成績出走馬データ
-    { pattern: /kol_sei2.kd3$/, priority: 42 },
+    { pattern: /kol_sei2.kd3$/i, priority: 43 },
     // JRDB成績データ
-    { pattern: /se[cd].*\.txt$/i, priority: 43 },
+    { pattern: /se[cd].*\.(txt|lzh|zip)$/i, priority: 44 },
     // KD3制裁その他データ
-    { pattern: /kol_sei3.kd3$/, priority: 44 },
+    { pattern: /kol_sei3.kd3$/i, priority: 45 },
     // JRDB成績拡張データ
-    { pattern: /skb.*\.txt$/i, priority: 45 },
+    { pattern: /skb.*\.(txt|lzh|zip)$/i, priority: 46 },
     // JRDB払戻情報データ
-    { pattern: /hj[ac].*\.txt$/i, priority: 46 },
+    { pattern: /hj[ac].*\.(txt|lzh|zip)$/i, priority: 47 },
     // KD3 コメントデータ（成績用）
-    { pattern: /lb.*\.lzh$/i, priority: 47 },
+    { pattern: /lb.*\.lzh$/i, priority: 48 },
     // KD3騎手厩舎コメント／次走へのメモ
-    { pattern: /kol_com1.kd3$/, priority: 48 },
+    { pattern: /kol_com1.kd3$/i, priority: 49 },
     // KD3 確定オッズ（１日）
-    { pattern: /kd.*\.lzh$/i, priority: 49 },
+    { pattern: /kd.*\.lzh$/i, priority: 50 },
     // KD3確定オッズ（単勝・枠連・馬連）
-    { pattern: /kol_kod.kd3$/, priority: 50 },
+    { pattern: /kol_kod.kd3$/i, priority: 51 },
     // KD3確定オッズ（複勝・ワイド・馬単・３連複）
-    { pattern: /kol_kod2.kd3$/, priority: 51 },
+    { pattern: /kol_kod2.kd3$/i, priority: 52 },
     // KD3確定オッズ３（３連単）
-    { pattern: /kol_kod3.kd3$/, priority: 52 },
+    { pattern: /kol_kod3.kd3$/i, priority: 53 },
     // 圧縮ファイル
     { pattern: /\.(lzh|zip)$/i, priority: 99 },
   ];
@@ -145,9 +146,10 @@ export class Traversal {
     if (!checked) {
       this.logger.error('"' + entry + '"は対象外です');
     } else if (checked.stat.isDirectory()) {
-      await this.traverseLzhDir(checked.entry);
-    } else if (checked.stat.isFile() && /.lzh$/i.test(checked.entry)) {
-      await this.uncompressLzhFile(checked.entry);
+      await this.traverseDir(checked.entry);
+    } else if (checked.stat.isFile()) {
+      const importFile = this.createImportFile(checked.entry);
+      await this.importFile(importFile);
     } else {
       this.logger.error('"' + entry + '"は対象外です');
     }
@@ -171,34 +173,44 @@ export class Traversal {
     return 0;
   }
 
-  protected async traverseLzhDir(lzhDir: string) {
+  protected async traverseDir(lzhDir: string) {
     const pattern = path.join(lzhDir, "**/*.*");
     const matches = glob.sync(pattern, { nocase: true });
     const importFiles: ImportFile[] = [];
     for (let i = 0; i < matches.length; i++) {
       const filepath = matches[i];
-      const basename = path.basename(filepath);
-      const priority = this.getPriority(basename);
-      const execed = /(^|\D)(\d{2})(\d{2})(\d{2})\D/i.exec(basename);
-      let importFile: ImportFile;
-      if (execed) {
-        const yy = parseInt(execed[2]);
-        let yyyy: number;
-        if (70 <= yy) {
-          yyyy = 1900 + yy;
-        } else {
-          yyyy = 2000 + yy;
-        }
-        const mm = parseInt(execed[3]);
-        const dd = parseInt(execed[4]);
-        const key = yyyy * 1000000 + mm * 10000 + dd * 100 + priority;
-        importFile = { key: key, path: filepath, basename: basename };
-      } else {
-        importFile = { key: priority, path: filepath, basename: basename };
-      }
+      const importFile = this.createImportFile(filepath); 
       importFiles.push(importFile);
     }
 
+    await this.importFiles(importFiles);
+  }
+
+  protected createImportFile(filepath: string) {
+    const basename = path.basename(filepath);
+    const priority = this.getPriority(basename);
+    const execed = /(^|\D)(\d{2})(\d{2})(\d{2})\D/i.exec(basename);
+    let importFile: ImportFile;
+    if (execed) {
+      const yy = parseInt(execed[2]);
+      let yyyy: number;
+      if (70 <= yy) {
+        yyyy = 1900 + yy;
+      } else {
+        yyyy = 2000 + yy;
+      }
+      const mm = parseInt(execed[3]);
+      const dd = parseInt(execed[4]);
+      const key = yyyy * 1000000 + mm * 10000 + dd * 100 + priority;
+      importFile = { key: key, path: filepath, basename: basename };
+    } else {
+      importFile = { key: priority, path: filepath, basename: basename };
+    }
+
+    return importFile;
+}
+
+  protected async importFiles(importFiles: ImportFile[]) {
     importFiles.sort((a, b) => {
       if (a.key !== b.key) {
         return a.key - b.key;
@@ -211,26 +223,30 @@ export class Traversal {
 
     for (let i = 0; i < importFiles.length; i++) {
       const importFile = importFiles[i];
-      const filepath = importFile.path;
-      const basename = importFile.basename;
-      if (this.logger.isLevelEnabled("info")) {
-        this.logger.info('"' + basename + '"を解凍しています。');
-      }
-      if (/\.lzh$/i.test(basename)) {
-        await this.uncompressLzhFile(importFile.path);
-      } else if (/\.zip$/i.test(basename)) {
-        await this.uncompressZipFile(importFile.path);
-      } else if (/\.(txt|kd3)$/i.test(basename)) {
-        const entries: Entries = {};
-        entries[basename] = filepath;
-        await this.importer.import(entries);
-      } else {
-        if (this.logger.isLevelEnabled("info")) {
-          this.logger.info('"' + basename + '"は取り込み対象ファイルではありません。');
-        }
-      }
+      await this.importFile(importFile);
     }
   }
+
+  protected async importFile(importFile: ImportFile) {
+    const filepath = importFile.path;
+    const basename = importFile.basename;
+    if (this.logger.isLevelEnabled("info")) {
+      this.logger.info('"' + basename + '"を解凍しています。');
+    }
+    if (/\.lzh$/i.test(basename)) {
+      await this.uncompressLzhFile(importFile.path);
+    } else if (/\.zip$/i.test(basename)) {
+      await this.uncompressZipFile(importFile.path);
+    } else if (/\.(txt|kd3)$/i.test(basename)) {
+      const entries: Entries = {};
+      entries[basename] = filepath;
+      await this.importer.import(entries);
+    } else {
+      if (this.logger.isLevelEnabled("info")) {
+        this.logger.info('"' + basename + '"は取り込み対象ファイルではありません。');
+      }
+    }
+}
 
   protected async uncompressZipFile(zipFile: string) {
     const dataDir = tmp.dirSync();
