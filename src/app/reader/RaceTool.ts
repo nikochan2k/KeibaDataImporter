@@ -51,11 +51,11 @@ export abstract class RaceTool {
    * @memberof RaceTool
    */
   public getRaceId(buffer: Buffer, kaisaiId: number) {
-    const raceBagou = this.getRaceBangou(buffer);
-    if (!raceBagou) {
+    const raceBangou = this.getRaceBangou(buffer);
+    if (!raceBangou) {
       return null;
     }
-    return this.getRaceIdFrom(kaisaiId, raceBagou);
+    return this.getRaceIdFrom(kaisaiId, raceBangou);
   }
 
   public getRace(buffer: Buffer, kaisaiId: number) {

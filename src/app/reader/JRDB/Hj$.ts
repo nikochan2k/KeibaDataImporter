@@ -1,13 +1,12 @@
 import { Inject } from "typedi";
+import { JrdbData } from "./JrdbData";
 import { JrdbOddsHaitouTool } from "./JrdbOddsHaitouTool";
 import { JrdbRaceTool } from "./JrdbRaceTool";
 import { Baken, Kakutei } from "../../converters/Common";
 import { OddsHaitou } from "../../entities/OddsHaitou";
-import { Bridge } from "../Bridge";
-import { DataToImport } from "../DataToImport";
 import { readPositiveInt } from "../Reader";
 
-export abstract class Hj$ extends DataToImport {
+export abstract class Hj$ extends JrdbData {
 
   @Inject()
   protected jrdbRaceTool: JrdbRaceTool;
@@ -15,7 +14,7 @@ export abstract class Hj$ extends DataToImport {
   @Inject()
   protected jrdbOddsHaitouTool: JrdbOddsHaitouTool;
 
-  public async save(buffer: Buffer, bridge: Bridge) {
+  public async save(buffer: Buffer) {
     const raceId = this.jrdbRaceTool.getRaceId(buffer);
     await this.saveTanshou(buffer, raceId);
     await this.saveFukushou(buffer, raceId);

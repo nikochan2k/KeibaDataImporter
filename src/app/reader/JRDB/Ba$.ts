@@ -1,5 +1,5 @@
 import { Inject } from "typedi";
-import { RaceData } from "./RaceData";
+import { JrdbRaceData } from "./JrdbRaceData";
 import * as $K from "../../converters/Kaisai";
 import * as $R from "../../converters/Race";
 import { Kaisai } from "../../entities/Kaisai";
@@ -8,7 +8,7 @@ import { KaisaiTool } from "../KaisaiTool";
 import { readPositiveInt, readStr } from "../Reader";
 import { Ba$KaisaiTool } from './Ba$KaisaiTool';
 
-export abstract class Ba$ extends RaceData {
+export abstract class Ba$ extends JrdbRaceData {
 
   @Inject()
   private ba$KaisaiTool: Ba$KaisaiTool;
@@ -71,8 +71,8 @@ export abstract class Ba$ extends RaceData {
   }
 
   protected async saveRaceRelated(buffer: Buffer, race: Race) {
+    await super.saveRaceRelated(buffer, race);
     await this.saveRaceMei(buffer, race);
-    
   }
 
   protected async saveRaceMei(buffer: Buffer, race: Race) {

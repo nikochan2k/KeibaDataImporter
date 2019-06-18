@@ -1,14 +1,11 @@
 import { Inject } from "typedi";
-import { JrdbShussoubaTool } from "./JrdbShussoubaTool";
 import * as $CH from "../../converters/Choukyou";
-import { ShussoubaChoukyou } from "../../entities/ShussoubaChoukyou";
-import { DataToImport } from "../DataToImport";
 import { ChoukyouDao } from "../../daos/ChoukyouDao";
+import { ShussoubaChoukyou } from "../../entities/ShussoubaChoukyou";
+import { JrdbShussoubaData } from './JrdbShussoubaData';
+import { Shussouba } from '../../entities/Shussouba';
 
-export abstract class Cy$ extends DataToImport {
-
-  @Inject()
-  protected jrdbShussoubaTool: JrdbShussoubaTool;
+export abstract class Cy$ extends JrdbShussoubaData {
 
   @Inject()
   protected choukyouDao: ChoukyouDao;
@@ -23,6 +20,19 @@ export abstract class Cy$ extends DataToImport {
     sc.Id = rsId.shussoubaId;
     this.setChoukyou(buffer, sc);
     await this.choukyouDao.save(sc);
+  }
+
+  protected async saveShussoubaRelated(buffer: Buffer, shussouba: Shussouba) {
+    await super.saveShussoubaRelated(buffer, shussouba);
+  }
+
+  protected async saveShussoubaChoukyou(buffer: Buffer, shussouba: Shussouba) {
+    const toBe = new ShussoubaChoukyou();
+    toBe.Id = shussouba.Id;
+    this.setChoukyou(buffer, toBe);
+
+    const asIs = await this.entityManager.findOne(ShussoubaChoukyou, toBe.Id);
+    await this.tool.saveOrUpdate(ShussoubaChoukyou, asIs, toBe);
   }
 
   protected setChoukyou(buffer: Buffer, sc: ShussoubaChoukyou) {

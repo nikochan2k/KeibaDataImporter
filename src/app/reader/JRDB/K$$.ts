@@ -1,16 +1,15 @@
 import { Inject } from "typedi";
+import { JrdbData } from "./JrdbData";
 import { KishuDao } from "../../daos/KishuDao";
 import { Kishu } from "../../entities/Kishu";
-import { Bridge } from "../Bridge";
-import { DataToImport } from "../DataToImport";
 import { readInt, readPositiveInt, readStr } from "../Reader";
 
-export abstract class K$$ extends DataToImport {
+export abstract class K$$ extends JrdbData {
 
   @Inject()
   private kishuDao: KishuDao;
 
-  public async save(buffer: Buffer, bridge: Bridge) {
+  public async save(buffer: Buffer) {
     await this.saveKishu(buffer);
   }
 

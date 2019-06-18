@@ -1,27 +1,13 @@
-import { Inject } from "typedi";
-import { RaceData } from "./RaceData";
-import { Kaisai } from "../../entities/Kaisai";
 import { Race } from "../../entities/Race";
-import { Bridge } from "../Bridge";
-import { Sr$KaisaiTool } from './Sr$KaisaiTool';
-import { RaceSeiseki } from '../../entities/RaceSeiseki';
-import { readStr } from '../Reader';
+import { RaceSeiseki } from "../../entities/RaceSeiseki";
+import { readStr } from "../Reader";
+import { JrdbRaceData } from './JrdbRaceData';
 
-export abstract class Sr$ extends RaceData {
+export abstract class Sr$ extends JrdbRaceData {
 
-  private static YYMMDD = /(\d{2})(\d{2})(\d{2})/;
-
-  @Inject()
-  private sr$KaisaiTool: Sr$KaisaiTool;
-
-  protected getKaisaiTool() {
-    return this.sr$KaisaiTool;
-  }
-
-  protected setKaisai(buffer: Buffer, toBe: Kaisai) {
-  }
-
-  protected setRace(buffer: Buffer, toBe: Race) {
+  protected async saveRaceRelated(buffer: Buffer, race: Race) {
+    await super.saveRaceSeiseki(buffer, race.Id);
+    await this.jrdbRaceTool.saveRaceLapTime(buffer, 8, race);
   }
 
   protected setRaceSeiseki(buffer: Buffer, toBe: RaceSeiseki) {
@@ -31,15 +17,4 @@ export abstract class Sr$ extends RaceData {
     toBe.Ichidori4Corner = readStr(buffer, 254, 64);
   }
 
-  protected async saveRaceRelated(buffer: Buffer, race: Race) {
-    await this.jrdbRaceTool.saveRaceLapTime(buffer, 8, race);
-  }
-
-  protected setup(bridge: Bridge) {
-    const result = Sr$.YYMMDD.exec(bridge.basename);
-    const yy = parseInt(result[1]);
-    this.sr$KaisaiTool.nen = yy + ((70 <= yy) ? 1000 : 2000);
-    this.sr$KaisaiTool.gatsu = parseInt(result[2]);
-    this.sr$KaisaiTool.nichi = parseInt(result[3]);
-  }
 }

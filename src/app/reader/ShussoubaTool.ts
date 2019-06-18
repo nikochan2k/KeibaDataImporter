@@ -46,7 +46,7 @@ export abstract class ShussoubaTool {
     return id;
   }
 
-  protected abstract getRaceId(buffer: Buffer);
+  protected abstract getRaceId(buffer: Buffer): number;
 
   /**
    * レースIDと出走馬IDを取得します。
@@ -60,6 +60,7 @@ export abstract class ShussoubaTool {
   public getRaceShussoubaId(buffer: Buffer, umabanOffset: number): RaceShussoubaId {
     const raceId = this.getRaceId(buffer);
     if (!raceId) {
+      this.logger.warn("レースIDがありません: " + raceId);
       return null;
     }
     const umaban = readPositiveInt(buffer, umabanOffset, 2);

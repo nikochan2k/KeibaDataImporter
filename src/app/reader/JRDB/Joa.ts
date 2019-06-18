@@ -1,15 +1,14 @@
 import { Inject } from "typedi";
 import { EntityManager } from "typeorm";
 import { OrmManager } from "typeorm-typedi-extensions";
+import { JrdbData } from "./JrdbData";
 import { JrdbShussoubaTool } from "./JrdbShussoubaTool";
 import * as $SY from "../../converters/ShussoubaYosou";
 import { ShussoubaYosou } from "../../entities/ShussoubaYosou";
-import { Bridge } from "../Bridge";
-import { DataToImport } from "../DataToImport";
 import { readDouble, readInt } from "../Reader";
 import { Tool } from "../Tool";
 
-export class Joa extends DataToImport {
+export class Joa extends JrdbData {
 
   @OrmManager()
   protected entityManager: EntityManager;
@@ -24,7 +23,7 @@ export class Joa extends DataToImport {
     return 116;
   }
 
-  public async save(buffer: Buffer, bridge: Bridge) {
+  public async save(buffer: Buffer) {
     const rsId = this.jrdbShussoubaTool.getRaceShussoubaId(buffer, 8);
     const asIs = await this.entityManager.findOne(ShussoubaYosou, rsId.shussoubaId);
 

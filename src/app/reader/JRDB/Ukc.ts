@@ -1,4 +1,5 @@
 import { Inject, Service } from "typedi";
+import { JrdbData } from "./JrdbData";
 import * as $C from "../../converters/Common";
 import * as $U from "../../converters/Uma";
 import { SeisanshaDao } from "../../daos/SeisanshaDao";
@@ -6,13 +7,11 @@ import { UmaDao } from "../../daos/UmaDao";
 import { Kyousouba } from "../../entities/Kyousouba";
 import { MeishouKubun } from "../../entities/Shoyuu";
 import { Uma } from "../../entities/Uma";
-import { Bridge } from "../Bridge";
-import { DataToImport } from "../DataToImport";
 import { readInt, readStr } from "../Reader";
 import { Tool } from "../Tool";
 
 @Service()
-export class Ukc extends DataToImport {
+export class Ukc extends JrdbData {
 
   @Inject()
   protected tool: Tool;
@@ -27,7 +26,7 @@ export class Ukc extends DataToImport {
     return 292;
   }
 
-  public async save(buffer: Buffer, bridge: Bridge) {
+  public async save(buffer: Buffer) {
     const seibetsu = $U.seibetsu.toCodeFromJrdb(buffer, 44, 1);
     let uma = new Uma();
     const bamei = readStr(buffer, 8, 36);

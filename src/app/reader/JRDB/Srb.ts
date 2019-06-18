@@ -16,20 +16,13 @@ export class Srb extends Sr$ {
 
   protected async saveRaceRelated(buffer: Buffer, race: Race) {
     await super.saveRaceRelated(buffer, race);
-    await this.saveRaceSeiseki(buffer, race);
     await this.saveRaceTrackBiases(buffer, race);
   }
 
-  protected async saveRaceSeiseki(buffer: Buffer, race: Race) {
-    const toBe = new RaceSeiseki();
-    toBe.Id = race.Id;
-    this.setRaceSeiseki(buffer, toBe);
+  protected setRaceSeiseki(buffer: Buffer, toBe: RaceSeiseki) {
+    super.setRaceSeiseki(buffer, toBe);
     toBe.PaceUpNokoriFalon = readPositiveInt(buffer, 318, 2, 200);
     toBe.RaceComment = readStr(buffer, 342, 500);
-
-    const asIs = await this.entityManager.findOne(RaceSeiseki, toBe.Id);
-
-    await this.tool.saveOrUpdate(RaceSeiseki, asIs, toBe);
   }
 
   protected async saveRaceTrackBiases(buffer: Buffer, race: Race) {

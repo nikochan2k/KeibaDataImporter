@@ -29,16 +29,19 @@ export class KolDen1Kd3 extends DataToImport {
   @Inject()
   private kolRaceTool: KolRaceTool;
 
+  @Inject()
+  private bridge: Bridge;
+
   protected getBufferLength() {
     return 848;
   }
 
-  protected setup(bridge: Bridge) {
-    const kolBridge = <KolBridge>bridge;
+  protected setup() {
+    const kolBridge = <KolBridge>this.bridge;
     kolBridge.yosouKyakushitsuMap = new Map<number, number>();
   }
 
-  public async save(buffer: Buffer, bridge: Bridge) {
+  public async save(buffer: Buffer) {
     const kaisai = await this.saveKaisai(buffer);
     if (!kaisai) {
       return;
@@ -57,7 +60,7 @@ export class KolDen1Kd3 extends DataToImport {
     }
 
     await this.saveRaceMei(buffer, race);
-    this.setYosouTenkai(buffer, race, <KolBridge>bridge);
+    this.setYosouTenkai(buffer, race);
   }
 
   protected async saveKaisai(buffer: Buffer) {
@@ -169,13 +172,14 @@ export class KolDen1Kd3 extends DataToImport {
     await this.kolRaceTool.saveRaceMei(buffer, 58, 14, race);
   }
 
-  protected setYosouTenkai(buffer: Buffer, race: Race, bridge: KolBridge) {
+  protected setYosouTenkai(buffer: Buffer, race: Race) {
     [362, 374, 386, 398].forEach((offset, index) => {
+      const kolBridge = <KolBridge>this.bridge;
       for (let i = 0; i < 4; i++) {
         const umaban = readInt(buffer, offset + i * 2, 2);
         if (1 <= umaban && umaban <= 28) {
           const shussoubaId = race.Id * (2 ** 6) + umaban;
-          bridge.yosouKyakushitsuMap.set(shussoubaId, index + 1);
+          kolBridge.yosouKyakushitsuMap.set(shussoubaId, index + 1);
         }
       }
     });

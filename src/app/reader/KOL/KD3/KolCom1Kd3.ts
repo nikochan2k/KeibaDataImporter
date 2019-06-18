@@ -3,7 +3,6 @@ import { DataToImport } from "../../DataToImport";
 import { EntityManager } from "typeorm";
 import { OrmManager } from "typeorm-typedi-extensions";
 import { ShussoubaSeiseki } from "../../../entities/ShussoubaSeiseki";
-import { Bridge } from "../../Bridge";
 import { Tool } from "../../Tool";
 import {
   readStr
@@ -26,7 +25,7 @@ export class KolCom1Kd3 extends DataToImport {
     return 3010;
   }
 
-  public async save(buffer: Buffer, bridge: Bridge) {
+  public async save(buffer: Buffer) {
     const rs = this.kolShussoubaTool.getRaceShussoubaId(buffer, 70);
     const asIs = await this.entityManager.findOne(ShussoubaSeiseki, rs.shussoubaId);
     if (!asIs) {

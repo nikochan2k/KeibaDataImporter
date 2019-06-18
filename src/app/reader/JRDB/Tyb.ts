@@ -1,6 +1,7 @@
 import { Inject } from "typedi";
 import { EntityManager } from "typeorm";
 import { OrmManager } from "typeorm-typedi-extensions";
+import { JrdbData } from "./JrdbData";
 import { JrdbOddsHaitouTool } from "./JrdbOddsHaitouTool";
 import { JrdbShussoubaTool } from "./JrdbShussoubaTool";
 import * as $C from "../../converters/Common";
@@ -8,13 +9,11 @@ import * as $S from "../../converters/Shussouba";
 import * as $SY from "../../converters/ShussoubaYosou";
 import { ShussoubaSeiseki } from "../../entities/ShussoubaSeiseki";
 import { ShussoubaYosou } from "../../entities/ShussoubaYosou";
-import { Bridge } from "../Bridge";
-import { DataToImport } from "../DataToImport";
 import { readDouble, readInt, readPositiveInt } from "../Reader";
-import { RaceShussoubaId } from "../ShussoubaTool";
 import { Tool } from "../Tool";
+import { Shussouba } from '../../entities/Shussouba';
 
-export class Tyb extends DataToImport {
+export class Tyb extends JrdbData {
 
   @OrmManager()
   protected entityManager: EntityManager;
@@ -32,11 +31,11 @@ export class Tyb extends DataToImport {
     return 128;
   }
 
-  public async save(buffer: Buffer, bridge: Bridge) {
-    const rsId = this.jrdbShussoubaTool.getRaceShussoubaId(buffer, 8);
-    await this.saveShussoubaYosou(buffer, rsId.shussoubaId);
-    await this.saveOddsHaitou(buffer, rsId);
-    await this.saveShussoubaSeiseki(buffer, rsId.shussoubaId);
+  public async save(buffer: Buffer) {
+    const shussouba = await this.jrdbShussoubaTool.getShussouba(buffer, 8);
+    await this.saveShussoubaYosou(buffer, shussouba.Id);
+    await this.saveOddsHaitou(buffer, shussouba);
+    await this.saveShussoubaSeiseki(buffer, shussouba.Id);
   }
 
   protected async saveShussoubaYosou(buffer: Buffer, shussoubaId: number) {
@@ -58,14 +57,14 @@ export class Tyb extends DataToImport {
     await this.tool.saveOrUpdate(ShussoubaYosou, asIs, toBe);
   }
 
-  protected async saveOddsHaitou(buffer: Buffer, rsId: RaceShussoubaId) {
-    await this.jrdbOddsHaitouTool.saveOddsNinki(buffer, rsId, {
+  protected async saveOddsHaitou(buffer: Buffer, shussouba: Shussouba) {
+    await this.jrdbOddsHaitouTool.saveOddsNinki(buffer, shussouba, {
       Kakutei: $C.Kakutei.Chokuzen,
       Baken: $C.Baken.Tanshou,
       OddsOffset: 72,
       OddsLength: 6
     });
-    await this.jrdbOddsHaitouTool.saveOddsNinki(buffer, rsId, {
+    await this.jrdbOddsHaitouTool.saveOddsNinki(buffer, shussouba, {
       Kakutei: $C.Kakutei.Chokuzen,
       Baken: $C.Baken.Fukushou,
       OddsOffset: 78,

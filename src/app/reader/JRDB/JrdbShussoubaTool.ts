@@ -17,7 +17,7 @@ export class JrdbShussoubaTool extends ShussoubaTool {
   private kishuDao: KishuDao;
 
   protected getRaceId(buffer: Buffer) {
-    return this.jrdbRaceTool.getRace(buffer);
+    return this.jrdbRaceTool.getRaceId(buffer);
   }
 
   public async saveShussoubaJoutaiWith(buffer: Buffer, offset: number, shussoubaId: number, kubun: Kubun) {

@@ -1,17 +1,16 @@
 import { Inject } from "typedi";
+import { JrdbData } from "./JrdbData";
 import * as $C from "../../converters/Common";
 import { ChoukyoushiDao } from "../../daos/ChoukyoushiDao";
 import { Choukyoushi } from "../../entities/Choukyoushi";
-import { Bridge } from "../Bridge";
-import { DataToImport } from "../DataToImport";
 import { readInt, readPositiveInt, readStr } from "../Reader";
 
-export abstract class C$$ extends DataToImport {
+export abstract class C$$ extends JrdbData {
 
   @Inject()
   private choukyoushiDao: ChoukyoushiDao;
 
-  public async save(buffer: Buffer, bridge: Bridge) {
+  public async save(buffer: Buffer) {
     const toBe = new Choukyoushi();
     toBe.JrdbChoukyoushiCode = readInt(buffer, 0, 5);
     toBe.MenkyoMasshouNengappi = readInt(buffer, 6, 8);

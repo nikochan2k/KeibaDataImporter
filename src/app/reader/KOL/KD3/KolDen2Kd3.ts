@@ -39,16 +39,19 @@ export class KolDen2Kd3 extends DataToImport {
   @Inject()
   private kolShussoubaTool: KolShussoubaTool;
 
+  @Inject()
+  private bridge: Bridge;
+
   protected getBufferLength() {
     return 1000;
   }
 
-  protected teardown(bridge: Bridge) {
-    const kolBridge = <KolBridge>bridge;
+  protected teardown() {
+    const kolBridge = <KolBridge>this.bridge;
     delete kolBridge.yosouKyakushitsuMap;
   }
 
-  public async save(buffer: Buffer, bridge: Bridge) {
+  public async save(buffer: Buffer) {
     const info = await this.kolShussoubaTool.getShussoubaInfo(buffer, 23);
     if (!info) {
       return;
@@ -67,7 +70,7 @@ export class KolDen2Kd3 extends DataToImport {
     info.shussouba = shussouba;
 
     await this.saveShussoubaJoutai(buffer, shussouba);
-    await this.saveShussoubaYosou(buffer, shussouba, <KolBridge>bridge);
+    await this.saveShussoubaYosou(buffer, shussouba);
     const tanshukuKishuMei = readStrWithNoSpace(buffer, 188, 8);
     await this.saveShussoubaChoukyou(buffer, info, tanshukuKishuMei);
   }
@@ -112,13 +115,14 @@ export class KolDen2Kd3 extends DataToImport {
     }
   }
 
-  protected async saveShussoubaYosou(buffer: Buffer, shussouba: Shussouba, bridge: KolBridge) {
+  protected async saveShussoubaYosou(buffer: Buffer, shussouba: Shussouba) {
     const toBe = new ShussoubaYosou();
     toBe.Id = shussouba.Id;
     toBe.KolYosou1 = $SY.shirushi.toCodeFromKol(buffer, 254, 1);
     toBe.KolYosou2 = $SY.shirushi.toCodeFromKol(buffer, 255, 1);
     toBe.Rating = readDouble(buffer, 739, 3, 0.1);
-    toBe.Kyakushitsu = bridge.yosouKyakushitsuMap.get(toBe.Id);
+    const kolBridge = <KolBridge>this.bridge;
+    toBe.Kyakushitsu = kolBridge.yosouKyakushitsuMap.get(toBe.Id);
 
     const asIs = await this.entityManager.findOne(ShussoubaYosou, shussouba.Id);
 

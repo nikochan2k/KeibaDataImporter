@@ -1,15 +1,14 @@
 import { Inject } from "typedi";
-import { Kakutei, Baken } from "../../converters/Common";
 import { EntityManager } from "typeorm";
 import { OrmManager } from "typeorm-typedi-extensions";
-import { JrdbRaceTool } from "./JrdbRaceTool";
+import { JrdbData } from "./JrdbData";
 import { JrdbOddsHaitouTool } from "./JrdbOddsHaitouTool";
-import { Bridge } from "../Bridge";
-import { DataToImport } from "../DataToImport";
+import { JrdbRaceTool } from "./JrdbRaceTool";
+import { Baken, Kakutei } from "../../converters/Common";
 import { OddsHaitou } from "../../entities/OddsHaitou";
 import { readDouble } from "../Reader";
 
-export class Ow extends DataToImport {
+export class Ow extends JrdbData {
 
   @OrmManager()
   protected entityManager: EntityManager;
@@ -24,7 +23,7 @@ export class Ow extends DataToImport {
     return 780;
   }
 
-  public async save(buffer: Buffer, bridge: Bridge) {
+  public async save(buffer: Buffer) {
     const raceId = this.jrdbRaceTool.getRaceId(buffer);
     await this.saveWide(buffer, raceId);
   }

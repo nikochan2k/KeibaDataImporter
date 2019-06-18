@@ -3,7 +3,6 @@ import * as log4js from "log4js";
 import { EntityManager } from "typeorm";
 import { OrmManager } from "typeorm-typedi-extensions";
 import { getLogger } from "../LogUtil";
-import { Bridge } from "./Bridge";
 
 export abstract class DataToImport {
 
@@ -24,18 +23,18 @@ export abstract class DataToImport {
 
   protected abstract getBufferLength(): number;
 
-  public abstract async save(buffer: Buffer, bridge?: Bridge);
+  public abstract async save(buffer: Buffer);
 
-  public async readAll(fd: number, bridge: Bridge) {
-    this.setup(bridge);
+  public async readAll(fd: number) {
+    this.setup();
     const length = this.getBufferLength();
     await this.entityManager.transaction(await (async () => {
       let buf: Buffer;
       while ((buf = this.readLine(fd, length)) !== null) {
-        await this.save(buf, bridge);
+        await this.save(buf);
       }
     }));
-    this.teardown(bridge);
+    this.teardown();
   }
 
   protected readLine(fd: number, length: number): Buffer {
@@ -70,10 +69,10 @@ export abstract class DataToImport {
     }
   }
 
-  protected setup(bridge: Bridge) {
+  protected setup() {
   }
 
-  protected teardown(bridge: Bridge) {
+  protected teardown() {
   }
 
 }

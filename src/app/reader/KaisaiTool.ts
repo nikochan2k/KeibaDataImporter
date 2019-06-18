@@ -11,8 +11,8 @@ export interface KaisaiInfo {
   nen: number;
   gatsu: number;
   nichi: number;
-  kaiji?: number;
-  nichiji?: number;
+  kaiji: number;
+  nichiji: number;
 }
 
 export abstract class KaisaiTool {

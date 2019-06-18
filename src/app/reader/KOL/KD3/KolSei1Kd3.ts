@@ -48,8 +48,8 @@ export class KolSei1Kd3 extends DataToImport {
     const id = this.kolRaceTool.getRaceId(buffer);
     const dataNengappi = readInt(buffer, 2910, 8);
 
-    const raceSeisei = await this.entityManager.findOne(RaceSeiseki, id);
-    if (raceSeisei && raceSeisei.KolNengappi && dataNengappi <= raceSeisei.KolNengappi) {
+    const raceSeiseki = await this.entityManager.findOne(RaceSeiseki, id);
+    if (raceSeiseki && raceSeiseki.KolNengappi && dataNengappi <= raceSeiseki.KolNengappi) {
       return;
     }
 
@@ -63,7 +63,7 @@ export class KolSei1Kd3 extends DataToImport {
       await this.saveRaceMei(buffer, race);
     }
 
-    await this.saveRaceSeiseki(buffer, race, raceSeisei, dataNengappi);
+    await this.saveRaceSeiseki(buffer, race, raceSeiseki, dataNengappi);
     await this.saveRaceLapTime(buffer, race);
     await this.saveRaceKeika(buffer, race);
     await this.saveRaceHassouJoukyou(buffer, race);

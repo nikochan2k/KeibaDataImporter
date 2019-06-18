@@ -14,10 +14,10 @@ export class Kyousouba {
   @Column("int")
   public UmaId: number;
 
-  @Column("smallint")
+  @Column("smallint", { nullable: true })
   public Seibetsu: number;
 
-  @Column("smallint")
+  @Column("smallint", { nullable: true })
   public UmaKigou: number;
 
   @Column("mediumint", { nullable: true })
