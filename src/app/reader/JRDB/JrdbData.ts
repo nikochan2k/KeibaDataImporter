@@ -18,7 +18,7 @@ export abstract class JrdbData extends DataToImport {
     }
     const yy = parseInt(result[1]);
     const jrdbBridge = <JrdbBridge>this.bridge;
-    jrdbBridge.nen = yy + ((70 <= yy) ? 1000 : 2000);
+    jrdbBridge.nen = yy + ((70 <= yy) ? 1900 : 2000);
     jrdbBridge.gatsu = parseInt(result[2]);
     jrdbBridge.nichi = parseInt(result[3]);
   }

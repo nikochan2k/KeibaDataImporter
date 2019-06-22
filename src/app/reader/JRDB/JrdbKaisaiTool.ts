@@ -27,9 +27,9 @@ export class JrdbKaisaiTool extends KaisaiTool {
     const jrdbBridge = <JrdbBridge>this.bridge;
     return {
       basho: basho,
-      nen: jrdbBridge.nen | readInt(buffer, 6, 4),
-      gatsu: jrdbBridge.gatsu | readInt(buffer, 10, 2),
-      nichi: jrdbBridge.nichi | readInt(buffer, 12, 2),
+      nen: jrdbBridge.nen || readInt(buffer, 6, 4),
+      gatsu: jrdbBridge.gatsu || readInt(buffer, 10, 2),
+      nichi: jrdbBridge.nichi || readInt(buffer, 12, 2),
       kaiji: readPositiveInt(buffer, 4, 1),
       nichiji: readHex(buffer, 5, 1),
     };

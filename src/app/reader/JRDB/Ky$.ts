@@ -46,11 +46,11 @@ export abstract class Ky$ extends JrdbShussoubaData {
     toBe.KishuId = kishu.Id;
     toBe.Kinryou = readDouble(buffer, 183, 3, 0.1);
     // toBe.MinaraiKubun = $S.minaraiKubun.toCodeFromJrdb(buffer, 186, 1);
+    const kyousouba = await this.saveKyousouba(buffer, info);
     if (info.uma.Seinen) {
       const nen = 2000 + readInt(buffer, 2, 2);
       toBe.Nenrei = this.tool.calculateNenrei(nen, info.uma.Seinen);
     }
-    const kyousouba = await this.saveKyousouba(buffer, info);
     toBe.KyousoubaId = kyousouba.Id;
     toBe.Wakuban = readPositiveInt(buffer, 323, 1);
     toBe.Bataijuu = readPositiveInt(buffer, 396, 3);

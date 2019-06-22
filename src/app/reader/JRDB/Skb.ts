@@ -11,7 +11,8 @@ export class Skb extends JrdbShussoubaData {
   }
 
   protected async saveShussoubaRelated(buffer: Buffer, shussouba: Shussouba) {
-    super.saveShussoubaRelated(buffer, shussouba);
+    await super.saveShussoubaRelated(buffer, shussouba);
+    await this.saveShussoubaHyouka(buffer, shussouba.Id);
   }
 
   protected async saveShussoubaHyouka(buffer: Buffer, shussoubaId: number) {

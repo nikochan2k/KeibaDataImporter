@@ -1,7 +1,8 @@
-import { Service } from "typedi";
+import { Inject, Service } from "typedi";
 import { Repository } from "typeorm";
 import { OrmRepository } from "typeorm-typedi-extensions";
 import { MeishouKubun, Shoyuu } from "../entities/Shoyuu";
+import { Tool } from "../reader/Tool";
 
 @Service()
 export class MeishouDao {
@@ -9,16 +10,16 @@ export class MeishouDao {
   @OrmRepository(Shoyuu)
   private repository: Repository<Shoyuu>;
 
+  @Inject()
+  protected tool: Tool;
+
   public async save(kubun: MeishouKubun, namae: string, banushiKaiCode?: number) {
-    let shoyuu = await this.repository.findOne({ Meishou: namae });
-    if (!shoyuu || shoyuu && !shoyuu.BanushiKaiCode && banushiKaiCode) {
-      shoyuu = new Shoyuu();
-      shoyuu.Kubun = kubun;
-      shoyuu.Meishou = namae;
-      shoyuu.BanushiKaiCode = banushiKaiCode;
-      shoyuu = await this.repository.save(shoyuu);
-    }
-    return shoyuu;
+    const asIs = await this.repository.findOne({ Meishou: namae });
+    const toBe = new Shoyuu();
+    toBe.Kubun = kubun;
+    toBe.Meishou = namae;
+    toBe.BanushiKaiCode = banushiKaiCode;
+    return this.tool.saveOrUpdate(Shoyuu, asIs, toBe);
   }
 
 }
