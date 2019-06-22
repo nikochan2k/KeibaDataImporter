@@ -34,7 +34,7 @@ export class Ot extends JrdbData {
       for (let bangou2 = bangou1 + 1; bangou2 <= 17; bangou2++) {
         for (let bangou3 = bangou2 + 1; bangou3 <= 18; bangou3++) {
           const odds1 = readDouble(buffer, offset, 6);
-          offset += 7;
+          offset += 6;
           if (!odds1) {
             continue;
           }

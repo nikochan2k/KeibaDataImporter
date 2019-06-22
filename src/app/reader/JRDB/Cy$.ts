@@ -10,20 +10,9 @@ export abstract class Cy$ extends JrdbShussoubaData {
   @Inject()
   protected choukyouDao: ChoukyouDao;
 
-  public async save(buffer: Buffer) {
-    const rsId = await this.jrdbShussoubaTool.getRaceShussoubaId(buffer, 8);
-    if (!rsId) {
-      return;
-    }
-
-    const sc = new ShussoubaChoukyou();
-    sc.Id = rsId.shussoubaId;
-    this.setChoukyou(buffer, sc);
-    await this.choukyouDao.save(sc);
-  }
-
   protected async saveShussoubaRelated(buffer: Buffer, shussouba: Shussouba) {
     await super.saveShussoubaRelated(buffer, shussouba);
+    await this.saveShussoubaChoukyou(buffer, shussouba);
   }
 
   protected async saveShussoubaChoukyou(buffer: Buffer, shussouba: Shussouba) {

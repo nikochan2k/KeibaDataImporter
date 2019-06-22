@@ -9,7 +9,7 @@ import { Cy$ } from "./Cy$";
 export class Cyb extends Cy$ {
 
   protected getBufferLength() {
-    return 98;
+    return 96;
   }
 
   protected async setChoukyou(buffer: Buffer, sc: ShussoubaChoukyou) {
