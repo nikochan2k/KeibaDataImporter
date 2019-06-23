@@ -48,10 +48,10 @@ export class Traversal {
     { pattern: /ksa.*\.(txt|lzh|zip)$/i, priority: 8 },
     // KD3種牡馬データ
     { pattern: /gsyu.*\.lzh$/i, priority: 9 },
-    { pattern: /kol_syu.kd3$/, priority: 10 },
+    { pattern: /kol_syu.kd3$/i, priority: 10 },
     // KD3 3代血統図
     { pattern: /fket.*\.lzh$/i, priority: 11 },
-    { pattern: /kol_ket.kd3$/, priority: 12 },
+    { pattern: /kol_ket.kd3$/i, priority: 12 },
     // KD3 5代血統図
     { pattern: /fket5.*\.lzh$/i, priority: 13 },
     { pattern: /kol_ket5.kd3$/i, priority: 14 },
@@ -191,24 +191,7 @@ export class Traversal {
   protected createImportFile(filepath: string) {
     const basename = path.basename(filepath);
     const priority = this.getPriority(basename);
-    const execed = /(^|\D)(\d{2})(\d{2})(\d{2})\D/i.exec(basename);
-    let importFile: ImportFile;
-    if (execed) {
-      const yy = parseInt(execed[2]);
-      let yyyy: number;
-      if (70 <= yy) {
-        yyyy = 1900 + yy;
-      } else {
-        yyyy = 2000 + yy;
-      }
-      const mm = parseInt(execed[3]);
-      const dd = parseInt(execed[4]);
-      const key = yyyy * 1000000 + mm * 10000 + dd * 100 + priority;
-      importFile = { key: key, path: filepath, basename: basename };
-    } else {
-      importFile = { key: priority, path: filepath, basename: basename };
-    }
-
+    const importFile = { key: priority, path: filepath, basename: basename };
     return importFile;
 }
 
