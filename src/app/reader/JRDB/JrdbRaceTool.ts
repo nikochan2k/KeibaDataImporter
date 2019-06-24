@@ -1,7 +1,7 @@
 import { Inject, Service } from "typedi";
 import { JrdbKaisaiTool } from "./JrdbKaisaiTool";
 import { RaceTool } from "../RaceTool";
-import { readPositiveInt } from "../Reader";
+import { readPositiveInt, readRaw } from "../Reader";
 
 @Service()
 export class JrdbRaceTool extends RaceTool {
@@ -26,7 +26,11 @@ export class JrdbRaceTool extends RaceTool {
   }
 
   protected getRaceBangou(buffer: Buffer) {
-    const raceBangou = readPositiveInt(buffer, 6, 2);
+    let raceBangou = readPositiveInt(buffer, 6, 2);
+    if (raceBangou == null) {
+      this.logger.debug("レース番号が不正です: " + readRaw(buffer, 6, 2));
+      raceBangou = 0;
+    }
     return raceBangou;
   }
 

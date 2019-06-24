@@ -52,7 +52,7 @@ export abstract class RaceTool {
    */
   public getRaceId(buffer: Buffer, kaisaiId: number) {
     const raceBangou = this.getRaceBangou(buffer);
-    if (!raceBangou) {
+    if (raceBangou == null) {
       return null;
     }
     return this.getRaceIdFrom(kaisaiId, raceBangou);
@@ -68,7 +68,7 @@ export abstract class RaceTool {
 
   public createRace(buffer: Buffer, kaisaiId: number) {
     const raceBangou = this.getRaceBangou(buffer);
-    if (!raceBangou) {
+    if (raceBangou == null) {
       return null;
     }
     const race = new Race();
