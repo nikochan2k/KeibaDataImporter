@@ -10,6 +10,10 @@ export class Skb extends JrdbShussoubaData {
     return 304;
   }
 
+  protected getKaisaiTool() {
+    return this.jrdbKaisaiShussoubaTool;
+  }
+
   protected async saveShussoubaRelated(buffer: Buffer, shussouba: Shussouba) {
     await super.saveShussoubaRelated(buffer, shussouba);
     await this.saveShussoubaHyouka(buffer, shussouba.Id);

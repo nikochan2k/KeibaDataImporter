@@ -5,7 +5,6 @@ import { Bridge } from "../Bridge";
 import { KaisaiInfo, KaisaiTool } from "../KaisaiTool";
 import {
   readHex,
-  readInt,
   readPositiveInt,
   readRaw
 } from "../Reader";
@@ -16,7 +15,7 @@ export class JrdbKaisaiTool extends KaisaiTool {
   @Inject()
   private bridge: Bridge;
 
-  protected getKaisaiInfo(buffer: Buffer): KaisaiInfo {
+  protected getBasho(buffer: Buffer) {
     const basho = $C.basho.toCodeFromJrdb(buffer, 0, 2);
     /* tslint:disable:triple-equals */
     if (basho == null) {
@@ -24,12 +23,16 @@ export class JrdbKaisaiTool extends KaisaiTool {
       return null;
     }
     /* tslint:enable:triple-equals */
+    return basho;
+  }
+
+  protected getKaisaiInfo(buffer: Buffer): KaisaiInfo {
     const jrdbBridge = <JrdbBridge>this.bridge;
     return {
-      basho: basho,
-      nen: jrdbBridge.nen || readInt(buffer, 6, 4),
-      gatsu: jrdbBridge.gatsu || readInt(buffer, 10, 2),
-      nichi: jrdbBridge.nichi || readInt(buffer, 12, 2),
+      basho: this.getBasho(buffer),
+      nen: jrdbBridge.nen,
+      gatsu: jrdbBridge.gatsu,
+      nichi: jrdbBridge.nichi,
       kaiji: readPositiveInt(buffer, 4, 1),
       nichiji: readHex(buffer, 5, 1),
     };

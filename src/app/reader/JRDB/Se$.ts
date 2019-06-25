@@ -42,6 +42,10 @@ export abstract class Se$ extends JrdbShussoubaData {
   @Inject()
   protected choukyoushiDao: ChoukyoushiDao;
 
+  protected getKaisaiTool() {
+    return this.jrdbKaisaiShussoubaTool;
+  }
+
   protected async saveKyousouba(buffer: Buffer, info: ShussoubaInfo) {
     let uma = new Uma();
     uma.KettouTourokuBangou = readStr(buffer, 10, 8);

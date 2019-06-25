@@ -55,6 +55,13 @@ export interface Entries {
   [basename: string]: string;
 }
 
+interface Item {
+  index: number;
+  basename: string;
+  dataFile: string;
+  dataToImport: DataToImport;
+}
+
 interface Reader {
   pattern: RegExp;
   dataToImport: DataToImport;
@@ -161,32 +168,40 @@ export class Importer {
     ];
   }
 
-  protected find(entries: Entries, reader: Reader) {
-    const basenames = Object.keys(entries);
-    for (let i = 0; i <= basenames.length; i++) {
-      const basename = basenames[i];
-      if (reader.pattern.test(basename)) {
-        return { basename: basename, dataToImport: reader.dataToImport };
+  public async import(entries: Entries) {
+    const items: Item[] = [];
+    for (let [basename, dataFile] of Object.entries(entries)) {
+      for (let i = 0; i < this.readers.length; i++) {
+        const reader = this.readers[i];
+        if (!reader.pattern.test(basename)) {
+          continue;
+        }
+        items.push({ index: i, basename: basename, dataFile: dataFile, dataToImport: reader.dataToImport })
       }
     }
-    return null;
-  }
 
-  public async import(entries: Entries) {
-    for (let i = 0; i < this.readers.length; i++) {
-      const reader = this.readers[i];
-      const entry = this.find(entries, reader);
-      if (!entry) {
-        continue;
+    items.sort((a, b) => {
+      let result = a.index - b.index;
+      if (result !== 0) {
+        return result;
       }
-      this.bridge.basename = entry.basename;
-      const dataFile = entries[entry.basename];
-      const dataToImport = entry.dataToImport;
+      if (a.basename < b.basename) {
+        return -1;
+      } else if (b.basename < a.basename) {
+        return 1;
+      }
+      return 0;
+    });
+
+    for (let i = 0; i < items.length; i++) {
+      const item = items[i];
+      this.bridge.basename = item.basename;
+      const dataToImport = item.dataToImport;
       let fd: number;
       try {
-        fd = fs.openSync(dataFile, "r");
-        if (this.logger.isLevelEnabled("debug")) {
-          this.logger.info('"' + entry.basename + '"を取り込んでいます');
+        fd = fs.openSync(item.dataFile, "r");
+        if (this.logger.isLevelEnabled("info")) {
+          this.logger.info('"' + item.basename + '"を取り込んでいます');
         }
         await dataToImport.readAll(fd);
       } catch (e) {

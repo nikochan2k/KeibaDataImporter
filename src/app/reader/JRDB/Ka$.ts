@@ -7,6 +7,10 @@ import { JrdbKaisaiData } from './JrdbKaisaiData';
 
 export abstract class Ka$ extends JrdbKaisaiData {
 
+  protected getKaisaiTool() {
+    return this.jrdbKaisaiKaisaiTool;
+  }
+
   protected setKaisai(buffer: Buffer, toBe: Kaisai) {
     toBe.KaisaiKubun = $K.kaisaiKubun.toCodeFromJrdb(buffer, 14, 1);
     toBe.Youbi = $K.youbi.toCodeFromJrdb(buffer, 15, 2);

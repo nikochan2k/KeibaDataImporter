@@ -1,4 +1,3 @@
-import { Inject } from "typedi";
 import { JrdbRaceData } from "./JrdbRaceData";
 import * as $K from "../../converters/Kaisai";
 import * as $R from "../../converters/Race";
@@ -6,15 +5,11 @@ import { Kaisai } from "../../entities/Kaisai";
 import { Race } from "../../entities/Race";
 import { KaisaiTool } from "../KaisaiTool";
 import { readPositiveInt, readStr } from "../Reader";
-import { Ba$KaisaiTool } from './Ba$KaisaiTool';
 
 export abstract class Ba$ extends JrdbRaceData {
 
-  @Inject()
-  private ba$KaisaiTool: Ba$KaisaiTool;
-
   protected getKaisaiTool(): KaisaiTool {
-    return this.ba$KaisaiTool;
+    return this.jrdbKaisaiRaceTool;
   }
 
   protected setKaisai(buffer: Buffer, toBe: Kaisai) {

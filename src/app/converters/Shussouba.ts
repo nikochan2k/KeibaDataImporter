@@ -71,6 +71,9 @@ export const kyuuyouRiyuuCode = new Codes(
     { code: 12, jrdb: "12", naiyou: "調整(故障、骨折等)" },
     { code: 13, jrdb: "13", naiyou: "調整(不安、ソエ等)" },
     { code: 14, jrdb: "14", naiyou: "調整(病気)" },
+    { code: 15, jrdb: "15", naiyou: "調整(再審査)" },
+    { code: 16, jrdb: "16", naiyou: "調整(出走停止)" },
+    { code: 21, jrdb: "21", naiyou: "その他" },
     {
       kol: (str) => {
         if (!str) {
@@ -87,6 +90,8 @@ export const kyuuyouRiyuuCode = new Codes(
           if (/故障|骨折|屈腱炎/.test(str)) return 12;
           if (/病|血|熱|蕁麻疹|鼻|肺|胃|腸|フレグモーネ/.test(str)) return 14;
           if (/不安|骨|節|股|蹄|肩|爪|トモ|ソエ|捻挫|傷|蟻洞|跛行/.test(str)) return 13;
+          if (/再審査/.test(str)) return 15;
+          if (/出走停止/.test(str)) return 16;
           return 11;
         }
       }

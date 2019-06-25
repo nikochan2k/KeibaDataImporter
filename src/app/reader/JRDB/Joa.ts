@@ -1,17 +1,13 @@
 import { Inject } from "typedi";
-import { EntityManager } from "typeorm";
-import { OrmManager } from "typeorm-typedi-extensions";
-import { JrdbData } from "./JrdbData";
 import { JrdbShussoubaTool } from "./JrdbShussoubaTool";
 import * as $SY from "../../converters/ShussoubaYosou";
 import { ShussoubaYosou } from "../../entities/ShussoubaYosou";
 import { readDouble, readInt } from "../Reader";
 import { Tool } from "../Tool";
+import { JrdbShussoubaData } from './JrdbShussoubaData';
+import { Shussouba } from '../../entities/Shussouba';
 
-export class Joa extends JrdbData {
-
-  @OrmManager()
-  protected entityManager: EntityManager;
+export class Joa extends JrdbShussoubaData {
 
   @Inject()
   protected tool: Tool;
@@ -23,12 +19,15 @@ export class Joa extends JrdbData {
     return 116;
   }
 
-  public async save(buffer: Buffer) {
-    const rsId = this.jrdbShussoubaTool.getRaceShussoubaId(buffer, 8);
-    const asIs = await this.entityManager.findOne(ShussoubaYosou, rsId.shussoubaId);
+  protected async saveShussoubaRelated(buffer: Buffer, shussouba: Shussouba) {
+    await super.saveShussoubaRelated(buffer, shussouba);
+    await this.saveShussoubaYosou(buffer, shussouba);
+  }
 
+  public async saveShussoubaYosou(buffer: Buffer, shussouba: Shussouba) {
+    const asIs = await this.entityManager.findOne(ShussoubaYosou, shussouba.Id);
     const toBe = new ShussoubaYosou();
-    toBe.Id = rsId.shussoubaId;
+    toBe.Id = shussouba.Id;
     toBe.CidChoukyouSoten = readDouble(buffer, 64, 5);
     toBe.CidKyuushaSoten = readDouble(buffer, 69, 5);
     toBe.Cid = readInt(buffer, 79, 3);
@@ -37,7 +36,6 @@ export class Joa extends JrdbData {
     toBe.Em = $SY.em.toCodeFromJrdb(buffer, 88, 1);
     toBe.KyuushaBbShirushi = $SY.shirushi.toCodeFromJrdb(buffer, 89, 1);
     toBe.KishuBbShirushi = $SY.shirushi.toCodeFromJrdb(buffer, 100, 1);
-
     return await this.tool.saveOrUpdate(ShussoubaYosou, asIs, toBe);
   }
 }
