@@ -40,13 +40,8 @@ export abstract class JrdbKaisaiData extends JrdbData {
       return asIs;
     }
 
-    // TODO 既に取り込まれている場合は取り込まない
     const toBe = this.getKaisaiTool().createKaisai(buffer);
-    if (!toBe) {
-      return null;
-    }
     this.setKaisai(buffer, toBe);
-
     const kaisai = await this.tool.saveOrUpdate(Kaisai, asIs, toBe);
     return kaisai;
   }

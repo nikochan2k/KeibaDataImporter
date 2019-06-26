@@ -3,6 +3,7 @@ import { Inject } from "typedi";
 import { EntityManager } from "typeorm";
 import { OrmManager } from "typeorm-typedi-extensions";
 import { Tool } from "./Tool";
+import * as $K from "../converters/Kaisai";
 import { Kaisai } from "../entities/Kaisai";
 import { getLogger } from "../LogUtil";
 
@@ -90,6 +91,14 @@ export abstract class KaisaiTool {
       .setParameter("key", key)
       .orderBy("Id", "DESC")
       .getOne();
+  }
+
+  public setYoubi(kaisai: Kaisai, buffer: Buffer, offset: number, length: number) {
+    kaisai.Youbi = $K.youbi.toCodeFromKol(buffer, offset, length);
+    if (kaisai.Youbi === null) {
+      const date = new Date(kaisai.Nen, kaisai.Gatsu, kaisai.Nichi);
+      kaisai.Youbi = (date.getDay() + 1) % 7 + 1
+    }
   }
 
   public createKaisai(buffer: Buffer) {

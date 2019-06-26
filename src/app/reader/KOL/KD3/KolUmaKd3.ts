@@ -169,24 +169,16 @@ export class KolUmaKd3 extends DataToImport {
     if (!nen) {
       return null;
     }
-    const kyuujitsu = $K.kyuujitsu.toCodeFromKol(buffer, 20, 1);
-    const gaikokuKeibajouMei = readStr(buffer, 131, 20);
-
-    const asIs = await this.kolKaisaiTool.getKaisaiWithId(buffer);
-    if (asIs && asIs.Kyuujitsu === kyuujitsu && asIs.GaikokuKeibajouMei === gaikokuKeibajouMei) {
-      return asIs;
-    }
-
     const toBe = this.kolKaisaiTool.createKaisai(buffer);
     if (!toBe) {
       return null;
     }
-    toBe.Kyuujitsu = kyuujitsu;
-    toBe.Youbi = $K.youbi.toCodeFromKol(buffer, 21, 1);
+    toBe.Kyuujitsu = $K.kyuujitsu.toCodeFromKol(buffer, 20, 1);
+    this.kolKaisaiTool.setYoubi(toBe, buffer, 21, 1);
     toBe.KaisaiKubun = this.kolKaisaiTool.convertKaisaiKubunFrom(toBe.Basho);
     toBe.ChuuouChihouGaikoku = $K.chuuouChihouGaikoku.toCodeFromKol(buffer, 23, 1);
-    toBe.GaikokuKeibajouMei = gaikokuKeibajouMei;
-
+    toBe.GaikokuKeibajouMei = readStr(buffer, 131, 20);
+    const asIs = await this.kolKaisaiTool.getKaisaiWithId(buffer);
     return await this.tool.saveOrUpdate(Kaisai, asIs, toBe);
   }
 

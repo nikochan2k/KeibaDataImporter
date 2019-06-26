@@ -71,23 +71,16 @@ export class KolSei1Kd3 extends DataToImport {
   }
 
   protected async saveKaisai(buffer: Buffer) {
-    const kyuujitsu = $K.kyuujitsu.toCodeFromKol(buffer, 20, 1);
-
-    const asIs = await this.kolKaisaiTool.getKaisaiWithId(buffer);
-    if (asIs && asIs.Kyuujitsu === kyuujitsu) {
-      return asIs;
-    }
-
-    let toBe = this.kolKaisaiTool.createKaisai(buffer);
+    const toBe = this.kolKaisaiTool.createKaisai(buffer);
     if (!toBe) {
       return null;
     }
-    toBe.Kyuujitsu = kyuujitsu;
-    toBe.Youbi = $K.youbi.toCodeFromKol(buffer, 21, 1);
+    toBe.Kyuujitsu = $K.kyuujitsu.toCodeFromKol(buffer, 20, 1);;
+    this.kolKaisaiTool.setYoubi(toBe, buffer, 21, 1);
     toBe.KaisaiKubun = this.kolKaisaiTool.convertKaisaiKubunFrom(toBe.Basho);
     toBe.ChuuouChihouGaikoku = $K.chuuouChihouGaikoku.toCodeFromKol(buffer, 23, 1);
-    toBe = await this.entityManager.save(toBe);
-    return toBe;
+    const asIs = await this.kolKaisaiTool.getKaisaiWithId(buffer);
+    return await this.tool.saveOrUpdate(Kaisai, asIs, toBe);
   }
 
   protected async saveRace(buffer: Buffer, kaisai: Kaisai, asIs: Race) {

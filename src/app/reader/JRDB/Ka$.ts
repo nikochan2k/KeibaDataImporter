@@ -13,7 +13,7 @@ export abstract class Ka$ extends JrdbKaisaiData {
 
   protected setKaisai(buffer: Buffer, toBe: Kaisai) {
     toBe.KaisaiKubun = $K.kaisaiKubun.toCodeFromJrdb(buffer, 14, 1);
-    toBe.Youbi = $K.youbi.toCodeFromJrdb(buffer, 15, 2);
+    this.jrdbKaisaiTool.setYoubi(toBe, buffer, 15, 2);
   }
 
   protected async saveKaisaiRelated(buffer: Buffer, kaisai: Kaisai) {
