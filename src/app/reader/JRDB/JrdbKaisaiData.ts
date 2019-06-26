@@ -30,7 +30,8 @@ export abstract class JrdbKaisaiData extends JrdbData {
   }
 
   public async save(buffer: Buffer) {
-    await this.saveKaisai(buffer);
+    const kaisai = await this.saveKaisai(buffer);
+    await this.saveKaisaiRelated(buffer, kaisai);
   }
 
   protected async saveKaisai(buffer: Buffer) {
@@ -47,7 +48,6 @@ export abstract class JrdbKaisaiData extends JrdbData {
     this.setKaisai(buffer, toBe);
 
     const kaisai = await this.tool.saveOrUpdate(Kaisai, asIs, toBe);
-    await this.saveKaisaiRelated(buffer, kaisai);
     return kaisai;
   }
 
