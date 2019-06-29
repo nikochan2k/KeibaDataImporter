@@ -371,8 +371,8 @@ export class ShussoubaYosou {
   public NyuukyuuNannichimae?: number;
 
 
-  @Column("varchar", { length: 75, nullable: true })
-  public Houbokusaki?: string;
+  @Column("mediumint", { nullable: true })
+  public HoubokusakiId?: number;
 
   @Column("tinyint", { nullable: true })
   public HoubokusakiRank?: number;
