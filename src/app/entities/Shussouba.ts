@@ -74,6 +74,4 @@ export class Shussouba {
   @Column("int", { nullable: true })
   public KolNengappi: number;
 
-  @Column("tinyint", { nullable: true })
-  public Jrdb: number;
 }

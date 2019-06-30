@@ -6,8 +6,8 @@ import {
 } from "typeorm";
 
 @Entity("Seisansha")
-@Index("IxSeisansha1", (s: Seisansha) => [s.UmaId, s.MeishouId], { unique: true })
-@Index("IxSeisansha2", (s: Seisansha) => [s.MeishouId])
+@Index("IxSeisansha1", (s: Seisansha) => [s.UmaId, s.ShoyuuId], { unique: true })
+@Index("IxSeisansha2", (s: Seisansha) => [s.ShoyuuId])
 export class Seisansha {
   @PrimaryGeneratedColumn()
   public Id: number;
@@ -16,5 +16,5 @@ export class Seisansha {
   public UmaId: number;
 
   @Column("mediumint")
-  public MeishouId: number;
+  public ShoyuuId: number;
 }

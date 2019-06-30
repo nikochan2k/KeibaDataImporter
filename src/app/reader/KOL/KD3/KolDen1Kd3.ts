@@ -69,7 +69,7 @@ export class KolDen1Kd3 extends DataToImport {
       return null;
     }
     toBe.Kyuujitsu = $K.kyuujitsu.toCodeFromKol(buffer, 20, 1);
-    this.kolKaisaiTool.setYoubi(toBe, buffer, 21, 1);
+    toBe.Youbi = $K.kyuujitsu.toCodeFromKol(buffer, 21, 1);
     toBe.KaisaiKubun = this.kolKaisaiTool.convertKaisaiKubunFrom(toBe.Basho);
     toBe.ChuuouChihouGaikoku = $K.chuuouChihouGaikoku.toCodeFromKol(buffer, 22, 1);
     const asIs = await this.kolKaisaiTool.getKaisaiWithId(buffer);

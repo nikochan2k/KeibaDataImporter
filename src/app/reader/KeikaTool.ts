@@ -1,16 +1,19 @@
 import { Logger } from "log4js";
-import { Service } from "typedi";
+import { Service, Inject } from "typedi";
 import { EntityManager } from "typeorm";
 import { OrmManager } from "typeorm-typedi-extensions";
 import { RaceKeika } from "../entities/RaceKeika";
-import { Shussouba } from "../entities/Shussouba";
 import { ShussoubaKeika } from "../entities/ShussoubaKeika";
 import { getLogger } from "../LogUtil";
+import { Tool } from './Tool';
 
 @Service()
 export class KeikaTool {
 
   protected logger: Logger;
+
+  @Inject()
+  protected tool: Tool;
 
   @OrmManager()
   protected entityManager: EntityManager;
@@ -35,14 +38,14 @@ export class KeikaTool {
     return shussoubaKeika;
   }
 
-  protected async saveShussoubaKeika(raceKeika: RaceKeika, shussoubaKeika: ShussoubaKeika, umabanStr: string) {
+  protected async saveShussoubaKeika(raceKeika: RaceKeika, toBe: ShussoubaKeika, umabanStr: string) {
     const umaban = parseInt(umabanStr);
-    const shussouba = new Shussouba();
-    shussouba.Id = raceKeika.RaceId * (2 ** 6) + umaban;
-    shussoubaKeika.Id = raceKeika.Id * (2 ** 6) + umaban;
-    shussoubaKeika.RaceKeikaId = raceKeika.Id;
-    shussoubaKeika.ShussoubaId = shussouba.Id;
-    await this.entityManager.getRepository(ShussoubaKeika).save(shussoubaKeika);
+    const shussoubaId = raceKeika.RaceId * (2 ** 6) + umaban;
+    toBe.Id = raceKeika.Id * (2 ** 6) + umaban;
+    toBe.RaceKeikaId = raceKeika.Id;
+    toBe.ShussoubaId = shussoubaId;
+    const asIs = await this.entityManager.findOne(ShussoubaKeika, toBe.Id);
+    await this.tool.saveOrUpdate(ShussoubaKeika, asIs, toBe);
   }
 
   public async parseRaceKeika(raceKeika: RaceKeika) {

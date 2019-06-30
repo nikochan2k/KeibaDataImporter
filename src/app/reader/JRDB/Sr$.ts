@@ -1,20 +1,38 @@
+import { Inject } from "typedi";
+import { JrdbRaceData } from "./JrdbRaceData";
 import { Race } from "../../entities/Race";
-import { RaceSeiseki } from "../../entities/RaceSeiseki";
+import { RaceKeika } from "../../entities/RaceKeika";
+import { KeikaTool } from "../KeikaTool";
 import { readStr } from "../Reader";
-import { JrdbRaceData } from './JrdbRaceData';
 
 export abstract class Sr$ extends JrdbRaceData {
+
+  @Inject()
+  private keikaTool: KeikaTool;
 
   protected async saveRaceRelated(buffer: Buffer, race: Race) {
     await super.saveRaceSeiseki(buffer, race.Id);
     await this.jrdbRaceTool.saveRaceLapTime(buffer, 8, race);
+    await this.saveCornerIchidori(buffer, race);
   }
 
-  protected setRaceSeiseki(buffer: Buffer, toBe: RaceSeiseki) {
-    toBe.Ichidori1Corner = readStr(buffer, 62, 64);
-    toBe.Ichidori2Corner = readStr(buffer, 126, 64);
-    toBe.Ichidori3Corner = readStr(buffer, 190, 64);
-    toBe.Ichidori4Corner = readStr(buffer, 254, 64);
+  private async saveCornerIchidori(buffer: Buffer, race: Race) {
+    await this.saveRaceKeika(buffer, 62, 64, race, 12); // 1角
+    await this.saveRaceKeika(buffer, 126, 64, race, 2); // 2角
+    await this.saveRaceKeika(buffer, 190, 64, race, 3); // 3角
+    await this.saveRaceKeika(buffer, 254, 64, race, 4); // 4角
+  }
+
+  private async saveRaceKeika(buffer: Buffer, offset: number, length: number, race: Race, midashi2: number) {
+    const toBe = new RaceKeika();
+    toBe.Id = race.Id * (2 ** 7) + midashi2;
+    toBe.RaceId = race.Id;
+    toBe.Midashi2 = midashi2;
+    toBe.Keika = readStr(buffer, offset, length);
+    const asIs = await this.entityManager.findOne(RaceKeika, toBe.Id);
+    await this.tool.saveOrUpdate(RaceKeika, asIs, toBe);
+
+    await this.keikaTool.parseRaceKeika(toBe);
   }
 
 }

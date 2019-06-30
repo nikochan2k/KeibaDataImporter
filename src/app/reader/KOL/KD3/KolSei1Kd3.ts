@@ -76,7 +76,7 @@ export class KolSei1Kd3 extends DataToImport {
       return null;
     }
     toBe.Kyuujitsu = $K.kyuujitsu.toCodeFromKol(buffer, 20, 1);;
-    this.kolKaisaiTool.setYoubi(toBe, buffer, 21, 1);
+    toBe.Youbi = $K.kyuujitsu.toCodeFromKol(buffer, 21, 1);
     toBe.KaisaiKubun = this.kolKaisaiTool.convertKaisaiKubunFrom(toBe.Basho);
     toBe.ChuuouChihouGaikoku = $K.chuuouChihouGaikoku.toCodeFromKol(buffer, 23, 1);
     const asIs = await this.kolKaisaiTool.getKaisaiWithId(buffer);
@@ -236,15 +236,18 @@ export class KolSei1Kd3 extends DataToImport {
       if (!keika) {
         continue;
       }
-      const raceKeika = new RaceKeika();
-      raceKeika.Id = race.Id * (2 ** 4) + bangou;
-      raceKeika.RaceId = race.Id;
-      raceKeika.Midashi1 = $RK.midashi1.toCodeFromKol(buffer, offset, 1);
-      raceKeika.Midashi2 = $RK.midashi2.toCodeFromKol(buffer, offset + 1, 2);
-      raceKeika.Keika = keika;
-      await this.entityManager.save(raceKeika);
+      const toBe = new RaceKeika();
+      const midashi1 = $RK.midashi1.toCodeFromKol(buffer, offset, 1);
+      const midashi2 = $RK.midashi2.toCodeFromKol(buffer, offset + 1, 2);
+      toBe.Id = race.Id * (2 ** 7) + (midashi1 || 0) * (2 ** 4) + (midashi2 || 0);
+      toBe.RaceId = race.Id;
+      toBe.Midashi1 = midashi1;
+      toBe.Midashi2 = midashi2;
+      toBe.Keika = keika;
+      const asIs = await this.entityManager.findOne(RaceKeika, toBe.Id);
+      await this.tool.saveOrUpdate(RaceKeika, asIs, toBe);
 
-      await this.keikaTool.parseRaceKeika(raceKeika);
+      await this.keikaTool.parseRaceKeika(toBe);
     }
   }
 

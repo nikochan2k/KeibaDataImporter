@@ -47,8 +47,8 @@ export class Ukc extends JrdbData {
     uma.Sanchi = $U.sanch.toCodeFromJrdb(buffer, 259, 8);
     uma.SanchiMei = readStr(buffer, 259, 8);
     uma.MasshouFlag = $C.masshouFlag.toCodeFromJrdb(buffer, 267, 1);
-    uma.ChichiKeitouCode = $U.keitou.toCodeFromJravan(buffer, 276, 4);
-    uma.HahaChichiKeitouCode = $U.keitou.toCodeFromJravan(buffer, 280, 4);
+    uma.ChichiKeitouCode = $U.keitou.toCodeFromJrdb(buffer, 276, 4);
+    uma.HahaChichiKeitouCode = $U.keitou.toCodeFromJrdb(buffer, 280, 4);
     uma = await this.umaDao.saveUma(uma, true);
     await this.saveSeisansha(buffer, uma.Id);
 

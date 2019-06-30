@@ -26,9 +26,7 @@ export abstract class JrdbShussoubaData extends JrdbRaceData {
     if (!toBe) {
       return info.shussouba;
     }
-    this.setShussouba(buffer, toBe, info);
-    toBe.Jrdb = 1;
-
+    await this.setShussouba(buffer, toBe, info);
     const asIs = info.shussouba;
     const shussouba = await this.tool.saveOrUpdate(Shussouba, asIs, toBe);
     return shussouba;

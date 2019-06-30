@@ -3,11 +3,7 @@ import { JrdbBridge } from "./JrdbBridge";
 import * as $C from "../../converters/Common";
 import { Bridge } from "../Bridge";
 import { KaisaiInfo, KaisaiTool } from "../KaisaiTool";
-import {
-  readHex,
-  readPositiveInt,
-  readRaw
-} from "../Reader";
+import { readHex, readPositiveInt, readRaw } from "../Reader";
 
 @Service()
 export class JrdbKaisaiTool extends KaisaiTool {

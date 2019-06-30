@@ -411,9 +411,9 @@ export const maeuriFlag = new Codes(
 
 export const pace = new Codes(
   [
-    { code: 0, kol: "0", naiyou: "H" },
-    { code: 1, kol: "1", naiyou: "M" },
-    { code: 2, kol: "2", naiyou: "S" }
+    { code: 0, kol: "0", jrdb: "H", naiyou: "H" },
+    { code: 1, kol: "1", jrdb: "M", naiyou: "M" },
+    { code: 2, kol: "2", jrdb: "S", naiyou: "S" }
   ]
 );
 

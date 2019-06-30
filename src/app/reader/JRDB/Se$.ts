@@ -24,6 +24,7 @@ import {
   readStrWithNoSpace
 } from "../Reader";
 import { ShussoubaInfo } from "../ShussoubaTool";
+import { Race } from '../../entities/Race';
 
 export abstract class Se$ extends JrdbShussoubaData {
 
@@ -65,20 +66,24 @@ export abstract class Se$ extends JrdbShussoubaData {
     return this.choukyoushiDao.saveChoukyoushi(choukyoushi, choukyoushiMei);
   }
 
-  protected async saveShussoubaRelated(buffer: Buffer, shussouba: Shussouba) {
-    await super.saveShussoubaRelated(buffer, shussouba);
-    await this.saveShussoubaSeiseki(buffer, shussouba.Id);
-    await this.saveShussoubaHyouka(buffer, shussouba.Id);
-    await this.saveOddsHaitou(buffer, shussouba);
-    await this.saveShussoubaTsuukaJuni(buffer, shussouba.Id);
+  protected async saveRaceRelated(buffer: Buffer, race: Race) {
+    await this.saveRaceSeiseki(buffer, race.Id);
   }
 
   protected setRaceSeiseki(buffer: Buffer, toBe: RaceSeiseki) {
     toBe.Baba = $R.baba.toCodeFromJrdb(buffer, 69, 1);
     toBe.BabaSokudo = $R.babaSokudo.toCodeFromJrdb(buffer, 70, 1);
     toBe.Pace = $R.pace.toCodeFromJrdb(buffer, 221, 1);
-    toBe.PaceShisuu = readDouble(buffer, 238, 5);
+    toBe.PaceShisuu = readDouble(buffer, 238, 5, 0.1);
     toBe.Tenki = $R.tenki.toCodeFromJrdb(buffer, 338, 1);
+  }
+
+  protected async saveShussoubaRelated(buffer: Buffer, shussouba: Shussouba) {
+    await super.saveShussoubaRelated(buffer, shussouba);
+    await this.saveShussoubaSeiseki(buffer, shussouba.Id);
+    await this.saveShussoubaHyouka(buffer, shussouba.Id);
+    await this.saveOddsHaitou(buffer, shussouba);
+    await this.saveShussoubaTsuukaJuni(buffer, shussouba.Id);
   }
 
   protected async saveShussoubaSeiseki(buffer: Buffer, shussoubaId: number) {

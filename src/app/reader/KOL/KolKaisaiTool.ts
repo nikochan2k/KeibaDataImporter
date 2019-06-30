@@ -4,10 +4,7 @@ import * as $C from "../../converters/Common";
 import { KaisaiKubun } from "../../converters/Kaisai";
 import { getLogger } from "../../LogUtil";
 import { KaisaiInfo, KaisaiTool } from "../KaisaiTool";
-import {
-  readPositiveInt,
-  readRaw
-} from "../Reader";
+import { readPositiveInt, readRaw } from "../Reader";
 
 @Service()
 export class KolKaisaiTool extends KaisaiTool {
