@@ -29,11 +29,13 @@ export class KeikaTool {
       shussoubaKeika.TateHanareteCount = old.TateHanareteCount;
       shussoubaKeika.TateOokikuHanareteCount = old.TateOokikuHanareteCount;
       shussoubaKeika.YokoCount = old.YokoCount;
+      shussoubaKeika.YokoHanareteCount = old.YokoHanareteCount;
     } else {
       shussoubaKeika.TateCount = 0;
       shussoubaKeika.TateHanareteCount = 0;
       shussoubaKeika.TateOokikuHanareteCount = 0;
       shussoubaKeika.YokoCount = 0;
+      shussoubaKeika.YokoHanareteCount = 0;
     }
     return shussoubaKeika;
   }
@@ -76,13 +78,17 @@ export class KeikaTool {
         if (bracket) {
           switch (ch) {
             case ".":
+            case ",":
               shussoubaKeika.YokoCount++;
+              break;
+            case "*":
+              shussoubaKeika.YokoHanareteCount++;
               break;
             case ")":
               shussoubaKeika.YokoCount = 0;
+              shussoubaKeika.YokoHanareteCount = 0;
               bracket = false;
               break;
-            case "*":
             case "止":
             case "落":
               break;
@@ -93,6 +99,7 @@ export class KeikaTool {
         } else {
           switch (ch) {
             case ".":
+            case ",":
               shussoubaKeika.TateCount++;
               break;
             case "-":

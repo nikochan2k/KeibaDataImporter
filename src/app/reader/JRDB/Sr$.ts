@@ -24,11 +24,15 @@ export abstract class Sr$ extends JrdbRaceData {
   }
 
   private async saveRaceKeika(buffer: Buffer, offset: number, length: number, race: Race, midashi2: number) {
+    const keika = readStr(buffer, offset, length);
+    if (!keika) {
+      return;
+    }
     const toBe = new RaceKeika();
     toBe.Id = race.Id * (2 ** 7) + midashi2;
     toBe.RaceId = race.Id;
     toBe.Midashi2 = midashi2;
-    toBe.Keika = readStr(buffer, offset, length);
+    toBe.Keika = keika;
     const asIs = await this.entityManager.findOne(RaceKeika, toBe.Id);
     await this.tool.saveOrUpdate(RaceKeika, asIs, toBe);
 

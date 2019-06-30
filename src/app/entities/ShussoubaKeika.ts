@@ -17,15 +17,18 @@ export class ShussoubaKeika {
   @Column("bigint")
   public ShussoubaId: number;
 
-  @Column("smallint")
+  @Column("tinyint")
   public TateCount: number;
 
-  @Column("smallint")
+  @Column("tinyint")
   public TateHanareteCount: number;
 
-  @Column("smallint")
+  @Column("tinyint")
   public TateOokikuHanareteCount: number;
 
-  @Column("smallint")
+  @Column("tinyint")
   public YokoCount: number;
+
+  @Column("tinyint")
+  public YokoHanareteCount: number;
 }
