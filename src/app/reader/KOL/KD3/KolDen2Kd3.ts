@@ -15,7 +15,8 @@ import {
   readInt,
   readPositiveInt,
   readStr,
-  readStrWithNoSpace
+  readStrWithNoSpace,
+  readPositiveDouble
 } from "../../Reader";
 import { ShussoubaInfo } from "../../ShussoubaTool";
 import { Tool } from "../../Tool";
@@ -89,7 +90,7 @@ export class KolDen2Kd3 extends DataToImport {
     const nenrei = readPositiveInt(buffer, 65, 2);
     const nen = readInt(buffer, 2, 4);
     toBe.Nenrei = this.tool.normalizeNenrei(nenrei, nen);
-    toBe.Kinryou = readDouble(buffer, 148, 3, 0.1);
+    toBe.Kinryou = readPositiveDouble(buffer, 148, 3, 0.1);
     const kishu = await this.kolTool.saveKishu(buffer, 151);
     toBe.KishuId = kishu.Id;
     toBe.KishuTouzaiBetsu = $C.touzaiBetsu.toCodeFromKol(buffer, 196, 1);

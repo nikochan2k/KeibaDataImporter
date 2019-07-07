@@ -14,12 +14,12 @@ import { ShussoubaYosou } from "../../../entities/ShussoubaYosou";
 import { Uma } from "../../../entities/Uma";
 import { DataToImport } from "../../DataToImport";
 import {
-  readDouble,
   readInt,
+  readPositiveDouble,
   readPositiveInt,
   readStrWithNoSpace,
   readTime
-} from "../../Reader";
+  } from "../../Reader";
 import { ShussoubaInfo } from "../../ShussoubaTool";
 import { Tool } from "../../Tool";
 import { KolChoukyouTool } from "../KolChoukyouTool";
@@ -112,7 +112,7 @@ export class KolSei2Kd3 extends DataToImport {
     const toBe = new ShussoubaSeiseki();
     toBe.Id = info.shussouba.Id;
     toBe.Gate = readPositiveInt(buffer, 25, 2);
-    toBe.Kinryou = readDouble(buffer, 150, 3, 0.1);
+    toBe.Kinryou = readPositiveDouble(buffer, 150, 3, 0.1);
     toBe.Bataijuu = readPositiveInt(buffer, 153, 3);
     toBe.Zougen = readInt(buffer, 156, 3);
     const kishu = await this.kolTool.saveKishu(buffer, 162);
@@ -132,12 +132,12 @@ export class KolSei2Kd3 extends DataToImport {
     toBe.Chakusa2 = $S.chakura2.toCodeFromKol(buffer, 288, 1);
     toBe.TimeSa = this.kolShussoubaTool.getTimeSa(buffer, 289);
     if (1200 <= info.race.Kyori) {
-      toBe.Ten3F = readDouble(buffer, 292, 3, 0.1);
+      toBe.Ten3F = readPositiveDouble(buffer, 292, 3, 0.1);
       if (toBe.Time && toBe.Ten3F) {
         toBe.Ten3FIkou = toBe.Time - toBe.Ten3F;
       }
     }
-    toBe.Agari3F = readDouble(buffer, 295, 3, 0.1);
+    toBe.Agari3F = readPositiveDouble(buffer, 295, 3, 0.1);
     if (toBe.Time && toBe.Agari3F) {
       toBe.Agari3FIzen = toBe.Time - toBe.Agari3F;
     }

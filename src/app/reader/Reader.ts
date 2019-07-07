@@ -68,6 +68,11 @@ export function readDouble(buf: Buffer, offset: number, length: number, mul?: nu
   return isNaN(d) ? null : d * mul;
 }
 
+export function readPositiveDouble(buf: Buffer, offset: number, length: number, mul?: number) {
+  const d = readDouble(buf, offset, length, mul);
+  return d !== null && 0 < d ? d : null;
+}
+
 export function readInt(buf: Buffer, offset: number, length: number, mul?: number) {
   mul = mul || 1;
   const str = readStr(buf, offset, length);

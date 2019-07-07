@@ -6,7 +6,7 @@ import { JrdbOddsHaitouTool } from "./JrdbOddsHaitouTool";
 import { JrdbRaceTool } from "./JrdbRaceTool";
 import { Baken, Kakutei } from "../../converters/Common";
 import { OddsHaitou } from "../../entities/OddsHaitou";
-import { readDouble } from "../Reader";
+import { readPositiveDouble } from "../Reader";
 
 export class Ov extends JrdbData {
 
@@ -36,7 +36,7 @@ export class Ov extends JrdbData {
           if (bangou1 === bangou2 || bangou2 === bangou3 || bangou3 === bangou1) {
             continue;
           }
-          const odds1 = readDouble(buffer, offset, 7, 0.1);
+          const odds1 = readPositiveDouble(buffer, offset, 7, 0.1);
           offset += 7;
           if (!odds1) {
             continue;

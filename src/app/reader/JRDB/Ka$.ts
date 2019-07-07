@@ -1,9 +1,9 @@
+import { JrdbKaisaiData } from "./JrdbKaisaiData";
 import * as $K from "../../converters/Kaisai";
 import * as $R from "../../converters/Race";
 import { Kaisai } from "../../entities/Kaisai";
 import { KaisaiYosou } from "../../entities/KaisaiYosou";
-import { readDouble } from "../Reader";
-import { JrdbKaisaiData } from './JrdbKaisaiData';
+import { readPositiveDouble } from "../Reader";
 
 export abstract class Ka$ extends JrdbKaisaiData {
 
@@ -36,17 +36,17 @@ export abstract class Ka$ extends JrdbKaisaiData {
     toBe.ShibaBabaUchi = $K.babaJoutai.toCodeFromJrdb(buffer, 24, 1);
     toBe.ShibaBabaNaka = $K.babaJoutai.toCodeFromJrdb(buffer, 25, 1);
     toBe.ShibaBabaSoto = $K.babaJoutai.toCodeFromJrdb(buffer, 26, 1);
-    toBe.ShibaBabaSa = readDouble(buffer, 27, 3, 0.1);
-    toBe.ChokusenBabaSaSaiuchi = readDouble(buffer, 30, 2, 0.1);
-    toBe.ChokusenBabaSaUchi = readDouble(buffer, 32, 2, 0.1);
-    toBe.ChokusenBabaSaNaka = readDouble(buffer, 34, 2, 0.1);
-    toBe.ChokusenBabaSaSoto = readDouble(buffer, 36, 2, 0.1);
-    toBe.ChokusenBabaSaOsoto = readDouble(buffer, 38, 2, 0.1);
+    toBe.ShibaBabaSa = readPositiveDouble(buffer, 27, 3, 0.1);
+    toBe.ChokusenBabaSaSaiuchi = readPositiveDouble(buffer, 30, 2, 0.1);
+    toBe.ChokusenBabaSaUchi = readPositiveDouble(buffer, 32, 2, 0.1);
+    toBe.ChokusenBabaSaNaka = readPositiveDouble(buffer, 34, 2, 0.1);
+    toBe.ChokusenBabaSaSoto = readPositiveDouble(buffer, 36, 2, 0.1);
+    toBe.ChokusenBabaSaOsoto = readPositiveDouble(buffer, 38, 2, 0.1);
     toBe.DirtBaba = $R.baba.toCodeFromJrdb(buffer, 40, 1);
     toBe.DirtBabaSokudo = $R.babaSokudo.toCodeFromJrdb(buffer, 41, 1);
     toBe.DirtBabaUchi = $K.babaJoutai.toCodeFromJrdb(buffer, 42, 1);
     toBe.DirtBabaNaka = $K.babaJoutai.toCodeFromJrdb(buffer, 43, 1);
     toBe.DirtBabaSoto = $K.babaJoutai.toCodeFromJrdb(buffer, 44, 1);
-    toBe.DirtBabaSa = readDouble(buffer, 45, 3, 0.1);
+    toBe.DirtBabaSa = readPositiveDouble(buffer, 45, 3, 0.1);
   }
 }

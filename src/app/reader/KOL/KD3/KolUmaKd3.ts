@@ -22,13 +22,13 @@ import { ShussoubaYosou } from "../../../entities/ShussoubaYosou";
 import { Uma } from "../../../entities/Uma";
 import { DataToImport } from "../../DataToImport";
 import {
-  readDouble,
   readInt,
   readPositiveInt,
   readRaw,
   readStr,
   readStrWithNoSpace,
-  readTime
+  readTime,
+  readPositiveDouble
 } from "../../Reader";
 import { Tool } from "../../Tool";
 import { KolChoukyouTool } from "../KolChoukyouTool";
@@ -149,7 +149,7 @@ export class KolUmaKd3 extends DataToImport {
     uma.MasshouNengappi = readInt(buffer, 545, 8);
     uma.Jiyuu = readStr(buffer, 553, 6);
     uma.Ikisaki = readStr(buffer, 559, 10);
-    uma = await this.umaDao.saveUma(uma, true);
+    uma = await this.umaDao.saveUma(uma);
     await this.kolTool.saveSeisansha(buffer, 423, uma.Id);
 
     let kyousouba = new Kyousouba();
@@ -305,7 +305,7 @@ export class KolUmaKd3 extends DataToImport {
     toBe.Id = shussouba.Id;
     toBe.Gate = readPositiveInt(buffer, 3, 2);
     toBe.Bataijuu = readPositiveInt(buffer, 94, 3);
-    toBe.Kinryou = readDouble(buffer, 91, 3, 0.1);
+    toBe.Kinryou = readPositiveDouble(buffer, 91, 3, 0.1);
     toBe.Zougen = readInt(buffer, 97, 3);
     const kishu = await this.kolTool.saveKishu(buffer, 103);
     toBe.KishuId = kishu.Id;
@@ -321,12 +321,12 @@ export class KolUmaKd3 extends DataToImport {
     toBe.TimeSa = this.kolShussoubaTool.getTimeSa(buffer, 230);
 
     if (1200 <= race.Kyori) {
-      toBe.Ten3F = readDouble(buffer, 233, 3, 0.1);
+      toBe.Ten3F = readPositiveDouble(buffer, 233, 3, 0.1);
       if (toBe.Time && toBe.Ten3F) {
         toBe.Ten3FIkou = toBe.Time - toBe.Ten3F;
       }
     }
-    toBe.Agari3F = readDouble(buffer, 236, 3, 0.1);
+    toBe.Agari3F = readPositiveDouble(buffer, 236, 3, 0.1);
     if (toBe.Time && toBe.Agari3F) {
       toBe.Agari3FIzen = toBe.Time - toBe.Agari3F;
     }

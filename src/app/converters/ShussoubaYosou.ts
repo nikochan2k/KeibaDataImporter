@@ -275,14 +275,6 @@ export const kyoseiFlag = new Codes(
   ]
 );
 
-export const norikawariFlag = new Codes(
-  [
-    { code: 0, jrdb: "0", naiyou: "変化なし" },
-    { code: 1, jrdb: "1", naiyou: "乗替(初)" },
-    { code: 9, jrdb: "9", naiyou: "乗替(再)" },
-  ]
-);
-
 export const houbokusakiRank = new Codes(
   [
     { code: 1, jrdb: "A", naiyou: "13%以上", tanshuku: "A" },

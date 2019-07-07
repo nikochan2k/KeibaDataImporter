@@ -10,8 +10,8 @@ import { RaceSeiseki } from "../../../entities/RaceSeiseki";
 import { DataToImport } from "../../DataToImport";
 import { KeikaTool } from "../../KeikaTool";
 import {
-  readDouble,
   readInt,
+  readPositiveDouble,
   readPositiveInt,
   readRaw,
   readStr,
@@ -184,7 +184,7 @@ export class KolSei1Kd3 extends DataToImport {
     toBe.Tenki = $R.tenki.toCodeFromKol(buffer, 379, 1);
     toBe.Baba = $R.baba.toCodeFromKol(buffer, 380, 1);
     if (race.HeichiShougai === 1) { // 障害
-      toBe.ShougaiHeikin1F = readDouble(buffer, 398, 4, 0.1);
+      toBe.ShougaiHeikin1F = readPositiveDouble(buffer, 398, 4, 0.1);
     }
     toBe.KolNengappi = dataNengappi;
 
@@ -192,7 +192,7 @@ export class KolSei1Kd3 extends DataToImport {
   }
 
   protected async saveRaceLapTime(buffer: Buffer, race: Race) {
-    const lapTime1 = readDouble(buffer, 402, 3, 0.1);
+    const lapTime1 = readPositiveDouble(buffer, 402, 3, 0.1);
     if (lapTime1) {
       await this.kolRaceTool.saveRaceLapTime(buffer, 402, race);
     } else {

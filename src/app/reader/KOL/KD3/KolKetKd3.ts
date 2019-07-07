@@ -49,7 +49,7 @@ export class KolKetKd3 extends DataToImport {
     uma.ChichiUmaId = chichiUmaId;
     uma.HahaUmaId = hahaUmaId;
 
-    return this.umaDao.saveUma(uma, true);
+    return this.umaDao.saveUma(uma);
   }
 
   protected async saveSosenba23(buffer: Buffer, offset: number, seibetsu: $U.Seibetsu, chichiUmaId?: number, hahaUmaId?: number) {
@@ -70,7 +70,7 @@ export class KolKetKd3 extends DataToImport {
     uma.ChichiUmaId = chichiUmaId;
     uma.HahaUmaId = hahaUmaId;
 
-    return this.umaDao.saveUma(uma, true);
+    return this.umaDao.saveUma(uma);
   }
 
   public async save(buffer: Buffer) {
@@ -103,7 +103,7 @@ export class KolKetKd3 extends DataToImport {
     }
     uma.ChichiUmaId = c.Id;
     uma.HahaUmaId = h.Id;
-    await this.umaDao.saveUma(uma, true);
+    await this.umaDao.saveUma(uma);
   }
 
 }

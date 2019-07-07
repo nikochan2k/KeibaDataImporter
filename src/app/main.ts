@@ -1,8 +1,8 @@
 import "reflect-metadata";
-import { createConnection, useContainer } from "typeorm";
 import { Container } from "typedi";
-import { Traversal } from "./Traversal";
+import { createConnection, useContainer } from "typeorm";
 import { getLogger } from "./LogUtil";
+import { Traversal } from "./Traversal";
 
 const logger = getLogger("main");
 
@@ -20,7 +20,6 @@ createConnection({
   ],
   logging: ["error", "warn"]
 }).then(async (con) => {
-  // await con.query("PRAGMA journal_mode = WAL");
   await con.synchronize(false);
   const traversal = Container.get(Traversal);
   await traversal.traverse(dirName);

@@ -43,13 +43,14 @@ export class Ukc extends JrdbData {
     const hahaChichiUma = await this.saveOyaUma(buffer, 121, $U.Seibetsu.Boba, 173);
     const hahaUma = await this.saveOyaUma(buffer, 85, $U.Seibetsu.Hinba, 169, hahaChichiUma);
     uma.HahaUmaId = hahaUma && hahaUma.Id;
+    uma.Seinen = readInt(buffer, 157, 4);
     uma.Seinengappi = readInt(buffer, 157, 8);
     uma.Sanchi = $U.sanch.toCodeFromJrdb(buffer, 259, 8);
     uma.SanchiMei = readStr(buffer, 259, 8);
     uma.MasshouFlag = $C.masshouFlag.toCodeFromJrdb(buffer, 267, 1);
     uma.ChichiKeitouCode = $U.keitou.toCodeFromJrdb(buffer, 276, 4);
     uma.HahaChichiKeitouCode = $U.keitou.toCodeFromJrdb(buffer, 280, 4);
-    uma = await this.umaDao.saveUma(uma, true);
+    uma = await this.umaDao.saveUma(uma);
     await this.saveSeisansha(buffer, uma.Id);
 
     let kyousouba = new Kyousouba();
@@ -74,7 +75,7 @@ export class Ukc extends JrdbData {
     uma.Seinen = readInt(buffer, seinenOffset, 4);
     uma.Seibetsu = seibetsu;
     uma.ChichiUmaId = chichiUma && chichiUma.Id;
-    return this.umaDao.saveUma(uma, true);
+    return this.umaDao.saveUma(uma);
   }
 
   public async saveSeisansha(buffer: Buffer, umaId: number) {

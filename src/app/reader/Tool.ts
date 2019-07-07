@@ -20,7 +20,7 @@ export class Tool {
   public async saveOrUpdate<T>(entity: ObjectType<T>, asIs: T, toBe: T, forceKeys?: string[]) {
     if (asIs) {
       const updateSet = this.createUpdateSet(asIs, toBe);
-      if (Object.keys(updateSet).length) {
+      if (0 < Object.keys(updateSet).length) {
         await this.entityManager
           .createQueryBuilder()
           .update(entity, updateSet)

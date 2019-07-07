@@ -53,7 +53,7 @@ export class KolShuKd3 extends DataToImport {
     uma.OmoKousetsu = $C.hyouka.toCodeFromKol(buffer, 134, 1);
     uma.DirtKousetsu = $C.hyouka.toCodeFromKol(buffer, 135, 1);
     uma.ShibouNen = readPositiveInt(buffer, 136, 4);
-    await this.umaDao.saveUma(uma, true);
+    await this.umaDao.saveUma(uma);
   }
 
 }

@@ -1,8 +1,4 @@
-import {
-  Column,
-  Entity,
-  PrimaryColumn
-} from "typeorm";
+import { Column, Entity, PrimaryColumn } from "typeorm";
 
 @Entity("ShussoubaYosou")
 export class ShussoubaYosou {
@@ -356,10 +352,7 @@ export class ShussoubaYosou {
 
   @Column("tinyint", { nullable: true })
   public KyoseiFlag?: number;
-
-  @Column("tinyint", { nullable: true })
-  public NorikawariFlag?: number;
-
+  
 
   @Column("tinyint", { nullable: true })
   public NyuukyuuNansoume?: number;

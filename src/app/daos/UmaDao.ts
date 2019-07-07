@@ -72,16 +72,12 @@ export class UmaDao {
     return qb.getOne();
   }
 
-  public async saveUma(toBe: Uma, update?: boolean) {
+  public async saveUma(toBe: Uma) {
     if (toBe.Seibetsu === $U.Seibetsu.Senba) {
       toBe.Seibetsu = $U.Seibetsu.Boba;
     }
     const asIs = await this.getUma(toBe);
-    if (!asIs || update) {
-      return await this.tool.saveOrUpdate(Uma, asIs, toBe);
-    } else {
-      return asIs;
-    }
+    return await this.tool.saveOrUpdate(Uma, asIs, toBe);
   }
 
   public async saveKyousouba(toBe: Kyousouba) {

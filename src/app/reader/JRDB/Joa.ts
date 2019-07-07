@@ -30,6 +30,7 @@ export class Joa extends JrdbShussoubaData {
     toBe.Id = shussouba.Id;
     toBe.CidChoukyouSoten = readDouble(buffer, 64, 5);
     toBe.CidKyuushaSoten = readDouble(buffer, 69, 5);
+    toBe.CidSoten = readDouble(buffer, 74, 5);
     toBe.Cid = readInt(buffer, 79, 3);
     toBe.LsShisuu = readDouble(buffer, 82, 5);
     toBe.LsHyouka = $SY.lsHyouka.toCodeFromJrdb(buffer, 87, 1);

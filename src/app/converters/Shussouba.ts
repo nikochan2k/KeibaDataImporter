@@ -10,7 +10,9 @@ export const blinker = new Codes(
 
 export const norikawari = new Codes(
   [
-    { code: 1, kol: "1", naiyou: "乗り替り", tanshuku: "乗Ï替" }
+    { code: 1, kol: "1", naiyou: "乗り替り", tanshuku: "乗替" },
+    { code: 2, jrdb: "1", naiyou: "乗替(初)" },
+    { code: 3, jrdb: "9", naiyou: "乗替(再)" }
   ]
 );
 

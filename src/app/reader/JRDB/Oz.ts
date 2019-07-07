@@ -6,7 +6,7 @@ import { JrdbOddsHaitouTool } from "./JrdbOddsHaitouTool";
 import { JrdbRaceTool } from "./JrdbRaceTool";
 import { Baken, Kakutei } from "../../converters/Common";
 import { OddsHaitou } from "../../entities/OddsHaitou";
-import { readDouble } from "../Reader";
+import { readPositiveDouble } from "../Reader";
 
 export class Oz extends JrdbData {
 
@@ -32,7 +32,7 @@ export class Oz extends JrdbData {
 
   protected async saveTanshou(buffer: Buffer, raceId: number) {
     for (let bangou = 1, offset = 10; bangou <= 18; bangou++ , offset += 5) {
-      const odds = readDouble(buffer, offset, 5);
+      const odds = readPositiveDouble(buffer, offset, 5);
       if (!odds) {
         continue;
       }
@@ -48,7 +48,7 @@ export class Oz extends JrdbData {
 
   protected async saveFukushou(buffer: Buffer, raceId: number) {
     for (let bangou = 1, offset = 100; bangou <= 18; bangou++ , offset += 5) {
-      const odds = readDouble(buffer, offset, 5);
+      const odds = readPositiveDouble(buffer, offset, 5, 0.1);
       if (!odds) {
         continue;
       }
@@ -66,7 +66,7 @@ export class Oz extends JrdbData {
     let offset = 190;
     for (let bangou1 = 1; bangou1 <= 17; bangou1++) {
       for (let bangou2 = bangou1 + 1; bangou2 <= 18; bangou2++) {
-        const odds1 = readDouble(buffer, offset, 5);
+        const odds1 = readPositiveDouble(buffer, offset, 5, 0.1);
         offset += 5;
         if (!odds1) {
           continue;

@@ -2,7 +2,7 @@ import { Service } from "typedi";
 import * as $CH from "../../converters/Choukyou";
 import * as $R from "../../converters/Race";
 import { ShussoubaChoukyou } from "../../entities/ShussoubaChoukyou";
-import { readInt, readPositiveInt, readDouble } from "../Reader";
+import { readInt, readPositiveInt, readPositiveDouble } from "../Reader";
 import { Cy$ } from "./Cy$";
 
 @Service()
@@ -21,9 +21,9 @@ export class Cha extends Cy$ {
     sc.OiJoutai = $CH.oiJoutai.toCodeFromJrdb(buffer, 24, 2);
     sc.Noriyaku = $CH.noriyaku.toCodeFromJrdb(buffer, 26, 1);
     sc.ChoukyouF = readPositiveInt(buffer, 27, 1);
-    sc.TenF = readDouble(buffer, 28, 3, 0.1);
-    sc.ChuukanF = readDouble(buffer, 31, 3, 0.1);
-    sc.ShimaiF = readDouble(buffer, 34, 3, 0.1);
+    sc.TenF = readPositiveDouble(buffer, 28, 3, 0.1);
+    sc.ChuukanF = readPositiveDouble(buffer, 31, 3, 0.1);
+    sc.ShimaiF = readPositiveDouble(buffer, 34, 3, 0.1);
     sc.TenFShisuu = readInt(buffer, 37, 3);
     sc.ChuukanFShisuu = readInt(buffer, 40, 3);
     sc.ShimaiFShisuu = readInt(buffer, 43, 3);

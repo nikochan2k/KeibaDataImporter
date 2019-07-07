@@ -37,7 +37,7 @@ export class KolUmaTool {
     }
     uma.Seibetsu = seibetsu;
 
-    return this.umaDao.saveUma(uma, true);
+    return this.umaDao.saveUma(uma);
   }
 
 }

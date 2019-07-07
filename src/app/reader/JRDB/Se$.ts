@@ -10,6 +10,7 @@ import { KishuDao } from "../../daos/KishuDao";
 import { UmaDao } from "../../daos/UmaDao";
 import { Choukyoushi } from "../../entities/Choukyoushi";
 import { Kyousouba } from "../../entities/Kyousouba";
+import { Race } from "../../entities/Race";
 import { RaceSeiseki } from "../../entities/RaceSeiseki";
 import { Shussouba } from "../../entities/Shussouba";
 import { ShussoubaHyouka } from "../../entities/ShussoubaHyouka";
@@ -19,12 +20,12 @@ import { Uma } from "../../entities/Uma";
 import {
   readDouble,
   readInt,
+  readPositiveDouble,
   readPositiveInt,
   readStr,
   readStrWithNoSpace
-} from "../Reader";
+  } from "../Reader";
 import { ShussoubaInfo } from "../ShussoubaTool";
-import { Race } from '../../entities/Race';
 
 export abstract class Se$ extends JrdbShussoubaData {
 
@@ -97,16 +98,16 @@ export abstract class Se$ extends JrdbShussoubaData {
   protected async setShussoubaSeiseki(buffer: Buffer, toBe: ShussoubaSeiseki) {
     toBe.KakuteiChakujun = readPositiveInt(buffer, 140, 2);
     toBe.ChakujunFuka = $S.chakujunFuka.toCodeFromJrdb(buffer, 142, 1);
-    toBe.Time = readDouble(buffer, 143, 4, 0.1);
-    toBe.Kinryou = readDouble(buffer, 147, 3, 0.1);
+    toBe.Time = readPositiveDouble(buffer, 143, 4, 0.1);
+    toBe.Kinryou = readPositiveDouble(buffer, 147, 3, 0.1);
     const kyori = readInt(buffer, 62, 4);
     if (1200 <= kyori) {
-      toBe.Ten3F = readDouble(buffer, 258, 3, 0.1);
+      toBe.Ten3F = readPositiveDouble(buffer, 258, 3, 0.1);
       if (toBe.Time && toBe.Ten3F) {
         toBe.Ten3FIkou = toBe.Time - toBe.Ten3F;
       }
     }
-    toBe.Agari3F = readDouble(buffer, 261, 3, 0.1);
+    toBe.Agari3F = readPositiveDouble(buffer, 261, 3, 0.1);
     if (toBe.Time && toBe.Agari3F) {
       toBe.Agari3FIzen = toBe.Time - toBe.Agari3F;
     }

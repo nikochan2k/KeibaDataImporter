@@ -13,12 +13,12 @@ import { ShussoubaHassouJoukyou } from "../../entities/ShussoubaHassouJoukyou";
 import { Uma } from "../../entities/Uma";
 import { RaceTool } from "../RaceTool";
 import {
-  readDouble,
   readInt,
   readPositiveInt,
   readStr,
   readStrWithNoSpace,
-  readTime
+  readTime,
+  readPositiveDouble
 } from "../Reader";
 
 export interface RaceLapTimeInfo {
@@ -78,7 +78,7 @@ export class KolRaceTool extends RaceTool {
     }
     uma = await this.umaDao.saveUma(uma);
     record.UmaId = uma.Id;
-    record.Kinryou = readDouble(buffer, offset + 42, 3, 0.1);
+    record.Kinryou = readPositiveDouble(buffer, offset + 42, 3, 0.1);
     const tanshukuKishuMei = readStrWithNoSpace(buffer, offset + 45, 8);
     const jinmei = await this.jinmeiDao.save(JinmeiKubun.Tanshuku, tanshukuKishuMei);
     record.TanshukuKishuMeiId = jinmei.Id;
@@ -148,7 +148,7 @@ export class KolRaceTool extends RaceTool {
     raceLapTime.RaceId = race.Id;
     for (let i = 0; i < infos.length; i++) {
       const info = infos[i];
-      raceLapTime.LapTime = readDouble(buffer, info.Offset, 3, 0.1);
+      raceLapTime.LapTime = readPositiveDouble(buffer, info.Offset, 3, 0.1);
       if (raceLapTime.LapTime) {
         raceLapTime.Id = race.Id * (2 ** 5) + i + 1;
         raceLapTime.KaishiKyori = info.KaishiKyori;

@@ -4,9 +4,9 @@ import { OddsHaitou } from "../../entities/OddsHaitou";
 import { Shussouba } from "../../entities/Shussouba";
 import { HaitouInfo, OddsHaitouTool } from "../OddsHaitouTool";
 import {
-  readDouble,
   readPositiveInt,
   readStr,
+  readPositiveDouble,
 } from "../Reader";
 
 @Service()
@@ -19,14 +19,14 @@ export class KolOddsHaitouTool extends OddsHaitouTool {
     oddsHaitou.Baken = Baken.Tanshou;
     oddsHaitou.Bangou1 = shussouba.Umaban;
     oddsHaitou.Ninki = readPositiveInt(buffer, ninkiOffset, 2);
-    oddsHaitou.Odds1 = readDouble(buffer, oddsOffset, 5, 0.1);
+    oddsHaitou.Odds1 = readPositiveDouble(buffer, oddsOffset, 5, 0.1);
     await this.saveOddsHaitou(oddsHaitou);
   }
 
   protected getOdds(buffer: Buffer, offset: number, length: number) {
     let odds: number;
     if (readStr(buffer, offset, length) !== "*") {
-      odds = readDouble(buffer, offset, length, 0.1);
+      odds = readPositiveDouble(buffer, offset, length, 0.1);
     } else {
       odds = 10 ** (length - 2);
     }

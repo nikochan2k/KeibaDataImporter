@@ -2,7 +2,7 @@ import { Logger } from "log4js";
 import { Inject } from "typedi";
 import { EntityManager } from "typeorm";
 import { OrmManager } from "typeorm-typedi-extensions";
-import { readDouble } from "./Reader";
+import { readPositiveDouble } from "./Reader";
 import { Tool } from "./Tool";
 import { RaceDao } from "../daos/RaceDao";
 import { Race } from "../entities/Race";
@@ -79,11 +79,11 @@ export abstract class RaceTool {
   }
 
   public async saveRaceLapTime(buffer: Buffer, offset: number, race: Race) {
-    let lapTime = readDouble(buffer, offset, 3, 0.1);
+    let lapTime = readPositiveDouble(buffer, offset, 3, 0.1);
     let kaishiKyori = 0;
     let shuuryouKyori = (lapTime < 10.0 ? 100 : 200);
     for (let i = 0; i < 18; i++ , offset += 3, kaishiKyori += 200, shuuryouKyori += 200) {
-      lapTime = readDouble(buffer, offset, 3, 0.1);
+      lapTime = readPositiveDouble(buffer, offset, 3, 0.1);
       if (!lapTime) {
         break;
       }

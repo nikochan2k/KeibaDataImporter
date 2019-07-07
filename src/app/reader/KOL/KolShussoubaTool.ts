@@ -1,7 +1,7 @@
 import { Inject, Service } from "typedi";
 import { Shussouba } from "../../entities/Shussouba";
 import { ShussoubaTsuukaJuni } from "../../entities/ShussoubaTsuukaJuni";
-import { readDouble, readPositiveInt } from "../Reader";
+import { readPositiveInt, readPositiveDouble } from "../Reader";
 import { ShussoubaTool } from "../ShussoubaTool";
 import { KolRaceTool } from "./KolRaceTool";
 
@@ -12,7 +12,7 @@ export class KolShussoubaTool extends ShussoubaTool {
   private kolRaceTool: KolRaceTool;
 
   public getTimeSa(buffer: Buffer, offset: number) {
-    const timeSa = readDouble(buffer, offset, 3, 0.1);
+    const timeSa = readPositiveDouble(buffer, offset, 3, 0.1);
     if (99.8 <= timeSa) {
       return 0.0;
     }
