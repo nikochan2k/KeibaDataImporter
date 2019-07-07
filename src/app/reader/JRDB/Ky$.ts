@@ -22,7 +22,7 @@ import {
   readInt,
   readPositiveInt,
   readStr,
-  readStrWithNoSpace
+  readStrWithNoSpace,
 } from "../Reader";
 import { ShussoubaInfo } from "../ShussoubaTool";
 import { JrdbShussoubaData } from './JrdbShussoubaData';
@@ -53,8 +53,8 @@ export abstract class Ky$ extends JrdbShussoubaData {
     }
     toBe.KyousoubaId = kyousouba.Id;
     toBe.Wakuban = readPositiveInt(buffer, 323, 1);
-    toBe.Bataijuu = readPositiveInt(buffer, 396, 3);
-    toBe.Zougen = readInt(buffer, 399, 3);
+    toBe.WakuKakuteiBataijuu = readPositiveInt(buffer, 396, 3);
+    toBe.WakuKakuteiZougen = readInt(buffer, 399, 3);
     toBe.TorikeshiShubetsu = $S.torikeshiShubetsu.toCodeFromJrdb(buffer, 402, 1);
   }
 
@@ -87,7 +87,7 @@ export abstract class Ky$ extends JrdbShussoubaData {
     let uma = new Uma();
     uma.KettouTourokuBangou = readStr(buffer, 10, 8);
     const bamei = readStr(buffer, 18, 36);
-    if (this.tool.isEnglish) {
+    if (this.tool.isEnglish(bamei)) {
       uma.EigoBamei = bamei;
     } else {
       uma.KanaBamei = bamei;

@@ -54,10 +54,10 @@ export class Shussouba {
   /* JRDB 競走馬データ */
 
   @Column("smallint", { nullable: true })
-  public Bataijuu?: number;
+  public WakuKakuteiBataijuu?: number;
 
   @Column("tinyint", { nullable: true })
-  public Zougen?: number;
+  public WakuKakuteiZougen?: number;
 
   @Column("tinyint", { nullable: true })
   public TorikeshiShubetsu?: number;

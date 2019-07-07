@@ -431,18 +431,18 @@ export const tenki = new Codes(
 
 export const baba = new Codes(
   [
-    { code: 0, kol: "0", jvdata:"1", naiyou: "良" },
-    { code: 1, kol: "1", jvdata:"2", naiyou: "稍重" },
-    { code: 2, kol: "2", jvdata:"3", naiyou: "重" },
-    { code: 3, kol: "3", jvdata:"4", naiyou: "不良" }
+    { code: 0, kol: "0", jrdb: "1", jvdata:"1", naiyou: "良" },
+    { code: 1, kol: "1", jrdb: "2", jvdata:"2", naiyou: "稍重" },
+    { code: 2, kol: "2", jrdb: "3", jvdata:"3", naiyou: "重" },
+    { code: 3, kol: "3", jrdb: "4", jvdata:"4", naiyou: "不良" }
   ]
 );
 
 export const babaSokudo = new Codes(
   [
-    { code: 0, kol: "0", naiyou: "普通" },
-    { code: 1, kol: "1", naiyou: "速い" },
-    { code: 2, kol: "2", naiyou: "遅い" }
+    { code: 0, jrdb: "0", naiyou: "普通" },
+    { code: 1, jrdb: "1", naiyou: "速い" },
+    { code: 2, jrdb: "2", naiyou: "遅い" }
   ]
 );
 
