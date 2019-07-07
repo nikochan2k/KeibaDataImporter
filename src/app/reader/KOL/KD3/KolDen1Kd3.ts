@@ -36,7 +36,7 @@ export class KolDen1Kd3 extends DataToImport {
     return 848;
   }
 
-  protected setup() {
+  protected async setup() {
     const kolBridge = <KolBridge>this.bridge;
     kolBridge.yosouKyakushitsuMap = new Map<number, number>();
   }

@@ -47,7 +47,7 @@ export class KolDen2Kd3 extends DataToImport {
     return 1000;
   }
 
-  protected teardown() {
+  protected async teardown() {
     const kolBridge = <KolBridge>this.bridge;
     delete kolBridge.yosouKyakushitsuMap;
   }

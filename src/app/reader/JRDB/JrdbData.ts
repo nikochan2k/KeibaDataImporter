@@ -10,7 +10,7 @@ export abstract class JrdbData extends DataToImport {
   @Inject()
   protected bridge: Bridge;
 
-  protected setup() {
+  protected async setup() {
     const result = JrdbData.YYMMDD.exec(this.bridge.basename);
     if (!result) {
       console.log("ファイル名に日付がありません: " + this.bridge.basename);
@@ -23,7 +23,7 @@ export abstract class JrdbData extends DataToImport {
     jrdbBridge.nichi = parseInt(result[3]);
   }
 
-  protected teardown() {
+  protected async teardown() {
     const jrdbBridge = <JrdbBridge>this.bridge;
     delete jrdbBridge.nen;
     delete jrdbBridge.gatsu;

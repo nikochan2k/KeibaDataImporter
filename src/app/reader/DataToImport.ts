@@ -26,7 +26,7 @@ export abstract class DataToImport {
   public abstract async save(buffer: Buffer);
 
   public async readAll(fd: number) {
-    this.setup();
+    await this.setup();
     const length = this.getBufferLength();
     await this.entityManager.transaction(await (async () => {
       let buf: Buffer;
@@ -34,7 +34,7 @@ export abstract class DataToImport {
         await this.save(buf);
       }
     }));
-    this.teardown();
+    await this.teardown();
   }
 
   protected readLine(fd: number, length: number): Buffer {
@@ -69,10 +69,10 @@ export abstract class DataToImport {
     }
   }
 
-  protected setup() {
+  protected async setup() {
   }
 
-  protected teardown() {
+  protected async teardown() {
   }
 
 }

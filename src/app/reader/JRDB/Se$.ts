@@ -24,7 +24,7 @@ import {
   readPositiveInt,
   readStr,
   readStrWithNoSpace
-  } from "../Reader";
+} from "../Reader";
 import { ShussoubaInfo } from "../ShussoubaTool";
 
 export abstract class Se$ extends JrdbShussoubaData {
@@ -196,4 +196,24 @@ export abstract class Se$ extends JrdbShussoubaData {
       await this.entityManager.save(shussoubaTsuukaJuni);
     }
   }
+
+  protected async teardown() {
+    const rows: any[] = await this.entityManager.query(`SELECT
+    SS.Id AS Id, ROUND(SS.Time - T.MinTime, 1) AS TimeSa
+  FROM
+    Shussouba S
+    INNER JOIN ShussoubaSeiseki SS ON S.Id = SS.Id
+    INNER JOIN (SELECT RaceId, MIN(Time) AS MinTime FROM Shussouba S_ INNER JOIN ShussoubaSeiseki SS_ ON S_.Id = SS_.Id GROUP BY RaceId HAVING COUNT(TimeSa) = 0) T ON S.RaceId = T.RaceId
+  `);
+    rows.forEach(async (row) => {
+      await this.entityManager
+        .createQueryBuilder()
+        .update(ShussoubaSeiseki, { "TimeSa": row.TimeSa })
+        .where("Id = :id")
+        .setParameter("id", row.Id)
+        .execute();
+    });
+    await super.teardown();
+  }
+
 }
