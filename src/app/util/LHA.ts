@@ -201,8 +201,8 @@ export interface LhaHeader {
     datetime: number;
     attribute: number;
     level: number;
-    filename: string;
-    crc: number;
+    filename?: string;
+    crc?: number;
     os?: number;
     packedOffset?: number;
 }
@@ -242,30 +242,40 @@ export class LhaReader {
                 datetime: reader.readUInt32(),
                 attribute: reader.readUInt8(),
                 level: reader.readUInt8(),
-                filename: reader.readString(reader.readUInt8()),
-                crc: reader.readUInt16()
             };
             let nextPosition = 0;
             if (header.level === 0x00) {
-                header.headerSize = (header.headerSize & 0xFF);
+                header.filename = reader.readString(reader.readUInt8());
+                header.crc = reader.readUInt16();
                 header.packedOffset = position + 2 + header.headerSize;
                 nextPosition = header.packedOffset + header.packedSize;
             } else if (header.level == 0x01) {
-                header.headerSize = (header.headerSize & 0xFF);
-                const skipSize = header.packedSize;
-                nextPosition = position + 2 + header.headerSize + skipSize;
+                header.filename = reader.readString(reader.readUInt8());
+                header.crc = reader.readUInt16();
                 header.os = reader.readUInt8();
                 let extSize = reader.readUInt16() - 2;
                 while (0 < extSize) {
                     reader.seek(extSize, LhaArrayReader.SeekRelative);
                     extSize = reader.readUInt16() - 2;
                 }
-                header.packedOffset = reader.getPosition();
-                header.packedSize = nextPosition - header.packedOffset;
+                header.packedOffset = position;
+                header.packedSize = position + 2 + header.headerSize + header.packedSize - header.packedOffset;
             } else if (header.level === 0x02) {
+                header.crc = reader.readUInt16();
                 header.packedOffset = position + header.headerSize;
                 nextPosition = position + header.headerSize + header.packedSize;
                 header.os = reader.readUInt8();
+                let extSize = reader.readUInt16() - 2;
+                while (0 < extSize) {
+                    const headerId = reader.readUInt8();
+                    if (headerId === 1) {
+                        header.filename = reader.readString(extSize - 1).replace(/\x00+$/, "");
+                        extSize = reader.readUInt16() - 2;
+                    } else {
+                        reader.seek(extSize - 1, LhaArrayReader.SeekRelative);
+                        extSize = reader.readUInt16() - 2;
+                    }
+                }
             }
             this.entries[header.filename.toLocaleLowerCase()] = header;
             reader.seek(nextPosition, LhaArrayReader.SeekAbsolute);

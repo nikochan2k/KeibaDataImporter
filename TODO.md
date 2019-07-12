@@ -3,4 +3,4 @@
 * ×ShussoubaSeisekiの乗り替わりは算出できる→データがない場合があるので算出できない
 * JRDB、KOL、JRAVAN、JVDATAの優先度を決める
   * RaceKeikaはKOLを優先
-  
+* LZH解凍でディレクトリを扱えるようにする
