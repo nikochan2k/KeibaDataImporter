@@ -245,11 +245,13 @@ export class LhaReader {
             };
             let nextPosition = 0;
             if (header.level === 0x00) {
+                header.headerSize = (header.headerSize & 0xFF);
                 header.filename = reader.readString(reader.readUInt8());
                 header.crc = reader.readUInt16();
                 header.packedOffset = position + 2 + header.headerSize;
                 nextPosition = header.packedOffset + header.packedSize;
             } else if (header.level == 0x01) {
+                header.headerSize = (header.headerSize & 0xFF);
                 header.filename = reader.readString(reader.readUInt8());
                 header.crc = reader.readUInt16();
                 header.os = reader.readUInt8();
