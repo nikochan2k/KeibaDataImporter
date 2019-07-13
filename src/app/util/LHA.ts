@@ -194,7 +194,7 @@ class LhaRingBuffer {
 }
 
 export interface LhaHeader {
-    headerSize: number;
+    headerSize?: number;
     packedType: string;
     packedSize: number;
     originalSize: number;
@@ -230,12 +230,12 @@ export class LhaReader {
 
         while (true) {
             const position = reader.getPosition();
-            const size = reader.readUInt16();
+            const size = reader.readUInt8();
+            const checksum = reader.readUInt8();
             if (size <= 0) {
                 break;
             }
             const header: LhaHeader = {
-                headerSize: size,
                 packedType: reader.readString(5),
                 packedSize: reader.readUInt32(),
                 originalSize: reader.readUInt32(),
@@ -245,38 +245,39 @@ export class LhaReader {
             };
             let nextPosition = 0;
             if (header.level === 0x00) {
-                header.headerSize = (header.headerSize & 0xFF);
+                header.headerSize = size;
                 header.filename = reader.readString(reader.readUInt8());
                 header.crc = reader.readUInt16();
                 header.packedOffset = position + 2 + header.headerSize;
                 nextPosition = header.packedOffset + header.packedSize;
             } else if (header.level == 0x01) {
-                header.headerSize = (header.headerSize & 0xFF);
+                header.headerSize = size;
+                nextPosition = position + 2 + header.headerSize + header.packedSize;
                 header.filename = reader.readString(reader.readUInt8());
                 header.crc = reader.readUInt16();
                 header.os = reader.readUInt8();
-                let extSize = reader.readUInt16() - 2;
+                let extSize = reader.readUInt16();
                 while (0 < extSize) {
-                    reader.seek(extSize, LhaArrayReader.SeekRelative);
-                    extSize = reader.readUInt16() - 2;
+                    reader.seek(extSize - 2, LhaArrayReader.SeekRelative);
+                    extSize = reader.readUInt16();
                 }
-                header.packedOffset = position;
-                header.packedSize = position + 2 + header.headerSize + header.packedSize - header.packedOffset;
+                header.packedOffset = reader.getPosition();
+                header.packedSize = nextPosition - header.packedOffset;
             } else if (header.level === 0x02) {
+                header.headerSize = checksum << 8 | size;
                 header.crc = reader.readUInt16();
                 header.packedOffset = position + header.headerSize;
-                nextPosition = position + header.headerSize + header.packedSize;
+                nextPosition = header.packedOffset + header.packedSize;
                 header.os = reader.readUInt8();
-                let extSize = reader.readUInt16() - 2;
+                let extSize = reader.readUInt16();
                 while (0 < extSize) {
                     const headerId = reader.readUInt8();
                     if (headerId === 1) {
-                        header.filename = reader.readString(extSize - 1).replace(/\x00+$/, "");
-                        extSize = reader.readUInt16() - 2;
+                        header.filename = reader.readString(extSize - 3);
                     } else {
-                        reader.seek(extSize - 1, LhaArrayReader.SeekRelative);
-                        extSize = reader.readUInt16() - 2;
+                        reader.seek(extSize - 3, LhaArrayReader.SeekRelative);
                     }
+                    extSize = reader.readUInt16();
                 }
             }
             this.entries[header.filename.toLocaleLowerCase()] = header;
