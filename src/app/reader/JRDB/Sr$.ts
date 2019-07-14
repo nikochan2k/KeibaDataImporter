@@ -24,10 +24,11 @@ export abstract class Sr$ extends JrdbRaceData {
   }
 
   private async saveRaceKeika(buffer: Buffer, offset: number, length: number, race: Race, midashi2: number) {
-    const keika = readStr(buffer, offset, length);
+    let keika = readStr(buffer, offset, length);
     if (!keika) {
       return;
     }
+    keika = keika.replace(/\s+/g, "=");
     const toBe = new RaceKeika();
     toBe.Id = race.Id * (2 ** 7) + midashi2;
     toBe.RaceId = race.Id;
