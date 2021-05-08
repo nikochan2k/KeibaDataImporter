@@ -45,7 +45,7 @@
     "tmp": "0.1.0",
     "tslib": "^1.10.0",
     "typedi": "^0.8.0",
-    "typeorm": "^0.2.18",
+    "typeorm": "^0.2.25",
     "typeorm-typedi-extensions": "^0.2.3",
     "unzipper": "^0.10.1"
   }
