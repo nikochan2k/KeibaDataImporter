@@ -63,9 +63,9 @@ class LhaArrayReader {
 
   readLength() {
     let length = this.readBits(3);
-    if (length == -1) return -1;
-    if (length == 7) {
-      while (this.readBits(1) != 0) {
+    if (length === -1) return -1;
+    if (length === 7) {
+      while (this.readBits(1) !== 0) {
         length++;
       }
     }
@@ -126,7 +126,7 @@ class LhaTree {
   addCodesWithLength(codeLengths: number[], codeLength: number) {
     let done = true;
     for (let i = 0; i < codeLengths.length; i++) {
-      if (codeLengths[i] == codeLength) {
+      if (codeLengths[i] === codeLength) {
         const node = this.nextEntry++;
         this.tree[node] = i | LhaTree.LEAF;
       } else if (codeLengths[i] > codeLength) {
@@ -151,7 +151,7 @@ class LhaTree {
 
   readCode(reader) {
     let code = this.tree[0];
-    while ((code & LhaTree.LEAF) == 0) {
+    while ((code & LhaTree.LEAF) === 0) {
       const bit = reader.readBits(1);
       code = this.tree[code + bit];
     }
@@ -208,11 +208,11 @@ export class LhaReader {
   constructor(buffer: Uint8Array) {
     const reader = new LhaArrayReader(buffer);
     this.reader = reader;
-    if (reader.readString(2) == "MZ") {
+    if (reader.readString(2) === "MZ") {
       // Check for SFX header, and skip it if it exists.
       const lastBlockSize = reader.readUInt16();
       const blockCount = reader.readUInt16();
-      const offset = (blockCount - 1) * 512 + (lastBlockSize != 0 ? lastBlockSize : 512);
+      const offset = (blockCount - 1) * 512 + (lastBlockSize !== 0 ? lastBlockSize : 512);
       reader.seek(offset, LhaArrayReader.SeekAbsolute);
     } else {
       reader.seek(0, LhaArrayReader.SeekAbsolute);
@@ -240,7 +240,7 @@ export class LhaReader {
         header.crc = reader.readUInt16();
         header.packedOffset = position + 2 + header.headerSize;
         nextPosition = header.packedOffset + header.packedSize;
-      } else if (header.level == 0x01) {
+      } else if (header.level === 0x01) {
         header.headerSize = size;
         nextPosition = position + 2 + header.headerSize + header.packedSize;
         header.filename = reader.readString(reader.readUInt8());
@@ -287,7 +287,7 @@ export class LhaReader {
     for (let i = 0; i < codeCount; i++) {
       const codeLength = reader.readLength();
       codeLengths.push(codeLength);
-      if (i == 2) {
+      if (i === 2) {
         // The dreaded special bit that no-one (including me) seems to understand.
         let length = reader.readBits(2);
         while (length-- > 0) {
@@ -313,8 +313,8 @@ export class LhaReader {
       const code = this.offsetTree.readCode(reader);
       if (code <= 2) {
         let skip = 1;
-        if (code == 1) skip = reader.readBits(4) + 3;
-        else if (code == 2) skip = reader.readBits(9) + 20;
+        if (code === 1) skip = reader.readBits(4) + 3;
+        else if (code === 2) skip = reader.readBits(9) + 20;
         while (--skip >= 0) {
           codeLengths.push(0);
           i++;

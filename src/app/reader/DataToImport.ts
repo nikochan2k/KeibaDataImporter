@@ -33,8 +33,7 @@ export abstract class DataToImport {
     try {
       const length = this.getBufferLength();
       await runInTransaction(async () => {
-        let buf: Buffer;
-        while ((buf = this.readLine(fd, length)) !== null) {
+        for (let buf = this.readLine(fd, length); buf !== null; buf = this.readLine(fd, length)) {
           await this.save(buf);
         }
       });

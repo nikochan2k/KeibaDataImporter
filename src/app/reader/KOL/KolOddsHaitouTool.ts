@@ -221,14 +221,14 @@ export class KolOddsHaitouTool extends OddsHaitouTool {
       if (!bangou1) {
         continue;
       }
-      let bangou2;
+      let bangou2: number | undefined;
       if (info.bangou2) {
         bangou2 = readPositiveInt(buffer, info.bangou2, info.bangou2Len);
         if (!bangou2 && [Baken.Tanshou, Baken.Fukushou].indexOf(info.baken) === -1) {
           continue;
         }
       }
-      let bangou3;
+      let bangou3: number | undefined;
       if (info.bangou3) {
         bangou3 = readPositiveInt(buffer, info.bangou3, info.bangou3Len);
         if (!bangou3 && [Baken.Sanrenpuku, Baken.Sanrentan].indexOf(info.baken) !== -1) {

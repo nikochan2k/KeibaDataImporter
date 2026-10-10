@@ -65,6 +65,7 @@ const toChar =
   " !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~\"'\\。「」、・ヲァィゥェォャュョッーアイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワン゛゜";
 
 function normalize(str: string) {
+  // biome-ignore lint/suspicious/noControlCharactersInRegex: 制御文字の除去が目的
   str = str.replace(/[\x00-\x1f\x7f-\x9f\s]+/g, " ");
 
   if (/^\s*$/.test(str)) {

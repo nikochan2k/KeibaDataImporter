@@ -121,6 +121,7 @@ export class Tool {
   }
 
   public isEnglish(name: string) {
+    // biome-ignore lint/suspicious/noControlCharactersInRegex: ASCII範囲の判定が目的
     return /^[\x00-\x7F]*$/.test(name);
   }
 
