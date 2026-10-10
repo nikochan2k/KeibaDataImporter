@@ -1,6 +1,6 @@
 import { Inject, Service } from "typedi";
 import { EntityManager, Repository } from "typeorm";
-import { OrmManager, OrmRepository } from "typeorm-typedi-extensions";
+import { OrmManager, OrmRepository } from "../OrmManager";
 import * as $U from "../converters/Uma";
 import { Kyousouba } from "../entities/Kyousouba";
 import { Uma } from "../entities/Uma";

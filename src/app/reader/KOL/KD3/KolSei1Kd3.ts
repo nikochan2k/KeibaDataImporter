@@ -48,12 +48,12 @@ export class KolSei1Kd3 extends DataToImport {
     const id = this.kolRaceTool.getRaceId(buffer);
     const dataNengappi = readInt(buffer, 2910, 8);
 
-    const raceSeiseki = await this.entityManager.findOne(RaceSeiseki, id);
+    const raceSeiseki = await this.entityManager.findOneBy(RaceSeiseki, { Id: id });
     if (raceSeiseki && raceSeiseki.KolNengappi && dataNengappi <= raceSeiseki.KolNengappi) {
       return;
     }
 
-    let race = await this.entityManager.findOne(Race, id);
+    let race = await this.entityManager.findOneBy(Race, { Id: id });
     if (!race) {
       const kaisai = await this.saveKaisai(buffer);
       if (!kaisai) {
@@ -244,7 +244,7 @@ export class KolSei1Kd3 extends DataToImport {
       toBe.Midashi1 = midashi1;
       toBe.Midashi2 = midashi2;
       toBe.Keika = keika;
-      const asIs = await this.entityManager.findOne(RaceKeika, toBe.Id);
+      const asIs = await this.entityManager.findOneBy(RaceKeika, { Id: toBe.Id });
       await this.tool.saveOrUpdate(RaceKeika, asIs, toBe);
 
       await this.keikaTool.parseRaceKeika(toBe);

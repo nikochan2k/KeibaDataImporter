@@ -1,6 +1,6 @@
 import { Inject, Service } from "typedi";
 import { EntityManager, Repository } from "typeorm";
-import { OrmManager, OrmRepository } from "typeorm-typedi-extensions";
+import { OrmManager, OrmRepository } from "../OrmManager";
 import { JinmeiDao } from "./JinmeiDao";
 import { Choukyoushi } from "../entities/Choukyoushi";
 import { ChoukyoushiMei as ChoukyoushiMei } from "../entities/ChoukyoushiMei";
@@ -28,9 +28,9 @@ export class ChoukyoushiDao {
   protected async getChoukyoushi(choukyoushi: Choukyoushi) {
     let result: Choukyoushi;
     if (choukyoushi.KolKyuushaCode) {
-      result = await this.choukyoushiRepository.findOne({ KolKyuushaCode: choukyoushi.KolKyuushaCode });
+      result = await this.choukyoushiRepository.findOneBy({ KolKyuushaCode: choukyoushi.KolKyuushaCode });
     } else if (choukyoushi.JrdbChoukyoushiCode) {
-      result = await this.choukyoushiRepository.findOne({ JrdbChoukyoushiCode: choukyoushi.JrdbChoukyoushiCode });
+      result = await this.choukyoushiRepository.findOneBy({ JrdbChoukyoushiCode: choukyoushi.JrdbChoukyoushiCode });
     }
     return result;
   }
@@ -77,7 +77,7 @@ export class ChoukyoushiDao {
 
   protected async saveChoukyoushiMei(choukyoushi: Choukyoushi, kubun: JinmeiKubun, meishou: string) {
     const jinmei = await this.jinmeiDao.save(kubun, meishou);
-    let choukyoushiMei = await this.choukyoushiMeiRepository.findOne({ ChoukyoushiId: choukyoushi.Id, JinmeiId: jinmei.Id });
+    let choukyoushiMei = await this.choukyoushiMeiRepository.findOneBy({ ChoukyoushiId: choukyoushi.Id, JinmeiId: jinmei.Id });
     if (!choukyoushiMei) {
       choukyoushiMei = new ChoukyoushiMei();
       choukyoushiMei.ChoukyoushiId = choukyoushi.Id;

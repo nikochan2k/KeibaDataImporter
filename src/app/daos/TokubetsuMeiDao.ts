@@ -1,6 +1,6 @@
 import { Service } from "typedi";
 import { Repository } from "typeorm";
-import { OrmRepository } from "typeorm-typedi-extensions";
+import { OrmRepository } from "../OrmManager";
 import { TokubetsuMei } from "../entities/TokubetsuMei";
 
 @Service()
@@ -10,7 +10,7 @@ export class TokubetsuMeiDao {
   private repository: Repository<TokubetsuMei>;
 
   public async save(meishou: string) {
-    let tokubetsuMei = await this.repository.findOne({ Meishou: meishou });
+    let tokubetsuMei = await this.repository.findOneBy({ Meishou: meishou });
     if (!tokubetsuMei) {
       tokubetsuMei = new TokubetsuMei();
       tokubetsuMei.Meishou = meishou;

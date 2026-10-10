@@ -91,7 +91,7 @@ export abstract class Se$ extends JrdbShussoubaData {
     const toBe = new ShussoubaSeiseki();
     toBe.Id = shussoubaId;
     await this.setShussoubaSeiseki(buffer, toBe);
-    const asIs = await this.entityManager.findOne(ShussoubaSeiseki, toBe.Id);
+    const asIs = await this.entityManager.findOneBy(ShussoubaSeiseki, { Id: toBe.Id });
     await this.tool.saveOrUpdate(ShussoubaSeiseki, asIs, toBe);
   }
 
@@ -125,7 +125,7 @@ export abstract class Se$ extends JrdbShussoubaData {
     toBe.Id = shussoubaId;
     this.setShussoubaHyouka(buffer, toBe);
 
-    const asIs = await this.entityManager.findOne(ShussoubaHyouka, shussoubaId);
+    const asIs = await this.entityManager.findOneBy(ShussoubaHyouka, { Id: shussoubaId });
     await this.tool.saveOrUpdate(ShussoubaHyouka, asIs, toBe);
   }
 

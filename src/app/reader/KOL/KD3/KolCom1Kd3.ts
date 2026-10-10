@@ -1,7 +1,7 @@
 import { Inject, Service } from "typedi";
 import { DataToImport } from "../../DataToImport";
 import { EntityManager } from "typeorm";
-import { OrmManager } from "typeorm-typedi-extensions";
+import { OrmManager } from "../../../OrmManager";
 import { ShussoubaSeiseki } from "../../../entities/ShussoubaSeiseki";
 import { Tool } from "../../Tool";
 import {
@@ -27,7 +27,7 @@ export class KolCom1Kd3 extends DataToImport {
 
   public async save(buffer: Buffer) {
     const rs = this.kolShussoubaTool.getRaceShussoubaId(buffer, 70);
-    const asIs = await this.entityManager.findOne(ShussoubaSeiseki, rs.shussoubaId);
+    const asIs = await this.entityManager.findOneBy(ShussoubaSeiseki, { Id: rs.shussoubaId });
     if (!asIs) {
       return;
     }

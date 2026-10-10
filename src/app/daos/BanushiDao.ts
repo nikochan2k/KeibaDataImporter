@@ -1,6 +1,6 @@
 import { Inject, Service } from "typedi";
 import { Repository } from "typeorm";
-import { OrmRepository } from "typeorm-typedi-extensions";
+import { OrmRepository } from "../OrmManager";
 import { MeishouDao } from "../daos/MeishouDao";
 import { MeishouKubun } from "../entities/Shoyuu";
 import { Banushi } from "../entities/Banushi";
@@ -16,7 +16,7 @@ export class BanushiDao {
 
   public async save(shussoubaId: number, kubun: MeishouKubun, meishou: string, banushiKaiCode?: number) {
     const shoyuu = await this.meishouDao.save(kubun, meishou, banushiKaiCode);
-    let banushi = await this.repository.findOne({ ShussoubaId: shussoubaId, MeishouId: shoyuu.Id });
+    let banushi = await this.repository.findOneBy({ ShussoubaId: shussoubaId, MeishouId: shoyuu.Id });
     if (!banushi) {
       banushi = new Banushi();
       banushi.ShussoubaId = shussoubaId;

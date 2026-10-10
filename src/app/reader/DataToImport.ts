@@ -1,7 +1,7 @@
 import * as fs from "fs";
 import * as log4js from "log4js";
 import { EntityManager } from "typeorm";
-import { OrmManager } from "typeorm-typedi-extensions";
+import { OrmManager } from "../OrmManager";
 import { getLogger } from "../LogUtil";
 
 export abstract class DataToImport {
@@ -23,7 +23,7 @@ export abstract class DataToImport {
 
   protected abstract getBufferLength(): number;
 
-  public abstract async save(buffer: Buffer);
+  public abstract save(buffer: Buffer);
 
   public async readAll(fd: number) {
     await this.setup();

@@ -1,6 +1,6 @@
 import { Inject } from "typedi";
 import { EntityManager } from "typeorm";
-import { OrmManager } from "typeorm-typedi-extensions";
+import { OrmManager } from "../../OrmManager";
 import { JrdbData } from "./JrdbData";
 import { JrdbOddsHaitouTool } from "./JrdbOddsHaitouTool";
 import { JrdbShussoubaTool } from "./JrdbShussoubaTool";
@@ -39,7 +39,7 @@ export class Tyb extends JrdbData {
   }
 
   protected async saveShussoubaYosou(buffer: Buffer, shussoubaId: number) {
-    const asIs = await this.entityManager.findOne(ShussoubaYosou, shussoubaId);
+    const asIs = await this.entityManager.findOneBy(ShussoubaYosou, { Id: shussoubaId });
 
     const toBe = new ShussoubaYosou();
     toBe.Id = shussoubaId;
@@ -73,7 +73,7 @@ export class Tyb extends JrdbData {
   }
 
   protected async saveShussoubaSeiseki(buffer: Buffer, shussoubaId: number) {
-    const asIs = await this.entityManager.findOne(ShussoubaSeiseki, shussoubaId);
+    const asIs = await this.entityManager.findOneBy(ShussoubaSeiseki, { Id: shussoubaId });
 
     const toBe = new ShussoubaSeiseki();
     toBe.Id = shussoubaId;

@@ -1,6 +1,6 @@
 import { Inject, Service } from "typedi";
 import { Repository } from "typeorm";
-import { OrmRepository } from "typeorm-typedi-extensions";
+import { OrmRepository } from "../OrmManager";
 import { MeishouKubun, Shoyuu } from "../entities/Shoyuu";
 import { Tool } from "../reader/Tool";
 
@@ -14,7 +14,7 @@ export class MeishouDao {
   protected tool: Tool;
 
   public async save(kubun: MeishouKubun, namae: string, banushiKaiCode?: number) {
-    const asIs = await this.repository.findOne({ Meishou: namae });
+    const asIs = await this.repository.findOneBy({ Meishou: namae });
     const toBe = new Shoyuu();
     toBe.Kubun = kubun;
     toBe.Meishou = namae;

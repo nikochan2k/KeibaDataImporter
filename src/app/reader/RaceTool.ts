@@ -1,7 +1,7 @@
 import { Logger } from "log4js";
 import { Inject } from "typedi";
 import { EntityManager } from "typeorm";
-import { OrmManager } from "typeorm-typedi-extensions";
+import { OrmManager } from "../OrmManager";
 import { readPositiveDouble } from "./Reader";
 import { Tool } from "./Tool";
 import { RaceDao } from "../daos/RaceDao";
@@ -63,7 +63,7 @@ export abstract class RaceTool {
     if (!id) {
       return null;
     }
-    return this.entityManager.findOne(Race, id);
+    return this.entityManager.findOneBy(Race, { Id: id });
   }
 
   public createRace(buffer: Buffer, kaisaiId: number) {

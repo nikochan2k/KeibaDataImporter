@@ -1,7 +1,7 @@
 import { Logger } from "log4js";
 import { Inject } from "typedi";
 import { EntityManager } from "typeorm";
-import { OrmManager } from "typeorm-typedi-extensions";
+import { OrmManager } from "../OrmManager";
 import { Tool } from "./Tool";
 import { Baken } from "../converters/Common";
 import { OddsHaitou } from "../entities/OddsHaitou";
@@ -57,8 +57,7 @@ export abstract class OddsHaitouTool {
   public async saveOddsHaitou(toBe: OddsHaitou) {
     toBe.Id = this.calculateOddsHaitouId(toBe);
     const asIs = await this.entityManager
-      .getRepository(OddsHaitou)
-      .findOne(toBe.Id);
+      .findOneBy(OddsHaitou, { Id: toBe.Id });
     if (asIs) {
       toBe = await this.tool.saveOrUpdate(OddsHaitou, toBe, asIs);
     } else {

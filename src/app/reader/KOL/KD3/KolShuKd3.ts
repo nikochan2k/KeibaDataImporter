@@ -1,6 +1,6 @@
 import { Inject, Service } from "typedi";
 import { EntityManager } from "typeorm";
-import { OrmManager } from "typeorm-typedi-extensions";
+import { OrmManager } from "../../../OrmManager";
 import * as $C from "../../../converters/Common";
 import * as $U from "../../../converters/Uma";
 import { UmaDao } from "../../../daos/UmaDao";

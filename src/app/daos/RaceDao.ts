@@ -1,6 +1,6 @@
 import { Inject, Service } from "typedi";
 import { Repository } from "typeorm";
-import { OrmRepository } from "typeorm-typedi-extensions";
+import { OrmRepository } from "../OrmManager";
 import { TokubetsuMeiDao } from "../daos/TokubetsuMeiDao";
 import { RaceMei } from "../entities/RaceMei";
 import { Record } from "../entities/Record";
@@ -35,7 +35,7 @@ export class RaceDao {
 
   public async saveRaceMei(raceId: number, meishou: string) {
     const tokubetsuMei = await this.tokubetsuMeiDao.save(meishou);
-    let raceMei = await this.raceMeiRepository.findOne({ RaceId: raceId, TokubetsuMeiId: tokubetsuMei.Id });
+    let raceMei = await this.raceMeiRepository.findOneBy({ RaceId: raceId, TokubetsuMeiId: tokubetsuMei.Id });
     if (!raceMei) {
       raceMei = new RaceMei();
       raceMei.RaceId = raceId;

@@ -1,6 +1,6 @@
 import { Service } from "typedi";
 import { Repository } from "typeorm";
-import { OrmRepository } from "typeorm-typedi-extensions";
+import { OrmRepository } from "../OrmManager";
 import { Houbokusaki } from "../entities/Houbokusaki";
 
 @Service()
@@ -10,7 +10,7 @@ export class HoubokusakiDao {
   private repository: Repository<Houbokusaki>;
 
   public async save(meishou: string) {
-    let houbokusaki = await this.repository.findOne({ Meishou: meishou });
+    let houbokusaki = await this.repository.findOneBy({ Meishou: meishou });
     if (!houbokusaki) {
       houbokusaki = new Houbokusaki();
       houbokusaki.Meishou = meishou;

@@ -1,6 +1,6 @@
 import { Inject, Service } from "typedi";
 import { Repository } from "typeorm";
-import { OrmRepository } from "typeorm-typedi-extensions";
+import { OrmRepository } from "../OrmManager";
 import { ShussoubaChoukyou } from "../entities/ShussoubaChoukyou";
 import { Tool } from "../reader/Tool";
 
@@ -19,7 +19,7 @@ export class ChoukyouDao {
       return null;
     }
     /* tslint:enable:triple-equals */
-    return this.repository.findOne(id);
+    return this.repository.findOneBy({ Id: id });
   }
 
   public async save(toBe: ShussoubaChoukyou) {

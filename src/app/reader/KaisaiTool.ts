@@ -1,7 +1,7 @@
 import { Logger } from "log4js";
 import { Inject } from "typedi";
 import { EntityManager } from "typeorm";
-import { OrmManager } from "typeorm-typedi-extensions";
+import { OrmManager } from "../OrmManager";
 import { Tool } from "./Tool";
 import { Kaisai } from "../entities/Kaisai";
 import { getLogger } from "../LogUtil";
@@ -78,7 +78,7 @@ export abstract class KaisaiTool {
 
   public getKaisaiWithId(buffer: Buffer) {
     const id = this.getKaisaiId(buffer);
-    return this.entityManager.findOne(Kaisai, id);
+    return this.entityManager.findOneBy(Kaisai, { Id: id });
   }
 
   public getKaisaiWithKey(buffer: Buffer) {

@@ -1,6 +1,6 @@
 import { Inject, Service } from "typedi";
 import { EntityManager } from "typeorm";
-import { OrmManager } from "typeorm-typedi-extensions";
+import { OrmManager } from "../../../OrmManager";
 import * as $CK from "../../../converters/Choukyoushi";
 import * as $C from "../../../converters/Common";
 import { ChoukyoushiDao } from "../../../daos/ChoukyoushiDao";

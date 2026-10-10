@@ -25,7 +25,7 @@ export abstract class Ka$ extends JrdbKaisaiData {
     toBe.Id = kaisai.Id;
     this.setKaisaiYosou(buffer, toBe);
 
-    const asIs = await this.entityManager.findOne(KaisaiYosou, toBe.Id);
+    const asIs = await this.entityManager.findOneBy(KaisaiYosou, { Id: toBe.Id });
     await this.tool.saveOrUpdate(KaisaiYosou, asIs, toBe);
   }
 

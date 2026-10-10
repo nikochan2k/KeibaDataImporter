@@ -34,7 +34,7 @@ export abstract class Sr$ extends JrdbRaceData {
     toBe.RaceId = race.Id;
     toBe.Midashi2 = midashi2;
     toBe.Keika = keika;
-    const asIs = await this.entityManager.findOne(RaceKeika, toBe.Id);
+    const asIs = await this.entityManager.findOneBy(RaceKeika, { Id: toBe.Id });
     await this.tool.saveOrUpdate(RaceKeika, asIs, toBe);
 
     await this.keikaTool.parseRaceKeika(toBe);

@@ -1,7 +1,7 @@
 import { Logger } from "log4js";
 import { Service, Inject } from "typedi";
 import { EntityManager } from "typeorm";
-import { OrmManager } from "typeorm-typedi-extensions";
+import { OrmManager } from "../OrmManager";
 import { RaceKeika } from "../entities/RaceKeika";
 import { ShussoubaKeika } from "../entities/ShussoubaKeika";
 import { getLogger } from "../LogUtil";
@@ -46,7 +46,7 @@ export class KeikaTool {
     toBe.Id = raceKeika.Id * (2 ** 6) + umaban;
     toBe.RaceKeikaId = raceKeika.Id;
     toBe.ShussoubaId = shussoubaId;
-    const asIs = await this.entityManager.findOne(ShussoubaKeika, toBe.Id);
+    const asIs = await this.entityManager.findOneBy(ShussoubaKeika, { Id: toBe.Id });
     await this.tool.saveOrUpdate(ShussoubaKeika, asIs, toBe);
   }
 

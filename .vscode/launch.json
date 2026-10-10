@@ -3,27 +3,11 @@
   "configurations": [
     {
       "name": "Launch",
-      "type": "node",
+      "type": "bun",
       "request": "launch",
-      "program": "${workspaceRoot}/build/app/main.js",
+      "program": "${workspaceFolder}/src/app/main.ts",
       "args": ["lzh/jrdb"],
-      "stopOnEntry": true,
-      "cwd": "${workspaceRoot}",
-      "env": {
-        "NODE_ENV": "development"
-      },
-      "sourceMaps": true
-    },
-    {
-      "name": "Attach",
-      "type": "node",
-      "request": "attach",
-      "port": 5858,
-      "address": "localhost",
-      "restart": false,
-      "sourceMaps": true,
-      "localRoot": "${workspaceRoot}",
-      "remoteRoot": null
+      "cwd": "${workspaceFolder}"
     }
   ]
 }

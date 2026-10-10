@@ -27,7 +27,7 @@ export class Skb extends JrdbShussoubaData {
     toBe.BaguSonotaComment = readStr(buffer, 193, 40);
     toBe.RaceComment = readStr(buffer, 233, 40);
 
-    const asIs = await this.entityManager.findOne(ShussoubaHyouka, shussoubaId);
+    const asIs = await this.entityManager.findOneBy(ShussoubaHyouka, { Id: shussoubaId });
     await this.tool.saveOrUpdate(ShussoubaHyouka, asIs, toBe);
   }
 

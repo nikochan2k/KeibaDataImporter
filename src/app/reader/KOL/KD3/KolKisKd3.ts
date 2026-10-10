@@ -1,6 +1,6 @@
 import { Inject, Service } from "typedi";
 import { EntityManager } from "typeorm";
-import { OrmManager } from "typeorm-typedi-extensions";
+import { OrmManager } from "../../../OrmManager";
 import { KishuDao } from "../../../daos/KishuDao";
 import { Kishu } from "../../../entities/Kishu";
 import { DataToImport } from "../../DataToImport";

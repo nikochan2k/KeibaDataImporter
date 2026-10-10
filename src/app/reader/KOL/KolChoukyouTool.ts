@@ -1,7 +1,7 @@
 import { crc16 } from "crc";
 import { Inject, Service } from "typedi";
 import { EntityManager } from "typeorm";
-import { OrmManager } from "typeorm-typedi-extensions";
+import { OrmManager } from "../../OrmManager";
 import * as $CH from "../../converters/Choukyou";
 import { ChoukyouDao } from "../../daos/ChoukyouDao";
 import { JinmeiDao } from "../../daos/JinmeiDao";

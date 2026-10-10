@@ -25,7 +25,7 @@ export class Joa extends JrdbShussoubaData {
   }
 
   public async saveShussoubaYosou(buffer: Buffer, shussouba: Shussouba) {
-    const asIs = await this.entityManager.findOne(ShussoubaYosou, shussouba.Id);
+    const asIs = await this.entityManager.findOneBy(ShussoubaYosou, { Id: shussouba.Id });
     const toBe = new ShussoubaYosou();
     toBe.Id = shussouba.Id;
     toBe.CidChoukyouSoten = readDouble(buffer, 64, 5);

@@ -1,7 +1,7 @@
 import { Logger } from "log4js";
 import { Service } from "typedi";
-import { EntityManager, ObjectType } from "typeorm";
-import { OrmManager } from "typeorm-typedi-extensions";
+import { EntityManager, EntityTarget } from "typeorm";
+import { OrmManager } from "../OrmManager";
 import { readInt, readPositiveInt, readStrWithNoSpace } from "./Reader";
 import { getLogger } from "../LogUtil";
 
@@ -17,13 +17,13 @@ export class Tool {
     this.logger = getLogger(this);
   }
 
-  public async saveOrUpdate<T>(entity: ObjectType<T>, asIs: T, toBe: T, forceKeys?: string[]) {
+  public async saveOrUpdate<T>(entity: EntityTarget<T>, asIs: T, toBe: T, forceKeys?: string[]) {
     if (asIs) {
       const updateSet = this.createUpdateSet(asIs, toBe);
       if (0 < Object.keys(updateSet).length) {
         await this.entityManager
           .createQueryBuilder()
-          .update(entity, updateSet)
+          .update(entity as EntityTarget<any>, updateSet as any)
           .where("Id = :id")
           .setParameter("id", (<any>asIs).Id)
           .execute();

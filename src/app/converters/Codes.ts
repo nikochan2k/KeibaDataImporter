@@ -22,7 +22,7 @@ export class Codes {
     if (buffer instanceof Buffer) {
       str = readRaw(buffer, offset, length);
     } else {
-      str = buffer;
+      str = buffer as string;
     }
     return str;
   }

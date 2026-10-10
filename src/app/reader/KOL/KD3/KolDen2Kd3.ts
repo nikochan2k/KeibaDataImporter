@@ -125,7 +125,7 @@ export class KolDen2Kd3 extends DataToImport {
     const kolBridge = <KolBridge>this.bridge;
     toBe.Kyakushitsu = kolBridge.yosouKyakushitsuMap.get(toBe.Id);
 
-    const asIs = await this.entityManager.findOne(ShussoubaYosou, shussouba.Id);
+    const asIs = await this.entityManager.findOneBy(ShussoubaYosou, { Id: shussouba.Id });
 
     return await this.tool.saveOrUpdate(ShussoubaYosou, asIs, toBe);
   }

@@ -1,6 +1,6 @@
 import { Service } from "typedi";
 import { Repository } from "typeorm";
-import { OrmRepository } from "typeorm-typedi-extensions";
+import { OrmRepository } from "../OrmManager";
 import { Jinmei, JinmeiKubun } from "../entities/Jinmei";
 
 @Service()
@@ -15,11 +15,11 @@ export class JinmeiDao {
       return null;
     }
     /* tslint:enable:triple-equals */
-    return this.repository.findOne(id);
+    return this.repository.findOneBy({ Id: id });
   }
 
   public async save(kubun: JinmeiKubun, meishou: string) {
-    let jinmei = await this.repository.findOne({ Meishou: meishou });
+    let jinmei = await this.repository.findOneBy({ Meishou: meishou });
     if (!jinmei) {
       jinmei = new Jinmei();
       jinmei.Kubun = kubun;

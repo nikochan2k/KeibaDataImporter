@@ -121,7 +121,7 @@ export abstract class Ky$ extends JrdbShussoubaData {
     toBe.Id = shussouba.Id;
     this.setShussoubaYosou(buffer, toBe);
 
-    const asIs = await this.entityManager.findOne(ShussoubaYosou, shussouba.Id);
+    const asIs = await this.entityManager.findOneBy(ShussoubaYosou, { Id: shussouba.Id });
     await this.tool.saveOrUpdate(ShussoubaYosou, asIs, toBe);
   }
 

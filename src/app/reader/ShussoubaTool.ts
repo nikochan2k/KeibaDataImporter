@@ -1,6 +1,6 @@
 import { Logger } from "log4js";
 import { EntityManager } from "typeorm";
-import { OrmManager } from "typeorm-typedi-extensions";
+import { OrmManager } from "../OrmManager";
 import { readPositiveInt, readRaw } from "./Reader";
 import { Race } from "../entities/Race";
 import { Shussouba } from "../entities/Shussouba";
@@ -82,7 +82,7 @@ export abstract class ShussoubaTool {
     if (!rsId) {
       return null;
     }
-    return this.entityManager.findOne(Shussouba, rsId.shussoubaId);
+    return this.entityManager.findOneBy(Shussouba, { Id: rsId.shussoubaId });
   }
 
   public createShussouba(buffer: Buffer, umabanOffset: number) {
@@ -103,13 +103,13 @@ export abstract class ShussoubaTool {
       return null;
     }
 
-    const race = await this.entityManager.findOne(Race, rsId.raceId);
+    const race = await this.entityManager.findOneBy(Race, { Id: rsId.raceId });
     if (!race) {
       return null;
     }
 
     const id = rsId.raceId * (2 ** 6) + rsId.umaban;
-    const shussouba = await this.entityManager.findOne(Shussouba, id);
+    const shussouba = await this.entityManager.findOneBy(Shussouba, { Id: id });
     return { race: race, shussouba: shussouba };
   }
 
@@ -121,7 +121,7 @@ export abstract class ShussoubaTool {
     toBe.Kubun = kubun;
     toBe.Code = code;
 
-    const asIs = await this.entityManager.findOne(ShussoubaJoutai, id);
+    const asIs = await this.entityManager.findOneBy(ShussoubaJoutai, { Id: id });
     if (asIs) {
       return;
     }

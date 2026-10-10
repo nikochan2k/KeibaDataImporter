@@ -44,7 +44,7 @@ export abstract class JrdbRaceData extends JrdbKaisaiData {
     const toBe = new RaceSeiseki();
     toBe.Id = raceId;
     this.setRaceSeiseki(buffer, toBe);
-    const asIs = await this.entityManager.findOne(RaceSeiseki, raceId);
+    const asIs = await this.entityManager.findOneBy(RaceSeiseki, { Id: raceId });
     await this.tool.saveOrUpdate(RaceSeiseki, asIs, toBe);
   }
 

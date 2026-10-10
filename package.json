@@ -2,14 +2,10 @@
   "name": "keiba-data-importer",
   "version": "0.0.1",
   "description": "Keiba Data Importer",
-  "main": "build/app/app.js",
+  "main": "src/app/main.ts",
   "scripts": {
-    "build": "tsc -p src || true",
-    "postbuild": "cpx 'src/{app,test}/**/*.json' build",
-    "rebuild": "rimraf build && tsc -p src || true",
-    "postrebuild": "cpx 'src/{app,test}/**/*.json' build",
-    "test": "mocha build/test --require source-map-support/register || true",
-    "clean": "rimraf build"
+    "start": "bun src/app/main.ts",
+    "typecheck": "tsc --noEmit"
   },
   "repository": {
     "type": "git",
@@ -18,35 +14,22 @@
   "license": "MIT",
   "private": true,
   "devDependencies": {
-    "@types/crc": "^3.4.0",
-    "@types/glob": "^7.1.1",
-    "@types/iconv-lite": "0.0.1",
-    "@types/log4js": "^2.3.5",
-    "@types/mocha": "^5.2.7",
-    "@types/node": "^12.6.2",
-    "@types/rimraf": "2.0.2",
-    "@types/sinon": "^7.0.13",
-    "@types/tmp": "0.1.0",
-    "@types/unzipper": "^0.9.2",
-    "mocha": "^6.1.4",
-    "rimraf": "^2.6.3",
-    "sinon": "^7.3.2",
-    "source-map-support": "^0.5.12",
-    "typescript": "^3.5.3"
+    "@types/bun": "latest",
+    "@types/glob": "^9.0.0",
+    "@types/tmp": "^0.2.6",
+    "@types/unzipper": "^0.10.11",
+    "typescript": "^7.0.2"
   },
   "dependencies": {
     "crc": "^3.8.0",
     "glob": "^7.1.4",
-    "iconv-lite": "^0.5.0",
-    "log4js": "^4.5.1",
-    "reflect-metadata": "^0.1.13",
-    "sqlite": "^3.0.3",
-    "sqlite3": "^4.0.9",
-    "tmp": "0.1.0",
-    "tslib": "^1.10.0",
+    "iconv-lite": "^0.7.3",
+    "log4js": "^6.9.1",
+    "reflect-metadata": "^0.2.2",
+    "tmp": "^0.2.7",
+    "tslib": "^2.8.1",
     "typedi": "^0.8.0",
-    "typeorm": "^0.2.18",
-    "typeorm-typedi-extensions": "^0.2.3",
+    "typeorm": "^1.1.2",
     "unzipper": "^0.10.1"
   }
 }

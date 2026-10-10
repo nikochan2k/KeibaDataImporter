@@ -84,13 +84,13 @@ export class KolUmaKd3 extends DataToImport {
       const raceBuffer = buffer.slice(offset, offset + 151);
 
       const raceId = this.kolRaceTool.getRaceId(raceBuffer);
-      const raceSeiseki = await this.entityManager.findOne(RaceSeiseki, raceId);
+      const raceSeiseki = await this.entityManager.findOneBy(RaceSeiseki, { Id: raceId });
       if (raceSeiseki && raceSeiseki.KolNengappi) {
         // 既に競走成績レースデータが取り込まれている場合
         continue;
       }
 
-      let race = await this.entityManager.findOne(Race, raceId);
+      let race = await this.entityManager.findOneBy(Race, { Id: raceId });
       /* tslint:disable:triple-equals */
       if (!race || race.KolNengappi == null) {
         const kaisai = await this.saveKaisai(raceBuffer);
@@ -263,7 +263,7 @@ export class KolUmaKd3 extends DataToImport {
     toBe.Baba = $R.baba.toCodeFromKol(buffer, 129, 1);
     toBe.KolNengappi = 0;
 
-    const asIs = await this.entityManager.findOne(RaceSeiseki, toBe.Id);
+    const asIs = await this.entityManager.findOneBy(RaceSeiseki, { Id: toBe.Id });
 
     await this.tool.saveOrUpdate(RaceSeiseki, asIs, toBe);
   }
@@ -271,7 +271,7 @@ export class KolUmaKd3 extends DataToImport {
   protected async saveShussouba(buffer: Buffer, race: Race, kyousouba: Kyousouba, uma: Uma, nen: number) {
     const umaban = readPositiveInt(buffer, 1, 2) || 0;
     const id = race.Id * (2 ** 6) + umaban;
-    const asIs = await this.entityManager.findOne(Shussouba, id);
+    const asIs = await this.entityManager.findOneBy(Shussouba, { Id: id });
     if (asIs) {
       return null;
     }
@@ -335,7 +335,7 @@ export class KolUmaKd3 extends DataToImport {
     }
     toBe.YonCornerIchiDori = $S.ichi.toCodeFromKol(buffer, 247, 1);
 
-    const asIs = await this.entityManager.findOne(ShussoubaSeiseki, toBe.Id);
+    const asIs = await this.entityManager.findOneBy(ShussoubaSeiseki, { Id: toBe.Id });
 
     return await this.tool.saveOrUpdate(ShussoubaSeiseki, asIs, toBe);
   }
@@ -346,7 +346,7 @@ export class KolUmaKd3 extends DataToImport {
     toBe.KolYosou1 = $SY.shirushi.toCodeFromKol(buffer, 206, 1);
     toBe.KolYosou2 = $SY.shirushi.toCodeFromKol(buffer, 207, 1);
 
-    const asIs = await this.entityManager.findOne(ShussoubaYosou, shussouba.Id);
+    const asIs = await this.entityManager.findOneBy(ShussoubaYosou, { Id: shussouba.Id });
 
     return await this.tool.saveOrUpdate(ShussoubaYosou, asIs, toBe);
   }
@@ -356,7 +356,7 @@ export class KolUmaKd3 extends DataToImport {
     toBe.Id = shussouba.Id;
     toBe.KolRecordShisuu = readInt(buffer, 100, 3);
 
-    const asIs = await this.entityManager.findOne(ShussoubaHyouka, shussouba.Id);
+    const asIs = await this.entityManager.findOneBy(ShussoubaHyouka, { Id: shussouba.Id });
 
     return await this.tool.saveOrUpdate(ShussoubaHyouka, asIs, toBe);
   }
