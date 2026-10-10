@@ -8,7 +8,6 @@ import { Ky$ } from "./Ky$";
 
 @Service()
 export class Kyh extends Ky$ {
-
   protected getBufferLength(): number {
     return 552;
   }
@@ -23,5 +22,4 @@ export class Kyh extends Ky$ {
     toBe.KoukyuuFlag = $SJ.koukyuuFlag.toCodeFromJrdb(buffer, 538, 1);
     toBe.GekisouType = $SJ.gekisouType.toCodeFromJrdb(buffer, 539, 2);
   }
-
 }

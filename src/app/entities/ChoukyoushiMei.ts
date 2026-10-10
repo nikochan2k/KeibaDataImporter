@@ -1,9 +1,4 @@
-import {
-  Column,
-  Entity,
-  Index,
-  PrimaryGeneratedColumn
-} from "typeorm";
+import { Column, Entity, Index, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity("ChoukyoushiMei")
 @Index("IxChoukyoushiMei1", (k: ChoukyoushiMei) => [k.ChoukyoushiId, k.JinmeiId], { unique: true })

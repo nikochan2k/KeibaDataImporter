@@ -1,18 +1,18 @@
 import { Service } from "typedi";
-import { Kakutei, Baken } from "../../converters/Common";
+import { Baken, Kakutei } from "../../converters/Common";
 import { OddsHaitou } from "../../entities/OddsHaitou";
 import { Shussouba } from "../../entities/Shussouba";
 import { HaitouInfo, OddsHaitouTool } from "../OddsHaitouTool";
-import {
-  readPositiveInt,
-  readStr,
-  readPositiveDouble,
-} from "../Reader";
+import { readPositiveDouble, readPositiveInt, readStr } from "../Reader";
 
 @Service()
 export class KolOddsHaitouTool extends OddsHaitouTool {
-
-  public async saveKakuteiNinkiOdds(buffer: Buffer, shussouba: Shussouba, ninkiOffset: number, oddsOffset: number) {
+  public async saveKakuteiNinkiOdds(
+    buffer: Buffer,
+    shussouba: Shussouba,
+    ninkiOffset: number,
+    oddsOffset: number,
+  ) {
     const oddsHaitou = new OddsHaitou();
     oddsHaitou.RaceId = shussouba.RaceId;
     oddsHaitou.Kakutei = Kakutei.Kakutei;
@@ -155,7 +155,12 @@ export class KolOddsHaitouTool extends OddsHaitouTool {
     }
   }
 
-  public async saveSanrenpukuOdds(buffer: Buffer, offset: number, raceId: number, kakutei: Kakutei) {
+  public async saveSanrenpukuOdds(
+    buffer: Buffer,
+    offset: number,
+    raceId: number,
+    kakutei: Kakutei,
+  ) {
     for (let bangou1 = 1; bangou1 <= 16; bangou1++) {
       for (let bangou2 = bangou1 + 1; bangou2 <= 17; bangou2++) {
         for (let bangou3 = bangou2 + 1; bangou3 <= 18; bangou3++) {
@@ -204,7 +209,12 @@ export class KolOddsHaitouTool extends OddsHaitouTool {
     }
   }
 
-  public async saveRaceHaitou(buffer: Buffer, raceId: number, kakutei: Kakutei, infos: HaitouInfo[]) {
+  public async saveRaceHaitou(
+    buffer: Buffer,
+    raceId: number,
+    kakutei: Kakutei,
+    infos: HaitouInfo[],
+  ) {
     for (let i = 0; i < infos.length; i++) {
       const info = infos[i];
       const bangou1 = readPositiveInt(buffer, info.bangou1, info.bangou1Len);
@@ -233,7 +243,9 @@ export class KolOddsHaitouTool extends OddsHaitouTool {
       oddsHaitou.Bangou2 = bangou2;
       oddsHaitou.Bangou3 = bangou3;
       oddsHaitou.Haitoukin = readPositiveInt(buffer, info.haitou, info.haitouLen);
-      oddsHaitou.Ninki = (info.ninki ? readPositiveInt(buffer, info.ninki, info.ninkiLen) : undefined);
+      oddsHaitou.Ninki = info.ninki
+        ? readPositiveInt(buffer, info.ninki, info.ninkiLen)
+        : undefined;
       await this.saveOddsHaitou(oddsHaitou);
     }
   }

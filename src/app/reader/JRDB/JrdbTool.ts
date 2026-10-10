@@ -13,7 +13,6 @@ export interface OddsHaitouInfo {
 
 @Service()
 export class JrdbTool extends Tool {
-
   public getDateFromFilename(basename: string) {
     const execed = /^[^0-9]+([0-9]{6})\.txt$/.exec(basename);
     if (!execed) {
@@ -28,5 +27,4 @@ export class JrdbTool extends Tool {
     }
     return yyyymmdd;
   }
-
 }

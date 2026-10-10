@@ -1,22 +1,17 @@
 import { crc16 } from "crc";
 import { Inject, Service } from "typedi";
 import { EntityManager } from "typeorm";
-import { OrmManager } from "../../OrmManager";
 import * as $CH from "../../converters/Choukyou";
 import { ChoukyouDao } from "../../daos/ChoukyouDao";
 import { JinmeiDao } from "../../daos/JinmeiDao";
 import { UmaDao } from "../../daos/UmaDao";
-import { ShussoubaChoukyou } from "../../entities/ShussoubaChoukyou";
 import { Choukyou } from "../../entities/Choukyou";
 import { ChoukyouTime } from "../../entities/ChoukyouTime";
 import { JinmeiKubun } from "../../entities/Jinmei";
+import { ShussoubaChoukyou } from "../../entities/ShussoubaChoukyou";
 import { Uma } from "../../entities/Uma";
-import {
-  readInt,
-  readPositiveInt,
-  readStr,
-  readStrWithNoSpace
-} from "../Reader";
+import { OrmManager } from "../../OrmManager";
+import { readInt, readPositiveInt, readStr, readStrWithNoSpace } from "../Reader";
 import { Tool } from "../Tool";
 
 interface FurlongOffset {
@@ -26,7 +21,6 @@ interface FurlongOffset {
 
 @Service()
 export class KolChoukyouTool {
-
   private static readonly courseFurlongOffsets: FurlongOffset[] = [
     { f: 8, offset: 27 },
     { f: 7, offset: 33 },
@@ -34,14 +28,14 @@ export class KolChoukyouTool {
     { f: 5, offset: 45 },
     { f: 4, offset: 51 },
     { f: 3, offset: 57 },
-    { f: 1, offset: 63 }
+    { f: 1, offset: 63 },
   ];
 
   private static readonly hanroFurlongOffsets: FurlongOffset[] = [
     { f: 4, offset: 45 },
     { f: 3, offset: 51 },
     { f: 2, offset: 57 },
-    { f: 1, offset: 63 }
+    { f: 1, offset: 63 },
   ];
 
   @OrmManager()
@@ -63,7 +57,12 @@ export class KolChoukyouTool {
     this.choukyouDao.save(sc);
   }
 
-  public async saveChoukyou(buffer: Buffer, offset: number, umaId: number, tanshukuKishuMei: string, awase?: string
+  public async saveChoukyou(
+    buffer: Buffer,
+    offset: number,
+    umaId: number,
+    tanshukuKishuMei: string,
+    awase?: string,
   ) {
     const kijousha = readStrWithNoSpace(buffer, offset + 1, 8);
     if (!kijousha) {
@@ -74,7 +73,7 @@ export class KolChoukyouTool {
     const dateId = this.tool.getDaysFrom1970(buffer, offset + 9);
     const buf = buffer.slice(offset + 27, 42);
     const hash = crc16(buf);
-    choukyou.Id = umaId * (2 ** (15 + 16)) + dateId * (2 ** 16) + hash;
+    choukyou.Id = umaId * 2 ** (15 + 16) + dateId * 2 ** 16 + hash;
     choukyou.UmaId = umaId;
     choukyou.ChoukyouFlag = $CH.choukyouFlag.toCodeFromKol(buffer, offset, 1);
     choukyou.Noriyaku = $CH.noriyaku.toCodeFromKol(kijousha);
@@ -151,12 +150,20 @@ export class KolChoukyouTool {
 
     if (choukyou.Type === $CH.ChoukyouType.Hanro) {
       await this.saveChoukyouTime(buffer, choukyou, offset, KolChoukyouTool.hanroFurlongOffsets);
-    } else if ($CH.ChoukyouType.Shiba <= choukyou.Type || choukyou.Type <= $CH.ChoukyouType.Shougai) {
+    } else if (
+      $CH.ChoukyouType.Shiba <= choukyou.Type ||
+      choukyou.Type <= $CH.ChoukyouType.Shougai
+    ) {
       await this.saveChoukyouTime(buffer, choukyou, offset, KolChoukyouTool.courseFurlongOffsets);
     }
   }
 
-  protected async saveChoukyouTime(buffer: Buffer, choukyou: Choukyou, offset: number, cfList: FurlongOffset[]) {
+  protected async saveChoukyouTime(
+    buffer: Buffer,
+    choukyou: Choukyou,
+    offset: number,
+    cfList: FurlongOffset[],
+  ) {
     for (let i = 0; i < cfList.length; i++) {
       const cf = cfList[i];
       const comment = readStr(buffer, offset + cf.offset, 6);
@@ -164,7 +171,7 @@ export class KolChoukyouTool {
         continue;
       }
       const choukyouTime = new ChoukyouTime();
-      choukyouTime.Id = choukyou.Id * (2 ** 3) + (cf.f - 1);
+      choukyouTime.Id = choukyou.Id * 2 ** 3 + (cf.f - 1);
       choukyouTime.ChoukyouId = choukyou.Id;
       choukyouTime.F = cf.f;
       const time = parseFloat(comment);
@@ -176,5 +183,4 @@ export class KolChoukyouTool {
       await this.entityManager.save(choukyouTime);
     }
   }
-
 }

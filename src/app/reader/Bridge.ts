@@ -1,8 +1,6 @@
-import { Service } from 'typedi';
+import { Service } from "typedi";
 
 @Service()
 export class Bridge {
-
   basename: string;
-
 }

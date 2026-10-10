@@ -5,7 +5,6 @@ import { Ba$ } from "./Ba$";
 
 @Service()
 export class Bac extends Ba$ {
-
   protected getBufferLength() {
     return 184;
   }
@@ -23,5 +22,4 @@ export class Bac extends Ba$ {
     toBe.BakenHatsubaiFlagSanrentan = readInt(buffer, 167, 1);
     toBe.WinsFlag = readInt(buffer, 176, 1);
   }
-
 }

@@ -23,12 +23,12 @@ import { Uma } from "../../../entities/Uma";
 import { DataToImport } from "../../DataToImport";
 import {
   readInt,
+  readPositiveDouble,
   readPositiveInt,
   readRaw,
   readStr,
   readStrWithNoSpace,
   readTime,
-  readPositiveDouble
 } from "../../Reader";
 import { Tool } from "../../Tool";
 import { KolChoukyouTool } from "../KolChoukyouTool";
@@ -41,7 +41,6 @@ import { KolUmaTool } from "../KolUmaTool";
 
 @Service()
 export class KolUmaKd3 extends DataToImport {
-
   private static readonly raceOffsets = [1064, 1654, 2244, 2834, 3424];
 
   @Inject()
@@ -192,7 +191,9 @@ export class KolUmaKd3 extends DataToImport {
     toBe.JuushouKaisuu = readPositiveInt(buffer, 26, 3);
     toBe.Grade = $R.grade.toCodeFromKol(buffer, 73, 1);
     const betteiBareiHandiReigai = readStr(buffer, 76, 18);
-    toBe.BetteiBareiHandi = $R.betteiBareiHandi.toCodeFromKol(buffer, 74, 2) || $R.betteiBareiHandi.toCodeFromKol(betteiBareiHandiReigai);
+    toBe.BetteiBareiHandi =
+      $R.betteiBareiHandi.toCodeFromKol(buffer, 74, 2) ||
+      $R.betteiBareiHandi.toCodeFromKol(betteiBareiHandiReigai);
     if (!toBe.BetteiBareiHandi) {
       toBe.BetteiBareiHandiReigai = betteiBareiHandiReigai;
     }
@@ -209,12 +210,17 @@ export class KolUmaKd3 extends DataToImport {
     toBe.JoukenMaruKokusai = $R.joukenMaruKokusai.toCodeFromKol(joukenFuka);
     toBe.JoukenMaruShou = $R.joukenMaruShou.toCodeFromKol(joukenFuka);
     const joukenFuka2 = readRaw(buffer, 96, 2);
-    toBe.JoukenMaruShi = $R.joukenMaruShi.toCodeFromKol(joukenFuka) || $R.joukenMaruShi.toCodeFromKol(joukenFuka2);
-    toBe.JoukenMaruTokuShi = $R.joukenMaruTokuShi.toCodeFromKol(joukenFuka) || $R.joukenMaruTokuShi.toCodeFromKol(joukenFuka2);
-    toBe.JoukenKakuShi = $R.joukenKakuShi.toCodeFromKol(joukenFuka) || $R.joukenKakuShi.toCodeFromKol(joukenFuka2);
+    toBe.JoukenMaruShi =
+      $R.joukenMaruShi.toCodeFromKol(joukenFuka) || $R.joukenMaruShi.toCodeFromKol(joukenFuka2);
+    toBe.JoukenMaruTokuShi =
+      $R.joukenMaruTokuShi.toCodeFromKol(joukenFuka) ||
+      $R.joukenMaruTokuShi.toCodeFromKol(joukenFuka2);
+    toBe.JoukenKakuShi =
+      $R.joukenKakuShi.toCodeFromKol(joukenFuka) || $R.joukenKakuShi.toCodeFromKol(joukenFuka2);
     toBe.JoukenShounyuu = $R.joukenShounyuu.toCodeFromKol(joukenFuka);
     toBe.JoukenNaikokusan = $R.joukenNaikokusan.toCodeFromKol(joukenFuka);
-    toBe.JoukenKouryuu = $R.joukenKouryuu.toCodeFromKol(joukenFuka) || $R.joukenKouryuu.toCodeFromKol(buffer, 22, 1);
+    toBe.JoukenKouryuu =
+      $R.joukenKouryuu.toCodeFromKol(joukenFuka) || $R.joukenKouryuu.toCodeFromKol(buffer, 22, 1);
     toBe.JoukenKyuushuusan = $R.joukenKyuushuusan.toCodeFromKol(joukenFuka);
     toBe.JoukenChibasan = $R.joukenChibasan.toCodeFromKol(joukenFuka);
     toBe.JoukenKansaiHaifuba = $R.joukenKansaiHaifuba.toCodeFromKol(joukenFuka);
@@ -228,7 +234,9 @@ export class KolUmaKd3 extends DataToImport {
     const joukenCut = readRaw(buffer, 98, 1);
     toBe.JoukenSarakei = $R.joukenSaraKei.toCodeFromKol(joukenCut);
     toBe.JoukenAraKei = $R.joukenAraKei.toCodeFromKol(joukenCut);
-    toBe.JoukenNenreiSeigen = $R.joukenNenreiSeigen.toCodeFromKol(buffer, 99, 1) || $R.joukenNenreiSeigenFromJoukenCut.toCodeFromKol(joukenCut);
+    toBe.JoukenNenreiSeigen =
+      $R.joukenNenreiSeigen.toCodeFromKol(buffer, 99, 1) ||
+      $R.joukenNenreiSeigenFromJoukenCut.toCodeFromKol(joukenCut);
     toBe.JoukenSeed = $R.joukenSeed.toCodeFromKol(buffer, 130, 1);
 
     toBe.Jouken1 = $R.jouken.toCodeFromKol(buffer, 100, 5);
@@ -268,9 +276,15 @@ export class KolUmaKd3 extends DataToImport {
     await this.tool.saveOrUpdate(RaceSeiseki, asIs, toBe);
   }
 
-  protected async saveShussouba(buffer: Buffer, race: Race, kyousouba: Kyousouba, uma: Uma, nen: number) {
+  protected async saveShussouba(
+    buffer: Buffer,
+    race: Race,
+    kyousouba: Kyousouba,
+    uma: Uma,
+    nen: number,
+  ) {
     const umaban = readPositiveInt(buffer, 1, 2) || 0;
-    const id = race.Id * (2 ** 6) + umaban;
+    const id = race.Id * 2 ** 6 + umaban;
     const asIs = await this.entityManager.findOneBy(Shussouba, { Id: id });
     if (asIs) {
       return null;
@@ -375,9 +389,8 @@ export class KolUmaKd3 extends DataToImport {
     kyousouba.UmaId = k.UmaId;
     kyousouba.Seibetsu = seibetsu || k.Seibetsu;
     kyousouba.UmaKigou = $U.umaKigou.toCodeFromKol(buffer, 5, 2) || k.UmaKigou;
-    kyousouba.ChoukyoushiId = choukyoushi && choukyoushi.Id || k.ChoukyoushiId;
+    kyousouba.ChoukyoushiId = (choukyoushi && choukyoushi.Id) || k.ChoukyoushiId;
     kyousouba = await this.umaDao.saveKyousouba(kyousouba);
     return kyousouba;
   }
-
 }

@@ -7,15 +7,19 @@ import { Tool } from "../Tool";
 
 @Service()
 export class KolUmaTool {
-
   @Inject()
   private tool: Tool;
 
   @Inject()
   private umaDao: UmaDao;
 
-
-  public async saveOyaUma(buffer: Buffer, offset: number, seibetsu: $U.Seibetsu, chichiOffset?: number, hahaOffset?: number) {
+  public async saveOyaUma(
+    buffer: Buffer,
+    offset: number,
+    seibetsu: $U.Seibetsu,
+    chichiOffset?: number,
+    hahaOffset?: number,
+  ) {
     const bamei = readStr(buffer, offset + 7, 34);
     if (!bamei) {
       return null;
@@ -39,5 +43,4 @@ export class KolUmaTool {
 
     return this.umaDao.saveUma(uma);
   }
-
 }

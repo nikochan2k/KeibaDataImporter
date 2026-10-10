@@ -1,5 +1,4 @@
 import { Inject, Service } from "typedi";
-import { KolKaisaiTool } from "./KolKaisaiTool";
 import * as $C from "../../converters/Common";
 import * as $R from "../../converters/Race";
 import { JinmeiDao } from "../../daos/JinmeiDao";
@@ -14,12 +13,13 @@ import { Uma } from "../../entities/Uma";
 import { RaceTool } from "../RaceTool";
 import {
   readInt,
+  readPositiveDouble,
   readPositiveInt,
   readStr,
   readStrWithNoSpace,
   readTime,
-  readPositiveDouble
 } from "../Reader";
+import { KolKaisaiTool } from "./KolKaisaiTool";
 
 export interface RaceLapTimeInfo {
   Offset: number;
@@ -30,7 +30,6 @@ export interface RaceLapTimeInfo {
 
 @Service()
 export class KolRaceTool extends RaceTool {
-
   @Inject()
   private kolKaisaiTool: KolKaisaiTool;
 
@@ -87,14 +86,14 @@ export class KolRaceTool extends RaceTool {
   }
 
   public async saveRaceHassouJoukyou(buffer: Buffer, offset: number, race: Race) {
-    for (let bangou = 1; bangou <= 6; bangou++ , offset += 80) {
+    for (let bangou = 1; bangou <= 6; bangou++, offset += 80) {
       const hassouJoukyou = readStr(buffer, offset, 80);
       if (!hassouJoukyou) {
         continue;
       }
 
       const rhj = new RaceHassouJoukyou();
-      rhj.Id = race.Id * (2 ** 3) + bangou;
+      rhj.Id = race.Id * 2 ** 3 + bangou;
       rhj.RaceId = race.Id;
       rhj.HassouJoukyou = hassouJoukyou;
       const comment = hassouJoukyou.replace(/(\([0-9]+\))+/, "");
@@ -131,12 +130,12 @@ export class KolRaceTool extends RaceTool {
       const umabans = /(\([0-9]+\))+/.exec(hassouJoukyou);
       for (let i = 1; i < umabans.length; i++) {
         const temp = umabans[i];
-        const umaban = Number.parseInt(temp.replace(/[\(\)]/, ""));
+        const umaban = Number.parseInt(temp.replace(/[()]/, ""));
         if (0 < umaban) {
           const shj = new ShussoubaHassouJoukyou();
-          shj.Id = rhj.Id * (2 ** 6) + umaban;
+          shj.Id = rhj.Id * 2 ** 6 + umaban;
           shj.RaceHassouJoukyouId = rhj.Id;
-          shj.ShussoubaId = race.Id * (2 ** 6) + umaban;
+          shj.ShussoubaId = race.Id * 2 ** 6 + umaban;
           await this.entityManager.getRepository(ShussoubaHassouJoukyou).save(shj);
         }
       }
@@ -150,12 +149,11 @@ export class KolRaceTool extends RaceTool {
       const info = infos[i];
       raceLapTime.LapTime = readPositiveDouble(buffer, info.Offset, 3, 0.1);
       if (raceLapTime.LapTime) {
-        raceLapTime.Id = race.Id * (2 ** 5) + i + 1;
+        raceLapTime.Id = race.Id * 2 ** 5 + i + 1;
         raceLapTime.KaishiKyori = info.KaishiKyori;
         raceLapTime.ShuuryouKyori = info.ShuuryouKyori;
         await this.entityManager.save(raceLapTime);
       }
     }
   }
-
 }

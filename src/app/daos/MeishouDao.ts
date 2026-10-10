@@ -1,12 +1,11 @@
 import { Inject, Service } from "typedi";
 import { Repository } from "typeorm";
-import { OrmRepository } from "../OrmManager";
 import { MeishouKubun, Shoyuu } from "../entities/Shoyuu";
+import { OrmRepository } from "../OrmManager";
 import { Tool } from "../reader/Tool";
 
 @Service()
 export class MeishouDao {
-
   @OrmRepository(Shoyuu)
   private repository: Repository<Shoyuu>;
 
@@ -21,5 +20,4 @@ export class MeishouDao {
     toBe.BanushiKaiCode = banushiKaiCode;
     return this.tool.saveOrUpdate(Shoyuu, asIs, toBe);
   }
-
 }

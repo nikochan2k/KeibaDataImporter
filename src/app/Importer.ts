@@ -1,17 +1,19 @@
 import * as fs from "fs";
 import { Logger } from "log4js";
-import { Container, Service, Inject } from "typedi";
+import { Container, Inject, Service } from "typedi";
 import { getLogger } from "./LogUtil";
 import { Bridge } from "./reader/Bridge";
 import { DataToImport } from "./reader/DataToImport";
 import { Bab } from "./reader/JRDB/Bab";
 import { Bac } from "./reader/JRDB/Bac";
+import { C$a } from "./reader/JRDB/C$a";
 import { Cha } from "./reader/JRDB/Cha";
 import { Cya } from "./reader/JRDB/Cya";
 import { Cyb } from "./reader/JRDB/Cyb";
 import { Hja } from "./reader/JRDB/Hja";
 import { Hjc } from "./reader/JRDB/Hjc";
 import { Joa } from "./reader/JRDB/Joa";
+import { K$a } from "./reader/JRDB/K$a";
 import { Kaa } from "./reader/JRDB/Kaa";
 import { Kab } from "./reader/JRDB/Kab";
 import { Kyg } from "./reader/JRDB/Kyg";
@@ -49,8 +51,6 @@ import { KolSei2Kd3 } from "./reader/KOL/KD3/KolSei2Kd3";
 import { KolSei3Kd3 } from "./reader/KOL/KD3/KolSei3Kd3";
 import { KolShuKd3 } from "./reader/KOL/KD3/KolShuKd3";
 import { KolUmaKd3 } from "./reader/KOL/KD3/KolUmaKd3";
-import { C$a } from "./reader/JRDB/C$a";
-import { K$a } from "./reader/JRDB/K$a";
 
 export interface Entries {
   [basename: string]: string;
@@ -70,7 +70,6 @@ interface Reader {
 
 @Service()
 export class Importer {
-
   private logger: Logger;
 
   private readers: Reader[];
@@ -172,18 +171,23 @@ export class Importer {
 
   public async import(entries: Entries) {
     const items: Item[] = [];
-    for (let [basename, dataFile] of Object.entries(entries)) {
+    for (const [basename, dataFile] of Object.entries(entries)) {
       for (let i = 0; i < this.readers.length; i++) {
         const reader = this.readers[i];
         if (!reader.pattern.test(basename)) {
           continue;
         }
-        items.push({ index: i, basename: basename, dataFile: dataFile, dataToImport: reader.dataToImport })
+        items.push({
+          index: i,
+          basename: basename,
+          dataFile: dataFile,
+          dataToImport: reader.dataToImport,
+        });
       }
     }
 
     items.sort((a, b) => {
-      let result = a.index - b.index;
+      const result = a.index - b.index;
       if (result !== 0) {
         return result;
       }

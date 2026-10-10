@@ -1,16 +1,15 @@
 import { Inject, Service } from "typedi";
 import { EntityManager } from "typeorm";
+import { Baken, Kakutei } from "../../converters/Common";
+import { OddsHaitou } from "../../entities/OddsHaitou";
 import { OrmManager } from "../../OrmManager";
+import { readPositiveDouble, readPositiveInt } from "../Reader";
 import { JrdbData } from "./JrdbData";
 import { JrdbOddsHaitouTool } from "./JrdbOddsHaitouTool";
 import { JrdbRaceTool } from "./JrdbRaceTool";
-import { Baken, Kakutei } from "../../converters/Common";
-import { OddsHaitou } from "../../entities/OddsHaitou";
-import { readPositiveDouble, readPositiveInt } from "../Reader";
 
 @Service()
 export class Oz extends JrdbData {
-
   @OrmManager()
   protected entityManager: EntityManager;
 
@@ -41,7 +40,7 @@ export class Oz extends JrdbData {
   }
 
   protected async saveTanshou(buffer: Buffer, raceId: number) {
-    for (let bangou = 1, offset = 10; bangou <= 18; bangou++ , offset += 5) {
+    for (let bangou = 1, offset = 10; bangou <= 18; bangou++, offset += 5) {
       const odds = readPositiveDouble(buffer, offset, 5);
       if (!odds) {
         continue;
@@ -57,7 +56,7 @@ export class Oz extends JrdbData {
   }
 
   protected async saveFukushou(buffer: Buffer, raceId: number) {
-    for (let bangou = 1, offset = 100; bangou <= 18; bangou++ , offset += 5) {
+    for (let bangou = 1, offset = 100; bangou <= 18; bangou++, offset += 5) {
       const odds = readPositiveDouble(buffer, offset, 5);
       if (!odds) {
         continue;

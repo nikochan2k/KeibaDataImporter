@@ -1,12 +1,10 @@
-import { JrdbRaceData } from './JrdbRaceData';
-import { ShussoubaInfo } from '../ShussoubaTool';
-import { JrdbShussoubaTool } from './JrdbShussoubaTool';
-import { Inject } from 'typedi';
-import { Shussouba } from '../../entities/Shussouba';
-
+import { Inject } from "typedi";
+import { Shussouba } from "../../entities/Shussouba";
+import { ShussoubaInfo } from "../ShussoubaTool";
+import { JrdbRaceData } from "./JrdbRaceData";
+import { JrdbShussoubaTool } from "./JrdbShussoubaTool";
 
 export abstract class JrdbShussoubaData extends JrdbRaceData {
-
   @Inject()
   protected jrdbShussoubaTool: JrdbShussoubaTool;
 
@@ -36,10 +34,7 @@ export abstract class JrdbShussoubaData extends JrdbRaceData {
     return shussouba;
   }
 
-  protected async setShussouba(buffer: Buffer, toBe: Shussouba, info: ShussoubaInfo) {
-  }
+  protected async setShussouba(buffer: Buffer, toBe: Shussouba, info: ShussoubaInfo) {}
 
-  protected async saveShussoubaRelated(buffer: Buffer, shussouba: Shussouba) {
-  }
-
+  protected async saveShussoubaRelated(buffer: Buffer, shussouba: Shussouba) {}
 }

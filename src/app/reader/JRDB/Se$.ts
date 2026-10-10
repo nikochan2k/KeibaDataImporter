@@ -1,6 +1,4 @@
 import { Inject } from "typedi";
-import { JrdbOddsHaitouTool } from "./JrdbOddsHaitouTool";
-import { JrdbShussoubaData } from "./JrdbShussoubaData";
 import * as $C from "../../converters/Common";
 import * as $R from "../../converters/Race";
 import * as $S from "../../converters/Shussouba";
@@ -22,15 +20,16 @@ import {
   readInt,
   readPositiveDouble,
   readPositiveInt,
+  readSignedInt,
   readStr,
   readStrWithNoSpace,
   readTime,
-  readSignedInt
 } from "../Reader";
 import { ShussoubaInfo } from "../ShussoubaTool";
+import { JrdbOddsHaitouTool } from "./JrdbOddsHaitouTool";
+import { JrdbShussoubaData } from "./JrdbShussoubaData";
 
 export abstract class Se$ extends JrdbShussoubaData {
-
   @Inject()
   protected jrdbOddsHaitouTool: JrdbOddsHaitouTool;
 
@@ -55,7 +54,7 @@ export abstract class Se$ extends JrdbShussoubaData {
     uma.KettouTourokuBangou = readStr(buffer, 10, 8);
     uma = await this.umaDao.saveUma(uma);
     info.uma = uma;
-    let kyousouba = new Kyousouba();
+    const kyousouba = new Kyousouba();
     kyousouba.UmaId = uma.Id;
     const choukyoushi = await this.saveChoukyoushi(buffer);
     kyousouba.ChoukyoushiId = choukyoushi && choukyoushi.Id;
@@ -173,37 +172,37 @@ export abstract class Se$ extends JrdbShussoubaData {
       Baken: $C.Baken.Tanshou,
       OddsOffset: 174,
       OddsLength: 6,
-      NinkiOffset: 180
+      NinkiOffset: 180,
     });
     await this.jrdbOddsHaitouTool.saveOddsNinki(buffer, shussouba, {
       Kakutei: $C.Kakutei.Kakutei,
       Baken: $C.Baken.Fukushou,
       OddsOffset: 290,
-      OddsLength: 6
+      OddsLength: 6,
     });
     await this.jrdbOddsHaitouTool.saveOddsNinki(buffer, shussouba, {
       Kakutei: $C.Kakutei.ToujitsuAM,
       Baken: $C.Baken.Tanshou,
       OddsOffset: 296,
-      OddsLength: 6
+      OddsLength: 6,
     });
     await this.jrdbOddsHaitouTool.saveOddsNinki(buffer, shussouba, {
       Kakutei: $C.Kakutei.ToujitsuAM,
       Baken: $C.Baken.Fukushou,
       OddsOffset: 302,
-      OddsLength: 6
+      OddsLength: 6,
     });
   }
 
   protected async saveShussoubaTsuukaJuni(buffer: Buffer, shussoubaId: number) {
-    for (let bangou = 1, offset = 308; bangou <= 4; bangou++ , offset += 2) {
+    for (let bangou = 1, offset = 308; bangou <= 4; bangou++, offset += 2) {
       const shussoubaTsuukaJuni = new ShussoubaTsuukaJuni();
 
       const juni = readPositiveInt(buffer, offset, 2);
       if (juni === null || 28 < juni) {
         continue;
       }
-      shussoubaTsuukaJuni.Id = shussoubaId * (2 ** 3) + bangou;
+      shussoubaTsuukaJuni.Id = shussoubaId * 2 ** 3 + bangou;
       shussoubaTsuukaJuni.ShussoubaId = shussoubaId;
       shussoubaTsuukaJuni.Bangou = bangou;
       shussoubaTsuukaJuni.Juni = juni;
@@ -222,12 +221,11 @@ export abstract class Se$ extends JrdbShussoubaData {
     for (const row of rows) {
       await this.entityManager
         .createQueryBuilder()
-        .update(ShussoubaSeiseki, { "TimeSa": row.TimeSa })
+        .update(ShussoubaSeiseki, { TimeSa: row.TimeSa })
         .where("Id = :id")
         .setParameter("id", row.Id)
         .execute();
     }
     await super.teardown();
   }
-
 }

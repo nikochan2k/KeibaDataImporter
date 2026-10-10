@@ -4,7 +4,7 @@ import { Database as BunDatabase } from "bun:sqlite";
  * TypeORM の better-sqlite3 ドライバーに渡す、bun:sqlite の互換ラッパー。
  */
 class Statement {
-  constructor(private stmt: any) { }
+  constructor(private stmt: any) {}
 
   get reader(): boolean {
     return 0 < this.stmt.columnNames.length;
@@ -23,7 +23,10 @@ export class BunSqliteDatabase {
   private db: BunDatabase;
 
   constructor(path: string, options: { readonly?: boolean } = {}) {
-    this.db = new BunDatabase(path, options.readonly ? { readonly: true } : { create: true, readwrite: true });
+    this.db = new BunDatabase(
+      path,
+      options.readonly ? { readonly: true } : { create: true, readwrite: true },
+    );
   }
 
   public prepare(query: string) {

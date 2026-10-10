@@ -1,12 +1,10 @@
-import {
-  Column,
-  Entity,
-  Index,
-  PrimaryColumn
-} from "typeorm";
+import { Column, Entity, Index, PrimaryColumn } from "typeorm";
 
 @Entity("ShussoubaHassouJoukyou")
-@Index("IxShussoubaHassouJoukyou", (shj: ShussoubaHassouJoukyou) => [shj.RaceHassouJoukyouId, shj.ShussoubaId])
+@Index("IxShussoubaHassouJoukyou", (shj: ShussoubaHassouJoukyou) => [
+  shj.RaceHassouJoukyouId,
+  shj.ShussoubaId,
+])
 export class ShussoubaHassouJoukyou {
   @PrimaryColumn("bigint")
   public Id: number;

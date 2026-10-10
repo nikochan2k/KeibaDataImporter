@@ -1,15 +1,14 @@
 import { Inject, Service } from "typedi";
-import { JrdbRaceTool } from "./JrdbRaceTool";
 import * as $SJ from "../../converters/ShussoubaJoutai";
-import { Kubun } from "../../entities/ShussoubaJoutai";
-import { Kishu } from "../../entities/Kishu";
 import { KishuDao } from "../../daos/KishuDao";
+import { Kishu } from "../../entities/Kishu";
+import { Kubun } from "../../entities/ShussoubaJoutai";
+import { readPositiveInt, readStr, readStrWithNoSpace } from "../../reader/Reader";
 import { ShussoubaTool } from "../ShussoubaTool";
-import { readStr, readStrWithNoSpace, readPositiveInt } from "../../reader/Reader";
+import { JrdbRaceTool } from "./JrdbRaceTool";
 
 @Service()
 export class JrdbShussoubaTool extends ShussoubaTool {
-
   @Inject()
   private jrdbRaceTool: JrdbRaceTool;
 
@@ -20,7 +19,12 @@ export class JrdbShussoubaTool extends ShussoubaTool {
     return this.jrdbRaceTool.getRaceId(buffer);
   }
 
-  public async saveShussoubaJoutaiWith(buffer: Buffer, offset: number, shussoubaId: number, kubun: Kubun) {
+  public async saveShussoubaJoutaiWith(
+    buffer: Buffer,
+    offset: number,
+    shussoubaId: number,
+    kubun: Kubun,
+  ) {
     let code: number;
     if (Kubun.TaikeiSougaou <= kubun && kubun <= Kubun.Tokki) {
       code = $SJ.tokki.toCodeFromJrdb(buffer, offset, 3);

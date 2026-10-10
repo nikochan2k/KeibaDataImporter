@@ -1,6 +1,13 @@
 import { describe, expect, test } from "bun:test";
 import * as iconv from "iconv-lite";
-import { readDouble, readInt, readJikan, readSignedInt, readStr, readTime } from "../src/app/reader/Reader";
+import {
+  readDouble,
+  readInt,
+  readJikan,
+  readSignedInt,
+  readStr,
+  readTime,
+} from "../src/app/reader/Reader";
 
 const buf = (s: string) => iconv.encode(s, "Windows932");
 

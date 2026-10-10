@@ -1,9 +1,4 @@
-import {
-  Column,
-  Entity,
-  Index,
-  PrimaryColumn
-} from "typeorm";
+import { Column, Entity, Index, PrimaryColumn } from "typeorm";
 
 @Entity("Shussouba")
 @Index("IxShussouba1", (s: Shussouba) => [s.RaceId, s.Umaban])
@@ -74,8 +69,6 @@ export class Shussouba {
   @Column("varchar", { length: 90, nullable: true })
   public KyuuyouRiyuu?: string;
 
-
   @Column("int", { nullable: true })
   public KolNengappi: number;
-
 }

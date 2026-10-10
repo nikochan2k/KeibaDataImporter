@@ -6,7 +6,6 @@ import { Ka$ } from "./Ka$";
 
 @Service()
 export class Kab extends Ka$ {
-
   protected getBufferLength() {
     return 72;
   }
@@ -20,5 +19,4 @@ export class Kab extends Ka$ {
     toBe.TouketsuBoushizai = $K.touketsuBoushizai.toCodeFromJrdb(buffer, 57, 1);
     toBe.ChuukanKousuiryou = readDouble(buffer, 58, 5);
   }
-
 }

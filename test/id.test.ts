@@ -4,7 +4,14 @@ import { Baken, Kakutei } from "../src/app/converters/Common";
 import { OddsHaitou } from "../src/app/entities/OddsHaitou";
 import { JrdbOddsHaitouTool } from "../src/app/reader/JRDB/JrdbOddsHaitouTool";
 
-function odds(raceId: number, kakutei: Kakutei, baken: Baken, b1: number, b2?: number, b3?: number) {
+function odds(
+  raceId: number,
+  kakutei: Kakutei,
+  baken: Baken,
+  b1: number,
+  b2?: number,
+  b3?: number,
+) {
   const o = new OddsHaitou();
   o.RaceId = raceId;
   o.Kakutei = kakutei;

@@ -1,12 +1,11 @@
-import { JrdbKaisaiData } from "./JrdbKaisaiData";
 import * as $K from "../../converters/Kaisai";
 import * as $R from "../../converters/Race";
 import { Kaisai } from "../../entities/Kaisai";
 import { KaisaiYosou } from "../../entities/KaisaiYosou";
 import { readDouble } from "../Reader";
+import { JrdbKaisaiData } from "./JrdbKaisaiData";
 
 export abstract class Ka$ extends JrdbKaisaiData {
-
   protected getKaisaiTool() {
     return this.jrdbKaisaiKaisaiTool;
   }

@@ -1,11 +1,6 @@
-import {
-  Column,
-  Entity,
-  Index,
-  PrimaryColumn
-} from "typeorm";
-import { Ichi } from "../converters/Shussouba";
+import { Column, Entity, Index, PrimaryColumn } from "typeorm";
 import { Midashi } from "../converters/Race";
+import { Ichi } from "../converters/Shussouba";
 
 @Entity("RaceTrackBias")
 @Index("IxRaceTrackBias", (rk: RaceTrackBias) => [rk.RaceId])

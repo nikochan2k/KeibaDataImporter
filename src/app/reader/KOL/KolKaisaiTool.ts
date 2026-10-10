@@ -8,7 +8,6 @@ import { readPositiveInt, readRaw } from "../Reader";
 
 @Service()
 export class KolKaisaiTool extends KaisaiTool {
-
   protected logger: Logger;
 
   constructor() {
@@ -34,7 +33,7 @@ export class KolKaisaiTool extends KaisaiTool {
       gatsu: readPositiveInt(buffer, 16, 2),
       nichi: readPositiveInt(buffer, 18, 2),
       kaiji: readPositiveInt(buffer, 6, 2),
-      nichiji: readPositiveInt(buffer, 8, 2)
+      nichiji: readPositiveInt(buffer, 8, 2),
     };
   }
 
@@ -56,5 +55,4 @@ export class KolKaisaiTool extends KaisaiTool {
     }
     return null;
   }
-
 }

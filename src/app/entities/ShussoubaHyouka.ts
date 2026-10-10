@@ -1,18 +1,12 @@
-import {
-  Column,
-  Entity,
-  PrimaryColumn
-} from "typeorm";
+import { Column, Entity, PrimaryColumn } from "typeorm";
 
 @Entity("ShussoubaHyouka")
 export class ShussoubaHyouka {
   @PrimaryColumn("bigint")
   public Id: number;
 
-
   @Column("smallint", { nullable: true })
   public KolRecordShisuu?: number;
-
 
   @Column("smallint", { nullable: true })
   public Idm?: number;
@@ -79,7 +73,6 @@ export class ShussoubaHyouka {
 
   @Column("tinyint", { nullable: true })
   public PaceNagare?: number;
-
 
   @Column("varchar", { length: 60, nullable: true })
   public PaddockComment?: string;

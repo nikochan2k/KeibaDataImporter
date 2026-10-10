@@ -6,7 +6,6 @@ import { KolRaceTool } from "../KolRaceTool";
 
 @Service()
 export class KolOdsKd3 extends DataToImport {
-
   @Inject()
   private kolRaceTool: KolRaceTool;
 

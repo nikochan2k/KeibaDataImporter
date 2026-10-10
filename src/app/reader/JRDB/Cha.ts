@@ -2,12 +2,11 @@ import { Service } from "typedi";
 import * as $CH from "../../converters/Choukyou";
 import * as $R from "../../converters/Race";
 import { ShussoubaChoukyou } from "../../entities/ShussoubaChoukyou";
-import { readInt, readPositiveInt, readPositiveDouble } from "../Reader";
+import { readInt, readPositiveDouble, readPositiveInt } from "../Reader";
 import { Cy$ } from "./Cy$";
 
 @Service()
 export class Cha extends Cy$ {
-
   protected getBufferLength() {
     return 64;
   }
@@ -36,5 +35,4 @@ export class Cha extends Cy$ {
     sc.AwaseumaNenrei = readPositiveInt(buffer, 51, 2);
     sc.AwaseumaClass = $R.jouken.toCodeFromJrdb(buffer, 53, 2);
   }
-
 }

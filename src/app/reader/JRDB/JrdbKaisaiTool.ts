@@ -1,13 +1,12 @@
 import { Inject, Service } from "typedi";
-import { JrdbBridge } from "./JrdbBridge";
 import * as $C from "../../converters/Common";
 import { Bridge } from "../Bridge";
 import { KaisaiInfo, KaisaiTool } from "../KaisaiTool";
 import { readHex, readPositiveInt, readRaw } from "../Reader";
+import { JrdbBridge } from "./JrdbBridge";
 
 @Service()
 export class JrdbKaisaiTool extends KaisaiTool {
-
   @Inject()
   private bridge: Bridge;
 
@@ -39,5 +38,4 @@ export class JrdbKaisaiTool extends KaisaiTool {
       nichiji: readHex(buffer, 5, 1),
     };
   }
-
 }

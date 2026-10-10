@@ -3,11 +3,7 @@ import * as $C from "../../converters/Common";
 import { OddsHaitou } from "../../entities/OddsHaitou";
 import { Shussouba } from "../../entities/Shussouba";
 import { OddsHaitouTool } from "../OddsHaitouTool";
-import {
-  readJikan,
-  readPositiveInt,
-  readPositiveDouble,
-} from "../Reader";
+import { readJikan, readPositiveDouble, readPositiveInt } from "../Reader";
 
 export interface OddsHaitouInfo {
   Kakutei: $C.Kakutei;
@@ -22,7 +18,6 @@ export interface OddsHaitouInfo {
 
 @Service()
 export class JrdbOddsHaitouTool extends OddsHaitouTool {
-
   public async saveOddsNinki(buffer: Buffer, shussouba: Shussouba, info: OddsHaitouInfo) {
     const oddsHaitou = new OddsHaitou();
     oddsHaitou.RaceId = shussouba.RaceId;
@@ -30,13 +25,14 @@ export class JrdbOddsHaitouTool extends OddsHaitouTool {
     oddsHaitou.Baken = info.Baken;
     oddsHaitou.Bangou1 = shussouba.Umaban;
     oddsHaitou.Odds1 = readPositiveDouble(buffer, info.OddsOffset, info.OddsLength);
-    oddsHaitou.Haitoukin = (info.HaitoukinOffset ? readPositiveInt(buffer, info.HaitoukinOffset, 7) : undefined);
-    oddsHaitou.Ninki = (info.NinkiOffset ? readPositiveInt(buffer, info.NinkiOffset, 2) : undefined);
+    oddsHaitou.Haitoukin = info.HaitoukinOffset
+      ? readPositiveInt(buffer, info.HaitoukinOffset, 7)
+      : undefined;
+    oddsHaitou.Ninki = info.NinkiOffset ? readPositiveInt(buffer, info.NinkiOffset, 2) : undefined;
     if (oddsHaitou.Odds1 == null && oddsHaitou.Haitoukin == null && oddsHaitou.Ninki == null) {
       return; // 空白の項目(速報版など)で空の行を作らない
     }
-    oddsHaitou.ShutokuJikan = (info.JikanOffset ? readJikan(buffer, info.JikanOffset) : undefined);
+    oddsHaitou.ShutokuJikan = info.JikanOffset ? readJikan(buffer, info.JikanOffset) : undefined;
     await this.saveOddsHaitou(oddsHaitou);
   }
-
 }

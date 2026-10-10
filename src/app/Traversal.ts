@@ -20,7 +20,6 @@ interface ImportFile {
 
 @Service()
 export class Traversal {
-
   private static PRIORITIES: RegExp[] = [
     // KD3厩舎データ
     /ekyu.*\.lzh$/i,
@@ -175,7 +174,7 @@ export class Traversal {
     const importFiles: ImportFile[] = [];
     for (let i = 0; i < matches.length; i++) {
       const filepath = matches[i];
-      const importFile = this.createImportFile(filepath); 
+      const importFile = this.createImportFile(filepath);
       importFiles.push(importFile);
     }
 
@@ -187,7 +186,7 @@ export class Traversal {
     const priority = this.getPriority(basename);
     const importFile: ImportFile = { priority: priority, path: filepath, basename: basename };
     return importFile;
-}
+  }
 
   protected async importFiles(importFiles: ImportFile[]) {
     importFiles.sort((a, b) => {
@@ -207,7 +206,7 @@ export class Traversal {
   }
 
   protected async importFile(importFile: ImportFile) {
-    if(importFile.priority < 0){
+    if (importFile.priority < 0) {
       return;
     }
     const filepath = importFile.path;
@@ -228,11 +227,12 @@ export class Traversal {
         this.logger.info('"' + basename + '"は取り込み対象ファイルではありません。');
       }
     }
-}
+  }
 
   protected async uncompressZipFile(zipFile: string) {
     const dataDir = tmp.dirSync();
-    await fs.createReadStream(zipFile)
+    await fs
+      .createReadStream(zipFile)
       .pipe(unzipper.Extract({ path: dataDir.name }))
       .promise();
     await this.traverseDataDir(dataDir.name);

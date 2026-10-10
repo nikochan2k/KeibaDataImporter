@@ -1,15 +1,14 @@
 import { Inject, Service } from "typedi";
 import { EntityManager, Repository } from "typeorm";
-import { OrmManager, OrmRepository } from "../OrmManager";
-import { JinmeiDao } from "./JinmeiDao";
 import { Choukyoushi } from "../entities/Choukyoushi";
-import { ChoukyoushiMei as ChoukyoushiMei } from "../entities/ChoukyoushiMei";
+import { ChoukyoushiMei } from "../entities/ChoukyoushiMei";
 import { Jinmei, JinmeiKubun } from "../entities/Jinmei";
+import { OrmManager, OrmRepository } from "../OrmManager";
 import { Tool } from "../reader/Tool";
+import { JinmeiDao } from "./JinmeiDao";
 
 @Service()
 export class ChoukyoushiDao {
-
   @OrmManager()
   protected entityManager: EntityManager;
 
@@ -28,9 +27,13 @@ export class ChoukyoushiDao {
   protected async getChoukyoushi(choukyoushi: Choukyoushi) {
     let result: Choukyoushi;
     if (choukyoushi.KolKyuushaCode) {
-      result = await this.choukyoushiRepository.findOneBy({ KolKyuushaCode: choukyoushi.KolKyuushaCode });
+      result = await this.choukyoushiRepository.findOneBy({
+        KolKyuushaCode: choukyoushi.KolKyuushaCode,
+      });
     } else if (choukyoushi.JrdbChoukyoushiCode) {
-      result = await this.choukyoushiRepository.findOneBy({ JrdbChoukyoushiCode: choukyoushi.JrdbChoukyoushiCode });
+      result = await this.choukyoushiRepository.findOneBy({
+        JrdbChoukyoushiCode: choukyoushi.JrdbChoukyoushiCode,
+      });
     }
     return result;
   }
@@ -47,14 +50,19 @@ export class ChoukyoushiDao {
       .getOne();
   }
 
-  public async saveChoukyoushi(toBe: Choukyoushi, seimei?: string, tanshuku?: string, furigana?: string) {
+  public async saveChoukyoushi(
+    toBe: Choukyoushi,
+    seimei?: string,
+    tanshuku?: string,
+    furigana?: string,
+  ) {
     let asIs: Choukyoushi;
     if (toBe.KolKyuushaCode || toBe.JrdbChoukyoushiCode) {
       asIs = await this.getChoukyoushi(toBe);
     } else {
       asIs = await this.getChoukyoushiWith(seimei);
     }
-    if (!asIs || seimei && tanshuku && furigana) {
+    if (!asIs || (seimei && tanshuku && furigana)) {
       toBe = await this.tool.saveOrUpdate(Choukyoushi, asIs, toBe);
     } else {
       return asIs;
@@ -75,9 +83,16 @@ export class ChoukyoushiDao {
     return toBe;
   }
 
-  protected async saveChoukyoushiMei(choukyoushi: Choukyoushi, kubun: JinmeiKubun, meishou: string) {
+  protected async saveChoukyoushiMei(
+    choukyoushi: Choukyoushi,
+    kubun: JinmeiKubun,
+    meishou: string,
+  ) {
     const jinmei = await this.jinmeiDao.save(kubun, meishou);
-    let choukyoushiMei = await this.choukyoushiMeiRepository.findOneBy({ ChoukyoushiId: choukyoushi.Id, JinmeiId: jinmei.Id });
+    let choukyoushiMei = await this.choukyoushiMeiRepository.findOneBy({
+      ChoukyoushiId: choukyoushi.Id,
+      JinmeiId: jinmei.Id,
+    });
     if (!choukyoushiMei) {
       choukyoushiMei = new ChoukyoushiMei();
       choukyoushiMei.ChoukyoushiId = choukyoushi.Id;
@@ -85,5 +100,4 @@ export class ChoukyoushiDao {
       await this.choukyoushiMeiRepository.save(choukyoushiMei);
     }
   }
-
 }

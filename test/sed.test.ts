@@ -2,12 +2,12 @@ import "reflect-metadata";
 import { afterAll, beforeAll, expect, test } from "bun:test";
 import { Container } from "typedi";
 import { dataSource } from "../src/app/DataSource";
+import { Kaisai } from "../src/app/entities/Kaisai";
 import { Race } from "../src/app/entities/Race";
 import { RaceSeiseki } from "../src/app/entities/RaceSeiseki";
 import { ShussoubaSeiseki } from "../src/app/entities/ShussoubaSeiseki";
-import { Kaisai } from "../src/app/entities/Kaisai";
-import { Sed } from "../src/app/reader/JRDB/Sed";
 import { Sec } from "../src/app/reader/JRDB/Sec";
+import { Sed } from "../src/app/reader/JRDB/Sed";
 import { base, Field, record } from "./helpers";
 
 const sedRecord = (fields: Field[], length = 376) => record(fields, length);
@@ -49,7 +49,10 @@ test("SED 1 レコードの取り込み", async () => {
 test("速報版(SEC)の空白項目で既存の値を消さない", async () => {
   const sec = Container.get(Sec);
   // 速報版は馬場状態・天候・コース・前3F先頭差などが空白
-  const record = sedRecord(base.filter(([pos]) => ![70, 339, 340, 317, 320, 256, 265, 371].includes(pos)), 346);
+  const record = sedRecord(
+    base.filter(([pos]) => ![70, 339, 340, 317, 320, 256, 265, 371].includes(pos)),
+    346,
+  );
   await sec.save(record);
 
   const race = await dataSource.manager.findOneByOrFail(Race, {});
@@ -63,7 +66,13 @@ test("速報版(SEC)の空白項目で既存の値を消さない", async () => 
 
 test("地方レース(回・日が英字)は年月日から開催を決める", async () => {
   const sed = Container.get(Sed);
-  const local = base.filter(([pos]) => ![1, 5, 6].includes(pos)).concat([[1, "35"], [5, "d"], [6, "g"]] as Field[]);
+  const local = base
+    .filter(([pos]) => ![1, 5, 6].includes(pos))
+    .concat([
+      [1, "35"],
+      [5, "d"],
+      [6, "g"],
+    ] as Field[]);
   await sed.save(sedRecord(local));
 
   const kaisai = await dataSource.manager.find(Kaisai);
@@ -87,5 +96,7 @@ test("場コードが空白のレコード(前走データの外国・地方な�
   const blank = base.filter(([pos]) => ![1, 5, 6, 7, 9].includes(pos));
   await sed.save(sedRecord(blank));
 
-  expect([await dataSource.manager.count(Kaisai), await dataSource.manager.count(Race)]).toEqual(before);
+  expect([await dataSource.manager.count(Kaisai), await dataSource.manager.count(Race)]).toEqual(
+    before,
+  );
 });

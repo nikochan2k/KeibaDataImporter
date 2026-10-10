@@ -1,6 +1,4 @@
 import { Inject } from "typedi";
-import { JrdbOddsHaitouTool } from "./JrdbOddsHaitouTool";
-import { JrdbShussoubaData } from "./JrdbShussoubaData";
 import * as $CK from "../../converters/Choukyoushi";
 import * as $C from "../../converters/Common";
 import * as $K from "../../converters/Kishu";
@@ -19,20 +17,21 @@ import { Shussouba } from "../../entities/Shussouba";
 import { Kubun } from "../../entities/ShussoubaJoutai";
 import { ShussoubaYosou } from "../../entities/ShussoubaYosou";
 import { Uma } from "../../entities/Uma";
-import { ShussoubaInfo } from "../ShussoubaTool";
 import {
   readDouble,
   readInt,
+  readPositiveDouble,
   readPositiveInt,
+  readRaw,
+  readSignedInt,
   readStr,
   readStrWithNoSpace,
-  readRaw,
-  readPositiveDouble,
-  readSignedInt
 } from "../Reader";
+import { ShussoubaInfo } from "../ShussoubaTool";
+import { JrdbOddsHaitouTool } from "./JrdbOddsHaitouTool";
+import { JrdbShussoubaData } from "./JrdbShussoubaData";
 
 export abstract class Ky$ extends JrdbShussoubaData {
-
   @Inject()
   protected jrdbOddsHaitouTool: JrdbOddsHaitouTool;
 
@@ -225,11 +224,21 @@ export abstract class Ky$ extends JrdbShussoubaData {
   }
 
   protected async saveShussoubaJoutaiSeries(buffer: Buffer, shussouba: Shussouba) {
-    for (let bangou = 0, offset = 501; bangou < 3; bangou++ , offset += 3) {
-      await this.jrdbShussoubaTool.saveShussoubaJoutaiWith(buffer, offset, shussouba.Id, Kubun.TaikeiSougaou);
+    for (let bangou = 0, offset = 501; bangou < 3; bangou++, offset += 3) {
+      await this.jrdbShussoubaTool.saveShussoubaJoutaiWith(
+        buffer,
+        offset,
+        shussouba.Id,
+        Kubun.TaikeiSougaou,
+      );
     }
-    for (let bangou = 0, offset = 510; bangou < 3; bangou++ , offset += 3) {
-      await this.jrdbShussoubaTool.saveShussoubaJoutaiWith(buffer, offset, shussouba.Id, Kubun.UmaTokki);
+    for (let bangou = 0, offset = 510; bangou < 3; bangou++, offset += 3) {
+      await this.jrdbShussoubaTool.saveShussoubaJoutaiWith(
+        buffer,
+        offset,
+        shussouba.Id,
+        Kubun.UmaTokki,
+      );
     }
   }
 
@@ -239,14 +248,14 @@ export abstract class Ky$ extends JrdbShussoubaData {
       Baken: $C.Baken.Tanshou,
       OddsOffset: 95,
       OddsLength: 5,
-      NinkiOffset: 100
+      NinkiOffset: 100,
     });
     await this.jrdbOddsHaitouTool.saveOddsNinki(buffer, shussouba, {
       Kakutei: $C.Kakutei.Yosou,
       Baken: $C.Baken.Fukushou,
       OddsOffset: 102,
       OddsLength: 5,
-      NinkiOffset: 107
+      NinkiOffset: 107,
     });
   }
 }

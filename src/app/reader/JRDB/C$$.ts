@@ -1,12 +1,11 @@
 import { Inject } from "typedi";
-import { JrdbData } from "./JrdbData";
 import * as $C from "../../converters/Common";
 import { ChoukyoushiDao } from "../../daos/ChoukyoushiDao";
 import { Choukyoushi } from "../../entities/Choukyoushi";
 import { readInt, readPositiveInt, readStr } from "../Reader";
+import { JrdbData } from "./JrdbData";
 
 export abstract class C$$ extends JrdbData {
-
   @Inject()
   private choukyoushiDao: ChoukyoushiDao;
 
@@ -26,5 +25,4 @@ export abstract class C$$ extends JrdbData {
     toBe.HatsuMenkyoNen = readPositiveInt(buffer, 75, 4);
     await this.choukyoushiDao.saveChoukyoushi(toBe, choukyoushiMei, tanshuku, furigana);
   }
-
 }

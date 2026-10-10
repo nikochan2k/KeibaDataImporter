@@ -13,10 +13,10 @@ import { DataToImport } from "../../DataToImport";
 import {
   readDouble,
   readInt,
+  readPositiveDouble,
   readPositiveInt,
   readStr,
   readStrWithNoSpace,
-  readPositiveDouble
 } from "../../Reader";
 import { ShussoubaInfo } from "../../ShussoubaTool";
 import { Tool } from "../../Tool";
@@ -27,7 +27,6 @@ import { KolTool } from "../KolTool";
 
 @Service()
 export class KolDen2Kd3 extends DataToImport {
-
   @Inject()
   private choukyouTool: KolChoukyouTool;
 
@@ -98,7 +97,9 @@ export class KolDen2Kd3 extends DataToImport {
     toBe.KishuShozokuChoukyoushiId = await this.kolTool.saveShozokuChoukyoushi(buffer, 199);
     toBe.MinaraiKubun = $K.minaraiKubun.toCodeFromKol(buffer, 204, 1);
     toBe.Norikawari = $S.norikawari.toCodeFromKol(buffer, 205, 1);
-    toBe.TorikeshiShubetsu = $S.torikeshiShubetsu.toCodeFromKol(buffer, 254, 1) || $S.torikeshiShubetsu.toCodeFromKol(buffer, 255, 1);
+    toBe.TorikeshiShubetsu =
+      $S.torikeshiShubetsu.toCodeFromKol(buffer, 254, 1) ||
+      $S.torikeshiShubetsu.toCodeFromKol(buffer, 255, 1);
     toBe.KyuuyouRiyuu = readStr(buffer, 783, 60);
     toBe.KyuuyouRiyuuCode = $S.kyuuyouRiyuuCode.toCodeFromKol(buffer, 783, 60);
 
@@ -130,7 +131,11 @@ export class KolDen2Kd3 extends DataToImport {
     return await this.tool.saveOrUpdate(ShussoubaYosou, asIs, toBe);
   }
 
-  protected async saveShussoubaChoukyou(buffer: Buffer, info: ShussoubaInfo, tanshukuKishuMei: string) {
+  protected async saveShussoubaChoukyou(
+    buffer: Buffer,
+    info: ShussoubaInfo,
+    tanshukuKishuMei: string,
+  ) {
     const sc = new ShussoubaChoukyou();
     sc.Id = info.shussouba.Id;
     sc.ChoukyouTanpyou = readStr(buffer, 694, 24);
@@ -141,12 +146,26 @@ export class KolDen2Kd3 extends DataToImport {
 
     const choukyouAwaseFlag = readPositiveInt(buffer, 607, 1);
     const choukyouAwase = readStr(buffer, 608, 86);
-    await this.choukyouTool.saveChoukyou(buffer, 256, info.uma.Id, tanshukuKishuMei,
-      choukyouAwaseFlag === 1 ? choukyouAwase : null);
-    await this.choukyouTool.saveChoukyou(buffer, 373, info.uma.Id, tanshukuKishuMei,
-      choukyouAwaseFlag === 2 ? choukyouAwase : null);
-    await this.choukyouTool.saveChoukyou(buffer, 490, info.uma.Id, tanshukuKishuMei,
-      choukyouAwaseFlag === 3 ? choukyouAwase : null);
+    await this.choukyouTool.saveChoukyou(
+      buffer,
+      256,
+      info.uma.Id,
+      tanshukuKishuMei,
+      choukyouAwaseFlag === 1 ? choukyouAwase : null,
+    );
+    await this.choukyouTool.saveChoukyou(
+      buffer,
+      373,
+      info.uma.Id,
+      tanshukuKishuMei,
+      choukyouAwaseFlag === 2 ? choukyouAwase : null,
+    );
+    await this.choukyouTool.saveChoukyou(
+      buffer,
+      490,
+      info.uma.Id,
+      tanshukuKishuMei,
+      choukyouAwaseFlag === 3 ? choukyouAwase : null,
+    );
   }
-
 }

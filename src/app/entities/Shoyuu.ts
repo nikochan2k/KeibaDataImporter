@@ -1,13 +1,8 @@
-import {
-  Column,
-  Entity,
-  Index,
-  PrimaryGeneratedColumn
-} from "typeorm";
+import { Column, Entity, Index, PrimaryGeneratedColumn } from "typeorm";
 
 export enum MeishouKubun {
   Full,
-  Tanshuku
+  Tanshuku,
 }
 
 @Entity("Shoyuu")

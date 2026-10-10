@@ -1,18 +1,17 @@
 import { Service } from "typedi";
-import { Hj$ } from "./Hj$";
 import { Baken, Kakutei } from "../../converters/Common";
 import { OddsHaitou } from "../../entities/OddsHaitou";
 import { readPositiveInt } from "../Reader";
+import { Hj$ } from "./Hj$";
 
 @Service()
 export class Hjc extends Hj$ {
-
   protected getBufferLength() {
     return 444;
   }
 
   protected async saveUmatan(buffer: Buffer, raceId: number) {
-    for (let i = 0, offset = 227; i < 6; i++ , offset += 12) {
+    for (let i = 0, offset = 227; i < 6; i++, offset += 12) {
       const umaban1 = readPositiveInt(buffer, offset, 2);
       if (!umaban1) {
         continue;
@@ -29,7 +28,7 @@ export class Hjc extends Hj$ {
   }
 
   protected async saveSanrenpuku(buffer: Buffer, raceId: number) {
-    for (let i = 0, offset = 299; i < 3; i++ , offset += 14) {
+    for (let i = 0, offset = 299; i < 3; i++, offset += 14) {
       const umaban1 = readPositiveInt(buffer, offset, 2);
       if (!umaban1) {
         continue;
@@ -47,7 +46,7 @@ export class Hjc extends Hj$ {
   }
 
   protected async saveSanrentan(buffer: Buffer, raceId: number) {
-    for (let i = 0, offset = 341; i < 6; i++ , offset += 15) {
+    for (let i = 0, offset = 341; i < 6; i++, offset += 15) {
       const umaban1 = readPositiveInt(buffer, offset, 2);
       if (!umaban1) {
         continue;
@@ -63,5 +62,4 @@ export class Hjc extends Hj$ {
       await this.jrdbOddsHaitouTool.saveOddsHaitou(oddsHaitou);
     }
   }
-
 }

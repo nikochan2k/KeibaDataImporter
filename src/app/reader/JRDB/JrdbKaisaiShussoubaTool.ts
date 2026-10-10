@@ -1,17 +1,11 @@
 import { Service } from "typedi";
-import { JrdbKaisaiTool } from "./JrdbKaisaiTool";
 import * as $C from "../../converters/Common";
 import { KaisaiInfo } from "../KaisaiTool";
-import {
-  readHex,
-  readInt,
-  readPositiveInt,
-  readRaw
-} from "../Reader";
+import { readHex, readInt, readPositiveInt, readRaw } from "../Reader";
+import { JrdbKaisaiTool } from "./JrdbKaisaiTool";
 
 @Service()
 export class JrdbKaisaiShussoubaTool extends JrdbKaisaiTool {
-
   /** 場コードが中央競馬(京都〜函館)かどうか */
   public static isJra(basho: number) {
     return 0 <= basho && basho <= 9;
@@ -46,5 +40,4 @@ export class JrdbKaisaiShussoubaTool extends JrdbKaisaiTool {
       nichiji: jra ? readHex(buffer, 5, 1) : nichi,
     };
   }
-
 }

@@ -5,7 +5,6 @@ export class ShussoubaYosou {
   @PrimaryColumn("bigint")
   public Id: number;
 
-
   @Column("tinyint", { nullable: true })
   public KolYosou1?: number;
 
@@ -14,7 +13,6 @@ export class ShussoubaYosou {
 
   @Column("real", { nullable: true })
   public Rating?: number;
-
 
   @Column("real", { nullable: true })
   public Idm?: number;
@@ -34,13 +32,11 @@ export class ShussoubaYosou {
   @Column("real", { nullable: true })
   public SougouShisuu?: number;
 
-
   @Column("tinyint", { nullable: true })
   public BaguHenkouJouhou: number;
 
   @Column("tinyint", { nullable: true })
   public Ashimoto: number;
-
 
   @Column("tinyint", { nullable: true })
   public Kyakushitsu: number; // Jrdb優先
@@ -53,7 +49,6 @@ export class ShussoubaYosou {
 
   @Column("smallint", { nullable: true })
   public Rotation: number;
-
 
   @Column("smallint", { nullable: true })
   public TokuteiJouhouHonmei?: number;
@@ -94,7 +89,6 @@ export class ShussoubaYosou {
   @Column("real", { nullable: true })
   public KyuushaShisuu?: number;
 
-
   @Column("tinyint", { nullable: true })
   public ChoukyouYajirushi?: number;
 
@@ -115,7 +109,6 @@ export class ShussoubaYosou {
 
   @Column("tinyint", { nullable: true })
   public ClassCode: number;
-
 
   // 印
 
@@ -155,7 +148,6 @@ export class ShussoubaYosou {
   @Column("tinyint", { nullable: true })
   public DirtTekisei?: number;
 
-
   // 賞金情報
 
   @Column("bigint", { nullable: true })
@@ -166,7 +158,6 @@ export class ShussoubaYosou {
 
   @Column("tinyint", { nullable: true })
   public JoukenClass: number;
-
 
   // 展開予想
 
@@ -215,10 +206,8 @@ export class ShussoubaYosou {
   @Column("tinyint", { nullable: true })
   public TenkaiKigou: number;
 
-
   @Column("tinyint", { nullable: true })
   public KyoriTekisei2: number;
-
 
   @Column("tinyint", { nullable: true })
   public GekisouJuni: number;
@@ -238,7 +227,6 @@ export class ShussoubaYosou {
   @Column("tinyint", { nullable: true })
   public IchiShisuuJuni: number;
 
-
   @Column("real", { nullable: true })
   public KishuKitaiTanshouRitsu: number;
 
@@ -247,7 +235,6 @@ export class ShussoubaYosou {
 
   @Column("tinyint", { nullable: true })
   public YosouKubun: number;
-
 
   @Column("tinyint", { nullable: true })
   public SouhouZentai: number;
@@ -330,13 +317,11 @@ export class ShussoubaYosou {
   @Column("tinyint", { nullable: true })
   public MankenShirushi: number;
 
-
   @Column("tinyint", { nullable: true })
   public KoukyuuFlag?: number;
 
   @Column("tinyint", { nullable: true })
   public GekisouType?: number;
-
 
   @Column("tinyint", { nullable: true })
   public ShibaDirtShougaiFlag?: number;
@@ -352,7 +337,6 @@ export class ShussoubaYosou {
 
   @Column("tinyint", { nullable: true })
   public KyoseiFlag?: number;
-  
 
   @Column("tinyint", { nullable: true })
   public NyuukyuuNansoume?: number;
@@ -362,7 +346,6 @@ export class ShussoubaYosou {
 
   @Column("smallint", { nullable: true })
   public NyuukyuuNannichimae?: number;
-
 
   @Column("mediumint", { nullable: true })
   public HoubokusakiId?: number;
@@ -385,7 +368,6 @@ export class ShussoubaYosou {
   @Column("smallint", { nullable: true })
   public Cid: number;
 
-
   @Column("real", { nullable: true })
   public LsShisuu: number;
 
@@ -400,5 +382,4 @@ export class ShussoubaYosou {
 
   @Column("tinyint", { nullable: true })
   public KishuBbShirushi: number;
-
 }

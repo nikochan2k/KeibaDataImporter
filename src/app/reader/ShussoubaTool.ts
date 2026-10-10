@@ -1,13 +1,12 @@
 import { Logger } from "log4js";
 import { EntityManager } from "typeorm";
-import { OrmManager } from "../OrmManager";
-import { readPositiveInt, readRaw } from "./Reader";
 import { Race } from "../entities/Race";
 import { Shussouba } from "../entities/Shussouba";
-import { ShussoubaJoutai, Kubun } from "../entities/ShussoubaJoutai";
+import { Kubun, ShussoubaJoutai } from "../entities/ShussoubaJoutai";
 import { Uma } from "../entities/Uma";
 import { getLogger } from "../LogUtil";
-
+import { OrmManager } from "../OrmManager";
+import { readPositiveInt, readRaw } from "./Reader";
 
 export interface ShussoubaInfo {
   race: Race;
@@ -22,7 +21,6 @@ export interface RaceShussoubaId {
 }
 
 export abstract class ShussoubaTool {
-
   protected logger: Logger;
 
   @OrmManager()
@@ -42,7 +40,7 @@ export abstract class ShussoubaTool {
    * @memberof RaceTool
    */
   protected getShussoubaIdFrom(raceId: number, umaban: number) {
-    const id = raceId * (2 ** 6) + umaban;
+    const id = raceId * 2 ** 6 + umaban;
     return id;
   }
 
@@ -57,7 +55,11 @@ export abstract class ShussoubaTool {
    * @returns 出走馬ID
    * @memberof RaceTool
    */
-  public getRaceShussoubaId(buffer: Buffer, umabanOffset: number, raceId?: number): RaceShussoubaId {
+  public getRaceShussoubaId(
+    buffer: Buffer,
+    umabanOffset: number,
+    raceId?: number,
+  ): RaceShussoubaId {
     raceId = raceId || this.getRaceId(buffer);
     if (!raceId) {
       this.logger.warn("レースIDがありません: " + raceId);
@@ -73,7 +75,7 @@ export abstract class ShussoubaTool {
     return {
       raceId: raceId,
       shussoubaId: shussoubaId,
-      umaban: umaban
+      umaban: umaban,
     };
   }
 
@@ -97,7 +99,11 @@ export abstract class ShussoubaTool {
     return shussouba;
   }
 
-  public async getShussoubaInfo(buffer: Buffer, umabanOffset: number, raceId?: number): Promise<ShussoubaInfo> {
+  public async getShussoubaInfo(
+    buffer: Buffer,
+    umabanOffset: number,
+    raceId?: number,
+  ): Promise<ShussoubaInfo> {
     const rsId = this.getRaceShussoubaId(buffer, umabanOffset, raceId);
     if (!rsId) {
       return null;
@@ -108,13 +114,13 @@ export abstract class ShussoubaTool {
       return null;
     }
 
-    const id = rsId.raceId * (2 ** 6) + rsId.umaban;
+    const id = rsId.raceId * 2 ** 6 + rsId.umaban;
     const shussouba = await this.entityManager.findOneBy(Shussouba, { Id: id });
     return { race: race, shussouba: shussouba };
   }
 
   public async saveShussoubaJoutai(shussoubaId: number, kubun: Kubun, code: number) {
-    const id = shussoubaId * (2 ** (4 + 10)) + kubun * (2 ** 10) + code;
+    const id = shussoubaId * 2 ** (4 + 10) + kubun * 2 ** 10 + code;
     const toBe = new ShussoubaJoutai();
     toBe.Id = id;
     toBe.ShussoubaId = shussoubaId;

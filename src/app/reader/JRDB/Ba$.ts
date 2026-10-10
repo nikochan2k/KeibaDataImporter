@@ -1,13 +1,12 @@
-import { JrdbRaceData } from "./JrdbRaceData";
 import * as $K from "../../converters/Kaisai";
 import * as $R from "../../converters/Race";
 import { Kaisai } from "../../entities/Kaisai";
 import { Race } from "../../entities/Race";
 import { KaisaiTool } from "../KaisaiTool";
 import { readJikan, readPositiveInt, readStr } from "../Reader";
+import { JrdbRaceData } from "./JrdbRaceData";
 
 export abstract class Ba$ extends JrdbRaceData {
-
   protected getKaisaiTool(): KaisaiTool {
     return this.jrdbKaisaiRaceTool;
   }
@@ -46,5 +45,4 @@ export abstract class Ba$ extends JrdbRaceData {
     await this.jrdbRaceTool.saveRaceMei(buffer, 98, 8, race);
     await this.jrdbRaceTool.saveRaceMei(buffer, 106, 18, race);
   }
-
 }

@@ -1,13 +1,12 @@
 import { Inject } from "typedi";
-import { JrdbRaceTool } from "./JrdbRaceTool";
-import { JrdbTool } from "./JrdbTool";
 import { Kaisai } from "../../entities/Kaisai";
 import { Race } from "../../entities/Race";
-import { JrdbKaisaiData } from './JrdbKaisaiData';
-import { RaceSeiseki } from '../../entities/RaceSeiseki';
+import { RaceSeiseki } from "../../entities/RaceSeiseki";
+import { JrdbKaisaiData } from "./JrdbKaisaiData";
+import { JrdbRaceTool } from "./JrdbRaceTool";
+import { JrdbTool } from "./JrdbTool";
 
 export abstract class JrdbRaceData extends JrdbKaisaiData {
-
   @Inject()
   protected jrdbTool: JrdbTool;
 
@@ -36,8 +35,7 @@ export abstract class JrdbRaceData extends JrdbKaisaiData {
     return await this.tool.saveOrUpdate(Race, asIs, toBe, this.keepExisting);
   }
 
-  protected setRace(buffer: Buffer, toBe: Race) {
-  }
+  protected setRace(buffer: Buffer, toBe: Race) {}
 
   protected async saveRaceRelated(buffer: Buffer, race: Race) {
     // await this.saveRaceSeiseki(buffer, race.Id);
@@ -51,7 +49,5 @@ export abstract class JrdbRaceData extends JrdbKaisaiData {
     await this.tool.saveOrUpdate(RaceSeiseki, asIs, toBe, this.keepExisting);
   }
 
-  protected setRaceSeiseki(buffer: Buffer, toBe: RaceSeiseki) {
-  }
-
+  protected setRaceSeiseki(buffer: Buffer, toBe: RaceSeiseki) {}
 }

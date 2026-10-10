@@ -7,7 +7,6 @@ import { Cy$ } from "./Cy$";
 
 @Service()
 export class Cya extends Cy$ {
-
   protected getBufferLength() {
     return 88;
   }
@@ -24,5 +23,4 @@ export class Cya extends Cy$ {
     sc.CommentNengappi = readInt(buffer, 75, 8);
     sc.ChoukyouHyouka = $C.hyouka.toCodeFromJrdb(buffer, 83, 1);
   }
-
 }

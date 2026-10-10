@@ -1,15 +1,15 @@
 import "reflect-metadata";
 import * as fs from "fs";
-import * as path from "path";
-import { Container } from "typedi";
-import { dataSource } from "../../src/app/DataSource";
-import { Importer } from "../../src/app/Importer";
 import * as log4js from "log4js";
 import * as os from "os";
-import { specOf } from "./docs";
+import * as path from "path";
+import { Container } from "typedi";
 import { Codes } from "../../src/app/converters/Codes";
+import { dataSource } from "../../src/app/DataSource";
+import { Importer } from "../../src/app/Importer";
 import { Sed } from "../../src/app/reader/JRDB/Sed";
 import { base, record, setFileDate } from "../helpers";
+import { specOf } from "./docs";
 import { parseSpec, specDir } from "./specs";
 
 export interface Read {
@@ -63,9 +63,12 @@ function normalizeLineEnd(basename: string, file: string, tmp: string) {
   if (data.length % length === 0) {
     return file;
   }
-  const lines = data.toString("latin1").split(/\r?\n/).filter(l => l.length > 0);
+  const lines = data
+    .toString("latin1")
+    .split(/\r?\n/)
+    .filter((l) => l.length > 0);
   const out = path.join(tmp, basename);
-  fs.writeFileSync(out, Buffer.from(lines.map(l => l + "\r\n").join(""), "latin1"));
+  fs.writeFileSync(out, Buffer.from(lines.map((l) => l + "\r\n").join(""), "latin1"));
   return out;
 }
 
@@ -82,7 +85,9 @@ async function seedShussoubaForTyb(file: string, basename: string) {
     const rec = data.subarray(i * 128, (i + 1) * 128);
     const key = rec.toString("latin1", 0, 8);
     const umaban = rec.toString("latin1", 8, 10);
-    await sed.save(record([...base, [1, key], [9, umaban], [11, String(10000000 + i)], [19, date]], 376));
+    await sed.save(
+      record([...base, [1, key], [9, umaban], [11, String(10000000 + i)], [19, date]], 376),
+    );
   }
 }
 
@@ -103,13 +108,31 @@ export async function importSamples(onlyPrefixes?: string[], excludePrefixes: st
   const reads: Reads = new Map();
   let current: string | null = null;
   const originalCopy = Buffer.prototype.copy;
-  (Buffer.prototype as any).copy = function (this: Buffer, target: Buffer, ts?: number, ss?: number, se?: number) {
-    if (current !== null && ss !== undefined && se !== undefined && target.length === se - ss && 64 <= this.length) {
+  (Buffer.prototype as any).copy = function (
+    this: Buffer,
+    target: Buffer,
+    ts?: number,
+    ss?: number,
+    se?: number,
+  ) {
+    if (
+      current !== null &&
+      ss !== undefined &&
+      se !== undefined &&
+      target.length === se - ss &&
+      64 <= this.length
+    ) {
       const stack = new Error().stack.split("\n").slice(2);
-      const frame = stack.find(l => /reader\/JRDB\//.test(l)) || stack.find(l => /reader\//.test(l)) || "";
-      const m = frame.match(/([^\/]+\.ts):(\d+)/);
+      const frame =
+        stack.find((l) => /reader\/JRDB\//.test(l)) || stack.find((l) => /reader\//.test(l)) || "";
+      const m = frame.match(/([^/]+\.ts):(\d+)/);
       const list = reads.get(current) || [];
-      list.push({ recordLength: this.length, offset: ss, length: se - ss, caller: m ? `${m[1]}:${m[2]}` : "?" });
+      list.push({
+        recordLength: this.length,
+        offset: ss,
+        length: se - ss,
+        caller: m ? `${m[1]}:${m[2]}` : "?",
+      });
       reads.set(current, list);
     }
     return originalCopy.call(this, target, ts, ss, se);
@@ -122,8 +145,8 @@ export async function importSamples(onlyPrefixes?: string[], excludePrefixes: st
     const code = originalToCodeFrom.call(this, key, str);
     if (current !== null && code === null && str !== null && str.trim() !== "") {
       const stack = new Error().stack.split("\n").slice(2);
-      const frame = stack.find(l => /reader\//.test(l)) || "";
-      const m = frame.match(/([^\/]+\.ts):(\d+)/);
+      const frame = stack.find((l) => /reader\//.test(l)) || "";
+      const m = frame.match(/([^/]+\.ts):(\d+)/);
       unmapped.push({ prefix: current, caller: m ? `${m[1]}:${m[2]}` : "?", value: str });
     }
     return code;
@@ -150,10 +173,13 @@ export async function importSamples(onlyPrefixes?: string[], excludePrefixes: st
     (Codes.prototype as any).toCodeFrom = originalToCodeFrom;
     fs.rmSync(tmp, { recursive: true, force: true });
   }
-  const logs = log4js.recording().replay().map(e => ({
-    level: e.level.levelStr as string,
-    category: e.categoryName as string,
-    message: e.data.map(String).join(" "),
-  }));
+  const logs = log4js
+    .recording()
+    .replay()
+    .map((e) => ({
+      level: e.level.levelStr as string,
+      category: e.categoryName as string,
+      message: e.data.map(String).join(" "),
+    }));
   return { reads, logs, unmapped };
 }

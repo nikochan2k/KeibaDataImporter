@@ -12,17 +12,11 @@ import { Kishu } from "../../entities/Kishu";
 import { Kyousouba } from "../../entities/Kyousouba";
 import { MeishouKubun } from "../../entities/Shoyuu";
 import { Uma } from "../../entities/Uma";
-import {
-  readInt,
-  readPositiveInt,
-  readStr,
-  readStrWithNoSpace
-} from "../Reader";
+import { readInt, readPositiveInt, readStr, readStrWithNoSpace } from "../Reader";
 import { Tool } from "../Tool";
 
 @Service()
 export class KolTool {
-
   @Inject()
   private tool: Tool;
 
@@ -118,5 +112,4 @@ export class KolTool {
     choukyoushi.RitsuHokuNanBetsu = $KY.ritsuHokuNanBetsu.toCodeFromKol(buffer, offset + 47, 1);
     return this.choukyoushiDao.saveChoukyoushi(choukyoushi, choukyoushiMei, tanshuku);
   }
-
 }

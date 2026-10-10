@@ -1,13 +1,12 @@
 import { Inject, Service } from "typedi";
 import { Repository } from "typeorm";
-import { OrmRepository } from "../OrmManager";
 import { MeishouDao } from "../daos/MeishouDao";
-import { MeishouKubun } from "../entities/Shoyuu";
 import { Seisansha } from "../entities/Seisansha";
+import { MeishouKubun } from "../entities/Shoyuu";
+import { OrmRepository } from "../OrmManager";
 
 @Service()
 export class SeisanshaDao {
-
   @OrmRepository(Seisansha)
   private repository: Repository<Seisansha>;
 
@@ -25,5 +24,4 @@ export class SeisanshaDao {
     }
     return seisansha;
   }
-
 }

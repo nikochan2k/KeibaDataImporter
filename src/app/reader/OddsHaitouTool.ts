@@ -1,10 +1,10 @@
 import { Logger } from "log4js";
 import { Inject } from "typedi";
 import { EntityManager } from "typeorm";
-import { OrmManager } from "../OrmManager";
-import { Tool } from "./Tool";
 import { Baken } from "../converters/Common";
 import { OddsHaitou } from "../entities/OddsHaitou";
+import { OrmManager } from "../OrmManager";
+import { Tool } from "./Tool";
 
 export interface HaitouInfo {
   baken: Baken;
@@ -22,7 +22,6 @@ export interface HaitouInfo {
 }
 
 export abstract class OddsHaitouTool {
-
   protected logger: Logger;
 
   @OrmManager()
@@ -45,19 +44,19 @@ export abstract class OddsHaitouTool {
   public calculateOddsHaitouId(toBe: OddsHaitou) {
     const bangou2 = toBe.Bangou2 || 0;
     const bangou3 = toBe.Bangou3 || 0;
-    const id = toBe.RaceId * (2 ** (3 + 4 + 5 + 5 + 5))
-      + toBe.Kakutei * (2 ** (4 + 5 + 5 + 5))
-      + toBe.Baken * (2 ** (5 + 5 + 5))
-      + toBe.Bangou1 * (2 ** (5 + 5))
-      + bangou2 * (2 ** 5)
-      + bangou3;
+    const id =
+      toBe.RaceId * 2 ** (3 + 4 + 5 + 5 + 5) +
+      toBe.Kakutei * 2 ** (4 + 5 + 5 + 5) +
+      toBe.Baken * 2 ** (5 + 5 + 5) +
+      toBe.Bangou1 * 2 ** (5 + 5) +
+      bangou2 * 2 ** 5 +
+      bangou3;
     return id;
   }
 
   public async saveOddsHaitou(toBe: OddsHaitou) {
     toBe.Id = this.calculateOddsHaitouId(toBe);
-    const asIs = await this.entityManager
-      .findOneBy(OddsHaitou, { Id: toBe.Id });
+    const asIs = await this.entityManager.findOneBy(OddsHaitou, { Id: toBe.Id });
     if (asIs) {
       toBe = await this.tool.saveOrUpdate(OddsHaitou, asIs, toBe);
     } else {
@@ -65,5 +64,4 @@ export abstract class OddsHaitouTool {
     }
     return toBe;
   }
-
 }

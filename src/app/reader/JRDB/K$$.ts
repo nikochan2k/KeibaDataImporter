@@ -1,12 +1,11 @@
 import { Inject } from "typedi";
-import { JrdbData } from "./JrdbData";
 import * as $K from "../../converters/Kishu";
 import { KishuDao } from "../../daos/KishuDao";
 import { Kishu } from "../../entities/Kishu";
 import { readInt, readPositiveInt, readStr } from "../Reader";
+import { JrdbData } from "./JrdbData";
 
 export abstract class K$$ extends JrdbData {
-
   @Inject()
   private kishuDao: KishuDao;
 
@@ -26,5 +25,4 @@ export abstract class K$$ extends JrdbData {
     kishu.MinaraiKubun = $K.minaraiKubun.toCodeFromJrdb(buffer, 79, 1);
     await this.kishuDao.saveKishu(kishu, kishuMei, tanshukuKishuMei, furigana);
   }
-
 }

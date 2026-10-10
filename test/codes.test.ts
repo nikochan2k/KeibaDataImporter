@@ -1,9 +1,9 @@
 import "reflect-metadata";
 import { expect, test } from "bun:test";
-import * as $SJ from "../src/app/converters/ShussoubaJoutai";
 import * as $K from "../src/app/converters/Kishu";
 import * as $R from "../src/app/converters/Race";
 import * as $S from "../src/app/converters/Shussouba";
+import * as $SJ from "../src/app/converters/ShussoubaJoutai";
 
 test("追加したコード表", () => {
   expect($SJ.tokki.toCodeFromJrdb("945")).toBe(945);

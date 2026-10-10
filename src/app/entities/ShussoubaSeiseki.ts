@@ -1,9 +1,4 @@
-import {
-  Column,
-  Entity,
-  Index,
-  PrimaryColumn
-} from "typeorm";
+import { Column, Entity, Index, PrimaryColumn } from "typeorm";
 
 @Entity("ShussoubaSeiseki")
 @Index("IxShussoubaSeiseki1", (s: ShussoubaSeiseki) => [s.Time])
@@ -122,7 +117,6 @@ export class ShussoubaSeiseki {
 
   @Column("int", { nullable: true })
   public ShuutokuShoukin?: number;
-
 
   @Column("int", { nullable: true })
   public KolNengappi: number;

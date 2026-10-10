@@ -1,10 +1,10 @@
 import { Logger } from "log4js";
 import { Inject } from "typedi";
 import { EntityManager } from "typeorm";
-import { OrmManager } from "../OrmManager";
-import { Tool } from "./Tool";
 import { Kaisai } from "../entities/Kaisai";
 import { getLogger } from "../LogUtil";
+import { OrmManager } from "../OrmManager";
+import { Tool } from "./Tool";
 
 export interface KaisaiInfo {
   basho: number;
@@ -16,7 +16,6 @@ export interface KaisaiInfo {
 }
 
 export abstract class KaisaiTool {
-
   protected logger: Logger;
 
   @OrmManager()
@@ -36,7 +35,13 @@ export abstract class KaisaiTool {
    */
   private getValidKaisaiInfo(buffer: Buffer) {
     const info = this.getKaisaiInfo(buffer);
-    if (!info || info.basho == null || info.nen == null || info.gatsu == null || info.nichi == null) {
+    if (
+      !info ||
+      info.basho == null ||
+      info.nen == null ||
+      info.gatsu == null ||
+      info.nichi == null
+    ) {
       return null;
     }
     return info;
@@ -52,16 +57,13 @@ export abstract class KaisaiTool {
    */
   protected generateKaisaiId(info: KaisaiInfo) {
     const daysFrom1970 = this.tool.getDaysFrom1970With(info.nen, info.gatsu, info.nichi);
-    const id = daysFrom1970 * (2 ** 7) + info.basho;
+    const id = daysFrom1970 * 2 ** 7 + info.basho;
     return id;
   }
 
   protected generateKaisaiKeyWith(nen: number, kaiji: number, nichiji: number, basho: number) {
     const yy = nen - 1970;
-    const key = yy * (2 ** (5 + 5 + 7))
-      + kaiji * (2 ** (5 + 7))
-      + nichiji * (2 ** 7)
-      + basho;
+    const key = yy * 2 ** (5 + 5 + 7) + kaiji * 2 ** (5 + 7) + nichiji * 2 ** 7 + basho;
     return key;
   }
 
@@ -113,7 +115,7 @@ export abstract class KaisaiTool {
   public setYoubi(kaisai: Kaisai) {
     if (!kaisai.Youbi) {
       const date = new Date(Date.UTC(kaisai.Nen, kaisai.Gatsu - 1, kaisai.Nichi));
-      kaisai.Youbi = (date.getUTCDay() + 1) % 7 + 1
+      kaisai.Youbi = ((date.getUTCDay() + 1) % 7) + 1;
     }
   }
 

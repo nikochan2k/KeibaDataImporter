@@ -20,7 +20,14 @@ import { Tyb } from "../src/app/reader/JRDB/Tyb";
 import { base, Field, record, setFileDate } from "./helpers";
 
 /** レースキー(中山 2024年 3回4日 11R)と馬番5 */
-const raceKey: Field[] = [[1, "06"], [3, "24"], [5, "3"], [6, "4"], [7, "11"], [9, "05"]];
+const raceKey: Field[] = [
+  [1, "06"],
+  [3, "24"],
+  [5, "3"],
+  [6, "4"],
+  [7, "11"],
+  [9, "05"],
+];
 
 beforeAll(async () => {
   dataSource.setOptions({ database: ":memory:" });
@@ -35,16 +42,30 @@ afterAll(async () => {
   await dataSource.destroy();
 });
 
-const find = async <T>(entity: new () => T, where: object) => (await dataSource.manager.findOneBy(entity as any, where)) as T;
+const find = async <T>(entity: new () => T, where: object) =>
+  (await dataSource.manager.findOneBy(entity as any, where)) as T;
 
 describe("TYB 直前情報", () => {
   const tyb = [
     ...raceKey,
-    [11, " 55.5"], [16, " 60.0"], [46, "1"], [47, "2"], // 馬具変更情報 1:通常、脚元情報 2:疑問
-    [49, "10500"], [54, "マツオカ"],
-    [66, "535"], [69, "4"], [70, "21"], [72, "4"], // 負担重量 53.5、見習い区分 4、馬場 21(稍重・速い)、天候 4(雨)
-    [73, "   3.4"], [79, "   1.5"], [85, "0925"],
-    [89, "484"], [92, "- 4"], [98, "3"], [99, "5"], [100, "1540"],
+    [11, " 55.5"],
+    [16, " 60.0"],
+    [46, "1"],
+    [47, "2"], // 馬具変更情報 1:通常、脚元情報 2:疑問
+    [49, "10500"],
+    [54, "マツオカ"],
+    [66, "535"],
+    [69, "4"],
+    [70, "21"],
+    [72, "4"], // 負担重量 53.5、見習い区分 4、馬場 21(稍重・速い)、天候 4(雨)
+    [73, "   3.4"],
+    [79, "   1.5"],
+    [85, "0925"],
+    [89, "484"],
+    [92, "- 4"],
+    [98, "3"],
+    [99, "5"],
+    [100, "1540"],
   ] as Field[];
 
   test("レース、出走馬、オッズ、状態コードに反映される", async () => {
@@ -74,10 +95,20 @@ describe("TYB 直前情報", () => {
     expect(hyouka.BataiCode).toBe(3);
     expect(hyouka.KehaiCode).toBe(5);
 
-    const tan = await find(OddsHaitou, { RaceId: race.Id, Kakutei: Kakutei.Chokuzen, Baken: Baken.Tanshou, Bangou1: 5 });
+    const tan = await find(OddsHaitou, {
+      RaceId: race.Id,
+      Kakutei: Kakutei.Chokuzen,
+      Baken: Baken.Tanshou,
+      Bangou1: 5,
+    });
     expect(tan.Odds1).toBeCloseTo(3.4);
     expect(tan.ShutokuJikan).toBe("09:25");
-    const fuku = await find(OddsHaitou, { RaceId: race.Id, Kakutei: Kakutei.Chokuzen, Baken: Baken.Fukushou, Bangou1: 5 });
+    const fuku = await find(OddsHaitou, {
+      RaceId: race.Id,
+      Kakutei: Kakutei.Chokuzen,
+      Baken: Baken.Fukushou,
+      Bangou1: 5,
+    });
     expect(fuku.Odds1).toBeCloseTo(1.5);
   });
 
@@ -91,15 +122,29 @@ describe("TYB 直前情報", () => {
 
 describe("HJC 払戻", () => {
   const hjc = [
-    [1, "06"], [3, "24"], [5, "3"], [6, "4"], [7, "11"],
-    [9, "05"], [11, "0000230"], // 単勝 5番 230円
-    [36, "05"], [38, "0000120"], [45, "08"], [47, "0000150"], // 複勝
-    [81, "34"], [83, "0000560"], // 枠連 3-4
-    [108, "0508"], [112, "00001230"], // 馬連
-    [144, "0508"], [148, "00000450"], // ワイド
-    [228, "0805"], [232, "00002560"], // 馬単
-    [300, "030507"], [306, "00012340"], // 3連複
-    [342, "070503"], [348, "000123450"], // 3連単
+    [1, "06"],
+    [3, "24"],
+    [5, "3"],
+    [6, "4"],
+    [7, "11"],
+    [9, "05"],
+    [11, "0000230"], // 単勝 5番 230円
+    [36, "05"],
+    [38, "0000120"],
+    [45, "08"],
+    [47, "0000150"], // 複勝
+    [81, "34"],
+    [83, "0000560"], // 枠連 3-4
+    [108, "0508"],
+    [112, "00001230"], // 馬連
+    [144, "0508"],
+    [148, "00000450"], // ワイド
+    [228, "0805"],
+    [232, "00002560"], // 馬単
+    [300, "030507"],
+    [306, "00012340"], // 3連複
+    [342, "070503"],
+    [348, "000123450"], // 3連単
   ] as Field[];
 
   test("すべての馬券種の払戻が保存される", async () => {
@@ -126,7 +171,12 @@ describe("HJC 払戻", () => {
     const changed = hjc.map(([p, v]) => (p === 11 ? [11, "0000310"] : [p, v])) as Field[];
     await Container.get(Hjc).save(record(changed, 444));
     const race = await find(Race, {});
-    const tan = await find(OddsHaitou, { RaceId: race.Id, Kakutei: Kakutei.Kakutei, Baken: Baken.Tanshou, Bangou1: 5 });
+    const tan = await find(OddsHaitou, {
+      RaceId: race.Id,
+      Kakutei: Kakutei.Kakutei,
+      Baken: Baken.Tanshou,
+      Bangou1: 5,
+    });
     expect(tan.Haitoukin).toBe(310);
   });
 });
@@ -136,8 +186,15 @@ describe("CYB 調教分析", () => {
     const cyb = [
       ...raceKey,
       [11, "11"], // 調教タイプ
-      [28, "2"], [29, "3"], [30, " 95"], [33, " 88"], [36, "B"], [37, "2"],
-      [86, "2"], [87, "100"], [90, "36"],
+      [28, "2"],
+      [29, "3"],
+      [30, " 95"],
+      [33, " 88"],
+      [36, "B"],
+      [37, "2"],
+      [86, "2"],
+      [87, "100"],
+      [90, "36"],
     ] as Field[];
     await Container.get(Cyb).save(record(cyb, 96));
 
@@ -152,10 +209,20 @@ describe("CYB 調教分析", () => {
 });
 
 describe("KSA 騎手マスタ", () => {
-  const ksa = (code: string, shozoku: string, minarai: string) => record([
-    [1, code], [6, "0"], [15, "マツオカマサミ"], [57, "松岡"],
-    [63, shozoku], [68, "19840211"], [76, "2003"], [80, minarai],
-  ] as Field[], 272);
+  const ksa = (code: string, shozoku: string, minarai: string) =>
+    record(
+      [
+        [1, code],
+        [6, "0"],
+        [15, "マツオカマサミ"],
+        [57, "松岡"],
+        [63, shozoku],
+        [68, "19840211"],
+        [76, "2003"],
+        [80, minarai],
+      ] as Field[],
+      272,
+    );
 
   test("所属と見習い区分が保存される", async () => {
     await Container.get(K$a).save(ksa("10500", "2", "4"));

@@ -1,4 +1,3 @@
-
 export function toUint8Array(buf: Buffer) {
   const ab = new ArrayBuffer(buf.length);
   const array = new Uint8Array(ab);

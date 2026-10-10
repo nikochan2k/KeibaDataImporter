@@ -1,5 +1,4 @@
 import { Inject, Service } from "typedi";
-import { Kyh } from "./Kyh";
 import * as $S from "../../converters/Shussouba";
 import * as $SJ from "../../converters/ShussoubaYosou";
 import { HoubokusakiDao } from "../../daos/HoubokusakiDao";
@@ -7,10 +6,10 @@ import { Shussouba } from "../../entities/Shussouba";
 import { ShussoubaYosou } from "../../entities/ShussoubaYosou";
 import { readInt, readStr } from "../Reader";
 import { ShussoubaInfo } from "../ShussoubaTool";
+import { Kyh } from "./Kyh";
 
 @Service()
 export class Kyi extends Kyh {
-
   @Inject()
   private houbokusakiDao: HoubokusakiDao;
 
@@ -41,5 +40,4 @@ export class Kyi extends Kyh {
     toBe.HoubokusakiRank = $SJ.houbokusakiRank.toCodeFromJrdb(buffer, 622, 1);
     toBe.KyuushaRank = $SJ.kyuushaRank.toCodeFromJrdb(buffer, 623, 1);
   }
-
 }

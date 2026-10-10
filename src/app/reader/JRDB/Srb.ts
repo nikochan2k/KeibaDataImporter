@@ -9,7 +9,6 @@ import { Sr$ } from "./Sr$";
 
 @Service()
 export class Srb extends Sr$ {
-
   protected getBufferLength() {
     return 852;
   }
@@ -29,7 +28,7 @@ export class Srb extends Sr$ {
     const biasCodes = race.DirtShiba === $R.DirtShiba.Dirt ? $R.trackBiasDirt : $R.trackBias;
     let offset = 320;
     for (let midashi = $R.Midashi.DaiichiCorner; midashi <= $R.Midashi.DaisanCorner; midashi++) {
-      for (let ichi = $S.Ichi.Uchi; ichi <= $S.Ichi.Soto; ichi++ , offset++) {
+      for (let ichi = $S.Ichi.Uchi; ichi <= $S.Ichi.Soto; ichi++, offset++) {
         const trackBias = biasCodes.toCodeFromJrdb(buffer, offset, 1);
         if (trackBias === null) {
           continue;
@@ -38,7 +37,7 @@ export class Srb extends Sr$ {
       }
     }
     for (let midashi = $R.Midashi.DaiyonCorner; midashi <= $R.Midashi.Chokusen; midashi++) {
-      for (let ichi = $S.Ichi.Saiuchi; ichi <= $S.Ichi.Ohsoto; ichi++ , offset++) {
+      for (let ichi = $S.Ichi.Saiuchi; ichi <= $S.Ichi.Ohsoto; ichi++, offset++) {
         const trackBias = biasCodes.toCodeFromJrdb(buffer, offset, 1);
         if (trackBias === null) {
           continue;
@@ -48,14 +47,18 @@ export class Srb extends Sr$ {
     }
   }
 
-  protected async saveRaceTrackBias(raceId: number, midashi: $R.Midashi, ichi: $S.Ichi, trackBias: number) {
+  protected async saveRaceTrackBias(
+    raceId: number,
+    midashi: $R.Midashi,
+    ichi: $S.Ichi,
+    trackBias: number,
+  ) {
     const rtb = new RaceTrackBias();
-    rtb.Id = raceId * (2 ** (3 + 3)) + midashi * (2 ** 3) + ichi;
+    rtb.Id = raceId * 2 ** (3 + 3) + midashi * 2 ** 3 + ichi;
     rtb.RaceId = raceId;
     rtb.Midashi = midashi;
     rtb.Ichi = ichi;
     rtb.TrackBias = trackBias;
     await this.entityManager.save(rtb);
   }
-
 }

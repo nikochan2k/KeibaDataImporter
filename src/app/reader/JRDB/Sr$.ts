@@ -1,12 +1,11 @@
 import { Inject } from "typedi";
-import { JrdbRaceData } from "./JrdbRaceData";
 import { Race } from "../../entities/Race";
 import { RaceKeika } from "../../entities/RaceKeika";
 import { KeikaTool } from "../KeikaTool";
 import { readStr } from "../Reader";
+import { JrdbRaceData } from "./JrdbRaceData";
 
 export abstract class Sr$ extends JrdbRaceData {
-
   @Inject()
   private keikaTool: KeikaTool;
 
@@ -23,14 +22,20 @@ export abstract class Sr$ extends JrdbRaceData {
     await this.saveRaceKeika(buffer, 254, 64, race, 4); // 4角
   }
 
-  private async saveRaceKeika(buffer: Buffer, offset: number, length: number, race: Race, midashi2: number) {
+  private async saveRaceKeika(
+    buffer: Buffer,
+    offset: number,
+    length: number,
+    race: Race,
+    midashi2: number,
+  ) {
     let keika = readStr(buffer, offset, length);
     if (!keika) {
       return;
     }
     keika = keika.replace(/\s+/g, "=");
     const toBe = new RaceKeika();
-    toBe.Id = race.Id * (2 ** 7) + midashi2;
+    toBe.Id = race.Id * 2 ** 7 + midashi2;
     toBe.RaceId = race.Id;
     toBe.Midashi2 = midashi2;
     toBe.Keika = keika;
@@ -39,5 +44,4 @@ export abstract class Sr$ extends JrdbRaceData {
 
     await this.keikaTool.parseRaceKeika(toBe);
   }
-
 }

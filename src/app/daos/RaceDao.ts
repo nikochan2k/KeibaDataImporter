@@ -1,13 +1,12 @@
 import { Inject, Service } from "typedi";
 import { Repository } from "typeorm";
-import { OrmRepository } from "../OrmManager";
 import { TokubetsuMeiDao } from "../daos/TokubetsuMeiDao";
 import { RaceMei } from "../entities/RaceMei";
 import { Record } from "../entities/Record";
+import { OrmRepository } from "../OrmManager";
 
 @Service()
 export class RaceDao {
-
   @OrmRepository(Record)
   private recordRepository: Repository<Record>;
 
@@ -35,7 +34,10 @@ export class RaceDao {
 
   public async saveRaceMei(raceId: number, meishou: string) {
     const tokubetsuMei = await this.tokubetsuMeiDao.save(meishou);
-    let raceMei = await this.raceMeiRepository.findOneBy({ RaceId: raceId, TokubetsuMeiId: tokubetsuMei.Id });
+    let raceMei = await this.raceMeiRepository.findOneBy({
+      RaceId: raceId,
+      TokubetsuMeiId: tokubetsuMei.Id,
+    });
     if (!raceMei) {
       raceMei = new RaceMei();
       raceMei.RaceId = raceId;
@@ -43,5 +45,4 @@ export class RaceDao {
       await this.raceMeiRepository.save(raceMei);
     }
   }
-
 }

@@ -1,10 +1,9 @@
-import { DataToImport } from '../DataToImport';
-import { JrdbBridge } from './JrdbBridge';
-import { Inject } from 'typedi';
-import { Bridge } from '../Bridge';
+import { Inject } from "typedi";
+import { Bridge } from "../Bridge";
+import { DataToImport } from "../DataToImport";
+import { JrdbBridge } from "./JrdbBridge";
 
 export abstract class JrdbData extends DataToImport {
-
   private static YYMMDD = /(\d{2})(\d{2})(\d{2})/;
 
   @Inject()
@@ -24,7 +23,7 @@ export abstract class JrdbData extends DataToImport {
     }
     const yy = parseInt(result[1]);
     const jrdbBridge = <JrdbBridge>this.bridge;
-    jrdbBridge.nen = yy + ((70 <= yy) ? 1900 : 2000);
+    jrdbBridge.nen = yy + (70 <= yy ? 1900 : 2000);
     jrdbBridge.gatsu = parseInt(result[2]);
     jrdbBridge.nichi = parseInt(result[3]);
   }
@@ -35,5 +34,4 @@ export abstract class JrdbData extends DataToImport {
     delete jrdbBridge.gatsu;
     delete jrdbBridge.nichi;
   }
-
 }

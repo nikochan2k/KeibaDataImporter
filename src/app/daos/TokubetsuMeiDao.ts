@@ -1,11 +1,10 @@
 import { Service } from "typedi";
 import { Repository } from "typeorm";
-import { OrmRepository } from "../OrmManager";
 import { TokubetsuMei } from "../entities/TokubetsuMei";
+import { OrmRepository } from "../OrmManager";
 
 @Service()
 export class TokubetsuMeiDao {
-
   @OrmRepository(TokubetsuMei)
   private repository: Repository<TokubetsuMei>;
 
@@ -18,5 +17,4 @@ export class TokubetsuMeiDao {
     }
     return tokubetsuMei;
   }
-
 }

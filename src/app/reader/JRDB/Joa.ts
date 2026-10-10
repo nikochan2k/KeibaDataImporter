@@ -1,15 +1,14 @@
 import { Inject, Service } from "typedi";
-import { JrdbShussoubaTool } from "./JrdbShussoubaTool";
 import * as $SY from "../../converters/ShussoubaYosou";
+import { Shussouba } from "../../entities/Shussouba";
 import { ShussoubaYosou } from "../../entities/ShussoubaYosou";
 import { readDouble, readInt } from "../Reader";
 import { Tool } from "../Tool";
-import { JrdbShussoubaData } from './JrdbShussoubaData';
-import { Shussouba } from '../../entities/Shussouba';
+import { JrdbShussoubaData } from "./JrdbShussoubaData";
+import { JrdbShussoubaTool } from "./JrdbShussoubaTool";
 
 @Service()
 export class Joa extends JrdbShussoubaData {
-
   @Inject()
   protected tool: Tool;
 

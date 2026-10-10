@@ -1,13 +1,12 @@
 import { Inject } from "typedi";
-import { JrdbData } from "./JrdbData";
-import { JrdbOddsHaitouTool } from "./JrdbOddsHaitouTool";
-import { JrdbRaceTool } from "./JrdbRaceTool";
 import { Baken, Kakutei } from "../../converters/Common";
 import { OddsHaitou } from "../../entities/OddsHaitou";
 import { readPositiveInt } from "../Reader";
+import { JrdbData } from "./JrdbData";
+import { JrdbOddsHaitouTool } from "./JrdbOddsHaitouTool";
+import { JrdbRaceTool } from "./JrdbRaceTool";
 
 export abstract class Hj$ extends JrdbData {
-
   @Inject()
   protected jrdbRaceTool: JrdbRaceTool;
 
@@ -27,7 +26,7 @@ export abstract class Hj$ extends JrdbData {
   }
 
   protected async saveTanshou(buffer: Buffer, raceId: number) {
-    for (let i = 0, offset = 8; i < 3; i++ , offset += 9) {
+    for (let i = 0, offset = 8; i < 3; i++, offset += 9) {
       const umaban = readPositiveInt(buffer, offset, 2);
       if (!umaban) {
         continue;
@@ -43,7 +42,7 @@ export abstract class Hj$ extends JrdbData {
   }
 
   protected async saveFukushou(buffer: Buffer, raceId: number) {
-    for (let i = 0, offset = 35; i < 5; i++ , offset += 9) {
+    for (let i = 0, offset = 35; i < 5; i++, offset += 9) {
       const umaban = readPositiveInt(buffer, offset, 2);
       if (!umaban) {
         continue;
@@ -59,7 +58,7 @@ export abstract class Hj$ extends JrdbData {
   }
 
   protected async saveWakuren(buffer: Buffer, raceId: number) {
-    for (let i = 0, offset = 80; i < 3; i++ , offset += 9) {
+    for (let i = 0, offset = 80; i < 3; i++, offset += 9) {
       const wakuban1 = readPositiveInt(buffer, offset, 1);
       if (!wakuban1) {
         continue;
@@ -76,7 +75,7 @@ export abstract class Hj$ extends JrdbData {
   }
 
   protected async saveUmaren(buffer: Buffer, raceId: number) {
-    for (let i = 0, offset = 107; i < 3; i++ , offset += 12) {
+    for (let i = 0, offset = 107; i < 3; i++, offset += 12) {
       const umaban1 = readPositiveInt(buffer, offset, 2);
       if (!umaban1) {
         continue;
@@ -93,7 +92,7 @@ export abstract class Hj$ extends JrdbData {
   }
 
   protected async saveWide(buffer: Buffer, raceId: number) {
-    for (let i = 0, offset = 143; i < 7; i++ , offset += 12) {
+    for (let i = 0, offset = 143; i < 7; i++, offset += 12) {
       const umaban1 = readPositiveInt(buffer, offset, 2);
       if (!umaban1) {
         continue;
@@ -109,12 +108,9 @@ export abstract class Hj$ extends JrdbData {
     }
   }
 
-  protected async saveUmatan(buffer: Buffer, raceId: number) {
-  }
+  protected async saveUmatan(buffer: Buffer, raceId: number) {}
 
-  protected async saveSanrenpuku(buffer: Buffer, raceId: number) {
-  }
+  protected async saveSanrenpuku(buffer: Buffer, raceId: number) {}
 
-  protected async saveSanrentan(buffer: Buffer, raceId: number) {
-  }
+  protected async saveSanrentan(buffer: Buffer, raceId: number) {}
 }

@@ -1,15 +1,14 @@
 import { Inject } from "typedi";
+import { Kaisai } from "../../entities/Kaisai";
+import { KaisaiTool } from "../KaisaiTool";
+import { Tool } from "../Tool";
 import { JrdbData } from "./JrdbData";
 import { JrdbKaisaiKaisaiTool } from "./JrdbKaisaiKaisaiTool";
 import { JrdbKaisaiRaceTool } from "./JrdbKaisaiRaceTool";
 import { JrdbKaisaiShussoubaTool } from "./JrdbKaisaiShussoubaTool";
 import { JrdbKaisaiTool } from "./JrdbKaisaiTool";
-import { Kaisai } from "../../entities/Kaisai";
-import { KaisaiTool } from "../KaisaiTool";
-import { Tool } from "../Tool";
 
 export abstract class JrdbKaisaiData extends JrdbData {
-
   @Inject()
   protected tool: Tool;
 
@@ -50,10 +49,7 @@ export abstract class JrdbKaisaiData extends JrdbData {
     return kaisai;
   }
 
-  protected setKaisai(buffer: Buffer, toBe: Kaisai) {
-  }
+  protected setKaisai(buffer: Buffer, toBe: Kaisai) {}
 
-  protected async saveKaisaiRelated(buffer: Buffer, kaisai: Kaisai) {
-  }
-
+  protected async saveKaisaiRelated(buffer: Buffer, kaisai: Kaisai) {}
 }

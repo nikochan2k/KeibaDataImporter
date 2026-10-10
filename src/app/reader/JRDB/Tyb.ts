@@ -1,9 +1,5 @@
 import { Inject, Service } from "typedi";
 import { EntityManager } from "typeorm";
-import { OrmManager } from "../../OrmManager";
-import { JrdbData } from "./JrdbData";
-import { JrdbOddsHaitouTool } from "./JrdbOddsHaitouTool";
-import { JrdbShussoubaTool } from "./JrdbShussoubaTool";
 import * as $C from "../../converters/Common";
 import * as $K from "../../converters/Kishu";
 import * as $R from "../../converters/Race";
@@ -11,16 +7,25 @@ import * as $S from "../../converters/Shussouba";
 import * as $SY from "../../converters/ShussoubaYosou";
 import { Race } from "../../entities/Race";
 import { RaceSeiseki } from "../../entities/RaceSeiseki";
+import { Shussouba } from "../../entities/Shussouba";
 import { ShussoubaHyouka } from "../../entities/ShussoubaHyouka";
 import { ShussoubaSeiseki } from "../../entities/ShussoubaSeiseki";
 import { ShussoubaYosou } from "../../entities/ShussoubaYosou";
-import { readDouble, readJikan, readPositiveDouble, readPositiveInt, readSignedInt } from "../Reader";
+import { OrmManager } from "../../OrmManager";
+import {
+  readDouble,
+  readJikan,
+  readPositiveDouble,
+  readPositiveInt,
+  readSignedInt,
+} from "../Reader";
 import { Tool } from "../Tool";
-import { Shussouba } from '../../entities/Shussouba';
+import { JrdbData } from "./JrdbData";
+import { JrdbOddsHaitouTool } from "./JrdbOddsHaitouTool";
+import { JrdbShussoubaTool } from "./JrdbShussoubaTool";
 
 @Service()
 export class Tyb extends JrdbData {
-
   @OrmManager()
   protected entityManager: EntityManager;
 
@@ -106,14 +111,14 @@ export class Tyb extends JrdbData {
       Baken: $C.Baken.Tanshou,
       OddsOffset: 72,
       OddsLength: 6,
-      JikanOffset: 84
+      JikanOffset: 84,
     });
     await this.jrdbOddsHaitouTool.saveOddsNinki(buffer, shussouba, {
       Kakutei: $C.Kakutei.Chokuzen,
       Baken: $C.Baken.Fukushou,
       OddsOffset: 78,
       OddsLength: 6,
-      JikanOffset: 84
+      JikanOffset: 84,
     });
   }
 

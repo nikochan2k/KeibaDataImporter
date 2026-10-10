@@ -1,15 +1,15 @@
 import * as fs from "fs";
-import * as path from "path";
 import * as iconv from "iconv-lite";
-import { specDir } from "./specs";
-import * as $C from "../../src/app/converters/Common";
+import * as path from "path";
 import * as $CH from "../../src/app/converters/Choukyou";
+import { Codes } from "../../src/app/converters/Codes";
+import * as $C from "../../src/app/converters/Common";
 import * as $R from "../../src/app/converters/Race";
 import * as $S from "../../src/app/converters/Shussouba";
 import * as $SJ from "../../src/app/converters/ShussoubaJoutai";
 import * as $SY from "../../src/app/converters/ShussoubaYosou";
 import * as $U from "../../src/app/converters/Uma";
-import { Codes } from "../../src/app/converters/Codes";
+import { specDir } from "./specs";
 
 export interface TableCode {
   /** 仕様書に書かれたコード(JRDB のデータに現れる文字列) */
@@ -30,10 +30,12 @@ export interface CodeTable {
   noCode?: string[];
 }
 
-const read = (file: string) => iconv.decode(fs.readFileSync(path.join(specDir, file)), "Windows932");
+const read = (file: string) =>
+  iconv.decode(fs.readFileSync(path.join(specDir, file)), "Windows932");
 
 /** 全角の英数字を半角にする(コード表の一部は全角で書かれている) */
-const half = (s: string) => s.replace(/[０-９Ａ-Ｚａ-ｚ]/g, c => String.fromCharCode(c.charCodeAt(0) - 0xFEE0));
+const half = (s: string) =>
+  s.replace(/[０-９Ａ-Ｚａ-ｚ]/g, (c) => String.fromCharCode(c.charCodeAt(0) - 0xfee0));
 
 /** JRDB データコード表(jrdb_code.txt)から、□見出しごとのコードと内容を取り出す */
 export function parseJrdbCode() {
@@ -80,7 +82,13 @@ export function codeTables(): CodeTable[] {
   };
   const tables: CodeTable[] = [];
   const add = (name: string, converter: Codes, extra: Partial<CodeTable> = {}) =>
-    tables.push({ name, file: "jrdb_code.txt", codes: section(name), converters: [converter], ...extra });
+    tables.push({
+      name,
+      file: "jrdb_code.txt",
+      codes: section(name),
+      converters: [converter],
+      ...extra,
+    });
 
   add("脚質コード", $S.kyakushitsu);
   add("距離適性コード", $SY.kyoriTekisei);
@@ -109,22 +117,56 @@ export function codeTables(): CodeTable[] {
   add("休養理由分類コード", $S.kyuuyouRiyuuCode);
   // 馬場状態は 2 桁(馬場状態 + 馬場速度)。1 桁のもの(開催データの推定値)は別のコード表
   tables.push({
-    name: "馬場状態(状態)", file: "jrdb_code.txt", converters: [$R.baba],
-    codes: section("馬場状態").filter(c => c.code.length === 2),
-    convert: c => [c[0]],
+    name: "馬場状態(状態)",
+    file: "jrdb_code.txt",
+    converters: [$R.baba],
+    codes: section("馬場状態").filter((c) => c.code.length === 2),
+    convert: (c) => [c[0]],
   });
   tables.push({
-    name: "馬場状態(速度)", file: "jrdb_code.txt", converters: [$R.babaSokudo],
-    codes: section("馬場状態").filter(c => c.code.length === 2),
-    convert: c => [c[1]],
+    name: "馬場状態(速度)",
+    file: "jrdb_code.txt",
+    converters: [$R.babaSokudo],
+    codes: section("馬場状態").filter((c) => c.code.length === 2),
+    convert: (c) => [c[1]],
     noCode: ["10", "20", "30", "40"],
   });
 
-  tables.push({ name: "特記コード", file: "tokki_code.txt", converters: [$SJ.tokki], codes: parseCodeFile("tokki_code.txt", /^(\d{3})\s+\S/) });
-  tables.push({ name: "馬具コード", file: "bagu_code.txt", converters: [$SJ.bagu], codes: parseCodeFile("bagu_code.txt", /^(\d{3})\s+\S/) });
-  tables.push({ name: "脚元コード", file: "ashimoto_code.txt", converters: [$SJ.ashimoto], codes: parseCodeFile("ashimoto_code.txt", /^(\d{3})\s+\S/) });
-  tables.push({ name: "追い状態コード", file: "oi_code.txt", converters: [$CH.oiJoutai], codes: parseCodeFile("oi_code.txt", /^(\d{2})\s+\S/) });
-  tables.push({ name: "調教コースコード", file: "cyokyo_course_code.txt", converters: [$CH.basho, $CH.type], codes: parseCodeFile("cyokyo_course_code.txt", /^([0-9A-Z]{2})\s+\S/) });
-  tables.push({ name: "系統コード", file: "keito_code.txt", converters: [$U.keitou], codes: parseCodeFile("keito_code.txt", /^(\d{4})\s+\S/) });
+  tables.push({
+    name: "特記コード",
+    file: "tokki_code.txt",
+    converters: [$SJ.tokki],
+    codes: parseCodeFile("tokki_code.txt", /^(\d{3})\s+\S/),
+  });
+  tables.push({
+    name: "馬具コード",
+    file: "bagu_code.txt",
+    converters: [$SJ.bagu],
+    codes: parseCodeFile("bagu_code.txt", /^(\d{3})\s+\S/),
+  });
+  tables.push({
+    name: "脚元コード",
+    file: "ashimoto_code.txt",
+    converters: [$SJ.ashimoto],
+    codes: parseCodeFile("ashimoto_code.txt", /^(\d{3})\s+\S/),
+  });
+  tables.push({
+    name: "追い状態コード",
+    file: "oi_code.txt",
+    converters: [$CH.oiJoutai],
+    codes: parseCodeFile("oi_code.txt", /^(\d{2})\s+\S/),
+  });
+  tables.push({
+    name: "調教コースコード",
+    file: "cyokyo_course_code.txt",
+    converters: [$CH.basho, $CH.type],
+    codes: parseCodeFile("cyokyo_course_code.txt", /^([0-9A-Z]{2})\s+\S/),
+  });
+  tables.push({
+    name: "系統コード",
+    file: "keito_code.txt",
+    converters: [$U.keitou],
+    codes: parseCodeFile("keito_code.txt", /^(\d{4})\s+\S/),
+  });
   return tables;
 }

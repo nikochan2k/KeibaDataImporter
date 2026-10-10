@@ -18,8 +18,8 @@ import {
   readPositiveDouble,
   readPositiveInt,
   readStrWithNoSpace,
-  readTime
-  } from "../../Reader";
+  readTime,
+} from "../../Reader";
 import { ShussoubaInfo } from "../../ShussoubaTool";
 import { Tool } from "../../Tool";
 import { KolChoukyouTool } from "../KolChoukyouTool";
@@ -29,7 +29,6 @@ import { KolTool } from "../KolTool";
 
 @Service()
 export class KolSei2Kd3 extends DataToImport {
-
   @Inject()
   private choukyouTool: KolChoukyouTool;
 
@@ -53,8 +52,14 @@ export class KolSei2Kd3 extends DataToImport {
     const rsId = this.kolShussoubaTool.getRaceShussoubaId(buffer, 23);
     const dataNenggapi = readInt(buffer, 424, 8);
 
-    const shussoubaSeiseki = await this.entityManager.findOneBy(ShussoubaSeiseki, { Id: rsId.shussoubaId });
-    if (shussoubaSeiseki && shussoubaSeiseki.KolNengappi && dataNenggapi <= shussoubaSeiseki.KolNengappi) {
+    const shussoubaSeiseki = await this.entityManager.findOneBy(ShussoubaSeiseki, {
+      Id: rsId.shussoubaId,
+    });
+    if (
+      shussoubaSeiseki &&
+      shussoubaSeiseki.KolNengappi &&
+      dataNenggapi <= shussoubaSeiseki.KolNengappi
+    ) {
       return;
     }
 
@@ -69,7 +74,9 @@ export class KolSei2Kd3 extends DataToImport {
         return;
       }
     } else {
-      const kyousouba = await this.entityManager.findOneBy(Kyousouba, { Id: info.shussouba.KyousoubaId });
+      const kyousouba = await this.entityManager.findOneBy(Kyousouba, {
+        Id: info.shussouba.KyousoubaId,
+      });
       info.uma = new Uma();
       info.uma.Id = kyousouba.UmaId;
     }
@@ -108,7 +115,12 @@ export class KolSei2Kd3 extends DataToImport {
     }
   }
 
-  protected async saveShussoubaSeiseki(buffer: Buffer, info: ShussoubaInfo, asIs: ShussoubaSeiseki, dataNengappi: number) {
+  protected async saveShussoubaSeiseki(
+    buffer: Buffer,
+    info: ShussoubaInfo,
+    asIs: ShussoubaSeiseki,
+    dataNengappi: number,
+  ) {
     const toBe = new ShussoubaSeiseki();
     toBe.Id = info.shussouba.Id;
     toBe.Gate = readPositiveInt(buffer, 25, 2);
@@ -178,5 +190,4 @@ export class KolSei2Kd3 extends DataToImport {
     await this.choukyouTool.saveShussoubaChoukyou(sc);
     await this.choukyouTool.saveChoukyou(buffer, 307, info.uma.Id, tanshukuKishuMei);
   }
-
 }

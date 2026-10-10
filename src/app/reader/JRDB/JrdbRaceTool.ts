@@ -1,14 +1,13 @@
 import { Inject, Service } from "typedi";
-import { JrdbKaisaiTool } from "./JrdbKaisaiTool";
-import { KaisaiTool } from "../KaisaiTool";
-import { RaceTool } from "../RaceTool";
 import * as $R from "../../converters/Race";
 import { Race } from "../../entities/Race";
+import { KaisaiTool } from "../KaisaiTool";
+import { RaceTool } from "../RaceTool";
 import { readPositiveInt, readRaw, readStr } from "../Reader";
+import { JrdbKaisaiTool } from "./JrdbKaisaiTool";
 
 @Service()
 export class JrdbRaceTool extends RaceTool {
-
   @Inject()
   private jrdbKaisaiTool: JrdbKaisaiTool;
 
@@ -81,5 +80,4 @@ export class JrdbRaceTool extends RaceTool {
     toBe.IppanTokubetsu = $R.ippanTokubetsu.toCodeFromJrdb(buffer, shubetsuOffset + 8, 1);
     toBe.Grade = $R.grade.toCodeFromJrdb(buffer, shubetsuOffset + 8, 1);
   }
-
 }

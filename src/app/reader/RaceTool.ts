@@ -1,16 +1,15 @@
 import { Logger } from "log4js";
 import { Inject } from "typedi";
 import { EntityManager } from "typeorm";
-import { OrmManager } from "../OrmManager";
-import { readPositiveDouble } from "./Reader";
-import { Tool } from "./Tool";
 import { RaceDao } from "../daos/RaceDao";
 import { Race } from "../entities/Race";
 import { RaceLapTime } from "../entities/RaceLapTime";
 import { getLogger } from "../LogUtil";
+import { OrmManager } from "../OrmManager";
+import { readPositiveDouble } from "./Reader";
+import { Tool } from "./Tool";
 
 export abstract class RaceTool {
-
   protected logger: Logger;
 
   @OrmManager()
@@ -38,7 +37,7 @@ export abstract class RaceTool {
    * @memberof RaceTool
    */
   protected getRaceIdFrom(kaisaiId: number, raceBangou: number) {
-    const id = kaisaiId * (2 ** 6) + raceBangou;
+    const id = kaisaiId * 2 ** 6 + raceBangou;
     return id;
   }
 
@@ -97,13 +96,13 @@ export abstract class RaceTool {
     let lapTime = readPositiveDouble(buffer, offset, 3, 0.1);
     let kaishiKyori = 0;
     let shuuryouKyori = RaceTool.firstLapDistance(race.Kyori, lapTime);
-    for (let i = 0; i < 18; i++ , offset += 3) {
+    for (let i = 0; i < 18; i++, offset += 3) {
       lapTime = readPositiveDouble(buffer, offset, 3, 0.1);
       if (!lapTime) {
         break;
       }
       const raceLapTime = new RaceLapTime();
-      raceLapTime.Id = race.Id * (2 ** 5) + i;
+      raceLapTime.Id = race.Id * 2 ** 5 + i;
       raceLapTime.RaceId = race.Id;
       raceLapTime.KaishiKyori = kaishiKyori;
       raceLapTime.ShuuryouKyori = shuuryouKyori;

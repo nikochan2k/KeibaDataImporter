@@ -1,8 +1,8 @@
 import "reflect-metadata";
-import * as fs from "fs";
-import * as path from "path";
-import * as iconv from "iconv-lite";
 import { afterAll, beforeAll, describe, expect, test } from "bun:test";
+import * as fs from "fs";
+import * as iconv from "iconv-lite";
+import * as path from "path";
 import { Container } from "typedi";
 import { IsNull } from "typeorm";
 import { Baken, Kakutei } from "../src/app/converters/Common";
@@ -58,10 +58,36 @@ import { importSamples, Reads, sampleFiles } from "./spec/trace";
  */
 
 const readers: { [prefix: string]: new () => any } = {
-  bab: Bab, bac: Bac, cha: Cha, csa: C$a, cya: Cya, cyb: Cyb, hja: Hja, hjc: Hjc, joa: Joa,
-  kaa: Kaa, kab: Kab, kyg: Kyg, kyh: Kyh, kyi: Kyi, ksa: K$a,
-  ot: Ot, ou: Ou, ov: Ov, ow: Ow, oz: Oz, sec: Sec, sed: Sed, skb: Skb, sra: Sra, srb: Srb,
-  tyb: Tyb, ukc: Ukc, zec: Zec, zed: Zed, zkb: Zkb,
+  bab: Bab,
+  bac: Bac,
+  cha: Cha,
+  csa: C$a,
+  cya: Cya,
+  cyb: Cyb,
+  hja: Hja,
+  hjc: Hjc,
+  joa: Joa,
+  kaa: Kaa,
+  kab: Kab,
+  kyg: Kyg,
+  kyh: Kyh,
+  kyi: Kyi,
+  ksa: K$a,
+  ot: Ot,
+  ou: Ou,
+  ov: Ov,
+  ow: Ow,
+  oz: Oz,
+  sec: Sec,
+  sed: Sed,
+  skb: Skb,
+  sra: Sra,
+  srb: Srb,
+  tyb: Tyb,
+  ukc: Ukc,
+  zec: Zec,
+  zed: Zed,
+  zkb: Zkb,
 };
 
 /** 仕様書のレコード長の記載が、項目表と合っていないもの(仕様書側の誤り) */
@@ -114,13 +140,13 @@ describe("レコード長", () => {
 
 describe("見本データの取り込み", () => {
   test("エラーが出ない", () => {
-    expect(logs.filter(l => l.level === "ERROR")).toEqual([]);
+    expect(logs.filter((l) => l.level === "ERROR")).toEqual([]);
   });
 
   test("警告は、見本データ自体の不整合による 1 件だけ", () => {
     // KYG040627 の 1 件だけ、体型総合２が "2  " と左詰めで入っていて特記コードにならない
-    const warns = logs.filter(l => l.level === "WARN");
-    expect(warns.map(w => w.message)).toEqual(["未定義の状態コード: kubun=0, code=2"]);
+    const warns = logs.filter((l) => l.level === "WARN");
+    expect(warns.map((w) => w.message)).toEqual(["未定義の状態コード: kubun=0, code=2"]);
   });
 
   test("読んだ範囲が、すべて仕様書の項目の中に収まる", () => {
@@ -148,7 +174,11 @@ describe("見本データの取り込み", () => {
     const counts = new Map<string, number>();
     for (const u of unmapped) {
       // 競走記号は、全部の変換器を順に試して合致しないものが null になる(正常)
-      if (u.caller.startsWith("JrdbRaceTool.ts") && u.caller !== "JrdbRaceTool.ts:56" && u.caller !== "JrdbRaceTool.ts:82") {
+      if (
+        u.caller.startsWith("JrdbRaceTool.ts") &&
+        u.caller !== "JrdbRaceTool.ts:55" &&
+        u.caller !== "JrdbRaceTool.ts:81"
+      ) {
         continue;
       }
       if (/^0+$/.test(u.value)) {
@@ -157,19 +187,21 @@ describe("見本データの取り込み", () => {
       const key = `${u.prefix} ${u.caller} ${JSON.stringify(u.value)}`;
       counts.set(key, (counts.get(key) ?? 0) + 1);
     }
-    const unexpected = [...counts.keys()].filter(k =>
-      // 障害(3)の芝ダ区分、重賞(4)・特別(5)のグレードは、別の項目で持つので null で正しい
-      !/JrdbRaceTool\.ts:(56|82)/.test(k)
-      // 調教コース A1(連闘) は調教場所を持たない(種類で持つ)
-      && !/cha Cha\.ts:18 "A1"/.test(k)
-      // 地方の調教師の所属(東西の区分がない)
-      && !/Ky\$\.ts:81 /.test(k)
-      // 産地名の「追分」(コード表にない地名)
-      && !/ukc Ukc\.ts:48 /.test(k)
-      // 見本データに現れる、コード表にない印(7, 8)や距離適性(4, 7)
-      && !/ky[ghi] Ky\$\.ts:(138|161|224) /.test(k)
-      // 見本データ自体の不整合
-      && !/kyg JrdbShussoubaTool\.ts:26 "2  "/.test(k));
+    const unexpected = [...counts.keys()].filter(
+      (k) =>
+        // 障害(3)の芝ダ区分、重賞(4)・特別(5)のグレードは、別の項目で持つので null で正しい
+        !/JrdbRaceTool\.ts:(55|81)/.test(k) &&
+        // 調教コース A1(連闘) は調教場所を持たない(種類で持つ)
+        !/cha Cha\.ts:17 "A1"/.test(k) &&
+        // 地方の調教師の所属(東西の区分がない)
+        !/Ky\$\.ts:80 /.test(k) &&
+        // 産地名の「追分」(コード表にない地名)
+        !/ukc Ukc\.ts:47 /.test(k) &&
+        // 見本データに現れる、コード表にない印(7, 8)や距離適性(4, 7)
+        !/ky[ghi] Ky\$\.ts:(137|160|223) /.test(k) &&
+        // 見本データ自体の不整合
+        !/kyg JrdbShussoubaTool\.ts:30 "2 {2}"/.test(k),
+    );
     expect(unexpected).toEqual([]);
   });
 });
@@ -183,7 +215,7 @@ describe("コード表", () => {
           continue;
         }
         for (const input of table.convert ? table.convert(c.code) : [c.code]) {
-          if (!table.converters.some(conv => conv.toCodeFromJrdb(input) != null)) {
+          if (!table.converters.some((conv) => conv.toCodeFromJrdb(input) != null)) {
             missing.push(c.code);
           }
         }
@@ -197,7 +229,7 @@ describe("コード表", () => {
 function fieldReader(prefix: string) {
   const spec = specFor(prefix);
   return (rec: Buffer, name: string, index = 0) => {
-    const slots = spec.slots.filter(s => s.name === name);
+    const slots = spec.slots.filter((s) => s.name === name);
     const slot = slots[0];
     if (!slot) {
       throw new Error(`仕様書に項目がありません: ${name}`);
@@ -209,12 +241,17 @@ function fieldReader(prefix: string) {
 
 function records(prefix: string, dir: string) {
   const spec = specFor(prefix);
-  const file = Object.entries(sampleFiles()).find(([name]) => name.toLowerCase().startsWith(prefix))[1];
+  const file = Object.entries(sampleFiles()).find(([name]) =>
+    name.toLowerCase().startsWith(prefix),
+  )[1];
   let data = fs.readFileSync(path.join(specDir, dir, path.basename(file)));
   if (data.length % spec.tableLength !== 0) {
     // TYB・HJC の見本は改行が LF だけなので、仕様書どおりの CR LF にそろえる
-    const lines = data.toString("latin1").split(/\r?\n/).filter(l => l.length > 0);
-    data = Buffer.from(lines.map(l => l + "\r\n").join(""), "latin1");
+    const lines = data
+      .toString("latin1")
+      .split(/\r?\n/)
+      .filter((l) => l.length > 0);
+    data = Buffer.from(lines.map((l) => l + "\r\n").join(""), "latin1");
   }
   const list: Buffer[] = [];
   for (let i = 0; i * spec.tableLength < data.length; i++) {
@@ -229,7 +266,10 @@ const time = (v: string) => {
 };
 
 const findShussouba = async (rec: Buffer) => {
-  const raceId = Container.get(JrdbRaceTool).getRaceIdBy(rec, Container.get(JrdbKaisaiShussoubaTool));
+  const raceId = Container.get(JrdbRaceTool).getRaceIdBy(
+    rec,
+    Container.get(JrdbKaisaiShussoubaTool),
+  );
   const info = await Container.get(JrdbShussoubaTool).getShussoubaInfo(rec, 8, raceId);
   return { raceId, shussouba: info.shussouba };
 };
@@ -280,9 +320,14 @@ describe("仕様書の値と取り込み結果の突き合わせ", () => {
     const f = fieldReader("hjc");
     setFileDate(2024, 9, 29);
     const groups: [string, number, Baken][] = [
-      ["単勝払戻", 3, Baken.Tanshou], ["複勝払戻", 5, Baken.Fukushou], ["枠連払戻", 3, Baken.Wakuren],
-      ["馬連払戻", 3, Baken.Umaren], ["ワイド払戻", 7, Baken.Wide], ["馬単払戻", 6, Baken.Umatan],
-      ["３連複払戻", 3, Baken.Sanrenpuku], ["３連単払戻", 6, Baken.Sanrentan],
+      ["単勝払戻", 3, Baken.Tanshou],
+      ["複勝払戻", 5, Baken.Fukushou],
+      ["枠連払戻", 3, Baken.Wakuren],
+      ["馬連払戻", 3, Baken.Umaren],
+      ["ワイド払戻", 7, Baken.Wide],
+      ["馬単払戻", 6, Baken.Umatan],
+      ["３連複払戻", 3, Baken.Sanrenpuku],
+      ["３連単払戻", 6, Baken.Sanrentan],
     ];
     const spec = specFor("hjc");
     let checked = 0;
@@ -291,11 +336,18 @@ describe("仕様書の値と取り込み結果の突き合わせ", () => {
       const raceId = Container.get(JrdbRaceTool).getRaceId(rec);
       for (const [group, occ, baken] of groups) {
         for (let i = 1; i <= occ; i++) {
-          const combo = spec.slots.find(s => s.name.startsWith(`${group}[${i}].`) && !s.name.endsWith("払戻金"));
-          const kin = spec.slots.find(s => s.name === `${group}[${i}].払戻金`);
-          const comboRaw = iconv.decode(rec.subarray(combo.start - 1, combo.start - 1 + combo.bytes), "Windows932");
+          const combo = spec.slots.find(
+            (s) => s.name.startsWith(`${group}[${i}].`) && !s.name.endsWith("払戻金"),
+          );
+          const kin = spec.slots.find((s) => s.name === `${group}[${i}].払戻金`);
+          const comboRaw = iconv.decode(
+            rec.subarray(combo.start - 1, combo.start - 1 + combo.bytes),
+            "Windows932",
+          );
           const comboText = comboRaw.trim();
-          const kinText = iconv.decode(rec.subarray(kin.start - 1, kin.start - 1 + kin.bytes), "Windows932").trim();
+          const kinText = iconv
+            .decode(rec.subarray(kin.start - 1, kin.start - 1 + kin.bytes), "Windows932")
+            .trim();
           if (comboText === "" || !(0 < parseInt(kinText))) {
             continue;
           }
@@ -308,10 +360,19 @@ describe("仕様書の値と取り込み結果の突き合わせ", () => {
             continue;
           }
           const rows = await dataSource.manager.find(OddsHaitou, {
-            where: { RaceId: raceId, Baken: baken, Kakutei: Kakutei.Kakutei, Bangou1: nums[0], Bangou2: nums[1] ?? IsNull(), Bangou3: nums[2] ?? IsNull() },
+            where: {
+              RaceId: raceId,
+              Baken: baken,
+              Kakutei: Kakutei.Kakutei,
+              Bangou1: nums[0],
+              Bangou2: nums[1] ?? IsNull(),
+              Bangou3: nums[2] ?? IsNull(),
+            },
           });
           if (rows.length !== 1 || rows[0].Haitoukin !== parseInt(kinText)) {
-            mismatches.push(`${group}[${i}] 組合せ=${comboText} 払戻金=${kinText} 取り込み=${rows.map(r => r.Haitoukin).join(",")}`);
+            mismatches.push(
+              `${group}[${i}] 組合せ=${comboText} 払戻金=${kinText} 取り込み=${rows.map((r) => r.Haitoukin).join(",")}`,
+            );
           }
           checked++;
         }
@@ -330,8 +391,13 @@ describe("仕様書の値と取り込み結果の突き合わせ", () => {
     for (const rec of records("oz", "Oz")) {
       const raceId = Container.get(JrdbRaceTool).getRaceId(rec);
       const tousuu = parseInt(f(rec, "登録頭数"));
-      const expected = tousuu * (tousuu - 1) / 2;
-      const count = (baken: Baken) => dataSource.manager.countBy(OddsHaitou, { RaceId: raceId, Kakutei: Kakutei.Yosou, Baken: baken });
+      const expected = (tousuu * (tousuu - 1)) / 2;
+      const count = (baken: Baken) =>
+        dataSource.manager.countBy(OddsHaitou, {
+          RaceId: raceId,
+          Kakutei: Kakutei.Yosou,
+          Baken: baken,
+        });
       if (tousuu <= 8) {
         expect(await count(Baken.Wakuren)).toBe(expected);
         expect(await count(Baken.Umaren)).toBe(0);

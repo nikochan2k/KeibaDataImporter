@@ -1,17 +1,13 @@
 import { Inject, Service } from "typedi";
 import { EntityManager } from "typeorm";
-import { OrmManager } from "../../../OrmManager";
 import { KishuDao } from "../../../daos/KishuDao";
 import { Kishu } from "../../../entities/Kishu";
+import { OrmManager } from "../../../OrmManager";
 import { DataToImport } from "../../DataToImport";
-import {
-  readInt,
-  readStr,
-} from "../../Reader";
+import { readInt, readStr } from "../../Reader";
 
 @Service()
 export class KolKisKd3 extends DataToImport {
-
   @OrmManager()
   protected entityManager: EntityManager;
 
@@ -32,5 +28,4 @@ export class KolKisKd3 extends DataToImport {
     const furigana = readStr(buffer, 45, 48);
     kishu = await this.kishuDao.saveKishu(kishu, kishuMei, tanshukuKishuMei, furigana);
   }
-
 }

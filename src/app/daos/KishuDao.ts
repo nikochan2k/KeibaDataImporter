@@ -1,15 +1,14 @@
 import { Inject, Service } from "typedi";
 import { EntityManager, Repository } from "typeorm";
-import { OrmManager, OrmRepository } from "../OrmManager";
-import { JinmeiDao } from "./JinmeiDao";
+import { JinmeiKubun } from "../entities/Jinmei";
 import { Kishu } from "../entities/Kishu";
 import { KishuMei } from "../entities/KishuMei";
-import { JinmeiKubun } from "../entities/Jinmei";
+import { OrmManager, OrmRepository } from "../OrmManager";
 import { Tool } from "../reader/Tool";
+import { JinmeiDao } from "./JinmeiDao";
 
 @Service()
 export class KishuDao {
-
   @OrmManager()
   protected entityManager: EntityManager;
 
@@ -36,7 +35,8 @@ export class KishuDao {
   }
 
   public async getKishuWith(jinmeiId: number, umaId: number) {
-    const kishuList = <Kishu[]>await this.entityManager.query(`SELECT
+    const kishuList = <Kishu[]>await this.entityManager.query(
+      `SELECT
   k.*
 FROM
   Kishu k
@@ -56,7 +56,9 @@ ORDER BY
       ky.UmaId = ?
   ) DESC
 LIMIT
-  1`, [jinmeiId, umaId]);
+  1`,
+      [jinmeiId, umaId],
+    );
 
     if (kishuList.length === 0) {
       return null;
@@ -67,7 +69,7 @@ LIMIT
 
   public async saveKishu(toBe: Kishu, seimei?: string, tanshuku?: string, furigana?: string) {
     const asIs = await this.getKishu(toBe);
-    if (!asIs || seimei && tanshuku && furigana) {
+    if (!asIs || (seimei && tanshuku && furigana)) {
       toBe = await this.tool.saveOrUpdate(Kishu, asIs, toBe);
     } else {
       return asIs;
@@ -90,7 +92,10 @@ LIMIT
 
   protected async saveKishuMei(kishu: Kishu, kubun: JinmeiKubun, meishou: string) {
     const jinmei = await this.jinmeiDao.save(kubun, meishou);
-    let kishuMei = await this.kishuMeiRepository.findOneBy({ KishuId: kishu.Id, JinmeiId: jinmei.Id });
+    let kishuMei = await this.kishuMeiRepository.findOneBy({
+      KishuId: kishu.Id,
+      JinmeiId: jinmei.Id,
+    });
     if (!kishuMei) {
       kishuMei = new KishuMei();
       kishuMei.KishuId = kishu.Id;
@@ -98,5 +103,4 @@ LIMIT
       await this.kishuMeiRepository.save(kishuMei);
     }
   }
-
 }

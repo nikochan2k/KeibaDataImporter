@@ -1,19 +1,15 @@
 import { Inject, Service } from "typedi";
 import { EntityManager } from "typeorm";
-import { OrmManager } from "../../../OrmManager";
 import * as $U from "../../../converters/Uma";
 import { UmaDao } from "../../../daos/UmaDao";
 import { Uma } from "../../../entities/Uma";
+import { OrmManager } from "../../../OrmManager";
 import { DataToImport } from "../../DataToImport";
+import { readInt, readStr } from "../../Reader";
 import { Tool } from "../../Tool";
-import {
-  readInt,
-  readStr,
-} from "../../Reader";
 
 @Service()
 export class KolKet5Kd3 extends DataToImport {
-
   @Inject()
   private tool: Tool;
 
@@ -27,7 +23,13 @@ export class KolKet5Kd3 extends DataToImport {
     return 4002;
   }
 
-  protected async saveSosenba123(buffer: Buffer, offset: number, seibetsu: $U.Seibetsu, chichiUmaId?: number, hahaUmaId?: number) {
+  protected async saveSosenba123(
+    buffer: Buffer,
+    offset: number,
+    seibetsu: $U.Seibetsu,
+    chichiUmaId?: number,
+    hahaUmaId?: number,
+  ) {
     const kanaBamei = readStr(buffer, offset + 7, 40);
     const eigoBamei = readStr(buffer, offset + 47, 40);
     if (!kanaBamei && !eigoBamei) {
@@ -49,7 +51,13 @@ export class KolKet5Kd3 extends DataToImport {
     return this.umaDao.saveUma(uma);
   }
 
-  protected async saveSosenba45(buffer: Buffer, offset: number, seibetsu: $U.Seibetsu, chichiUmaId?: number, hahaUmaId?: number) {
+  protected async saveSosenba45(
+    buffer: Buffer,
+    offset: number,
+    seibetsu: $U.Seibetsu,
+    chichiUmaId?: number,
+    hahaUmaId?: number,
+  ) {
     const bamei = readStr(buffer, offset + 7, 40);
     if (!bamei) {
       return null;

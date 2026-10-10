@@ -1,13 +1,12 @@
 import { Inject, Service } from "typedi";
 import { Shussouba } from "../../entities/Shussouba";
 import { ShussoubaTsuukaJuni } from "../../entities/ShussoubaTsuukaJuni";
-import { readPositiveInt, readPositiveDouble } from "../Reader";
+import { readPositiveDouble, readPositiveInt } from "../Reader";
 import { ShussoubaTool } from "../ShussoubaTool";
 import { KolRaceTool } from "./KolRaceTool";
 
 @Service()
 export class KolShussoubaTool extends ShussoubaTool {
-
   @Inject()
   private kolRaceTool: KolRaceTool;
 
@@ -24,7 +23,7 @@ export class KolShussoubaTool extends ShussoubaTool {
   }
 
   public async saveShussoubaTsuukaJuni(buffer: Buffer, offset: number, shussouba: Shussouba) {
-    for (let bangou = 1; bangou <= 4; bangou++ , offset += 2) {
+    for (let bangou = 1; bangou <= 4; bangou++, offset += 2) {
       const shussoubaTsuukaJuni = new ShussoubaTsuukaJuni();
 
       const juni = readPositiveInt(buffer, offset, 2);
@@ -43,11 +42,10 @@ export class KolShussoubaTool extends ShussoubaTool {
         continue;
       }
 
-      shussoubaTsuukaJuni.Id = shussouba.Id * (2 ** 3) + bangou;
+      shussoubaTsuukaJuni.Id = shussouba.Id * 2 ** 3 + bangou;
       shussoubaTsuukaJuni.ShussoubaId = shussouba.Id;
       shussoubaTsuukaJuni.Bangou = bangou;
       await this.entityManager.save(shussoubaTsuukaJuni);
     }
   }
-
 }

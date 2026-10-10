@@ -1,11 +1,10 @@
 import { Service } from "typedi";
 import { Repository } from "typeorm";
-import { OrmRepository } from "../OrmManager";
 import { Jinmei, JinmeiKubun } from "../entities/Jinmei";
+import { OrmRepository } from "../OrmManager";
 
 @Service()
 export class JinmeiDao {
-
   @OrmRepository(Jinmei)
   private repository: Repository<Jinmei>;
 
@@ -28,5 +27,4 @@ export class JinmeiDao {
     }
     return jinmei;
   }
-
 }

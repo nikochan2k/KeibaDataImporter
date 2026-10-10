@@ -1,9 +1,4 @@
-import {
-  Column,
-  Entity,
-  Index,
-  PrimaryColumn
-} from "typeorm";
+import { Column, Entity, Index, PrimaryColumn } from "typeorm";
 
 export enum Kubun {
   // KYG, KYH, KYI
@@ -26,7 +21,9 @@ export enum Kubun {
 }
 
 @Entity("ShussoubaJoutai")
-@Index("IxShussoubaJoutai", (stj: ShussoubaJoutai) => [stj.ShussoubaId, stj.Kubun, stj.Code], { unique: true })
+@Index("IxShussoubaJoutai", (stj: ShussoubaJoutai) => [stj.ShussoubaId, stj.Kubun, stj.Code], {
+  unique: true,
+})
 export class ShussoubaJoutai {
   @PrimaryColumn("bigint")
   public Id: number;

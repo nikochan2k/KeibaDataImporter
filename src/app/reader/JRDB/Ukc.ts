@@ -1,5 +1,4 @@
 import { Inject, Service } from "typedi";
-import { JrdbData } from "./JrdbData";
 import * as $C from "../../converters/Common";
 import * as $U from "../../converters/Uma";
 import { SeisanshaDao } from "../../daos/SeisanshaDao";
@@ -9,10 +8,10 @@ import { MeishouKubun } from "../../entities/Shoyuu";
 import { Uma } from "../../entities/Uma";
 import { readInt, readStr } from "../Reader";
 import { Tool } from "../Tool";
+import { JrdbData } from "./JrdbData";
 
 @Service()
 export class Ukc extends JrdbData {
-
   @Inject()
   protected tool: Tool;
 
@@ -61,7 +60,13 @@ export class Ukc extends JrdbData {
     return { Kyousouba: kyousouba, Uma: uma };
   }
 
-  protected async saveOyaUma(buffer: Buffer, bameiOffset: number, seibetsu: $U.Seibetsu, seinenOffset: number, chichiUma?: Uma) {
+  protected async saveOyaUma(
+    buffer: Buffer,
+    bameiOffset: number,
+    seibetsu: $U.Seibetsu,
+    seinenOffset: number,
+    chichiUma?: Uma,
+  ) {
     const bamei = readStr(buffer, bameiOffset, 36);
     if (!bamei) {
       return null;

@@ -1,6 +1,6 @@
 import * as fs from "fs";
-import * as path from "path";
 import * as iconv from "iconv-lite";
+import * as path from "path";
 
 /** 仕様書の 1 項目。繰り返し(OCC)は 1 要素の長さ bytes と個数 occ で表す */
 export interface Slot {
@@ -37,7 +37,13 @@ export function parseSpec(file: string): Spec {
   const slots: Slot[] = [];
   let next = 1;
   let recordLength: number | null = null;
-  let group: { name: string; occ: number; rel: number; size: number; children: { name: string; bytes: number }[] } | null = null;
+  let group: {
+    name: string;
+    occ: number;
+    rel: number;
+    size: number;
+    children: { name: string; bytes: number }[];
+  } | null = null;
 
   const flushGroup = () => {
     if (!group) {
@@ -46,7 +52,12 @@ export function parseSpec(file: string): Spec {
     let pos = group.rel;
     for (let i = 0; i < group.occ; i++) {
       for (const c of group.children) {
-        slots.push({ name: `${group.name}[${i + 1}].${c.name}`, start: pos, bytes: c.bytes, occ: 1 });
+        slots.push({
+          name: `${group.name}[${i + 1}].${c.name}`,
+          start: pos,
+          bytes: c.bytes,
+          occ: 1,
+        });
         pos += c.bytes;
       }
     }
@@ -60,11 +71,15 @@ export function parseSpec(file: string): Spec {
       recordLength = parseInt(m[1]);
     }
     const t = line.trim().split(/[ \t]+/);
-    if (t.length < 3 || /^[\*=\-]/.test(t[0])) {
+    if (t.length < 3 || /^[*=-]/.test(t[0])) {
       continue;
     }
     const g = line.match(/^(\S+)\s+(\d+)\s+(\d+)\s+(\d+)\s*\*\s*(\d+)\s*=\s*(\d+)/);
-    if (g && +g[3] === (group ? group.rel + group.size * group.occ : next) && +g[4] * +g[2] === +g[6]) {
+    if (
+      g &&
+      +g[3] === (group ? group.rel + group.size * group.occ : next) &&
+      +g[4] * +g[2] === +g[6]
+    ) {
       flushGroup();
       group = { name: g[1], occ: +g[2], rel: +g[3], size: +g[4], children: [] };
       continue;
@@ -87,7 +102,7 @@ export function parseSpec(file: string): Spec {
       continue;
     }
     flushGroup();
-    const f = cands.find(c => c.start === next);
+    const f = cands.find((c) => c.start === next);
     if (f) {
       slots.push(f);
       next = f.start + f.bytes * f.occ;
@@ -112,7 +127,7 @@ export type Place =
 export function locate(spec: Spec, offset: number, length: number): Place {
   const s = offset + 1;
   const e = s + length;
-  const hit = spec.slots.filter(f => s < f.start + f.bytes * f.occ && f.start < e);
+  const hit = spec.slots.filter((f) => s < f.start + f.bytes * f.occ && f.start < e);
   if (hit.length === 0) {
     return { kind: "none" };
   }

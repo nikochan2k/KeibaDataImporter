@@ -5,13 +5,7 @@ import { Kaisai } from "../../../entities/Kaisai";
 import { Race } from "../../../entities/Race";
 import { Bridge } from "../../Bridge";
 import { DataToImport } from "../../DataToImport";
-import {
-  readInt,
-  readPositiveInt,
-  readRaw,
-  readStr,
-  readTime
-} from "../../Reader";
+import { readInt, readPositiveInt, readRaw, readStr, readTime } from "../../Reader";
 import { Tool } from "../../Tool";
 import { KolBridge } from "../KolBridge";
 import { KolKaisaiTool } from "../KolKaisaiTool";
@@ -19,7 +13,6 @@ import { KolRaceTool } from "../KolRaceTool";
 
 @Service()
 export class KolDen1Kd3 extends DataToImport {
-
   @Inject()
   private tool: Tool;
 
@@ -90,7 +83,9 @@ export class KolDen1Kd3 extends DataToImport {
     toBe.Grade = $R.grade.toCodeFromKol(buffer, 72, 1);
     toBe.JpnFlag = $R.jpnFlag.toCodeFromKol(buffer, 73, 1);
     const betteiBareiHandiReigai = readStr(buffer, 76, 18);
-    toBe.BetteiBareiHandi = $R.betteiBareiHandi.toCodeFromKol(buffer, 74, 2) || $R.betteiBareiHandi.toCodeFromKol(betteiBareiHandiReigai);
+    toBe.BetteiBareiHandi =
+      $R.betteiBareiHandi.toCodeFromKol(buffer, 74, 2) ||
+      $R.betteiBareiHandi.toCodeFromKol(betteiBareiHandiReigai);
     if (!toBe.BetteiBareiHandi) {
       toBe.BetteiBareiHandiReigai = betteiBareiHandiReigai;
     }
@@ -107,9 +102,13 @@ export class KolDen1Kd3 extends DataToImport {
     toBe.JoukenMaruKokusai = $R.joukenMaruKokusai.toCodeFromKol(joukenFuka);
     toBe.JoukenMaruShou = $R.joukenMaruShou.toCodeFromKol(joukenFuka);
     const joukenFuka2 = readRaw(buffer, 96, 2);
-    toBe.JoukenMaruShi = $R.joukenMaruShi.toCodeFromKol(joukenFuka) || $R.joukenMaruShi.toCodeFromKol(joukenFuka2);
-    toBe.JoukenMaruTokuShi = $R.joukenMaruTokuShi.toCodeFromKol(joukenFuka) || $R.joukenMaruTokuShi.toCodeFromKol(joukenFuka2);
-    toBe.JoukenKakuShi = $R.joukenKakuShi.toCodeFromKol(joukenFuka) || $R.joukenKakuShi.toCodeFromKol(joukenFuka2);
+    toBe.JoukenMaruShi =
+      $R.joukenMaruShi.toCodeFromKol(joukenFuka) || $R.joukenMaruShi.toCodeFromKol(joukenFuka2);
+    toBe.JoukenMaruTokuShi =
+      $R.joukenMaruTokuShi.toCodeFromKol(joukenFuka) ||
+      $R.joukenMaruTokuShi.toCodeFromKol(joukenFuka2);
+    toBe.JoukenKakuShi =
+      $R.joukenKakuShi.toCodeFromKol(joukenFuka) || $R.joukenKakuShi.toCodeFromKol(joukenFuka2);
     toBe.JoukenShounyuu = $R.joukenShounyuu.toCodeFromKol(joukenFuka);
     toBe.JoukenNaikokusan = $R.joukenNaikokusan.toCodeFromKol(joukenFuka);
     toBe.JoukenKouryuu = $R.joukenKouryuu.toCodeFromKol(joukenFuka);
@@ -126,7 +125,9 @@ export class KolDen1Kd3 extends DataToImport {
     const joukenCut = readRaw(buffer, 98, 1);
     toBe.JoukenSarakei = $R.joukenSaraKei.toCodeFromKol(joukenCut);
     toBe.JoukenAraKei = $R.joukenAraKei.toCodeFromKol(joukenCut);
-    toBe.JoukenNenreiSeigen = $R.joukenNenreiSeigen.toCodeFromKol(buffer, 99, 1) || $R.joukenNenreiSeigenFromJoukenCut.toCodeFromKol(joukenCut);
+    toBe.JoukenNenreiSeigen =
+      $R.joukenNenreiSeigen.toCodeFromKol(buffer, 99, 1) ||
+      $R.joukenNenreiSeigenFromJoukenCut.toCodeFromKol(joukenCut);
 
     toBe.Jouken1 = $R.jouken.toCodeFromKol(buffer, 100, 5);
     toBe.DirtShiba = $R.dirtShiba.toCodeFromKol(buffer, 105, 1);
@@ -171,11 +172,10 @@ export class KolDen1Kd3 extends DataToImport {
       for (let i = 0; i < 4; i++) {
         const umaban = readInt(buffer, offset + i * 2, 2);
         if (1 <= umaban && umaban <= 28) {
-          const shussoubaId = race.Id * (2 ** 6) + umaban;
+          const shussoubaId = race.Id * 2 ** 6 + umaban;
           kolBridge.yosouKyakushitsuMap.set(shussoubaId, index + 1);
         }
       }
     });
   }
-
 }

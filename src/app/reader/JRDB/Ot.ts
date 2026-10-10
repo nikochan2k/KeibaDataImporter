@@ -1,16 +1,15 @@
 import { Inject, Service } from "typedi";
 import { EntityManager } from "typeorm";
+import { Baken, Kakutei } from "../../converters/Common";
+import { OddsHaitou } from "../../entities/OddsHaitou";
 import { OrmManager } from "../../OrmManager";
+import { readPositiveDouble } from "../Reader";
 import { JrdbData } from "./JrdbData";
 import { JrdbOddsHaitouTool } from "./JrdbOddsHaitouTool";
 import { JrdbRaceTool } from "./JrdbRaceTool";
-import { Baken, Kakutei } from "../../converters/Common";
-import { OddsHaitou } from "../../entities/OddsHaitou";
-import { readPositiveDouble } from "../Reader";
 
 @Service()
 export class Ot extends JrdbData {
-
   @OrmManager()
   protected entityManager: EntityManager;
 
@@ -36,7 +35,8 @@ export class Ot extends JrdbData {
         for (let bangou3 = bangou2 + 1; bangou3 <= 18; bangou3++) {
           const odds1 = readPositiveDouble(buffer, offset, 6);
           offset += 6;
-          if (!odds1 || 9999.9 <= odds1) { // 9999.9 は取消
+          if (!odds1 || 9999.9 <= odds1) {
+            // 9999.9 は取消
             continue;
           }
           const oddsHaitou = new OddsHaitou();

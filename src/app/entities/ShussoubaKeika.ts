@@ -1,9 +1,4 @@
-import {
-  Column,
-  Entity,
-  Index,
-  PrimaryColumn
-} from "typeorm";
+import { Column, Entity, Index, PrimaryColumn } from "typeorm";
 
 @Entity("ShussoubaKeika")
 @Index("IxShussoubaKeika", (sk: ShussoubaKeika) => [sk.RaceKeikaId, sk.ShussoubaId])

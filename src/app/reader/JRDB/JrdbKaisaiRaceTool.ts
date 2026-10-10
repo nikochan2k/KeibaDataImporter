@@ -1,15 +1,10 @@
 import { Service } from "typedi";
-import { JrdbKaisaiTool } from "./JrdbKaisaiTool";
 import { KaisaiInfo } from "../KaisaiTool";
-import {
-  readHex,
-  readInt,
-  readPositiveInt,
-} from "../Reader";
+import { readHex, readInt, readPositiveInt } from "../Reader";
+import { JrdbKaisaiTool } from "./JrdbKaisaiTool";
 
 @Service()
 export class JrdbKaisaiRaceTool extends JrdbKaisaiTool {
-
   protected getKaisaiInfo(buffer: Buffer): KaisaiInfo {
     return {
       basho: this.getBasho(buffer),
@@ -20,5 +15,4 @@ export class JrdbKaisaiRaceTool extends JrdbKaisaiTool {
       nichiji: readHex(buffer, 5, 1),
     };
   }
-
 }

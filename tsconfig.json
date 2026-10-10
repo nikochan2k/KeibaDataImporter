@@ -19,9 +19,7 @@
     "strictPropertyInitialization": false,
     "target": "esnext",
     "useDefineForClassFields": false,
-    "types": [
-      "bun"
-    ]
+    "types": ["bun"]
   },
   "include": ["src"]
 }

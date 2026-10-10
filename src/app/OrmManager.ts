@@ -31,7 +31,7 @@ export function OrmManager() {
   return (target: any, propertyKey: string) => {
     Object.defineProperty(target, propertyKey, {
       get: (): EntityManager => currentManager(),
-      configurable: true
+      configurable: true,
     });
   };
 }
@@ -43,7 +43,7 @@ export function OrmRepository(entity: Function) {
   return (target: any, propertyKey: string) => {
     Object.defineProperty(target, propertyKey, {
       get: () => currentManager().getRepository(entity),
-      configurable: true
+      configurable: true,
     });
   };
 }

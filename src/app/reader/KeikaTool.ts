@@ -1,15 +1,14 @@
 import { Logger } from "log4js";
-import { Service, Inject } from "typedi";
+import { Inject, Service } from "typedi";
 import { EntityManager } from "typeorm";
-import { OrmManager } from "../OrmManager";
 import { RaceKeika } from "../entities/RaceKeika";
 import { ShussoubaKeika } from "../entities/ShussoubaKeika";
 import { getLogger } from "../LogUtil";
-import { Tool } from './Tool';
+import { OrmManager } from "../OrmManager";
+import { Tool } from "./Tool";
 
 @Service()
 export class KeikaTool {
-
   protected logger: Logger;
 
   @Inject()
@@ -40,10 +39,14 @@ export class KeikaTool {
     return shussoubaKeika;
   }
 
-  protected async saveShussoubaKeika(raceKeika: RaceKeika, toBe: ShussoubaKeika, umabanStr: string) {
+  protected async saveShussoubaKeika(
+    raceKeika: RaceKeika,
+    toBe: ShussoubaKeika,
+    umabanStr: string,
+  ) {
     const umaban = parseInt(umabanStr);
-    const shussoubaId = raceKeika.RaceId * (2 ** 6) + umaban;
-    toBe.Id = raceKeika.Id * (2 ** 6) + umaban;
+    const shussoubaId = raceKeika.RaceId * 2 ** 6 + umaban;
+    toBe.Id = raceKeika.Id * 2 ** 6 + umaban;
     toBe.RaceKeikaId = raceKeika.Id;
     toBe.ShussoubaId = shussoubaId;
     const asIs = await this.entityManager.findOneBy(ShussoubaKeika, { Id: toBe.Id });
@@ -57,7 +60,8 @@ export class KeikaTool {
     let bracket = false;
     for (let i = 0; i < keika.length; i++) {
       const ch = keika[i];
-      if (/[0-9]/.test(ch)) { // 数字の場合
+      if (/[0-9]/.test(ch)) {
+        // 数字の場合
         if (0 < i && keika[i - 1] === ")") {
           shussoubaKeika.TateCount++;
         }
@@ -67,8 +71,8 @@ export class KeikaTool {
           await this.saveShussoubaKeika(raceKeika, shussoubaKeika, umaban);
           shussoubaKeika = this.createShussoubaKeika(shussoubaKeika);
         }
-        continue;
-      } else { // 数字でない場合
+      } else {
+        // 数字でない場合
         if (0 < umaban.length) {
           await this.saveShussoubaKeika(raceKeika, shussoubaKeika, umaban);
           shussoubaKeika = this.createShussoubaKeika(shussoubaKeika);
@@ -124,5 +128,4 @@ export class KeikaTool {
       }
     }
   }
-
 }

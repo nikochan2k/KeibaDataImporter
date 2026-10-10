@@ -1,12 +1,11 @@
 import { Inject } from "typedi";
 import * as $CH from "../../converters/Choukyou";
 import { ChoukyouDao } from "../../daos/ChoukyouDao";
+import { Shussouba } from "../../entities/Shussouba";
 import { ShussoubaChoukyou } from "../../entities/ShussoubaChoukyou";
-import { JrdbShussoubaData } from './JrdbShussoubaData';
-import { Shussouba } from '../../entities/Shussouba';
+import { JrdbShussoubaData } from "./JrdbShussoubaData";
 
 export abstract class Cy$ extends JrdbShussoubaData {
-
   @Inject()
   protected choukyouDao: ChoukyouDao;
 
@@ -36,5 +35,4 @@ export abstract class Cy$ extends JrdbShussoubaData {
     sc.ChoukyouCoursePool = $CH.choukyouCourseShurui.toCodeFromJrdb(buffer, 21, 2);
     sc.ChoukyouCourseShougai = $CH.choukyouCourseShurui.toCodeFromJrdb(buffer, 23, 2);
   }
-
 }

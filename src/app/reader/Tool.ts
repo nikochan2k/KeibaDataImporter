@@ -1,13 +1,12 @@
 import { Logger } from "log4js";
 import { Service } from "typedi";
 import { EntityManager, EntityTarget } from "typeorm";
+import { getLogger } from "../LogUtil";
 import { OrmManager } from "../OrmManager";
 import { readInt, readPositiveInt, readStrWithNoSpace } from "./Reader";
-import { getLogger } from "../LogUtil";
 
 @Service()
 export class Tool {
-
   protected logger: Logger;
 
   @OrmManager()
@@ -132,5 +131,4 @@ export class Tool {
     }
     return null;
   }
-
 }

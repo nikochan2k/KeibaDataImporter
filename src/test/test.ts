@@ -1,6 +1,6 @@
-import { LhaReader } from "../app/util/LHA";
-import * as ioutil from "../app/util/IOUtil";
 import * as fs from "fs";
+import * as ioutil from "../app/util/IOUtil";
+import { LhaReader } from "../app/util/LHA";
 
 if (process.argv.length < 3) {
   console.log("No file");

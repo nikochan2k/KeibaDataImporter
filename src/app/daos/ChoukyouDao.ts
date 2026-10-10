@@ -1,12 +1,11 @@
 import { Inject, Service } from "typedi";
 import { Repository } from "typeorm";
-import { OrmRepository } from "../OrmManager";
 import { ShussoubaChoukyou } from "../entities/ShussoubaChoukyou";
+import { OrmRepository } from "../OrmManager";
 import { Tool } from "../reader/Tool";
 
 @Service()
 export class ChoukyouDao {
-
   @OrmRepository(ShussoubaChoukyou)
   private repository: Repository<ShussoubaChoukyou>;
 
@@ -26,5 +25,4 @@ export class ChoukyouDao {
     const asIs = await this.findOne(toBe.Id);
     return await this.tool.saveOrUpdate(ShussoubaChoukyou, asIs, toBe);
   }
-
 }

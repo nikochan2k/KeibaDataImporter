@@ -1,14 +1,13 @@
 import { Inject, Service } from "typedi";
 import { EntityManager, Repository } from "typeorm";
-import { OrmManager, OrmRepository } from "../OrmManager";
 import * as $U from "../converters/Uma";
 import { Kyousouba } from "../entities/Kyousouba";
 import { Uma } from "../entities/Uma";
+import { OrmManager, OrmRepository } from "../OrmManager";
 import { Tool } from "../reader/Tool";
 
 @Service()
 export class UmaDao {
-
   @OrmManager()
   protected entityManager: EntityManager;
 
@@ -22,24 +21,21 @@ export class UmaDao {
   private tool: Tool;
 
   protected async getUma(uma: Uma) {
-    const qb = this.umaRepository
-      .createQueryBuilder("u")
-      .where("0 = 1");
+    const qb = this.umaRepository.createQueryBuilder("u").where("0 = 1");
     if (uma.KolUmaCode) {
-      qb.orWhere("u.KolUmaCode = :kolUmaCode")
-        .setParameter("kolUmaCode", uma.KolUmaCode);
+      qb.orWhere("u.KolUmaCode = :kolUmaCode").setParameter("kolUmaCode", uma.KolUmaCode);
     }
     if (uma.KettouTourokuBangou) {
-      qb.orWhere("u.KettouTourokuBangou = :kettouTourokuBangou")
-        .setParameter("kettouTourokuBangou", uma.KettouTourokuBangou);
+      qb.orWhere("u.KettouTourokuBangou = :kettouTourokuBangou").setParameter(
+        "kettouTourokuBangou",
+        uma.KettouTourokuBangou,
+      );
     }
     if (uma.KanaBamei) {
-      qb.orWhere("u.KanaBamei = :kanaBamei")
-        .setParameter("kanaBamei", uma.KanaBamei);
+      qb.orWhere("u.KanaBamei = :kanaBamei").setParameter("kanaBamei", uma.KanaBamei);
     }
     if (uma.EigoBamei) {
-      qb.orWhere("u.EigoBamei = :eigoBamei")
-        .setParameter("eigoBamei", uma.EigoBamei);
+      qb.orWhere("u.EigoBamei = :eigoBamei").setParameter("eigoBamei", uma.EigoBamei);
     }
     return qb.getOne();
   }
@@ -50,22 +46,24 @@ export class UmaDao {
       .where("k.UmaId = :umaId")
       .setParameter("umaId", kyousouba.UmaId);
     if (kyousouba.Seibetsu) {
-      qb.andWhere("k.Seibetsu = :seibetsu")
-        .setParameter("seibetsu", kyousouba.Seibetsu);
+      qb.andWhere("k.Seibetsu = :seibetsu").setParameter("seibetsu", kyousouba.Seibetsu);
     }
     if (kyousouba.UmaKigou) {
-      qb.andWhere("k.UmaKigou = :umaKigou")
-        .setParameter("umaKigou", kyousouba.UmaKigou);
+      qb.andWhere("k.UmaKigou = :umaKigou").setParameter("umaKigou", kyousouba.UmaKigou);
     }
     if (kyousouba.ChoukyoushiId) {
-      qb.andWhere("k.ChoukyoushiId = :choukyoushiId")
-        .setParameter("choukyoushiId", kyousouba.ChoukyoushiId);
+      qb.andWhere("k.ChoukyoushiId = :choukyoushiId").setParameter(
+        "choukyoushiId",
+        kyousouba.ChoukyoushiId,
+      );
     } else {
       qb.andWhere("k.ChoukyoushiId IS NULL");
     }
     if (kyousouba.KoueiGaikokuChoukyoushiMei) {
-      qb.andWhere("k.KoueiGaikokuChoukyoushiMei = :koueiGaikokuChoukyoushiMei")
-        .setParameter("koueiGaikokuChoukyoushiMei", kyousouba.KoueiGaikokuChoukyoushiMei);
+      qb.andWhere("k.KoueiGaikokuChoukyoushiMei = :koueiGaikokuChoukyoushiMei").setParameter(
+        "koueiGaikokuChoukyoushiMei",
+        kyousouba.KoueiGaikokuChoukyoushiMei,
+      );
     } else {
       qb.andWhere("k.KoueiGaikokuChoukyoushiMei IS NULL");
     }
@@ -88,5 +86,4 @@ export class UmaDao {
       return await this.kyousoubaRepository.save(toBe);
     }
   }
-
 }

@@ -1,21 +1,17 @@
 import { Inject, Service } from "typedi";
 import { EntityManager } from "typeorm";
-import { OrmManager } from "../../../OrmManager";
 import * as $C from "../../../converters/Common";
 import * as $U from "../../../converters/Uma";
 import { UmaDao } from "../../../daos/UmaDao";
 import { Uma } from "../../../entities/Uma";
+import { OrmManager } from "../../../OrmManager";
 import { DataToImport } from "../../DataToImport";
+import { readPositiveInt, readStr } from "../../Reader";
 import { Tool } from "../../Tool";
 import { KolUmaTool } from "../KolUmaTool";
-import {
-  readPositiveInt,
-  readStr,
-} from "../../Reader";
 
 @Service()
 export class KolShuKd3 extends DataToImport {
-
   @OrmManager()
   protected entityManager: EntityManager;
 
@@ -55,5 +51,4 @@ export class KolShuKd3 extends DataToImport {
     uma.ShibouNen = readPositiveInt(buffer, 136, 4);
     await this.umaDao.saveUma(uma);
   }
-
 }
