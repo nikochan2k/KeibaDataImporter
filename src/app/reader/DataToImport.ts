@@ -1,4 +1,4 @@
-import * as fs from "fs";
+import * as fs from "node:fs";
 import * as log4js from "log4js";
 import { EntityManager } from "typeorm";
 import { getLogger } from "../LogUtil";

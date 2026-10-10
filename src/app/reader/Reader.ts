@@ -116,7 +116,7 @@ export function readDouble(buf: Buffer, offset: number, length: number, mul?: nu
   mul = mul || 1.0;
   const str = readStr(buf, offset, length);
   const d = parseFloat(str);
-  return isNaN(d) ? null : d * mul;
+  return Number.isNaN(d) ? null : d * mul;
 }
 
 export function readPositiveDouble(buf: Buffer, offset: number, length: number, mul?: number) {
@@ -127,8 +127,8 @@ export function readPositiveDouble(buf: Buffer, offset: number, length: number, 
 export function readInt(buf: Buffer, offset: number, length: number, mul?: number) {
   mul = mul || 1;
   const str = readStr(buf, offset, length);
-  const i = parseInt(str);
-  return isNaN(i) ? null : i * mul;
+  const i = parseInt(str, 10);
+  return Number.isNaN(i) ? null : i * mul;
 }
 
 /**
@@ -140,8 +140,8 @@ export function readSignedInt(buf: Buffer, offset: number, length: number, mul?:
   if (str === null) {
     return null;
   }
-  const i = parseInt(str.replace(/\s+/g, ""));
-  return isNaN(i) ? null : i * mul;
+  const i = parseInt(str.replace(/\s+/g, ""), 10);
+  return Number.isNaN(i) ? null : i * mul;
 }
 
 export function readTime(buf: Buffer, offset: number, length: number) {
@@ -163,7 +163,7 @@ export function readJikan(buf: Buffer, offset: number) {
   if (!str || !/^\d{4}$/.test(str) || str === "0000") {
     return null;
   }
-  return str.substring(0, 2) + ":" + str.substring(2);
+  return `${str.substring(0, 2)}:${str.substring(2)}`;
 }
 
 export function readPositiveInt(buf: Buffer, offset: number, length: number, mul?: number) {
@@ -174,5 +174,5 @@ export function readPositiveInt(buf: Buffer, offset: number, length: number, mul
 export function readHex(buf: Buffer, offset: number, length: number) {
   const str = readStr(buf, offset, length);
   const i = parseInt(str, 16);
-  return isNaN(i) ? null : i;
+  return Number.isNaN(i) ? null : i;
 }

@@ -18,7 +18,7 @@ export class JrdbTool extends Tool {
     if (!execed) {
       return null;
     }
-    const yymmdd = parseInt(execed[1]);
+    const yymmdd = parseInt(execed[1], 10);
     let yyyymmdd = yymmdd;
     if (700000 <= yymmdd) {
       yyyymmdd += 19000000;

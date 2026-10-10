@@ -1,3 +1,4 @@
+import type { EntityTarget, ObjectLiteral } from "typeorm";
 import "reflect-metadata";
 import { afterAll, beforeAll, describe, expect, test } from "bun:test";
 import { Container } from "typedi";
@@ -43,7 +44,7 @@ afterAll(async () => {
 });
 
 const find = async <T>(entity: new () => T, where: object) =>
-  (await dataSource.manager.findOneBy(entity as any, where)) as T;
+  (await dataSource.manager.findOneBy(entity as EntityTarget<ObjectLiteral>, where)) as T;
 
 describe("TYB 直前情報", () => {
   const tyb = [
@@ -151,7 +152,12 @@ describe("HJC 払戻", () => {
     await Container.get(Hjc).save(record(hjc, 444));
     const race = await find(Race, {});
     const get = async (baken: Baken, b1: number, b2?: number, b3?: number) => {
-      const where: any = { RaceId: race.Id, Kakutei: Kakutei.Kakutei, Baken: baken, Bangou1: b1 };
+      const where: Record<string, unknown> = {
+        RaceId: race.Id,
+        Kakutei: Kakutei.Kakutei,
+        Baken: baken,
+        Bangou1: b1,
+      };
       if (b2) where.Bangou2 = b2;
       if (b3) where.Bangou3 = b3;
       return (await find(OddsHaitou, where))?.Haitoukin;

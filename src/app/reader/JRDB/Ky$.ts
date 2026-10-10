@@ -107,7 +107,7 @@ export abstract class Ky$ extends JrdbShussoubaData {
     kyousouba.Seibetsu = seibetsu;
     kyousouba.UmaKigou = $U.umaKigou.toCodeFromJrdb(buffer, 446, 2);
     const choukyoushi = await this.saveChoukyoushi(buffer);
-    kyousouba.ChoukyoushiId = choukyoushi && choukyoushi.Id;
+    kyousouba.ChoukyoushiId = choukyoushi?.Id;
     kyousouba = await this.umaDao.saveKyousouba(kyousouba);
     return kyousouba;
   }

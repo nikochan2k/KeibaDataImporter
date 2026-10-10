@@ -42,9 +42,9 @@ export class KolShuKd3 extends DataToImport {
     uma.YunyuubaFlag = $U.yunyuubaFlag.toCodeFromKol(buffer, 50, 1);
     uma.Seibetsu = $U.Seibetsu.Boba;
     const chichiUma = await this.kolUmaTool.saveOyaUma(buffer, 51, $U.Seibetsu.Boba);
-    uma.ChichiUmaId = chichiUma && chichiUma.Id;
+    uma.ChichiUmaId = chichiUma?.Id;
     const hahaUma = await this.kolUmaTool.saveOyaUma(buffer, 92, $U.Seibetsu.Hinba);
-    uma.HahaUmaId = hahaUma && hahaUma.Id;
+    uma.HahaUmaId = hahaUma?.Id;
     uma.KyoriTekisei = $U.kyoriTekisei.toCodeFromKol(buffer, 133, 1);
     uma.OmoKousetsu = $C.hyouka.toCodeFromKol(buffer, 134, 1);
     uma.DirtKousetsu = $C.hyouka.toCodeFromKol(buffer, 135, 1);

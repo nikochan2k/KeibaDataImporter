@@ -1,6 +1,6 @@
-import * as fs from "fs";
+import * as fs from "node:fs";
+import * as path from "node:path";
 import * as iconv from "iconv-lite";
-import * as path from "path";
 
 /** 仕様書の 1 項目。繰り返し(OCC)は 1 要素の長さ bytes と個数 occ で表す */
 export interface Slot {
@@ -68,7 +68,7 @@ export function parseSpec(file: string): Spec {
   for (const line of text.split(/\r?\n/)) {
     const m = line.match(/レコード長[：:]\s*(\d+)/);
     if (m) {
-      recordLength = parseInt(m[1]);
+      recordLength = parseInt(m[1], 10);
     }
     const t = line.trim().split(/[ \t]+/);
     if (t.length < 3 || /^[*=-]/.test(t[0])) {

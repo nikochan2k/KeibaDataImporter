@@ -1,4 +1,4 @@
-import * as fs from "fs";
+import * as fs from "node:fs";
 import { Logger } from "log4js";
 import { Container, Inject, Service } from "typedi";
 import { getLogger } from "./LogUtil";
@@ -207,7 +207,7 @@ export class Importer {
       try {
         fd = fs.openSync(item.dataFile, "r");
         if (this.logger.isLevelEnabled("info")) {
-          this.logger.info('"' + item.basename + '"を取り込んでいます');
+          this.logger.info(`"${item.basename}"を取り込んでいます`);
         }
         await dataToImport.readAll(fd);
       } catch (e) {

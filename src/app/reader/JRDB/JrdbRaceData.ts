@@ -35,9 +35,9 @@ export abstract class JrdbRaceData extends JrdbKaisaiData {
     return await this.tool.saveOrUpdate(Race, asIs, toBe, this.keepExisting);
   }
 
-  protected setRace(buffer: Buffer, toBe: Race) {}
+  protected setRace(_buffer: Buffer, _toBe: Race) {}
 
-  protected async saveRaceRelated(buffer: Buffer, race: Race) {
+  protected async saveRaceRelated(_buffer: Buffer, _race: Race) {
     // await this.saveRaceSeiseki(buffer, race.Id);
   }
 
@@ -49,5 +49,5 @@ export abstract class JrdbRaceData extends JrdbKaisaiData {
     await this.tool.saveOrUpdate(RaceSeiseki, asIs, toBe, this.keepExisting);
   }
 
-  protected setRaceSeiseki(buffer: Buffer, toBe: RaceSeiseki) {}
+  protected setRaceSeiseki(_buffer: Buffer, _toBe: RaceSeiseki) {}
 }

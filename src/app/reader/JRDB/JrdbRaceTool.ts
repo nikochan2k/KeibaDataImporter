@@ -38,7 +38,7 @@ export class JrdbRaceTool extends RaceTool {
   protected getRaceBangou(buffer: Buffer) {
     let raceBangou = readPositiveInt(buffer, 6, 2);
     if (raceBangou == null) {
-      this.logger.debug("レース番号が不正です: " + readRaw(buffer, 6, 2));
+      this.logger.debug(`レース番号が不正です: ${readRaw(buffer, 6, 2)}`);
       raceBangou = 0;
     }
     return raceBangou;

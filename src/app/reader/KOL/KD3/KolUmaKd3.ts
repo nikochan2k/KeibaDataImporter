@@ -84,7 +84,7 @@ export class KolUmaKd3 extends DataToImport {
 
       const raceId = this.kolRaceTool.getRaceId(raceBuffer);
       const raceSeiseki = await this.entityManager.findOneBy(RaceSeiseki, { Id: raceId });
-      if (raceSeiseki && raceSeiseki.KolNengappi) {
+      if (raceSeiseki?.KolNengappi) {
         // 既に競走成績レースデータが取り込まれている場合
         continue;
       }
@@ -141,9 +141,9 @@ export class KolUmaKd3 extends DataToImport {
     uma.Sanchi = $U.sanch.toCodeFromKol(buffer, 89, 3);
     uma.Seibetsu = seibetsu;
     const chichiUma = await this.kolUmaTool.saveOyaUma(buffer, 97, $U.Seibetsu.Boba);
-    uma.ChichiUmaId = chichiUma && chichiUma.Id;
+    uma.ChichiUmaId = chichiUma?.Id;
     const hahaUma = await this.kolUmaTool.saveOyaUma(buffer, 138, $U.Seibetsu.Hinba, 179, 220);
-    uma.HahaUmaId = hahaUma && hahaUma.Id;
+    uma.HahaUmaId = hahaUma?.Id;
     uma.MasshouFlag = $C.masshouFlag.toCodeFromKol(buffer, 544, 1);
     uma.MasshouNengappi = readInt(buffer, 545, 8);
     uma.Jiyuu = readStr(buffer, 553, 6);
@@ -156,7 +156,7 @@ export class KolUmaKd3 extends DataToImport {
     kyousouba.Seibetsu = seibetsu;
     kyousouba.UmaKigou = $U.umaKigou.toCodeFromKol(buffer, 92, 2);
     const choukyoushi = await this.kolTool.saveChoukyoushi(buffer, 488);
-    kyousouba.ChoukyoushiId = choukyoushi && choukyoushi.Id;
+    kyousouba.ChoukyoushiId = choukyoushi?.Id;
     kyousouba.KoueiGaikokuChoukyoushiMei = readStr(buffer, 536, 8);
     kyousouba = await this.umaDao.saveKyousouba(kyousouba);
 
@@ -280,7 +280,7 @@ export class KolUmaKd3 extends DataToImport {
     buffer: Buffer,
     race: Race,
     kyousouba: Kyousouba,
-    uma: Uma,
+    _uma: Uma,
     nen: number,
   ) {
     const umaban = readPositiveInt(buffer, 1, 2) || 0;
@@ -389,7 +389,7 @@ export class KolUmaKd3 extends DataToImport {
     kyousouba.UmaId = k.UmaId;
     kyousouba.Seibetsu = seibetsu || k.Seibetsu;
     kyousouba.UmaKigou = $U.umaKigou.toCodeFromKol(buffer, 5, 2) || k.UmaKigou;
-    kyousouba.ChoukyoushiId = (choukyoushi && choukyoushi.Id) || k.ChoukyoushiId;
+    kyousouba.ChoukyoushiId = choukyoushi?.Id || k.ChoukyoushiId;
     kyousouba = await this.umaDao.saveKyousouba(kyousouba);
     return kyousouba;
   }

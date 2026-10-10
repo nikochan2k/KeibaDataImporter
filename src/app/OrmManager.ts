@@ -1,5 +1,5 @@
 import { AsyncLocalStorage } from "node:async_hooks";
-import { EntityManager } from "typeorm";
+import type { EntityManager, EntityTarget, ObjectLiteral } from "typeorm";
 import { dataSource } from "./DataSource";
 
 /**
@@ -28,7 +28,7 @@ export function runInTransaction<T>(fn: () => Promise<T>): Promise<T> {
  * プロパティに DataSource の EntityManager を差し込むデコレーター。
  */
 export function OrmManager() {
-  return (target: any, propertyKey: string) => {
+  return (target: object, propertyKey: string) => {
     Object.defineProperty(target, propertyKey, {
       get: (): EntityManager => currentManager(),
       configurable: true,
@@ -39,8 +39,8 @@ export function OrmManager() {
 /**
  * プロパティに指定エンティティの Repository を差し込むデコレーター。
  */
-export function OrmRepository(entity: Function) {
-  return (target: any, propertyKey: string) => {
+export function OrmRepository(entity: EntityTarget<ObjectLiteral>) {
+  return (target: object, propertyKey: string) => {
     Object.defineProperty(target, propertyKey, {
       get: () => currentManager().getRepository(entity),
       configurable: true,

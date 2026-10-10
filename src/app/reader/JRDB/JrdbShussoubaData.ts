@@ -34,7 +34,7 @@ export abstract class JrdbShussoubaData extends JrdbRaceData {
     return shussouba;
   }
 
-  protected async setShussouba(buffer: Buffer, toBe: Shussouba, info: ShussoubaInfo) {}
+  protected async setShussouba(_buffer: Buffer, _toBe: Shussouba, _info: ShussoubaInfo) {}
 
-  protected async saveShussoubaRelated(buffer: Buffer, shussouba: Shussouba) {}
+  protected async saveShussoubaRelated(_buffer: Buffer, _shussouba: Shussouba) {}
 }

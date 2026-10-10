@@ -23,7 +23,7 @@ export class KolKaisaiTool extends KaisaiTool {
     }
     const basho = $C.basho.toCodeFromKol(buffer, 0, 2);
     if (basho == null) {
-      this.logger.warn("不正な場所です: " + readRaw(buffer, 0, 2));
+      this.logger.warn(`不正な場所です: ${readRaw(buffer, 0, 2)}`);
       return null;
     }
     /* tslint:enable:triple-equals */

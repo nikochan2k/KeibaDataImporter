@@ -71,7 +71,7 @@ export class KolTool {
     kyousouba.UmaId = uma.Id;
     kyousouba.Seibetsu = seibetsu;
     kyousouba.UmaKigou = $U.umaKigou.toCodeFromKol(buffer, offset + 37, 2);
-    kyousouba.ChoukyoushiId = choukyoushi && choukyoushi.Id;
+    kyousouba.ChoukyoushiId = choukyoushi?.Id;
     kyousouba = await this.umaDao.saveKyousouba(kyousouba);
     return { Kyousouba: kyousouba, Uma: uma };
   }

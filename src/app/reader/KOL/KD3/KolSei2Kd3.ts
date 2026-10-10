@@ -55,11 +55,7 @@ export class KolSei2Kd3 extends DataToImport {
     const shussoubaSeiseki = await this.entityManager.findOneBy(ShussoubaSeiseki, {
       Id: rsId.shussoubaId,
     });
-    if (
-      shussoubaSeiseki &&
-      shussoubaSeiseki.KolNengappi &&
-      dataNenggapi <= shussoubaSeiseki.KolNengappi
-    ) {
+    if (shussoubaSeiseki?.KolNengappi && dataNenggapi <= shussoubaSeiseki.KolNengappi) {
       return;
     }
 

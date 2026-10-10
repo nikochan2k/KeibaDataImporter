@@ -1,6 +1,6 @@
 import { Logger } from "log4js";
 import { Service } from "typedi";
-import { EntityManager, EntityTarget } from "typeorm";
+import { EntityManager, EntityTarget, ObjectLiteral, QueryDeepPartialEntity } from "typeorm";
 import { getLogger } from "../LogUtil";
 import { OrmManager } from "../OrmManager";
 import { readInt, readPositiveInt, readStrWithNoSpace } from "./Reader";
@@ -26,9 +26,12 @@ export class Tool {
       if (0 < Object.keys(updateSet).length) {
         await this.entityManager
           .createQueryBuilder()
-          .update(entity as EntityTarget<any>, updateSet as any)
+          .update(
+            entity as EntityTarget<ObjectLiteral>,
+            updateSet as QueryDeepPartialEntity<ObjectLiteral>,
+          )
           .where("Id = :id")
-          .setParameter("id", (<any>asIs).Id)
+          .setParameter("id", (asIs as { Id: number }).Id)
           .execute();
       }
       toBe = asIs;

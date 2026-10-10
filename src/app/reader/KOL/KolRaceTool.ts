@@ -130,7 +130,7 @@ export class KolRaceTool extends RaceTool {
       const umabans = /(\([0-9]+\))+/.exec(hassouJoukyou);
       for (let i = 1; i < umabans.length; i++) {
         const temp = umabans[i];
-        const umaban = Number.parseInt(temp.replace(/[()]/, ""));
+        const umaban = Number.parseInt(temp.replace(/[()]/, ""), 10);
         if (0 < umaban) {
           const shj = new ShussoubaHassouJoukyou();
           shj.Id = rhj.Id * 2 ** 6 + umaban;

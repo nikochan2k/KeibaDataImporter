@@ -44,7 +44,7 @@ export class KeikaTool {
     toBe: ShussoubaKeika,
     umabanStr: string,
   ) {
-    const umaban = parseInt(umabanStr);
+    const umaban = parseInt(umabanStr, 10);
     const shussoubaId = raceKeika.RaceId * 2 ** 6 + umaban;
     toBe.Id = raceKeika.Id * 2 ** 6 + umaban;
     toBe.RaceKeikaId = raceKeika.Id;
@@ -97,7 +97,7 @@ export class KeikaTool {
             case "落":
               break;
             default:
-              this.logger.warn('不正な経過"' + ch + '": ' + raceKeika.Id);
+              this.logger.warn(`不正な経過"${ch}": ${raceKeika.Id}`);
               break;
           }
         } else {
@@ -121,7 +121,7 @@ export class KeikaTool {
             case "落":
               break;
             default:
-              this.logger.warn('不正な経過"' + ch + '": ' + raceKeika.Id);
+              this.logger.warn(`不正な経過"${ch}": ${raceKeika.Id}`);
               break;
           }
         }

@@ -33,11 +33,11 @@ export class KolUmaTool {
     }
     if (chichiOffset && !uma.ChichiUmaId) {
       const chichiUma = await this.saveOyaUma(buffer, chichiOffset, $U.Seibetsu.Boba);
-      uma.ChichiUmaId = chichiUma && chichiUma.Id;
+      uma.ChichiUmaId = chichiUma?.Id;
     }
     if (hahaOffset && !uma.HahaUmaId) {
       const hahaUma = await this.saveOyaUma(buffer, hahaOffset, $U.Seibetsu.Hinba);
-      uma.HahaUmaId = hahaUma && hahaUma.Id;
+      uma.HahaUmaId = hahaUma?.Id;
     }
     uma.Seibetsu = seibetsu;
 

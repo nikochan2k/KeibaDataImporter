@@ -217,22 +217,22 @@ export const jouken = new Codes([
   { code: -65, kol: "-0065", naiyou: "F" },
   {
     kol: (str: string) => {
-      const num = parseInt(str);
+      const num = parseInt(str, 10);
       if (100 <= num) return num / 10;
       return null;
     },
     jrdb: (str: string) => {
-      const num = parseInt(str);
+      const num = parseInt(str, 10);
       if (num <= 100) return num * 100;
       return null;
     },
     jvdata: (str: string) => {
-      const num = parseInt(str);
+      const num = parseInt(str, 10);
       if (num <= 100) return num * 100;
       return null;
     },
     naiyou: (code: number) => {
-      if (100 <= code) return code + "万";
+      if (100 <= code) return `${code}万`;
       return null;
     },
   },

@@ -1,8 +1,8 @@
-import * as fs from "fs";
+import * as fs from "node:fs";
+import * as path from "node:path";
+import * as process from "node:process";
 import * as glob from "glob";
 import { Logger } from "log4js";
-import * as path from "path";
-import * as process from "process";
 import "reflect-metadata";
 import * as tmp from "tmp";
 import { Inject, Service } from "typedi";
@@ -139,21 +139,21 @@ export class Traversal {
   public async traverse(entry: string) {
     const checked = this.checkPath(path.join(process.cwd(), entry)) || this.checkPath(entry);
     if (!checked) {
-      this.logger.error('"' + entry + '"は対象外です');
+      this.logger.error(`"${entry}"は対象外です`);
     } else if (checked.stat.isDirectory()) {
       await this.traverseDir(checked.entry);
     } else if (checked.stat.isFile()) {
       const importFile = this.createImportFile(checked.entry);
       await this.importFile(importFile);
     } else {
-      this.logger.error('"' + entry + '"は対象外です');
+      this.logger.error(`"${entry}"は対象外です`);
     }
   }
 
   protected checkPath(entry: string) {
     try {
       return { stat: fs.statSync(entry), entry: entry };
-    } catch (e) {
+    } catch (_e) {
       return null;
     }
   }
@@ -212,7 +212,7 @@ export class Traversal {
     const filepath = importFile.path;
     const basename = importFile.basename;
     if (this.logger.isLevelEnabled("info")) {
-      this.logger.info('"' + basename + '"を解凍しています。');
+      this.logger.info(`"${basename}"を解凍しています。`);
     }
     if (/\.lzh$/i.test(basename)) {
       await this.uncompressLzhFile(importFile.path);
@@ -224,7 +224,7 @@ export class Traversal {
       await this.importer.import(entries);
     } else {
       if (this.logger.isLevelEnabled("info")) {
-        this.logger.info('"' + basename + '"は取り込み対象ファイルではありません。');
+        this.logger.info(`"${basename}"は取り込み対象ファイルではありません。`);
       }
     }
   }

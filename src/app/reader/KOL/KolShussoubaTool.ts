@@ -38,7 +38,7 @@ export class KolShussoubaTool extends ShussoubaTool {
         shussoubaTsuukaJuni.Juni = juni - 40;
         shussoubaTsuukaJuni.Joukyou = 40;
       } else {
-        this.logger.warn("不正な順位: " + juni);
+        this.logger.warn(`不正な順位: ${juni}`);
         continue;
       }
 

@@ -1,6 +1,6 @@
-import * as fs from "fs";
+import * as fs from "node:fs";
+import * as path from "node:path";
 import * as iconv from "iconv-lite";
-import * as path from "path";
 import * as $CH from "../../src/app/converters/Choukyou";
 import { Codes } from "../../src/app/converters/Codes";
 import * as $C from "../../src/app/converters/Common";

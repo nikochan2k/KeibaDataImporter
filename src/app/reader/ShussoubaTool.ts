@@ -62,12 +62,12 @@ export abstract class ShussoubaTool {
   ): RaceShussoubaId {
     raceId = raceId || this.getRaceId(buffer);
     if (!raceId) {
-      this.logger.warn("レースIDがありません: " + raceId);
+      this.logger.warn(`レースIDがありません: ${raceId}`);
       return null;
     }
     let umaban = readPositiveInt(buffer, umabanOffset, 2);
     if (umaban == null) {
-      this.logger.debug("不正な馬番です: " + readRaw(buffer, umabanOffset, 2));
+      this.logger.debug(`不正な馬番です: ${readRaw(buffer, umabanOffset, 2)}`);
       umaban = 0;
     }
 

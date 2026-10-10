@@ -59,7 +59,7 @@ export class KolDen2Kd3 extends DataToImport {
 
     const dataNengappi = readInt(buffer, 727, 8);
     const asIs = info.shussouba;
-    if (asIs && asIs.KolNengappi && dataNengappi <= asIs.KolNengappi) {
+    if (asIs?.KolNengappi && dataNengappi <= asIs.KolNengappi) {
       return;
     }
 

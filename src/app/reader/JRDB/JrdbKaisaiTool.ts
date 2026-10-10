@@ -19,7 +19,7 @@ export class JrdbKaisaiTool extends KaisaiTool {
       if (raw.trim() === "") {
         this.logger.debug("場所が空白です");
       } else {
-        this.logger.warn("不正な場所です: " + raw);
+        this.logger.warn(`不正な場所です: ${raw}`);
       }
       return null;
     }

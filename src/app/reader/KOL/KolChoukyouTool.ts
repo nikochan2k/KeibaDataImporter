@@ -98,7 +98,7 @@ export class KolChoukyouTool {
     if (choukyou.Type === $CH.ChoukyouType.Hanro || choukyou.Type === $CH.ChoukyouType.Pool) {
       const array = /[0-9]+/.exec(readStr(buffer, offset + 39, 6));
       if (array !== null && 0 < array.length) {
-        choukyou.Kaisuu = parseInt(array[0]);
+        choukyou.Kaisuu = parseInt(array[0], 10);
       }
     }
     choukyou.Baba = $CH.baba.toCodeFromKol(buffer, offset + 25, 2); // 307
@@ -175,7 +175,7 @@ export class KolChoukyouTool {
       choukyouTime.ChoukyouId = choukyou.Id;
       choukyouTime.F = cf.f;
       const time = parseFloat(comment);
-      if (isNaN(time)) {
+      if (Number.isNaN(time)) {
         choukyouTime.Comment = comment;
       } else {
         choukyouTime.Time = time;

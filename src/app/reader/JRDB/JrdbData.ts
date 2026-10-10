@@ -18,14 +18,14 @@ export abstract class JrdbData extends DataToImport {
   protected async setup() {
     const result = JrdbData.YYMMDD.exec(this.bridge.basename);
     if (!result) {
-      console.log("ファイル名に日付がありません: " + this.bridge.basename);
+      console.log(`ファイル名に日付がありません: ${this.bridge.basename}`);
       return;
     }
-    const yy = parseInt(result[1]);
+    const yy = parseInt(result[1], 10);
     const jrdbBridge = <JrdbBridge>this.bridge;
     jrdbBridge.nen = yy + (70 <= yy ? 1900 : 2000);
-    jrdbBridge.gatsu = parseInt(result[2]);
-    jrdbBridge.nichi = parseInt(result[3]);
+    jrdbBridge.gatsu = parseInt(result[2], 10);
+    jrdbBridge.nichi = parseInt(result[3], 10);
   }
 
   protected async teardown() {

@@ -1,8 +1,8 @@
 import "reflect-metadata";
 import { afterAll, beforeAll, describe, expect, test } from "bun:test";
-import * as fs from "fs";
+import * as fs from "node:fs";
+import * as path from "node:path";
 import * as iconv from "iconv-lite";
-import * as path from "path";
 import { Container } from "typedi";
 import { IsNull } from "typeorm";
 import { Baken, Kakutei } from "../src/app/converters/Common";
@@ -57,7 +57,7 @@ import { importSamples, Reads, sampleFiles } from "./spec/trace";
  * 取り込み処理が仕様書どおりになっているかを確かめる。
  */
 
-const readers: { [prefix: string]: new () => any } = {
+const readers: { [prefix: string]: new () => object } = {
   bab: Bab,
   bac: Bac,
   cha: Cha,
@@ -132,7 +132,7 @@ describe("仕様書の項目表", () => {
 describe("レコード長", () => {
   for (const [prefix, cls] of Object.entries(readers)) {
     test(`${prefix}: リーダーのレコード長が仕様書と一致する`, () => {
-      const reader = Container.get(cls) as any;
+      const reader = Container.get(cls) as unknown as { getBufferLength(): number };
       expect(reader.getBufferLength()).toBe(specFor(prefix).tableLength);
     });
   }
@@ -251,7 +251,7 @@ function records(prefix: string, dir: string) {
       .toString("latin1")
       .split(/\r?\n/)
       .filter((l) => l.length > 0);
-    data = Buffer.from(lines.map((l) => l + "\r\n").join(""), "latin1");
+    data = Buffer.from(lines.map((l) => `${l}\r\n`).join(""), "latin1");
   }
   const list: Buffer[] = [];
   for (let i = 0; i * spec.tableLength < data.length; i++) {
@@ -261,7 +261,7 @@ function records(prefix: string, dir: string) {
 }
 
 const time = (v: string) => {
-  const i = parseInt(v);
+  const i = parseInt(v, 10);
   return i > 0 ? ((i / 1000) | 0) * 60 + (i % 1000) / 10 : null;
 };
 
@@ -282,16 +282,16 @@ describe("仕様書の値と取り込み結果の突き合わせ", () => {
       const { raceId, shussouba } = await findShussouba(rec);
       expect(shussouba).toBeTruthy();
       const seiseki = await dataSource.manager.findOneBy(ShussoubaSeiseki, { Id: shussouba.Id });
-      const chaku = parseInt(f(rec, "着順"));
+      const chaku = parseInt(f(rec, "着順"), 10);
       expect(seiseki.KakuteiChakujun).toBe(1 <= chaku && chaku <= 28 ? chaku : null);
       expect(seiseki.Time).toBe(time(f(rec, "タイム")));
-      const bataijuu = parseInt(f(rec, "馬体重"));
+      const bataijuu = parseInt(f(rec, "馬体重"), 10);
       expect(seiseki.Bataijuu).toBe(0 < bataijuu ? bataijuu : null);
       const hyouka = await dataSource.manager.findOneBy(ShussoubaHyouka, { Id: shussouba.Id });
-      expect(hyouka.Idm).toBe(f(rec, "ＩＤＭ") === "" ? null : parseInt(f(rec, "ＩＤＭ")));
+      expect(hyouka.Idm).toBe(f(rec, "ＩＤＭ") === "" ? null : parseInt(f(rec, "ＩＤＭ"), 10));
       const race = await dataSource.manager.findOneBy(Race, { Id: raceId });
-      expect(race.Kyori).toBe(parseInt(f(rec, "距離")));
-      expect(race.Tousuu).toBe(parseInt(f(rec, "頭数")));
+      expect(race.Kyori).toBe(parseInt(f(rec, "距離"), 10));
+      expect(race.Tousuu).toBe(parseInt(f(rec, "頭数"), 10));
       checked++;
     }
     expect(checked).toBe(324);
@@ -307,8 +307,8 @@ describe("仕様書の値と取り込み結果の突き合わせ", () => {
       const info = await Container.get(JrdbShussoubaTool).getShussoubaInfo(rec, 8, raceId);
       expect(info.shussouba).toBeTruthy();
       const shussouba = await dataSource.manager.findOneBy(Shussouba, { Id: info.shussouba.Id });
-      expect(shussouba.Wakuban).toBe(parseInt(f(rec, "枠番")));
-      expect(shussouba.Kinryou).toBe(parseInt(f(rec, "負担重量")) / 10);
+      expect(shussouba.Wakuban).toBe(parseInt(f(rec, "枠番"), 10));
+      expect(shussouba.Kinryou).toBe(parseInt(f(rec, "負担重量"), 10) / 10);
       const yosou = await dataSource.manager.findOneBy(ShussoubaYosou, { Id: shussouba.Id });
       expect(yosou.Idm).toBe(parseFloat(f(rec, "ＩＤＭ")));
       checked++;
@@ -348,13 +348,13 @@ describe("仕様書の値と取り込み結果の突き合わせ", () => {
           const kinText = iconv
             .decode(rec.subarray(kin.start - 1, kin.start - 1 + kin.bytes), "Windows932")
             .trim();
-          if (comboText === "" || !(0 < parseInt(kinText))) {
+          if (comboText === "" || !(0 < parseInt(kinText, 10))) {
             continue;
           }
           // 枠連は枠番 1 桁を 2 つ並べる。それ以外は馬番 2 桁ずつ
           const n = baken === Baken.Wakuren ? 2 : combo.bytes / 2;
           const w = combo.bytes / n;
-          const nums = Array.from({ length: n }, (_, k) => parseInt(comboRaw.substr(k * w, w)));
+          const nums = Array.from({ length: n }, (_, k) => parseInt(comboRaw.substr(k * w, w), 10));
           if (nums.some(Number.isNaN)) {
             mismatches.push(`${group}[${i}] 組合せが読めません: "${comboRaw}"`);
             continue;
@@ -369,7 +369,7 @@ describe("仕様書の値と取り込み結果の突き合わせ", () => {
               Bangou3: nums[2] ?? IsNull(),
             },
           });
-          if (rows.length !== 1 || rows[0].Haitoukin !== parseInt(kinText)) {
+          if (rows.length !== 1 || rows[0].Haitoukin !== parseInt(kinText, 10)) {
             mismatches.push(
               `${group}[${i}] 組合せ=${comboText} 払戻金=${kinText} 取り込み=${rows.map((r) => r.Haitoukin).join(",")}`,
             );
@@ -390,7 +390,7 @@ describe("仕様書の値と取り込み結果の突き合わせ", () => {
     let umaren = 0;
     for (const rec of records("oz", "Oz")) {
       const raceId = Container.get(JrdbRaceTool).getRaceId(rec);
-      const tousuu = parseInt(f(rec, "登録頭数"));
+      const tousuu = parseInt(f(rec, "登録頭数"), 10);
       const expected = (tousuu * (tousuu - 1)) / 2;
       const count = (baken: Baken) =>
         dataSource.manager.countBy(OddsHaitou, {

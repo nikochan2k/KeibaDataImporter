@@ -38,10 +38,10 @@ export class Ukc extends JrdbData {
     uma.Seibetsu = seibetsu;
     uma.Keiro = $U.keiro.toCodeFromJrdb(buffer, 45, 2);
     const chichiUma = await this.saveOyaUma(buffer, 49, $U.Seibetsu.Boba, 165);
-    uma.ChichiUmaId = chichiUma && chichiUma.Id;
+    uma.ChichiUmaId = chichiUma?.Id;
     const hahaChichiUma = await this.saveOyaUma(buffer, 121, $U.Seibetsu.Boba, 173);
     const hahaUma = await this.saveOyaUma(buffer, 85, $U.Seibetsu.Hinba, 169, hahaChichiUma);
-    uma.HahaUmaId = hahaUma && hahaUma.Id;
+    uma.HahaUmaId = hahaUma?.Id;
     uma.Seinen = readInt(buffer, 157, 4);
     uma.Seinengappi = readInt(buffer, 157, 8);
     uma.Sanchi = $U.sanch.toCodeFromJrdb(buffer, 259, 8);
@@ -79,7 +79,7 @@ export class Ukc extends JrdbData {
     }
     uma.Seinen = readInt(buffer, seinenOffset, 4);
     uma.Seibetsu = seibetsu;
-    uma.ChichiUmaId = chichiUma && chichiUma.Id;
+    uma.ChichiUmaId = chichiUma?.Id;
     return this.umaDao.saveUma(uma);
   }
 

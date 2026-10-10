@@ -57,7 +57,7 @@ export abstract class Se$ extends JrdbShussoubaData {
     const kyousouba = new Kyousouba();
     kyousouba.UmaId = uma.Id;
     const choukyoushi = await this.saveChoukyoushi(buffer);
-    kyousouba.ChoukyoushiId = choukyoushi && choukyoushi.Id;
+    kyousouba.ChoukyoushiId = choukyoushi?.Id;
     await this.umaDao.saveKyousouba(kyousouba);
   }
 
@@ -211,7 +211,7 @@ export abstract class Se$ extends JrdbShussoubaData {
   }
 
   protected async teardown() {
-    const rows: any[] = await this.entityManager.query(`SELECT
+    const rows: { Id: number; TimeSa: number }[] = await this.entityManager.query(`SELECT
     SS.Id AS Id, ROUND(SS.Time - T.MinTime, 1) AS TimeSa
   FROM
     Shussouba S

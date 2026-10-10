@@ -1,20 +1,24 @@
-import { Database as BunDatabase } from "bun:sqlite";
+import {
+  Database as BunDatabase,
+  type Statement as BunStatement,
+  type SQLQueryBindings,
+} from "bun:sqlite";
 
 /**
  * TypeORM の better-sqlite3 ドライバーに渡す、bun:sqlite の互換ラッパー。
  */
 class Statement {
-  constructor(private stmt: any) {}
+  constructor(private stmt: BunStatement) {}
 
   get reader(): boolean {
     return 0 < this.stmt.columnNames.length;
   }
 
-  public all(...params: any[]) {
+  public all(...params: SQLQueryBindings[]) {
     return this.stmt.all(...params);
   }
 
-  public run(...params: any[]) {
+  public run(...params: SQLQueryBindings[]) {
     return this.stmt.run(...params);
   }
 }

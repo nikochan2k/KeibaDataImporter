@@ -1,8 +1,8 @@
 import "reflect-metadata";
-import * as fs from "fs";
+import * as fs from "node:fs";
+import * as os from "node:os";
+import * as path from "node:path";
 import * as log4js from "log4js";
-import * as os from "os";
-import * as path from "path";
 import { Container } from "typedi";
 import { Codes } from "../../src/app/converters/Codes";
 import { dataSource } from "../../src/app/DataSource";
@@ -68,7 +68,7 @@ function normalizeLineEnd(basename: string, file: string, tmp: string) {
     .split(/\r?\n/)
     .filter((l) => l.length > 0);
   const out = path.join(tmp, basename);
-  fs.writeFileSync(out, Buffer.from(lines.map((l) => l + "\r\n").join(""), "latin1"));
+  fs.writeFileSync(out, Buffer.from(lines.map((l) => `${l}\r\n`).join(""), "latin1"));
   return out;
 }
 
@@ -108,7 +108,7 @@ export async function importSamples(onlyPrefixes?: string[], excludePrefixes: st
   const reads: Reads = new Map();
   let current: string | null = null;
   const originalCopy = Buffer.prototype.copy;
-  (Buffer.prototype as any).copy = function (
+  (Buffer.prototype as { copy: unknown }).copy = function (
     this: Buffer,
     target: Buffer,
     ts?: number,
@@ -140,8 +140,12 @@ export async function importSamples(onlyPrefixes?: string[], excludePrefixes: st
 
   // コード表にない値の記録(Codes は未定義のコードを黙って null にするので、ここで捕まえる)
   const unmapped: Unmapped[] = [];
-  const originalToCodeFrom = (Codes.prototype as any).toCodeFrom;
-  (Codes.prototype as any).toCodeFrom = function (this: Codes, key: string, str: string) {
+  const originalToCodeFrom = (Codes.prototype as unknown as { toCodeFrom: unknown }).toCodeFrom;
+  (Codes.prototype as unknown as { toCodeFrom: unknown }).toCodeFrom = function (
+    this: Codes,
+    key: string,
+    str: string,
+  ) {
     const code = originalToCodeFrom.call(this, key, str);
     if (current !== null && code === null && str !== null && str.trim() !== "") {
       const stack = new Error().stack.split("\n").slice(2);
@@ -169,8 +173,8 @@ export async function importSamples(onlyPrefixes?: string[], excludePrefixes: st
     }
   } finally {
     current = null;
-    (Buffer.prototype as any).copy = originalCopy;
-    (Codes.prototype as any).toCodeFrom = originalToCodeFrom;
+    (Buffer.prototype as { copy: unknown }).copy = originalCopy;
+    (Codes.prototype as unknown as { toCodeFrom: unknown }).toCodeFrom = originalToCodeFrom;
     fs.rmSync(tmp, { recursive: true, force: true });
   }
   const logs = log4js

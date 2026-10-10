@@ -108,9 +108,9 @@ export abstract class Hj$ extends JrdbData {
     }
   }
 
-  protected async saveUmatan(buffer: Buffer, raceId: number) {}
+  protected async saveUmatan(_buffer: Buffer, _raceId: number) {}
 
-  protected async saveSanrenpuku(buffer: Buffer, raceId: number) {}
+  protected async saveSanrenpuku(_buffer: Buffer, _raceId: number) {}
 
-  protected async saveSanrentan(buffer: Buffer, raceId: number) {}
+  protected async saveSanrentan(_buffer: Buffer, _raceId: number) {}
 }

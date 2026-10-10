@@ -21,7 +21,7 @@ export abstract class Ba$ extends JrdbRaceData {
     const kaisuu = readStr(buffer, 86, 8);
     const execed = /\d+/.exec(kaisuu);
     if (execed) {
-      toBe.JuushouKaisuu = parseInt(execed[0]);
+      toBe.JuushouKaisuu = parseInt(execed[0], 10);
     }
     toBe.Tousuu = readPositiveInt(buffer, 94, 2);
     toBe.Course = $R.course.toCodeFromJrdb(buffer, 96, 1);

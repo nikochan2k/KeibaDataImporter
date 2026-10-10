@@ -42,7 +42,7 @@ export class KolDen1Kd3 extends DataToImport {
 
     const dataNengappi = readInt(buffer, 418, 8);
     const asIs = await this.kolRaceTool.getRace(buffer);
-    if (asIs && asIs.KolNengappi && dataNengappi <= asIs.KolNengappi) {
+    if (asIs?.KolNengappi && dataNengappi <= asIs.KolNengappi) {
       // 既に取り込み済みの場合
       return;
     }
@@ -136,11 +136,11 @@ export class KolDen1Kd3 extends DataToImport {
     toBe.Course = $R.course.toCodeFromKol(buffer, 108, 1);
     toBe.Kyori = readPositiveInt(buffer, 109, 4);
     const courceRecord = await this.kolRaceTool.getRecord(buffer, 114, 0);
-    toBe.CourseRecordId = courceRecord && courceRecord.Id;
+    toBe.CourseRecordId = courceRecord?.Id;
     const kyoriRecord = await this.kolRaceTool.getRecord(buffer, 167, 220);
-    toBe.KyoriRecordId = kyoriRecord && kyoriRecord.Id;
+    toBe.KyoriRecordId = kyoriRecord?.Id;
     const raceRecord = await this.kolRaceTool.getRecord(buffer, 222, 275);
-    toBe.RaceRecordId = raceRecord && raceRecord.Id;
+    toBe.RaceRecordId = raceRecord?.Id;
     toBe.Shoukin1Chaku = readPositiveInt(buffer, 277, 9);
     toBe.Shoukin2Chaku = readPositiveInt(buffer, 286, 9);
     toBe.Shoukin3Chaku = readPositiveInt(buffer, 295, 9);

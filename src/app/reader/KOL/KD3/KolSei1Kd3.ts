@@ -48,7 +48,7 @@ export class KolSei1Kd3 extends DataToImport {
     const dataNengappi = readInt(buffer, 2910, 8);
 
     const raceSeiseki = await this.entityManager.findOneBy(RaceSeiseki, { Id: id });
-    if (raceSeiseki && raceSeiseki.KolNengappi && dataNengappi <= raceSeiseki.KolNengappi) {
+    if (raceSeiseki?.KolNengappi && dataNengappi <= raceSeiseki.KolNengappi) {
       return;
     }
 
@@ -157,11 +157,11 @@ export class KolSei1Kd3 extends DataToImport {
     toBe.Kyori = readPositiveInt(buffer, 120, 4);
 
     const courceRecord = await this.kolRaceTool.getRecord(buffer, 125, 0);
-    toBe.CourseRecordId = courceRecord && courceRecord.Id;
+    toBe.CourseRecordId = courceRecord?.Id;
     const kyoriRecord = await this.kolRaceTool.getRecord(buffer, 178, 231);
-    toBe.KyoriRecordId = kyoriRecord && kyoriRecord.Id;
+    toBe.KyoriRecordId = kyoriRecord?.Id;
     const raceRecord = await this.kolRaceTool.getRecord(buffer, 233, 286);
-    toBe.RaceRecordId = raceRecord && raceRecord.Id;
+    toBe.RaceRecordId = raceRecord?.Id;
 
     toBe.FukaShou = readPositiveInt(buffer, 351, 9);
     toBe.MaeuriFlag = $R.maeuriFlag.toCodeFromKol(buffer, 360, 1);

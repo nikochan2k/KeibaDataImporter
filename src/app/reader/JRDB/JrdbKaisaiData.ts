@@ -49,7 +49,7 @@ export abstract class JrdbKaisaiData extends JrdbData {
     return kaisai;
   }
 
-  protected setKaisai(buffer: Buffer, toBe: Kaisai) {}
+  protected setKaisai(_buffer: Buffer, _toBe: Kaisai) {}
 
-  protected async saveKaisaiRelated(buffer: Buffer, kaisai: Kaisai) {}
+  protected async saveKaisaiRelated(_buffer: Buffer, _kaisai: Kaisai) {}
 }

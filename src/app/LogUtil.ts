@@ -1,6 +1,6 @@
 import * as log4js from "log4js";
 
-export function getLogger(obj: any) {
+export function getLogger(obj: object | string) {
   let categoryName: string;
   if (typeof obj === "string") {
     categoryName = obj;
