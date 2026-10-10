@@ -3,7 +3,7 @@
 --   * 移行元のテーブルを、移行先と同じサーバーの別データベース old に作成済みであること
 --       CREATE DATABASE old;  -- Keiba.sql を old に流し込み、データをインポートする
 --   * 移行先のテーブル(TypeORM のエンティティ定義と同じもの)が作成済みであること
---   * 識別子を "Key" のように二重引用符で囲み、文字列結合に || を使うため、ANSI モードにする
+--   * 予約語の列名 "key" を二重引用符で囲み、文字列結合に || を使うため、ANSI モードにする
 
 SET SESSION sql_mode = 'ANSI';
 SET SESSION cte_max_recursion_depth = 100000;

@@ -34,7 +34,7 @@ INNER JOIN mig_calendar c ON c.D = r.Nengappi;
 -- Kaisai (旧 Race を 場所 + 日付 でまとめる)
 --   Key = (年 - 1970) * 2^17 + 回次 * 2^12 + 日次 * 2^7
 -- ---------------------------------------------------------------
-INSERT INTO Kaisai ("Key", Id, Basho, Nen, Gatsu, Nichi, Kaiji, Nichiji, Youbi, Kyuujitsu, ChuuouChihouGaikoku)
+INSERT INTO Kaisai ("key", Id, Basho, Nen, Gatsu, Nichi, Kaiji, Nichiji, Youbi, Kyuujitsu, ChuuouChihouGaikoku)
 SELECT
   (x.Nen - 1970) * 131072 + COALESCE(x.Kaiji, 0) * 4096 + COALESCE(x.Nichiji, 0) * 128
   ,x.KaisaiId, x.Basho, x.Nen, x.Gatsu, x.Nichi, x.Kaiji, x.Nichiji, x.Youbi, x.Kyuujitsu, x.ChuuouChihouGaikoku

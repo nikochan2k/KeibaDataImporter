@@ -4,9 +4,15 @@
 データベース(`src/app/entities`)へ移行する。
 
 ```
-bun start    # 移行先に空のテーブルを作る(未作成の場合)
+bun start    # 移行先に空のテーブルを作る(SQLite の場合)
 migration/migrate-sqlite.sh <移行元 Keiba.sqlite> <移行先 keiba.sqlite>
+migration/migrate-mysql.sh <移行先DB名> [mysql のオプション...]
+migration/migrate-postgresql.sh <接続文字列 または DB名> [psql のオプション...]
 ```
+
+MySQL / PostgreSQL では、移行先にテーブルを作成済みで、移行元のテーブル(`Keiba.sql` と同じ構造)が
+データベース/スキーマ `old` にあることが前提になる。`migration/old/Keiba.sql` は SQLite 用の記述
+(`PRAGMA`、`INTEGER PRIMARY KEY AUTOINCREMENT` など)なので、そのままは流せない。
 
 SQL は `steps/` に分かれている。`dialect/` は DB 固有の部分(日付のカレンダーを作る処理)だけで、
 `steps/*.sql` は SQLite / MySQL / PostgreSQL 共通の書き方にしてある。移行元のテーブルは
@@ -25,8 +31,12 @@ SQL は `steps/` に分かれている。`dialect/` は DB 固有の部分(日�
 ## 動作確認の状況
 
 * SQLite: 架空のデータ(2レース分)で最後まで実行できることと、主な値を確認した。実データでは未確認。
-* MySQL / PostgreSQL: 未実行。MySQL は 8.0 以降、`sql_mode = 'ANSI'` が必要。
-  PostgreSQL は識別子の大文字小文字(クォートの有無)を、移行先のテーブルの作り方に合わせて調整が必要。
+* MySQL / PostgreSQL: 実行環境が無く未実行(シェルは構文チェックのみ)。
+  * MySQL は 8.0 以降。`migrate-mysql.sh` は `sql_mode = 'ANSI'` で実行する。DDL で暗黙コミットされるため、
+    途中で失敗してもロールバックされない。
+  * PostgreSQL は、移行先のテーブル・列がクォートなしの小文字の名前であることが前提
+    (TypeORM が作る `"Race"` のような名前なら、小文字に直すか SQL の識別子を合わせる)。
+    `migrate-postgresql.sh` は全体を1トランザクションで実行する。
 
 ## 移行しないデータ・対応が無いデータ
 
