@@ -1,11 +1,11 @@
 import { Inject, Service } from "typedi";
-import { Kakutei } from "../../../converters/Common";
-import { DataToImport } from "../../DataToImport";
-import { KolOddsHaitouTool } from "../KolOddsHaitouTool";
-import { KolRaceTool } from "../KolRaceTool";
+import { Kakutei } from "../../converters/Common";
+import { DataToImport } from "../DataToImport";
+import { KolOddsHaitouTool } from "./KolOddsHaitouTool";
+import { KolRaceTool } from "./KolRaceTool";
 
 @Service()
-export class KolKodKd3 extends DataToImport {
+export class KolKod extends DataToImport {
   @Inject()
   private kolRaceTool: KolRaceTool;
 

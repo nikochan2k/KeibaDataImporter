@@ -1,15 +1,15 @@
 import { Inject, Service } from "typedi";
 import { EntityManager } from "typeorm";
-import * as $U from "../../../converters/Uma";
-import { UmaDao } from "../../../daos/UmaDao";
-import { Uma } from "../../../entities/Uma";
-import { OrmManager } from "../../../OrmManager";
-import { DataToImport } from "../../DataToImport";
-import { readInt, readStr } from "../../Reader";
-import { Tool } from "../../Tool";
+import * as $U from "../../converters/Uma";
+import { UmaDao } from "../../daos/UmaDao";
+import { Uma } from "../../entities/Uma";
+import { OrmManager } from "../../OrmManager";
+import { DataToImport } from "../DataToImport";
+import { readInt, readStr } from "../Reader";
+import { Tool } from "../Tool";
 
 @Service()
-export class KolKetKd3 extends DataToImport {
+export class KolKet extends DataToImport {
   @OrmManager()
   protected entityManager: EntityManager;
 

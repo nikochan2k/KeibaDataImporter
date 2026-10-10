@@ -206,7 +206,7 @@ export interface KolRead {
   /** 1 レコード内の絶対位置 (0 始まり) */
   offset: number;
   length: number;
-  /** 呼び出し元 ("KolDen2Kd3.ts:55" の形) */
+  /** 呼び出し元 ("KolDen2.ts:55" の形) */
   caller: string;
 }
 

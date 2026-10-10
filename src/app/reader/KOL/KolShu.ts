@@ -1,17 +1,17 @@
 import { Inject, Service } from "typedi";
 import { EntityManager } from "typeorm";
-import * as $C from "../../../converters/Common";
-import * as $U from "../../../converters/Uma";
-import { UmaDao } from "../../../daos/UmaDao";
-import { Uma } from "../../../entities/Uma";
-import { OrmManager } from "../../../OrmManager";
-import { DataToImport } from "../../DataToImport";
-import { readInt, readPositiveInt, readStr } from "../../Reader";
-import { Tool } from "../../Tool";
-import { KolUmaTool } from "../KolUmaTool";
+import * as $C from "../../converters/Common";
+import * as $U from "../../converters/Uma";
+import { UmaDao } from "../../daos/UmaDao";
+import { Uma } from "../../entities/Uma";
+import { OrmManager } from "../../OrmManager";
+import { DataToImport } from "../DataToImport";
+import { readInt, readPositiveInt, readStr } from "../Reader";
+import { Tool } from "../Tool";
+import { KolUmaTool } from "./KolUmaTool";
 
 @Service()
-export class KolShuKd3 extends DataToImport {
+export class KolShu extends DataToImport {
   @OrmManager()
   protected entityManager: EntityManager;
 

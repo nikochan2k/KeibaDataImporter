@@ -1,18 +1,18 @@
 import { Inject, Service } from "typedi";
-import * as $K from "../../../converters/Kaisai";
-import * as $R from "../../../converters/Race";
-import { Kaisai } from "../../../entities/Kaisai";
-import { Race } from "../../../entities/Race";
-import { Bridge } from "../../Bridge";
-import { readInt, readPositiveInt, readRaw, readStr, readTime } from "../../Reader";
-import { Tool } from "../../Tool";
-import { KolBridge } from "../KolBridge";
-import { KolDataToImport } from "../KolDataToImport";
-import { KolKaisaiTool } from "../KolKaisaiTool";
-import { KolRaceTool } from "../KolRaceTool";
+import * as $K from "../../converters/Kaisai";
+import * as $R from "../../converters/Race";
+import { Kaisai } from "../../entities/Kaisai";
+import { Race } from "../../entities/Race";
+import { Bridge } from "../Bridge";
+import { readInt, readPositiveInt, readRaw, readStr, readTime } from "../Reader";
+import { Tool } from "../Tool";
+import { KolBridge } from "./KolBridge";
+import { KolDataToImport } from "./KolDataToImport";
+import { KolKaisaiTool } from "./KolKaisaiTool";
+import { KolRaceTool } from "./KolRaceTool";
 
 @Service()
-export class KolDen1Kd3 extends KolDataToImport {
+export class KolDen1 extends KolDataToImport {
   @Inject()
   private tool: Tool;
 

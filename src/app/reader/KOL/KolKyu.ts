@@ -1,15 +1,15 @@
 import { Inject, Service } from "typedi";
 import { EntityManager } from "typeorm";
-import * as $CK from "../../../converters/Choukyoushi";
-import * as $C from "../../../converters/Common";
-import { ChoukyoushiDao } from "../../../daos/ChoukyoushiDao";
-import { Choukyoushi } from "../../../entities/Choukyoushi";
-import { OrmManager } from "../../../OrmManager";
-import { DataToImport } from "../../DataToImport";
-import { readInt, readStr } from "../../Reader";
+import * as $CK from "../../converters/Choukyoushi";
+import * as $C from "../../converters/Common";
+import { ChoukyoushiDao } from "../../daos/ChoukyoushiDao";
+import { Choukyoushi } from "../../entities/Choukyoushi";
+import { OrmManager } from "../../OrmManager";
+import { DataToImport } from "../DataToImport";
+import { readInt, readStr } from "../Reader";
 
 @Service()
-export class KolKyuKd3 extends DataToImport {
+export class KolKyu extends DataToImport {
   @OrmManager()
   protected entityManager: EntityManager;
 

@@ -22,51 +22,51 @@
 | # | 場所 | 内容 |
 |---|---|---|
 | 1 | [OddsHaitouTool.ts:243](../src/app/reader/KOL/KolOddsHaitouTool.ts#L243) `saveRaceHaitou` | 払戻をすべて `Baken.Sanrentan` で保存していた。単勝・複勝・枠連・馬連・ワイド・馬単・3連複の払戻が 3連単として保存され、ID も衝突して互いに上書きしていた。`info.baken` にした。 |
-| 2 | [KolOdsKd3.ts:34](../src/app/reader/KOL/KD3/KolOdsKd3.ts#L34), [KolKodKd3.ts:34](../src/app/reader/KOL/KD3/KolKodKd3.ts#L34) | 枠連オッズを `saveTanshouOdds` で読んでいた。枠連の位置(251〜)を単勝として 18 件保存し、本物の単勝オッズを上書きしていた。`saveWakurenOdds` にした。 |
+| 2 | [KolOds.ts:34](../src/app/reader/KOL/KD3/KolOds.ts#L34), [KolKod.ts:34](../src/app/reader/KOL/KD3/KolKod.ts#L34) | 枠連オッズを `saveTanshouOdds` で読んでいた。枠連の位置(251〜)を単勝として 18 件保存し、本物の単勝オッズを上書きしていた。`saveWakurenOdds` にした。 |
 | 3 | [KolOddsHaitouTool.ts:56](../src/app/reader/KOL/KolOddsHaitouTool.ts#L56) `saveWakurenOdds` | 枠連の組み合わせを 8×8=64 通り読んでいた。仕様は `1-1, 1-2, …, 1-8, 2-2, …, 8-8` の 36 通り。以降のオッズ(馬連の領域)まで読み進めていた。 |
-| 4 | [KolUmaKd3.ts:87](../src/app/reader/KOL/KD3/KolUmaKd3.ts#L87) | 過去走が 5 走に満たない馬で、レース ID が null になり `findOneBy({ Id: null })` が例外になる。**ファイルごとロールバックされ、競走馬データがまったく取り込めなかった**(見本の 2 ファイルとも)。スキップするようにした。 |
-| 5 | [KolSei2Kd3.ts:94](../src/app/reader/KOL/KD3/KolSei2Kd3.ts#L94) | `if (toBe) return null;` と条件が逆。出走馬が未登録のとき必ず登録されず、`createShussouba` が null のときは `toBe.Wakuban` で落ちていた。`!toBe` にした。出走馬の馬番がないレコードで落ちないようにもした。 |
-| 6 | [KolKetKd3.ts:23](../src/app/reader/KOL/KD3/KolKetKd3.ts#L23) | 3代血統図のレコード長が 2010(種牡馬データの長さ)。仕様書は 839。レコードの区切りがずれて、1 件目しか読めなかった。 |
+| 4 | [KolUma.ts:87](../src/app/reader/KOL/KD3/KolUma.ts#L87) | 過去走が 5 走に満たない馬で、レース ID が null になり `findOneBy({ Id: null })` が例外になる。**ファイルごとロールバックされ、競走馬データがまったく取り込めなかった**(見本の 2 ファイルとも)。スキップするようにした。 |
+| 5 | [KolSei2.ts:94](../src/app/reader/KOL/KD3/KolSei2.ts#L94) | `if (toBe) return null;` と条件が逆。出走馬が未登録のとき必ず登録されず、`createShussouba` が null のときは `toBe.Wakuban` で落ちていた。`!toBe` にした。出走馬の馬番がないレコードで落ちないようにもした。 |
+| 6 | [KolKet.ts:23](../src/app/reader/KOL/KD3/KolKet.ts#L23) | 3代血統図のレコード長が 2010(種牡馬データの長さ)。仕様書は 839。レコードの区切りがずれて、1 件目しか読めなかった。 |
 | 7 | [KolSei3Kd3.ts](../src/app/reader/KOL/KD3/KolSei3Kd3.ts) | レースの成績が未登録(`asIs` が null)だと `asIs.SeisaiNaiyou` で落ちる。 |
 | 8 | [KolChoukyouTool.ts:74](../src/app/reader/KOL/KolChoukyouTool.ts#L74) | ID に使うハッシュの `slice(offset + 27, 42)` の終端が絶対位置で、常に空。同じ馬が同じ日に 2 回調教すると同じ ID になり上書きされた。調教の本体(offset+17〜77)から作る。([kol-choukyou-fix-plan.md](./kol-choukyou-fix-plan.md) の K-P0-1) |
 | 9 | [KolChoukyouTool.ts:57](../src/app/reader/KOL/KolChoukyouTool.ts#L57) | `saveShussoubaChoukyou` が `await` されていない。保存の失敗が握りつぶされる。(同 K-P0-3) |
-| 10 | `KolDen2Kd3` `KolSei2Kd3` `KolUmaKd3` の `saveShussoubaJoutai` | 状態(ブリンカー)の保存を `await` していなかった。 |
+| 10 | `KolDen2` `KolSei2` `KolUma` の `saveShussoubaJoutai` | 状態(ブリンカー)の保存を `await` していなかった。 |
 
 ### P1(値の誤り)
 
 | # | 場所 | 内容 |
 |---|---|---|
 | 11 | [KolRaceTool.ts:150](../src/app/reader/KOL/KolRaceTool.ts#L150) `saveSpecialRaceLapTime` | 障害レースの上り時計(`104.9-52.0-38.9-13.3`)を、項目の長さ(5/4/4)でなく常に 3 バイト、しかも 0.1 秒単位として読んでいた(`104.9` → 10.4)。長さを使い、秒の単位(×1)で読む。 |
-| 12 | [KolSei1Kd3.ts:202](../src/app/reader/KOL/KD3/KolSei1Kd3.ts#L202) | 障害の上り 1F(`13.3`)を 0.1 倍していた(1.33)。 |
-| 13 | [KolSei1Kd3.ts:480](../src/app/reader/KOL/KD3/KolSei1Kd3.ts#L480) | 馬単 4 番目の人気を 1 番目の位置(2345)から読んでいた。正しくは 2387。 |
-| 14 | [KolDen1Kd3.ts:149](../src/app/reader/KOL/KD3/KolDen1Kd3.ts#L149) | 附加賞を 351(SEI1 の位置)から読んでいた。DEN1 は 322。 |
-| 15 | [KolDen1Kd3.ts:65](../src/app/reader/KOL/KD3/KolDen1Kd3.ts#L65), [KolSei1Kd3.ts:78](../src/app/reader/KOL/KD3/KolSei1Kd3.ts#L78), [KolUmaKd3.ts:182](../src/app/reader/KOL/KD3/KolUmaKd3.ts#L182) | 曜日を、休日の変換表(`kyuujitsu`: 1〜3 だけ)で読んでいた。火〜金(4〜7)が null になり、土日月だけ偶然合っていた。曜日の変換表(`youbi`)にした。 |
+| 12 | [KolSei1.ts:202](../src/app/reader/KOL/KD3/KolSei1.ts#L202) | 障害の上り 1F(`13.3`)を 0.1 倍していた(1.33)。 |
+| 13 | [KolSei1.ts:480](../src/app/reader/KOL/KD3/KolSei1.ts#L480) | 馬単 4 番目の人気を 1 番目の位置(2345)から読んでいた。正しくは 2387。 |
+| 14 | [KolDen1.ts:149](../src/app/reader/KOL/KD3/KolDen1.ts#L149) | 附加賞を 351(SEI1 の位置)から読んでいた。DEN1 は 322。 |
+| 15 | [KolDen1.ts:65](../src/app/reader/KOL/KD3/KolDen1.ts#L65), [KolSei1.ts:78](../src/app/reader/KOL/KD3/KolSei1.ts#L78), [KolUma.ts:182](../src/app/reader/KOL/KD3/KolUma.ts#L182) | 曜日を、休日の変換表(`kyuujitsu`: 1〜3 だけ)で読んでいた。火〜金(4〜7)が null になり、土日月だけ偶然合っていた。曜日の変換表(`youbi`)にした。 |
 | 16 | [KolRaceTool.ts:132](../src/app/reader/KOL/KolRaceTool.ts#L132) `saveRaceHassouJoukyou` | 発走状況の馬番を `/(\([0-9]+\))+/.exec` で取っていて、`(04)(05)` のうち最後の `(05)` しか保存されない。馬番が 1 つもない文言だと `null.length` で落ちる。`matchAll` で全部取る。 |
 | 17 | [KolOddsHaitouTool.ts:109](../src/app/reader/KOL/KolOddsHaitouTool.ts#L109) `saveWideOdds` | ワイドの上限オッズ(`Odds2`)を保存していなかった(複勝は保存している)。 |
-| 18 | [KolKetKd3.ts:90](../src/app/reader/KOL/KD3/KolKetKd3.ts#L90) | 3代血統図の母母を 332、母父父を 542 から読んでいた(1 バイトずれ、仕様は 331, 541)。 |
-| 19 | [KolKetKd3.ts](../src/app/reader/KOL/KD3/KolKetKd3.ts) | 父父(205)を牝馬として保存していた。 |
-| 20 | `KolKetKd3` `KolKet5Kd3` | 血種を毛色の変換表(`keiro`)で変換していた(`kesshu` が正しい)。 |
+| 18 | [KolKet.ts:90](../src/app/reader/KOL/KD3/KolKet.ts#L90) | 3代血統図の母母を 332、母父父を 542 から読んでいた(1 バイトずれ、仕様は 331, 541)。 |
+| 19 | [KolKet.ts](../src/app/reader/KOL/KD3/KolKet.ts) | 父父(205)を牝馬として保存していた。 |
+| 20 | `KolKet` `KolKet5Kd3` | 血種を毛色の変換表(`keiro`)で変換していた(`kesshu` が正しい)。 |
 | 21 | [KolKet5Kd3.ts](../src/app/reader/KOL/KD3/KolKet5Kd3.ts) | 父・父父・父父父・父母父・母父・母父父・母母父(エリア名が「父」で終わる 1〜3 代の祖先)を牝馬として保存していた。 |
 | 22 | [KolKet5Kd3.ts](../src/app/reader/KOL/KD3/KolKet5Kd3.ts) `saveHch` | 母父母の父と母が逆(父に母父母母、母に母父母父を渡していた)。 |
-| 23 | `KolKetKd3` `KolKet5Kd3` | 祖先の名前が空だと、`.Id` で落ちてファイル全体がロールバックされる。`?.Id` にした。3代血統図の英語馬名は、空のときに既存の値を消さないようにした。 |
+| 23 | `KolKet` `KolKet5Kd3` | 祖先の名前が空だと、`.Id` で落ちてファイル全体がロールバックされる。`?.Id` にした。3代血統図の英語馬名は、空のときに既存の値を消さないようにした。 |
 | 24 | [KolChoukyouTool.ts:154](../src/app/reader/KOL/KolChoukyouTool.ts#L154) | `Shiba <= type \|\| type <= Shougai` が常に真で、プール・連闘・ゲート・牧場にもコース用の時計(8F〜1F)を読んでいた。`&&` にした。(kol-choukyou-fix-plan.md の K-P1-1) |
 
 ### P2(取りこぼし)
 
 | # | 場所 | 内容 |
 |---|---|---|
-| 25 | [KolShuKd3.ts:33](../src/app/reader/KOL/KD3/KolShuKd3.ts#L33) | 種牡馬コード(先頭 7 バイト)を保存していなかった。馬名だけで馬を探すので、カナと英語が別の行になりうる。 |
-| 26 | [KolUmaKd3.ts:124](../src/app/reader/KOL/KD3/KolUmaKd3.ts#L124) | 過去走のレコード指数を読む `saveShussoubaHyouka` が定義されているのに呼ばれていなかった。 |
-| 27 | [KolUmaKd3.ts:332](../src/app/reader/KOL/KD3/KolUmaKd3.ts#L332) | 過去走の騎手の東西別・所属場所・所属厩舎・見習い区分を読んでいなかった(DEN2・SEI2 は読んでいる)。 |
+| 25 | [KolShu.ts:33](../src/app/reader/KOL/KD3/KolShu.ts#L33) | 種牡馬コード(先頭 7 バイト)を保存していなかった。馬名だけで馬を探すので、カナと英語が別の行になりうる。 |
+| 26 | [KolUma.ts:124](../src/app/reader/KOL/KD3/KolUma.ts#L124) | 過去走のレコード指数を読む `saveShussoubaHyouka` が定義されているのに呼ばれていなかった。 |
+| 27 | [KolUma.ts:332](../src/app/reader/KOL/KD3/KolUma.ts#L332) | 過去走の騎手の東西別・所属場所・所属厩舎・見習い区分を読んでいなかった(DEN2・SEI2 は読んでいる)。 |
 
 ## 3. 修正していないもの(判断が必要)
 
 | 場所 | 内容 |
 |---|---|
-| [KolKisKd3.ts:25](../src/app/reader/KOL/KD3/KolKisKd3.ts#L25) | 騎手の「初免許年(YYYY)」を `Kishu.MenkyoKoufuNengappi`(年月日)に入れている。厩舎は `HatsuMenkyoNen` に入れている。騎手に年だけを入れる列がないので、列を足すか、`YYYY0101` にするか決める必要がある(スキーマ変更になるので保留)。 |
+| [KolKis.ts:25](../src/app/reader/KOL/KD3/KolKis.ts#L25) | 騎手の「初免許年(YYYY)」を `Kishu.MenkyoKoufuNengappi`(年月日)に入れている。厩舎は `HatsuMenkyoNen` に入れている。騎手に年だけを入れる列がないので、列を足すか、`YYYY0101` にするか決める必要がある(スキーマ変更になるので保留)。 |
 | [KolOddsHaitouTool.ts:28](../src/app/reader/KOL/KolOddsHaitouTool.ts#L28) `getOdds` | オッズが `*`(上限以上)のとき `10 ** (桁数 - 2)` を入れる。仕様書の上限は単勝 50 倍(ODS)/1 万倍(KOD)、馬連 1000 倍、3連複 100 万倍、3連単 1 億倍と、データごとに違うので、桁数からは決まらない。また「50 倍以上」を 1000 倍と保存してよいかは決めが必要。 |
 | 調教の読み方 | [kol-choukyou-fix-plan.md](./kol-choukyou-fix-plan.md) の K-P1-2(異常値の除外)、K-P1-3(回数の読み方)、K-P2-1(日付の有無でスロットを飛ばす)など。K-Q1「1 本目(DEN2 の 256)は有効か」は、仕様書で「調教フラグ 0=前回 1=追切り、(前回)調教１」と定義されており、**有効**。Analizer が外した理由は仕様書からは分からない。 |
-| `KolSei1Kd3.save` | レースが既に登録されている(DEN1・UMA が先)と、`saveRace` を実行せず、SEI1 のレース情報(コースレコード、取消頭数など)でレースを更新しない。意図的かもしれない。 |
+| `KolSei1.save` | レースが既に登録されている(DEN1・UMA が先)と、`saveRace` を実行せず、SEI1 のレース情報(コースレコード、取消頭数など)でレースを更新しない。意図的かもしれない。 |
 | ODS・KOD の `*` | 上と同じ。 |
 
 ## 4. 仕様書にあるが取り込んでいない項目

@@ -1,34 +1,34 @@
 import { Inject, Service } from "typedi";
-import * as $C from "../../../converters/Common";
-import * as $K from "../../../converters/Kishu";
-import * as $S from "../../../converters/Shussouba";
-import { Bagu } from "../../../converters/ShussoubaJoutai";
-import * as $SY from "../../../converters/ShussoubaYosou";
-import { Kyousouba } from "../../../entities/Kyousouba";
-import { Shussouba } from "../../../entities/Shussouba";
-import { ShussoubaChoukyou } from "../../../entities/ShussoubaChoukyou";
-import { ShussoubaHyouka } from "../../../entities/ShussoubaHyouka";
-import { Kubun } from "../../../entities/ShussoubaJoutai";
-import { ShussoubaSeiseki } from "../../../entities/ShussoubaSeiseki";
-import { ShussoubaYosou } from "../../../entities/ShussoubaYosou";
-import { Uma } from "../../../entities/Uma";
-import { DataToImport } from "../../DataToImport";
+import * as $C from "../../converters/Common";
+import * as $K from "../../converters/Kishu";
+import * as $S from "../../converters/Shussouba";
+import { Bagu } from "../../converters/ShussoubaJoutai";
+import * as $SY from "../../converters/ShussoubaYosou";
+import { Kyousouba } from "../../entities/Kyousouba";
+import { Shussouba } from "../../entities/Shussouba";
+import { ShussoubaChoukyou } from "../../entities/ShussoubaChoukyou";
+import { ShussoubaHyouka } from "../../entities/ShussoubaHyouka";
+import { Kubun } from "../../entities/ShussoubaJoutai";
+import { ShussoubaSeiseki } from "../../entities/ShussoubaSeiseki";
+import { ShussoubaYosou } from "../../entities/ShussoubaYosou";
+import { Uma } from "../../entities/Uma";
+import { DataToImport } from "../DataToImport";
 import {
   readInt,
   readPositiveDouble,
   readPositiveInt,
   readStrWithNoSpace,
   readTime,
-} from "../../Reader";
-import { ShussoubaInfo } from "../../ShussoubaTool";
-import { Tool } from "../../Tool";
-import { KolChoukyouTool } from "../KolChoukyouTool";
-import { KolOddsHaitouTool } from "../KolOddsHaitouTool";
-import { KolShussoubaTool } from "../KolShussoubaTool";
-import { KolTool } from "../KolTool";
+} from "../Reader";
+import { ShussoubaInfo } from "../ShussoubaTool";
+import { Tool } from "../Tool";
+import { KolChoukyouTool } from "./KolChoukyouTool";
+import { KolOddsHaitouTool } from "./KolOddsHaitouTool";
+import { KolShussoubaTool } from "./KolShussoubaTool";
+import { KolTool } from "./KolTool";
 
 @Service()
-export class KolSei2Kd3 extends DataToImport {
+export class KolSei2 extends DataToImport {
   @Inject()
   private choukyouTool: KolChoukyouTool;
 

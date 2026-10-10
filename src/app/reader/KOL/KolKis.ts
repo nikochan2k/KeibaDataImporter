@@ -1,13 +1,13 @@
 import { Inject, Service } from "typedi";
 import { EntityManager } from "typeorm";
-import { KishuDao } from "../../../daos/KishuDao";
-import { Kishu } from "../../../entities/Kishu";
-import { OrmManager } from "../../../OrmManager";
-import { DataToImport } from "../../DataToImport";
-import { readInt, readStr } from "../../Reader";
+import { KishuDao } from "../../daos/KishuDao";
+import { Kishu } from "../../entities/Kishu";
+import { OrmManager } from "../../OrmManager";
+import { DataToImport } from "../DataToImport";
+import { readInt, readStr } from "../Reader";
 
 @Service()
-export class KolKisKd3 extends DataToImport {
+export class KolKis extends DataToImport {
   @OrmManager()
   protected entityManager: EntityManager;
 

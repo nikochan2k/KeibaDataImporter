@@ -1,14 +1,14 @@
 import { Inject, Service } from "typedi";
 import { EntityManager } from "typeorm";
-import { ShussoubaSeiseki } from "../../../entities/ShussoubaSeiseki";
-import { OrmManager } from "../../../OrmManager";
-import { DataToImport } from "../../DataToImport";
-import { readStr } from "../../Reader";
-import { Tool } from "../../Tool";
-import { KolShussoubaTool } from "../KolShussoubaTool";
+import { ShussoubaSeiseki } from "../../entities/ShussoubaSeiseki";
+import { OrmManager } from "../../OrmManager";
+import { DataToImport } from "../DataToImport";
+import { readStr } from "../Reader";
+import { Tool } from "../Tool";
+import { KolShussoubaTool } from "./KolShussoubaTool";
 
 @Service()
-export class KolCom1Kd3 extends DataToImport {
+export class KolCom1 extends DataToImport {
   @OrmManager()
   protected entityManager: EntityManager;
 

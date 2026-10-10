@@ -9,13 +9,13 @@ import { KolDen1Kd2 } from "../src/app/reader/KOL/KD2/KolDen1Kd2";
 import { KolDen2Kd2 } from "../src/app/reader/KOL/KD2/KolDen2Kd2";
 import { KolSei1Kd2 } from "../src/app/reader/KOL/KD2/KolSei1Kd2";
 import { KolSei2Kd2 } from "../src/app/reader/KOL/KD2/KolSei2Kd2";
-import { KolKetKd3 } from "../src/app/reader/KOL/KD3/KolKetKd3";
-import { KolKisKd3 } from "../src/app/reader/KOL/KD3/KolKisKd3";
-import { KolKodKd3 } from "../src/app/reader/KOL/KD3/KolKodKd3";
-import { KolKyuKd3 } from "../src/app/reader/KOL/KD3/KolKyuKd3";
-import { KolOdsKd3 } from "../src/app/reader/KOL/KD3/KolOdsKd3";
-import { KolShuKd3 } from "../src/app/reader/KOL/KD3/KolShuKd3";
-import { KolUmaKd3 } from "../src/app/reader/KOL/KD3/KolUmaKd3";
+import { KolKet } from "../src/app/reader/KOL/KolKet";
+import { KolKis } from "../src/app/reader/KOL/KolKis";
+import { KolKod } from "../src/app/reader/KOL/KolKod";
+import { KolKyu } from "../src/app/reader/KOL/KolKyu";
+import { KolOds } from "../src/app/reader/KOL/KolOds";
+import { KolShu } from "../src/app/reader/KOL/KolShu";
+import { KolUma } from "../src/app/reader/KOL/KolUma";
 import {
   closeKolDb,
   importKolKind,
@@ -34,18 +34,18 @@ setDefaultTimeout(120_000);
 
 /** KD2 の種別ごとの取り込み処理 (KD2 と KD3 でレコードの並びが同じものは KD3 と共通) */
 const readers = {
-  kyu: KolKyuKd3,
-  kis: KolKisKd3,
-  syu: KolShuKd3,
-  uma: KolUmaKd3,
-  ket: KolKetKd3,
+  kyu: KolKyu,
+  kis: KolKis,
+  syu: KolShu,
+  uma: KolUma,
+  ket: KolKet,
   den1: KolDen1Kd2,
   den2: KolDen2Kd2,
-  ods: KolOdsKd3,
+  ods: KolOds,
   sei1: KolSei1Kd2,
   sei2: KolSei2Kd2,
   com1: KolCom1Kd2,
-  kod: KolKodKd3,
+  kod: KolKod,
 };
 
 describe("KD2 の仕様書", () => {

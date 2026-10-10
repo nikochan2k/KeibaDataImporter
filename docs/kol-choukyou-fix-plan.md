@@ -1,7 +1,7 @@
 # KOL 調教取り込み 修正計画
 
 作成日: 2026-10-10
-対象: `src/app/reader/KOL/` 以下（主に [KolChoukyouTool.ts](../src/app/reader/KOL/KolChoukyouTool.ts) と、その呼び出し元 `KD3/KolDen2Kd3.ts` `KD3/KolSei2Kd3.ts` `KD3/KolUmaKd3.ts`）
+対象: `src/app/reader/KOL/` 以下（主に [KolChoukyouTool.ts](../src/app/reader/KOL/KolChoukyouTool.ts) と、その呼び出し元 `KD3/KolDen2.ts` `KD3/KolSei2.ts` `KD3/KolUma.ts`）
 
 ## 1. 調査結果
 
@@ -60,7 +60,7 @@
 |---|---|---|---|
 | K-P2-1 | [KolChoukyouTool.ts:67-70](../src/app/reader/KOL/KolChoukyouTool.ts#L67-L70) | Analizer は**日付の有無**でスロットを飛ばすが、こちらは**騎乗者名が空**だと飛ばす。騎乗者名が空で日付・時計だけあるスロットを取りこぼす。逆に日付がなく騎乗者だけあるスロットは `getDaysFrom1970` が不正値を返しうる。 | 日付（`offset + 9`, 8 桁）が読めなければ return、騎乗者名は空でも続行する（`Noriyaku` は null）。 |
 | K-P2-2 | [KolChoukyouTool.ts:91-97](../src/app/reader/KOL/KolChoukyouTool.ts#L91-L97) | コースが空のスロットを Analizer は「履歴だけ登録・時計なし」とするが、こちらは `Basho`/`Type`/`Course` が全部 null のまま保存され、さらに `Type` が null で K-P1-1 の分岐に入る。 | コース空のときは時計を読まずに保存だけして次へ（A と同じ挙動）。 |
-| K-P2-3 | [KolDen2Kd3.ts:149-170](../src/app/reader/KOL/KD3/KolDen2Kd3.ts#L149-L170) | 調教 1 本目（256）を取り込んでいる。Analizer は B/C で 1 本目を外した。 | **K-Q1 の結果次第**。1 本目が不正なら外す。有効なら Analizer 側が誤り（Analizer を戻す提案をする）。 |
+| K-P2-3 | [KolDen2.ts:149-170](../src/app/reader/KOL/KD3/KolDen2.ts#L149-L170) | 調教 1 本目（256）を取り込んでいる。Analizer は B/C で 1 本目を外した。 | **K-Q1 の結果次第**。1 本目が不正なら外す。有効なら Analizer 側が誤り（Analizer を戻す提案をする）。 |
 
 ### P3
 

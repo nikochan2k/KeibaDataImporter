@@ -1,14 +1,14 @@
 import { Inject, Service } from "typedi";
-import * as $C from "../../../converters/Common";
-import * as $K from "../../../converters/Kishu";
-import * as $S from "../../../converters/Shussouba";
-import { Bagu } from "../../../converters/ShussoubaJoutai";
-import * as $SY from "../../../converters/ShussoubaYosou";
-import { Shussouba } from "../../../entities/Shussouba";
-import { ShussoubaChoukyou } from "../../../entities/ShussoubaChoukyou";
-import { Kubun } from "../../../entities/ShussoubaJoutai";
-import { ShussoubaYosou } from "../../../entities/ShussoubaYosou";
-import { Bridge } from "../../Bridge";
+import * as $C from "../../converters/Common";
+import * as $K from "../../converters/Kishu";
+import * as $S from "../../converters/Shussouba";
+import { Bagu } from "../../converters/ShussoubaJoutai";
+import * as $SY from "../../converters/ShussoubaYosou";
+import { Shussouba } from "../../entities/Shussouba";
+import { ShussoubaChoukyou } from "../../entities/ShussoubaChoukyou";
+import { Kubun } from "../../entities/ShussoubaJoutai";
+import { ShussoubaYosou } from "../../entities/ShussoubaYosou";
+import { Bridge } from "../Bridge";
 import {
   readDouble,
   readInt,
@@ -16,17 +16,17 @@ import {
   readPositiveInt,
   readStr,
   readStrWithNoSpace,
-} from "../../Reader";
-import { ShussoubaInfo } from "../../ShussoubaTool";
-import { Tool } from "../../Tool";
-import { KolBridge } from "../KolBridge";
-import { KolChoukyouTool } from "../KolChoukyouTool";
-import { KolDataToImport } from "../KolDataToImport";
-import { KolShussoubaTool } from "../KolShussoubaTool";
-import { KolTool } from "../KolTool";
+} from "../Reader";
+import { ShussoubaInfo } from "../ShussoubaTool";
+import { Tool } from "../Tool";
+import { KolBridge } from "./KolBridge";
+import { KolChoukyouTool } from "./KolChoukyouTool";
+import { KolDataToImport } from "./KolDataToImport";
+import { KolShussoubaTool } from "./KolShussoubaTool";
+import { KolTool } from "./KolTool";
 
 @Service()
-export class KolDen2Kd3 extends KolDataToImport {
+export class KolDen2 extends KolDataToImport {
   @Inject()
   private choukyouTool: KolChoukyouTool;
 

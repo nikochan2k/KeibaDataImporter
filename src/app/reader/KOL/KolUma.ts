@@ -1,27 +1,27 @@
 import "reflect-metadata";
 import { Inject, Service } from "typedi";
-import * as $C from "../../../converters/Common";
-import * as $K from "../../../converters/Kaisai";
-import * as $KI from "../../../converters/Kishu";
-import * as $R from "../../../converters/Race";
-import * as $S from "../../../converters/Shussouba";
-import { Bagu } from "../../../converters/ShussoubaJoutai";
-import * as $SY from "../../../converters/ShussoubaYosou";
-import * as $U from "../../../converters/Uma";
-import { UmaDao } from "../../../daos/UmaDao";
-import { Choukyoushi } from "../../../entities/Choukyoushi";
-import { Kaisai } from "../../../entities/Kaisai";
-import { Kyousouba } from "../../../entities/Kyousouba";
-import { Race } from "../../../entities/Race";
-import { RaceSeiseki } from "../../../entities/RaceSeiseki";
-import { Shussouba } from "../../../entities/Shussouba";
-import { ShussoubaChoukyou } from "../../../entities/ShussoubaChoukyou";
-import { ShussoubaHyouka } from "../../../entities/ShussoubaHyouka";
-import { Kubun } from "../../../entities/ShussoubaJoutai";
-import { ShussoubaSeiseki } from "../../../entities/ShussoubaSeiseki";
-import { ShussoubaYosou } from "../../../entities/ShussoubaYosou";
-import { Uma } from "../../../entities/Uma";
-import { DataToImport } from "../../DataToImport";
+import * as $C from "../../converters/Common";
+import * as $K from "../../converters/Kaisai";
+import * as $KI from "../../converters/Kishu";
+import * as $R from "../../converters/Race";
+import * as $S from "../../converters/Shussouba";
+import { Bagu } from "../../converters/ShussoubaJoutai";
+import * as $SY from "../../converters/ShussoubaYosou";
+import * as $U from "../../converters/Uma";
+import { UmaDao } from "../../daos/UmaDao";
+import { Choukyoushi } from "../../entities/Choukyoushi";
+import { Kaisai } from "../../entities/Kaisai";
+import { Kyousouba } from "../../entities/Kyousouba";
+import { Race } from "../../entities/Race";
+import { RaceSeiseki } from "../../entities/RaceSeiseki";
+import { Shussouba } from "../../entities/Shussouba";
+import { ShussoubaChoukyou } from "../../entities/ShussoubaChoukyou";
+import { ShussoubaHyouka } from "../../entities/ShussoubaHyouka";
+import { Kubun } from "../../entities/ShussoubaJoutai";
+import { ShussoubaSeiseki } from "../../entities/ShussoubaSeiseki";
+import { ShussoubaYosou } from "../../entities/ShussoubaYosou";
+import { Uma } from "../../entities/Uma";
+import { DataToImport } from "../DataToImport";
 import {
   readInt,
   readPositiveDouble,
@@ -30,18 +30,18 @@ import {
   readStr,
   readStrWithNoSpace,
   readTime,
-} from "../../Reader";
-import { Tool } from "../../Tool";
-import { KolChoukyouTool } from "../KolChoukyouTool";
-import { KolKaisaiTool } from "../KolKaisaiTool";
-import { KolOddsHaitouTool } from "../KolOddsHaitouTool";
-import { KolRaceTool } from "../KolRaceTool";
-import { KolShussoubaTool } from "../KolShussoubaTool";
-import { KolTool } from "../KolTool";
-import { KolUmaTool } from "../KolUmaTool";
+} from "../Reader";
+import { Tool } from "../Tool";
+import { KolChoukyouTool } from "./KolChoukyouTool";
+import { KolKaisaiTool } from "./KolKaisaiTool";
+import { KolOddsHaitouTool } from "./KolOddsHaitouTool";
+import { KolRaceTool } from "./KolRaceTool";
+import { KolShussoubaTool } from "./KolShussoubaTool";
+import { KolTool } from "./KolTool";
+import { KolUmaTool } from "./KolUmaTool";
 
 @Service()
-export class KolUmaKd3 extends DataToImport {
+export class KolUma extends DataToImport {
   private static readonly raceOffsets = [1064, 1654, 2244, 2834, 3424];
 
   @Inject()
@@ -79,8 +79,8 @@ export class KolUmaKd3 extends DataToImport {
     const result = await this.saveKyousouba(buffer);
     const kyousouba = result.Kyousouba;
     const uma = result.Uma;
-    for (let i = 0; i < KolUmaKd3.raceOffsets.length; i++) {
-      const offset = KolUmaKd3.raceOffsets[i];
+    for (let i = 0; i < KolUma.raceOffsets.length; i++) {
+      const offset = KolUma.raceOffsets[i];
       const raceBuffer = buffer.slice(offset, offset + 151);
 
       const raceId = this.kolRaceTool.getRaceId(raceBuffer);

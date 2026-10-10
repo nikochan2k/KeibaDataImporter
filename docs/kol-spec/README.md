@@ -32,7 +32,7 @@ KD3/
 
 | データ | 仕様書 | 取り込み処理 |
 |---|---|---|
-| 3代血統図 (`kol_ket`) | `spec/kol_ket.html` | `KolKetKd3` (テストは仕様書から作った 1 レコードで確認) |
+| 3代血統図 (`kol_ket`) | `spec/kol_ket.html` | `KolKet` (テストは仕様書から作った 1 レコードで確認) |
 | 特別登録レース (`kol_tok1`) | `spec/kol_tok1.html` | **なし** |
 | 特別登録出走予定馬 (`kol_tok2`) | `spec/kol_tok2.html` | **なし** |
 

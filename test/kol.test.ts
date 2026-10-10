@@ -17,25 +17,25 @@ import { ShussoubaHassouJoukyou } from "../src/app/entities/ShussoubaHassouJouky
 import { ShussoubaHyouka } from "../src/app/entities/ShussoubaHyouka";
 import { ShussoubaSeiseki } from "../src/app/entities/ShussoubaSeiseki";
 import { Uma } from "../src/app/entities/Uma";
-import { KolCom1Kd3 } from "../src/app/reader/KOL/KD3/KolCom1Kd3";
-import { KolDen1Kd3 } from "../src/app/reader/KOL/KD3/KolDen1Kd3";
-import { KolDen2Kd3 } from "../src/app/reader/KOL/KD3/KolDen2Kd3";
 import { KolKet5Kd3 } from "../src/app/reader/KOL/KD3/KolKet5Kd3";
-import { KolKetKd3 } from "../src/app/reader/KOL/KD3/KolKetKd3";
-import { KolKisKd3 } from "../src/app/reader/KOL/KD3/KolKisKd3";
 import { KolKod2Kd3 } from "../src/app/reader/KOL/KD3/KolKod2Kd3";
 import { KolKod3Kd3 } from "../src/app/reader/KOL/KD3/KolKod3Kd3";
-import { KolKodKd3 } from "../src/app/reader/KOL/KD3/KolKodKd3";
-import { KolKyuKd3 } from "../src/app/reader/KOL/KD3/KolKyuKd3";
 import { KolOds2Kd3 } from "../src/app/reader/KOL/KD3/KolOds2Kd3";
-import { KolOdsKd3 } from "../src/app/reader/KOL/KD3/KolOdsKd3";
-import { KolSei1Kd3 } from "../src/app/reader/KOL/KD3/KolSei1Kd3";
-import { KolSei2Kd3 } from "../src/app/reader/KOL/KD3/KolSei2Kd3";
 import { KolSei3Kd3 } from "../src/app/reader/KOL/KD3/KolSei3Kd3";
-import { KolShuKd3 } from "../src/app/reader/KOL/KD3/KolShuKd3";
-import { KolUmaKd3 } from "../src/app/reader/KOL/KD3/KolUmaKd3";
 import { KolChoukyouTool } from "../src/app/reader/KOL/KolChoukyouTool";
+import { KolCom1 } from "../src/app/reader/KOL/KolCom1";
+import { KolDen1 } from "../src/app/reader/KOL/KolDen1";
+import { KolDen2 } from "../src/app/reader/KOL/KolDen2";
+import { KolKet } from "../src/app/reader/KOL/KolKet";
+import { KolKis } from "../src/app/reader/KOL/KolKis";
+import { KolKod } from "../src/app/reader/KOL/KolKod";
+import { KolKyu } from "../src/app/reader/KOL/KolKyu";
+import { KolOds } from "../src/app/reader/KOL/KolOds";
 import { KolRaceTool } from "../src/app/reader/KOL/KolRaceTool";
+import { KolSei1 } from "../src/app/reader/KOL/KolSei1";
+import { KolSei2 } from "../src/app/reader/KOL/KolSei2";
+import { KolShu } from "../src/app/reader/KOL/KolShu";
+import { KolUma } from "../src/app/reader/KOL/KolUma";
 import {
   closeKolDb,
   field,
@@ -57,21 +57,21 @@ setDefaultTimeout(120_000);
 
 /** 種別ごとの取り込み処理 */
 const readers = {
-  kyu: KolKyuKd3,
-  kis: KolKisKd3,
-  syu: KolShuKd3,
-  uma: KolUmaKd3,
-  ket: KolKetKd3,
+  kyu: KolKyu,
+  kis: KolKis,
+  syu: KolShu,
+  uma: KolUma,
+  ket: KolKet,
   ket5: KolKet5Kd3,
-  den1: KolDen1Kd3,
-  den2: KolDen2Kd3,
-  ods: KolOdsKd3,
+  den1: KolDen1,
+  den2: KolDen2,
+  ods: KolOds,
   ods2: KolOds2Kd3,
-  sei1: KolSei1Kd3,
-  sei2: KolSei2Kd3,
+  sei1: KolSei1,
+  sei2: KolSei2,
   sei3: KolSei3Kd3,
-  com1: KolCom1Kd3,
-  kod: KolKodKd3,
+  com1: KolCom1,
+  kod: KolKod,
   kod2: KolKod2Kd3,
   kod3: KolKod3Kd3,
 };

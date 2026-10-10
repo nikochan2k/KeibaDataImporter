@@ -1,14 +1,14 @@
 import { Inject, Service } from "typedi";
-import { Baken, Kakutei } from "../../../converters/Common";
-import * as $K from "../../../converters/Kaisai";
-import * as $R from "../../../converters/Race";
-import * as $RK from "../../../converters/RaceKeika";
-import { Kaisai } from "../../../entities/Kaisai";
-import { Race } from "../../../entities/Race";
-import { RaceKeika } from "../../../entities/RaceKeika";
-import { RaceSeiseki } from "../../../entities/RaceSeiseki";
-import { KeikaTool } from "../../KeikaTool";
-import { HaitouInfo } from "../../OddsHaitouTool";
+import { Baken, Kakutei } from "../../converters/Common";
+import * as $K from "../../converters/Kaisai";
+import * as $R from "../../converters/Race";
+import * as $RK from "../../converters/RaceKeika";
+import { Kaisai } from "../../entities/Kaisai";
+import { Race } from "../../entities/Race";
+import { RaceKeika } from "../../entities/RaceKeika";
+import { RaceSeiseki } from "../../entities/RaceSeiseki";
+import { KeikaTool } from "../KeikaTool";
+import { HaitouInfo } from "../OddsHaitouTool";
 import {
   readInt,
   readPositiveDouble,
@@ -16,15 +16,15 @@ import {
   readRaw,
   readStr,
   readTime,
-} from "../../Reader";
-import { Tool } from "../../Tool";
-import { KolDataToImport } from "../KolDataToImport";
-import { KolKaisaiTool } from "../KolKaisaiTool";
-import { KolOddsHaitouTool } from "../KolOddsHaitouTool";
-import { KolRaceTool } from "../KolRaceTool";
+} from "../Reader";
+import { Tool } from "../Tool";
+import { KolDataToImport } from "./KolDataToImport";
+import { KolKaisaiTool } from "./KolKaisaiTool";
+import { KolOddsHaitouTool } from "./KolOddsHaitouTool";
+import { KolRaceTool } from "./KolRaceTool";
 
 @Service()
-export class KolSei1Kd3 extends KolDataToImport {
+export class KolSei1 extends KolDataToImport {
   @Inject()
   private tool: Tool;
 
