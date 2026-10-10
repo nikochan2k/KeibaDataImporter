@@ -21,15 +21,15 @@
     "typescript": "^7.0.2"
   },
   "dependencies": {
-    "crc": "^3.8.0",
-    "glob": "^7.1.4",
+    "crc": "^4.3.2",
+    "glob": "^13.0.6",
     "iconv-lite": "^0.7.3",
     "log4js": "^6.9.1",
     "reflect-metadata": "^0.2.2",
     "tmp": "^0.2.7",
     "tslib": "^2.8.1",
-    "typedi": "^0.8.0",
+    "typedi": "^0.10.0",
     "typeorm": "^1.1.2",
-    "unzipper": "^0.10.1"
+    "unzipper": "^0.12.5"
   }
 }

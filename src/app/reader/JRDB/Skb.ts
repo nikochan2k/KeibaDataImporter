@@ -1,9 +1,11 @@
+import { Service } from "typedi";
 import { ShussoubaHyouka } from "../../entities/ShussoubaHyouka";
 import { Kubun } from "../../entities/ShussoubaJoutai";
 import { readStr } from "../Reader";
 import { JrdbShussoubaData } from './JrdbShussoubaData';
 import { Shussouba } from '../../entities/Shussouba';
 
+@Service()
 export class Skb extends JrdbShussoubaData {
 
   protected getBufferLength() {

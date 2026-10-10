@@ -1,3 +1,4 @@
+import { Service } from "typedi";
 import * as $C from "../../converters/Common";
 import * as $S from "../../converters/Shussouba";
 import { RaceSeiseki } from "../../entities/RaceSeiseki";
@@ -9,6 +10,7 @@ import {
 } from "../Reader";
 import { Shussouba } from '../../entities/Shussouba';
 
+@Service()
 export class Sed extends Se$ {
 
   protected getBufferLength() {

@@ -1,8 +1,10 @@
+import { Service } from "typedi";
 import { Hj$ } from "./Hj$";
 import { Baken, Kakutei } from "../../converters/Common";
 import { OddsHaitou } from "../../entities/OddsHaitou";
 import { readPositiveInt } from "../Reader";
 
+@Service()
 export class Hjc extends Hj$ {
 
   protected getBufferLength() {

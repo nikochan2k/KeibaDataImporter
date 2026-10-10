@@ -1,4 +1,4 @@
-import { Inject } from "typedi";
+import { Inject, Service } from "typedi";
 import { EntityManager } from "typeorm";
 import { OrmManager } from "../../OrmManager";
 import { JrdbData } from "./JrdbData";
@@ -13,6 +13,7 @@ import { readDouble, readInt, readPositiveInt } from "../Reader";
 import { Tool } from "../Tool";
 import { Shussouba } from '../../entities/Shussouba';
 
+@Service()
 export class Tyb extends JrdbData {
 
   @OrmManager()

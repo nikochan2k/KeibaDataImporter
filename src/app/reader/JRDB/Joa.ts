@@ -1,4 +1,4 @@
-import { Inject } from "typedi";
+import { Inject, Service } from "typedi";
 import { JrdbShussoubaTool } from "./JrdbShussoubaTool";
 import * as $SY from "../../converters/ShussoubaYosou";
 import { ShussoubaYosou } from "../../entities/ShussoubaYosou";
@@ -7,6 +7,7 @@ import { Tool } from "../Tool";
 import { JrdbShussoubaData } from './JrdbShussoubaData';
 import { Shussouba } from '../../entities/Shussouba';
 
+@Service()
 export class Joa extends JrdbShussoubaData {
 
   @Inject()
