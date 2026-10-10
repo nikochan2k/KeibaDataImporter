@@ -15,7 +15,13 @@ export class JrdbKaisaiTool extends KaisaiTool {
     const basho = $C.basho.toCodeFromJrdb(buffer, 0, 2);
     /* tslint:disable:triple-equals */
     if (basho == null) {
-      this.logger.warn("不正な場所です: " + readRaw(buffer, 0, 2));
+      // 前走データの地方・外国などで場コードが空白のレコードは、異常ではないので警告しない
+      const raw = readRaw(buffer, 0, 2);
+      if (raw.trim() === "") {
+        this.logger.debug("場所が空白です");
+      } else {
+        this.logger.warn("不正な場所です: " + raw);
+      }
       return null;
     }
     /* tslint:enable:triple-equals */

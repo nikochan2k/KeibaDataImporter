@@ -51,6 +51,9 @@ export abstract class RaceTool {
    * @memberof RaceTool
    */
   public getRaceId(buffer: Buffer, kaisaiId: number) {
+    if (kaisaiId == null) {
+      return null;
+    }
     const raceBangou = this.getRaceBangou(buffer);
     if (raceBangou == null) {
       return null;

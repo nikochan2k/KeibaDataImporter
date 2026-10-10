@@ -16,6 +16,9 @@ export abstract class JrdbRaceData extends JrdbKaisaiData {
 
   public async save(buffer: Buffer) {
     const kaisai = await this.saveKaisai(buffer);
+    if (!kaisai) {
+      return null;
+    }
     const race = await this.saveRace(buffer, kaisai);
     if (!race) {
       return null;

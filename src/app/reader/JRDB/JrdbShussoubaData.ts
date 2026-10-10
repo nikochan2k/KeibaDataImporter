@@ -13,6 +13,9 @@ export abstract class JrdbShussoubaData extends JrdbRaceData {
   public async save(buffer: Buffer) {
     await super.save(buffer);
     const raceId = this.jrdbRaceTool.getRaceIdBy(buffer, this.getKaisaiTool());
+    if (raceId == null) {
+      return;
+    }
     const info = await this.jrdbShussoubaTool.getShussoubaInfo(buffer, 8, raceId);
     if (!info) {
       return;

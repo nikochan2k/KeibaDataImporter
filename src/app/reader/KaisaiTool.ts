@@ -32,6 +32,17 @@ export abstract class KaisaiTool {
   protected abstract getKaisaiInfo(buffer: Buffer): KaisaiInfo;
 
   /**
+   * 開催を特定できる情報です。場所や日付が読めないレコード(前走データの地方・外国など)は null を返します。
+   */
+  private getValidKaisaiInfo(buffer: Buffer) {
+    const info = this.getKaisaiInfo(buffer);
+    if (!info || info.basho == null || info.nen == null || info.gatsu == null || info.nichi == null) {
+      return null;
+    }
+    return info;
+  }
+
+  /**
    * 開催IDを返します。
    * 開催IDは場所(7ビット)、1970年1月1日からの経過日数(15ビット)の計22ビットです。
    * @protected
@@ -61,7 +72,7 @@ export abstract class KaisaiTool {
   }
 
   public getKaisaiId(buffer: Buffer) {
-    const info = this.getKaisaiInfo(buffer);
+    const info = this.getValidKaisaiInfo(buffer);
     if (!info) {
       return null;
     }
@@ -70,7 +81,7 @@ export abstract class KaisaiTool {
   }
 
   protected getKaisaiKey(buffer: Buffer) {
-    const info = this.getKaisaiInfo(buffer);
+    const info = this.getValidKaisaiInfo(buffer);
     if (!info) {
       return null;
     }
@@ -79,11 +90,17 @@ export abstract class KaisaiTool {
 
   public getKaisaiWithId(buffer: Buffer) {
     const id = this.getKaisaiId(buffer);
+    if (id == null) {
+      return null;
+    }
     return this.entityManager.findOneBy(Kaisai, { Id: id });
   }
 
   public getKaisaiWithKey(buffer: Buffer) {
     const key = this.getKaisaiKey(buffer);
+    if (key == null) {
+      return null;
+    }
     // 開催は悪天により日付がずれる可能性があるので、最新のものを取得する。
     return this.entityManager
       .createQueryBuilder(Kaisai, "k")
@@ -101,7 +118,7 @@ export abstract class KaisaiTool {
   }
 
   public createKaisai(buffer: Buffer) {
-    const info = this.getKaisaiInfo(buffer);
+    const info = this.getValidKaisaiInfo(buffer);
     if (!info) {
       return null;
     }

@@ -6,7 +6,7 @@ import { JrdbOddsHaitouTool } from "./JrdbOddsHaitouTool";
 import { JrdbRaceTool } from "./JrdbRaceTool";
 import { Baken, Kakutei } from "../../converters/Common";
 import { OddsHaitou } from "../../entities/OddsHaitou";
-import { readPositiveDouble } from "../Reader";
+import { readPositiveDouble, readPositiveInt } from "../Reader";
 
 @Service()
 export class Oz extends JrdbData {
@@ -29,6 +29,15 @@ export class Oz extends JrdbData {
     await this.saveTanshou(buffer, raceId);
     await this.saveFukushou(buffer, raceId);
     await this.saveUmaren(buffer, raceId);
+  }
+
+  /**
+   * 連勝オッズは、8頭立以下のときは枠連、9頭立以上のときは馬連のオッズです(仕様書の説明)。
+   * 8頭立以下では枠番と馬番が同じ並びになるので、番号の付け方は変わりません。
+   */
+  protected getRenshouBaken(buffer: Buffer) {
+    const tousuu = readPositiveInt(buffer, 8, 2);
+    return tousuu !== null && tousuu <= 8 ? Baken.Wakuren : Baken.Umaren;
   }
 
   protected async saveTanshou(buffer: Buffer, raceId: number) {
@@ -64,6 +73,7 @@ export class Oz extends JrdbData {
   }
 
   protected async saveUmaren(buffer: Buffer, raceId: number) {
+    const baken = this.getRenshouBaken(buffer);
     let offset = 190;
     for (let bangou1 = 1; bangou1 <= 17; bangou1++) {
       for (let bangou2 = bangou1 + 1; bangou2 <= 18; bangou2++) {
@@ -75,7 +85,7 @@ export class Oz extends JrdbData {
         const oddsHaitou = new OddsHaitou();
         oddsHaitou.RaceId = raceId;
         oddsHaitou.Kakutei = Kakutei.Yosou;
-        oddsHaitou.Baken = Baken.Umaren;
+        oddsHaitou.Baken = baken;
         oddsHaitou.Bangou1 = bangou1;
         oddsHaitou.Bangou2 = bangou2;
         oddsHaitou.Odds1 = odds1;

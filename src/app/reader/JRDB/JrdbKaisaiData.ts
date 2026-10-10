@@ -31,11 +31,18 @@ export abstract class JrdbKaisaiData extends JrdbData {
 
   public async save(buffer: Buffer) {
     const kaisai = await this.saveKaisai(buffer);
+    if (!kaisai) {
+      return;
+    }
     await this.saveKaisaiRelated(buffer, kaisai);
   }
 
   protected async saveKaisai(buffer: Buffer) {
     const toBe = this.getKaisaiTool().createKaisai(buffer);
+    if (!toBe) {
+      // 前走データの地方・外国など、開催を特定できないレコード
+      return null;
+    }
     this.setKaisai(buffer, toBe);
     this.getKaisaiTool().setYoubi(toBe);
     const asIs = await this.getKaisaiTool().getKaisaiWithKey(buffer);
