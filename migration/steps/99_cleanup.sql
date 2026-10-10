@@ -1,0 +1,12 @@
+-- 99_cleanup.sql: 移行用の作業テーブルを削除する。
+DROP TABLE mig_choukyou;
+DROP TABLE mig_shoyuu;
+DROP TABLE mig_shussouba;
+DROP TABLE mig_odds;
+DROP TABLE mig_uma_name;
+DROP TABLE mig_const;
+DROP TABLE mig_record;
+DROP TABLE mig_race_mei;
+DROP TABLE mig_race;
+DROP TABLE mig_name;
+DROP TABLE mig_calendar;

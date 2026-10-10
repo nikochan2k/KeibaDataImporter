@@ -3,7 +3,6 @@
 /lzh/
 /src/typings/
 /tmp/
-*sqlite*
 npm-debug.log
 *.log
 .DS_Store
