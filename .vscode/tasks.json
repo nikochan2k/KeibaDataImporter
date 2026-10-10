@@ -1,26 +1,27 @@
 {
-  "version": "0.1.0",
+  "version": "2.0.0",
   "command": "npm",
-  "isShellCommand": true,
-  "showOutput": "silent",
-  "args": [
-    "run"
-  ],
+  "args": ["run"],
   "tasks": [
     {
-      "taskName": "build",
-      "isBuildCommand": true,
-      "problemMatcher": "$tsc"
+      "label": "build",
+      "type": "shell",
+      "command": "npm",
+      "args": ["run", "build"],
+      "problemMatcher": "$tsc",
+      "group": {
+        "_id": "build",
+        "isDefault": false
+      }
     },
     {
-      "taskName": "test",
-      "isTestCommand": true,
-      "showOutput": "always",
+      "label": "test",
+      "type": "shell",
+      "command": "npm",
+      "args": ["run", "test"],
       "problemMatcher": {
         "owner": "mocha",
-        "fileLocation": [
-          "absolute"
-        ],
+        "fileLocation": ["absolute"],
         "pattern": [
           {
             "regexp": "^\\s*\\d+\\)\\s+(.+):$",
@@ -48,14 +49,18 @@
             "column": 4
           }
         ]
+      },
+      "group": {
+        "_id": "test",
+        "isDefault": false
       }
     },
     {
-      "taskName": "clean",
-      "args": [
-        "run"
-      ],
-      "showOutput": "silent"
+      "label": "clean",
+      "type": "shell",
+      "command": "npm",
+      "args": ["run", "clean", "run"],
+      "problemMatcher": []
     }
   ]
 }
