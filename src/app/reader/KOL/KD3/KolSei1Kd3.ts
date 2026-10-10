@@ -7,8 +7,8 @@ import { Kaisai } from "../../../entities/Kaisai";
 import { Race } from "../../../entities/Race";
 import { RaceKeika } from "../../../entities/RaceKeika";
 import { RaceSeiseki } from "../../../entities/RaceSeiseki";
-import { DataToImport } from "../../DataToImport";
 import { KeikaTool } from "../../KeikaTool";
+import { HaitouInfo } from "../../OddsHaitouTool";
 import {
   readInt,
   readPositiveDouble,
@@ -18,12 +18,13 @@ import {
   readTime,
 } from "../../Reader";
 import { Tool } from "../../Tool";
+import { KolDataToImport } from "../KolDataToImport";
 import { KolKaisaiTool } from "../KolKaisaiTool";
 import { KolOddsHaitouTool } from "../KolOddsHaitouTool";
 import { KolRaceTool } from "../KolRaceTool";
 
 @Service()
-export class KolSei1Kd3 extends DataToImport {
+export class KolSei1Kd3 extends KolDataToImport {
   @Inject()
   private tool: Tool;
 
@@ -45,7 +46,7 @@ export class KolSei1Kd3 extends DataToImport {
 
   public async save(buffer: Buffer) {
     const id = this.kolRaceTool.getRaceId(buffer);
-    const dataNengappi = readInt(buffer, 2910, 8);
+    const dataNengappi = readInt(buffer, this.at(2910), 8);
 
     const raceSeiseki = await this.entityManager.findOneBy(RaceSeiseki, { Id: id });
     if (raceSeiseki?.KolNengappi && dataNengappi <= raceSeiseki.KolNengappi) {
@@ -92,16 +93,18 @@ export class KolSei1Kd3 extends DataToImport {
     toBe.HeichiShougai = $R.heichiShougai.toCodeFromKol(buffer, 25, 1);
     toBe.JuushouKaisuu = readPositiveInt(buffer, 26, 3);
     toBe.Grade = $R.grade.toCodeFromKol(buffer, 73, 1);
-    toBe.JpnFlag = $R.jpnFlag.toCodeFromKol(buffer, 74, 1);
-    const betteiBareiHandiReigai = readStr(buffer, 77, 18);
+    if (this.has(74)) {
+      toBe.JpnFlag = $R.jpnFlag.toCodeFromKol(buffer, this.at(74), 1);
+    }
+    const betteiBareiHandiReigai = readStr(buffer, this.at(77), 18);
     toBe.BetteiBareiHandi =
-      $R.betteiBareiHandi.toCodeFromKol(buffer, 75, 2) ||
+      $R.betteiBareiHandi.toCodeFromKol(buffer, this.at(75), 2) ||
       $R.betteiBareiHandi.toCodeFromKol(betteiBareiHandiReigai);
     if (!toBe.BetteiBareiHandi) {
       toBe.BetteiBareiHandiReigai = betteiBareiHandiReigai;
     }
 
-    const joukenFuka = readRaw(buffer, 95, 2);
+    const joukenFuka = readRaw(buffer, this.at(95), 2);
     toBe.JoukenBoba = $R.joukenBoba.toCodeFromKol(joukenFuka);
     toBe.JoukenHinba = $R.joukenHinba.toCodeFromKol(joukenFuka);
     toBe.JoukenSenba = $R.joukenSenba.toCodeFromKol(joukenFuka);
@@ -112,7 +115,7 @@ export class KolSei1Kd3 extends DataToImport {
     toBe.JoukenKakuChuu = $R.joukenKakuChuu.toCodeFromKol(joukenFuka);
     toBe.JoukenMaruKokusai = $R.joukenMaruKokusai.toCodeFromKol(joukenFuka);
     toBe.JoukenMaruShou = $R.joukenMaruShou.toCodeFromKol(joukenFuka);
-    const joukenFuka2 = readRaw(buffer, 97, 2);
+    const joukenFuka2 = readRaw(buffer, this.at(97), 2);
     toBe.JoukenMaruShi =
       $R.joukenMaruShi.toCodeFromKol(joukenFuka) || $R.joukenMaruShi.toCodeFromKol(joukenFuka2);
     toBe.JoukenMaruTokuShi =
@@ -134,41 +137,41 @@ export class KolSei1Kd3 extends DataToImport {
     toBe.JoukenKurige = $R.joukenKurige.toCodeFromKol(joukenFuka);
     toBe.JoukenAshigeShiroge = $R.joukenAshigeShiroge.toCodeFromKol(joukenFuka);
     toBe.JoukenKurokage = $R.joukenKurokage.toCodeFromKol(joukenFuka);
-    const joukenCut = readRaw(buffer, 99, 1);
+    const joukenCut = readRaw(buffer, this.at(99), 1);
     toBe.JoukenSarakei = $R.joukenSaraKei.toCodeFromKol(joukenCut);
     toBe.JoukenAraKei = $R.joukenAraKei.toCodeFromKol(joukenCut);
     toBe.JoukenNenreiSeigen =
-      $R.joukenNenreiSeigen.toCodeFromKol(buffer, 100, 1) ||
+      $R.joukenNenreiSeigen.toCodeFromKol(buffer, this.at(100), 1) ||
       $R.joukenNenreiSeigenFromJoukenCut.toCodeFromKol(joukenCut);
-    toBe.JoukenSeed = $R.joukenSeed.toCodeFromKol(buffer, 381, 1);
+    toBe.JoukenSeed = $R.joukenSeed.toCodeFromKol(buffer, this.at(381), 1);
 
-    toBe.Jouken1 = $R.jouken.toCodeFromKol(buffer, 101, 5);
+    toBe.Jouken1 = $R.jouken.toCodeFromKol(buffer, this.at(101), 5);
     if (kaisai.ChuuouChihouGaikoku !== 0) {
       // 中央
-      toBe.Kumi1 = readPositiveInt(buffer, 106, 2);
-      toBe.IjouIkaMiman = $R.ijouIkaMiman.toCodeFromKol(buffer, 108, 1);
-      toBe.Jouken2 = $R.jouken.toCodeFromKol(buffer, 109, 5);
-      toBe.Kumi2 = readPositiveInt(buffer, 114, 2);
+      toBe.Kumi1 = readPositiveInt(buffer, this.at(106), 2);
+      toBe.IjouIkaMiman = $R.ijouIkaMiman.toCodeFromKol(buffer, this.at(108), 1);
+      toBe.Jouken2 = $R.jouken.toCodeFromKol(buffer, this.at(109), 5);
+      toBe.Kumi2 = readPositiveInt(buffer, this.at(114), 2);
     }
-    toBe.DirtShiba = $R.dirtShiba.toCodeFromKol(buffer, 116, 1);
-    toBe.MigiHidari = $R.migiHidari.toCodeFromKol(buffer, 117, 1);
-    toBe.UchiSoto = $R.uchiSoto.toCodeFromKol(buffer, 118, 1);
-    toBe.Course = $R.course.toCodeFromKol(buffer, 119, 1);
-    toBe.Kyori = readPositiveInt(buffer, 120, 4);
+    toBe.DirtShiba = $R.dirtShiba.toCodeFromKol(buffer, this.at(116), 1);
+    toBe.MigiHidari = $R.migiHidari.toCodeFromKol(buffer, this.at(117), 1);
+    toBe.UchiSoto = $R.uchiSoto.toCodeFromKol(buffer, this.at(118), 1);
+    toBe.Course = $R.course.toCodeFromKol(buffer, this.at(119), 1);
+    toBe.Kyori = readPositiveInt(buffer, this.at(120), 4);
 
-    const courceRecord = await this.kolRaceTool.getRecord(buffer, 125, 0);
+    const courceRecord = await this.kolRaceTool.getRecord(buffer, this.at(125), 0);
     toBe.CourseRecordId = courceRecord?.Id;
-    const kyoriRecord = await this.kolRaceTool.getRecord(buffer, 178, 231);
+    const kyoriRecord = await this.kolRaceTool.getRecord(buffer, this.at(178), this.at(231));
     toBe.KyoriRecordId = kyoriRecord?.Id;
-    const raceRecord = await this.kolRaceTool.getRecord(buffer, 233, 286);
+    const raceRecord = await this.kolRaceTool.getRecord(buffer, this.at(233), this.at(286));
     toBe.RaceRecordId = raceRecord?.Id;
 
-    toBe.FukaShou = readPositiveInt(buffer, 351, 9);
-    toBe.MaeuriFlag = $R.maeuriFlag.toCodeFromKol(buffer, 360, 1);
-    toBe.YoteiHassouJikan = readStr(buffer, 361, 5);
-    toBe.Tousuu = readPositiveInt(buffer, 366, 2);
-    toBe.SuiteiTimeRyou = readTime(buffer, 370, 4);
-    toBe.SuiteiTimeOmoFuryou = readTime(buffer, 374, 4);
+    toBe.FukaShou = readPositiveInt(buffer, this.at(351), 9);
+    toBe.MaeuriFlag = $R.maeuriFlag.toCodeFromKol(buffer, this.at(360), 1);
+    toBe.YoteiHassouJikan = readStr(buffer, this.at(361), 5);
+    toBe.Tousuu = readPositiveInt(buffer, this.at(366), 2);
+    toBe.SuiteiTimeRyou = readTime(buffer, this.at(370), 4);
+    toBe.SuiteiTimeOmoFuryou = readTime(buffer, this.at(374), 4);
 
     return await this.tool.saveOrUpdate(Race, asIs, toBe);
   }
@@ -186,20 +189,20 @@ export class KolSei1Kd3 extends DataToImport {
   ) {
     const toBe = new RaceSeiseki();
     toBe.Id = race.Id;
-    toBe.Shoukin1Chaku = readPositiveInt(buffer, 288, 9);
-    toBe.Shoukin2Chaku = readPositiveInt(buffer, 297, 9);
-    toBe.Shoukin3Chaku = readPositiveInt(buffer, 306, 9);
-    toBe.Shoukin4Chaku = readPositiveInt(buffer, 315, 9);
-    toBe.Shoukin5Chaku = readPositiveInt(buffer, 324, 9);
-    toBe.Shoukin5ChakuDouchaku = readPositiveInt(buffer, 333, 9);
-    toBe.Shoukin5ChakuDouchaku2 = readPositiveInt(buffer, 342, 9);
-    toBe.TorikeshiTousuu = readInt(buffer, 368, 2);
-    toBe.Pace = $R.pace.toCodeFromKol(buffer, 378, 1);
-    toBe.Tenki = $R.tenki.toCodeFromKol(buffer, 379, 1);
-    toBe.Baba = $R.baba.toCodeFromKol(buffer, 380, 1);
+    toBe.Shoukin1Chaku = readPositiveInt(buffer, this.at(288), 9);
+    toBe.Shoukin2Chaku = readPositiveInt(buffer, this.at(297), 9);
+    toBe.Shoukin3Chaku = readPositiveInt(buffer, this.at(306), 9);
+    toBe.Shoukin4Chaku = readPositiveInt(buffer, this.at(315), 9);
+    toBe.Shoukin5Chaku = readPositiveInt(buffer, this.at(324), 9);
+    toBe.Shoukin5ChakuDouchaku = readPositiveInt(buffer, this.at(333), 9);
+    toBe.Shoukin5ChakuDouchaku2 = readPositiveInt(buffer, this.at(342), 9);
+    toBe.TorikeshiTousuu = readInt(buffer, this.at(368), 2);
+    toBe.Pace = $R.pace.toCodeFromKol(buffer, this.at(378), 1);
+    toBe.Tenki = $R.tenki.toCodeFromKol(buffer, this.at(379), 1);
+    toBe.Baba = $R.baba.toCodeFromKol(buffer, this.at(380), 1);
     if (race.HeichiShougai === 1) {
       // 障害
-      toBe.ShougaiHeikin1F = readPositiveDouble(buffer, 398, 4);
+      toBe.ShougaiHeikin1F = readPositiveDouble(buffer, this.at(398), 4);
     }
     toBe.KolNengappi = dataNengappi;
 
@@ -207,9 +210,9 @@ export class KolSei1Kd3 extends DataToImport {
   }
 
   protected async saveRaceLapTime(buffer: Buffer, race: Race) {
-    const lapTime1 = readPositiveDouble(buffer, 402, 3, 0.1);
+    const lapTime1 = readPositiveDouble(buffer, this.at(402), 3, 0.1);
     if (lapTime1) {
-      await this.kolRaceTool.saveRaceLapTime(buffer, 402, race);
+      await this.kolRaceTool.saveRaceLapTime(buffer, this.at(402), race);
     } else {
       const heichiShougai = $R.heichiShougai.toCodeFromKol(buffer, 25, 1);
       if (heichiShougai === 1) {
@@ -225,24 +228,42 @@ export class KolSei1Kd3 extends DataToImport {
 
   protected async saveShougaiRaceLapTime(buffer: Buffer, race: Race) {
     await this.kolRaceTool.saveSpecialRaceLapTime(buffer, race, [
-      { Offset: 382, Length: 5, Mul: 1, KaishiKyori: race.Kyori - 1600, ShuuryouKyori: race.Kyori },
-      { Offset: 388, Length: 4, Mul: 1, KaishiKyori: race.Kyori - 800, ShuuryouKyori: race.Kyori },
-      { Offset: 393, Length: 4, Mul: 1, KaishiKyori: race.Kyori - 600, ShuuryouKyori: race.Kyori },
+      {
+        Offset: this.at(382),
+        Length: 5,
+        Mul: 1,
+        KaishiKyori: race.Kyori - 1600,
+        ShuuryouKyori: race.Kyori,
+      },
+      {
+        Offset: this.at(388),
+        Length: 4,
+        Mul: 1,
+        KaishiKyori: race.Kyori - 800,
+        ShuuryouKyori: race.Kyori,
+      },
+      {
+        Offset: this.at(393),
+        Length: 4,
+        Mul: 1,
+        KaishiKyori: race.Kyori - 600,
+        ShuuryouKyori: race.Kyori,
+      },
     ]);
   }
 
   protected async saveChihouRaceLapTime(buffer: Buffer, race: Race) {
     await this.kolRaceTool.saveSpecialRaceLapTime(buffer, race, [
-      { Offset: 441, Length: 3, KaishiKyori: 0, ShuuryouKyori: 600 },
-      { Offset: 444, Length: 3, KaishiKyori: 0, ShuuryouKyori: 800 },
-      { Offset: 447, Length: 3, KaishiKyori: 0, ShuuryouKyori: 1000 },
-      { Offset: 450, Length: 3, KaishiKyori: race.Kyori - 800, ShuuryouKyori: race.Kyori },
-      { Offset: 453, Length: 3, KaishiKyori: race.Kyori - 600, ShuuryouKyori: race.Kyori },
+      { Offset: this.at(441), Length: 3, KaishiKyori: 0, ShuuryouKyori: 600 },
+      { Offset: this.at(444), Length: 3, KaishiKyori: 0, ShuuryouKyori: 800 },
+      { Offset: this.at(447), Length: 3, KaishiKyori: 0, ShuuryouKyori: 1000 },
+      { Offset: this.at(450), Length: 3, KaishiKyori: race.Kyori - 800, ShuuryouKyori: race.Kyori },
+      { Offset: this.at(453), Length: 3, KaishiKyori: race.Kyori - 600, ShuuryouKyori: race.Kyori },
     ]);
   }
 
   protected async saveRaceKeika(buffer: Buffer, race: Race) {
-    for (let bangou = 1, offset = 456; bangou <= 9; bangou++, offset += 113) {
+    for (let bangou = 1, offset = this.at(456); bangou <= 9; bangou++, offset += 113) {
       const keika = readStr(buffer, offset + 3, 110);
       if (!keika) {
         continue;
@@ -263,11 +284,21 @@ export class KolSei1Kd3 extends DataToImport {
   }
 
   protected async saveRaceHassouJoukyou(buffer: Buffer, race: Race) {
-    await this.kolRaceTool.saveRaceHassouJoukyou(buffer, 1473, race);
+    await this.kolRaceTool.saveRaceHassouJoukyou(buffer, this.at(1473), race);
   }
 
   protected async saveRaceHaitou(buffer: Buffer, race: Race) {
-    await this.kolOddsHaitouTool.saveRaceHaitou(buffer, race.Id, Kakutei.Kakutei, [
+    await this.kolOddsHaitouTool.saveRaceHaitou(
+      buffer,
+      race.Id,
+      Kakutei.Kakutei,
+      this.haitouInfos(),
+    );
+  }
+
+  /** 配当の読み取り位置 (KD3 のアドレス) */
+  private haitouInfos(): HaitouInfo[] {
+    const infos: HaitouInfo[] = [
       { baken: Baken.Tanshou, index: 1, bangou1: 2100, bangou1Len: 2, haitou: 2102, haitouLen: 6 },
       { baken: Baken.Tanshou, index: 2, bangou1: 2108, bangou1Len: 2, haitou: 2110, haitouLen: 6 },
       { baken: Baken.Tanshou, index: 3, bangou1: 2116, bangou1Len: 2, haitou: 2118, haitouLen: 6 },
@@ -630,6 +661,7 @@ export class KolSei1Kd3 extends DataToImport {
         ninki: 2576,
         ninkiLen: 4,
       },
-    ]);
+    ];
+    return infos.map((info) => this.layout.atHaitou(info));
   }
 }

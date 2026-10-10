@@ -1,0 +1,499 @@
+<HTML>
+<HEAD>
+<meta http-equiv="Content-Type" content="text/html; charset=x-sjis">
+<TITLE>KOL KD2 Data Format</TITLE>
+<style type="text/css">
+<!--
+table {  font-size: 9pt}
+-->
+</style>
+</HEAD>
+<BODY bgcolor="#F4FFF4">
+<H1><CENTER>
+特別登録レースデータ
+</CENTER></H1>
+<TABLE width="100%">
+<TR>
+<TD><FONT SIZE=+1><B>特別登録レースデータ 【ファイル名：kol_tok1.kd2】</B></FONT></TD>
+</TR>
+<TR><TD><form><select size="1" onChange="location=this.options[this.selectedIndex].value">
+<option value="index.html">お知らせ</option>
+<option value="first.html">はじめに</option>
+<option value="kol_sei1.html">競走成績レースデータ</option>
+<option value="kol_sei2.html">競走成績出走馬データ</option>
+<option value="kol_den1.html">出馬表レースデータ</option>
+<option value="kol_den2.html">出馬表出走馬データ</option>
+<option value="kol_uma.html">競走馬データ</option>
+<option value="kol_kis.html">騎手データ</option>
+<option value="kol_kyu.html">厩舎データ</option>
+<option value="kol_ods.html">予想オッズ</option>
+<option value="kol_kod.html">確定オッズ</option>
+<option value="kol_syu.html">種牡馬データ</option>
+<option value="kol_ket.html">３代血統図</option>
+<option value="kol_com1.html">コメントデータ</option>
+<option selected value="kol_tok1.html">特別登録レースデータ</option>
+<option value="kol_tok2.html">特別登録出走予定馬データ</option>
+<option value="hikaku.html">主要データ項目比較表</option>
+<option value="table.html">コードテーブル</option>
+<option value="history.html">改版履歴</option>
+</select></form></TD></TR>
+</TABLE>
+<Table border bgcolor="#FFFFFF" bordercolor="#CCCCCC">
+<tr> 
+    
+<td bgcolor=#C0C0C0 width="13" nowrap>
+<div align="center"><font color="#000000">記</font></div>
+</td>
+<td bgcolor=#C0C0C0 width="27" nowrap>
+<div align="center"><font color="#000000">項番</font></div>
+</td>
+<td bgcolor=#C0C0C0 width="85" nowrap>
+<div align="center"><font color="#000000">項目名</font></div>
+</td>
+<td bgcolor=#C0C0C0 align="center" width="31" nowrap>
+<div align="center"><font color="#000000">桁数</font></div>
+</td>
+<td bgcolor=#C0C0C0 align="center" width="44" nowrap>
+<div align="center"><font color="#000000">アドレス</font></div>
+</td>
+<td bgcolor=#C0C0C0 align="center" width="8" nowrap>
+<div align="center"><font color="#000000">規</font></div>
+</td>
+<td bgcolor=#C0C0C0 nowrap><font color="#000000">　　備　　　考</font></td>
+</tr>
+
+<TR>
+<TD ALIGN="right" nowrap>&nbsp;</TD>
+<TD ALIGN="right" nowrap>1</TD>
+<TD nowrap>開催場所コード</TD>
+<TD ALIGN="center" nowrap><FONT COLOR=#000000>2</FONT></TD>
+<TD ALIGN="center" nowrap><FONT COLOR=#000000>0</FONT></TD>
+<TD ALIGN="center" nowrap><FONT COLOR=#000000>&nbsp;</FONT></TD>
+<TD>場所テーブル参照</TD>
+</TR>
+<TR>
+<TD ALIGN="right" nowrap>&nbsp;</TD>
+<TD ALIGN="right" nowrap>2</TD>
+<TD nowrap>開催年</TD>
+<TD ALIGN="center" nowrap><FONT COLOR=#000000>4</FONT></TD>
+<TD ALIGN="center" nowrap><FONT COLOR=#000000>2</FONT></TD>
+<TD ALIGN="center" nowrap><FONT COLOR=#000000>&nbsp;</FONT></TD>
+<TD>YYYY</TD>
+</TR>
+<TR>
+<TD ALIGN="right" nowrap>&nbsp;</TD>
+<TD ALIGN="right" nowrap>3</TD>
+<TD nowrap>開催回次</TD>
+<TD ALIGN="center" nowrap><FONT COLOR=#000000>2</FONT></TD>
+<TD ALIGN="center" nowrap><FONT COLOR=#000000>6</FONT></TD>
+<TD ALIGN="center" nowrap><FONT COLOR=#000000>&nbsp;</FONT></TD>
+<TD>XX　例)１回東京２日４Ｒ の「１回」。地方を考慮し２桁。0埋め</TD>
+</TR>
+<TR>
+<TD ALIGN="right" nowrap>&nbsp;</TD>
+<TD ALIGN="right" nowrap>4</TD>
+<TD nowrap>開催日次</TD>
+<TD ALIGN="center" nowrap><FONT COLOR=#000000>2</FONT></TD>
+<TD ALIGN="center" nowrap><FONT COLOR=#000000>8</FONT></TD>
+<TD ALIGN="center" nowrap><FONT COLOR=#000000>&nbsp;</FONT></TD>
+<TD>XX　例)１回東京２日４Ｒ の「２日」。地方を考慮し２桁。0埋め</TD>
+</TR>
+<TR>
+<TD ALIGN="right" nowrap>&nbsp;</TD>
+<TD ALIGN="right" nowrap>5</TD>
+<TD nowrap>レース番号</TD>
+<TD ALIGN="center" nowrap>2</TD>
+<TD ALIGN="center" nowrap>10</TD>
+<TD ALIGN="center" nowrap>&nbsp;</TD>
+<TD>XX　例)１回東京２日４Ｒ の「４Ｒ」。0埋め</TD>
+</TR>
+<TR>
+<TD ALIGN="right" nowrap>&nbsp;</TD>
+<TD ALIGN="right" nowrap>6</TD>
+<TD nowrap>年月日</TD>
+<TD ALIGN="center" nowrap>8</TD>
+<TD ALIGN="center" nowrap>12</TD>
+<TD ALIGN="center" nowrap>&nbsp;</TD>
+<TD>YYYYMMDD</TD>
+</TR>
+<TR>
+<TD ALIGN="right" nowrap>&nbsp;</TD>
+<TD ALIGN="right" nowrap>7</TD>
+<TD nowrap>曜日コード</TD>
+<TD ALIGN="center" nowrap>2</TD>
+<TD ALIGN="center" nowrap>20</TD>
+<TD ALIGN="center" nowrap>&nbsp;</TD>
+<TD>01=土 02=日 03=月  04=火  05=水  06=木  07=金  (1byte目が1の時は祝日[例：13=祝日の月曜]、2の時は振替休日[例：23=振替休日の月曜]、3の時は国民の休日[例：33=国民の休日の月曜])</TD>
+</TR>
+<TR>
+<TD ALIGN="right" nowrap>&nbsp;</TD>
+<TD ALIGN="right" nowrap>8</TD>
+<TD nowrap>中央・地方・外国</TD>
+<TD ALIGN="center" nowrap>1</TD>
+<TD ALIGN="center" nowrap>22</TD>
+<TD ALIGN="center" nowrap>&nbsp;</TD>
+<TD>0=中央  1=南関東　2=その他の公営  3=道営　4=外国</TD>
+</TR>
+<TR>
+<TD ALIGN="right" nowrap>&nbsp;</TD>
+<TD ALIGN="right" nowrap>9</TD>
+<TD nowrap>一・特</TD>
+<TD ALIGN="center" nowrap><FONT COLOR=#000000>1</FONT></TD>
+<TD ALIGN="center" nowrap>23</TD>
+<TD ALIGN="center" nowrap><FONT COLOR=#000000>&nbsp;</FONT></TD>
+<TD>0=一般　1=特別  公営は（2=準重賞） 3=重賞</TD>
+</TR>
+<TR>
+<TD ALIGN="right" nowrap>&nbsp;</TD>
+<TD ALIGN="right" nowrap>10</TD>
+<TD nowrap>平・障</TD>
+<TD ALIGN="center" nowrap><FONT COLOR=#000000>1</FONT></TD>
+<TD ALIGN="center" nowrap>24</TD>
+<TD ALIGN="center" nowrap><FONT COLOR=#000000>&nbsp;</FONT></TD>
+<TD>0=平地  1=障害</TD>
+</TR>
+<TR>
+<TD ALIGN="right" nowrap>&nbsp;</TD>
+<TD ALIGN="right" nowrap>11</TD>
+<TD nowrap>重賞回数</TD>
+<TD ALIGN="center" nowrap><FONT COLOR=#000000>3</FONT></TD>
+<TD ALIGN="center" nowrap>25</TD>
+<TD ALIGN="center" nowrap><FONT COLOR=#000000>SP</FONT></TD>
+<TD>第XXX回</TD>
+</TR>
+<TR>
+<TD ALIGN="right" nowrap>&nbsp;</TD>
+<TD ALIGN="right" nowrap>12</TD>
+<TD nowrap>特別名１５</TD>
+<TD ALIGN="center" nowrap><FONT COLOR=#000000>30</FONT></TD>
+<TD ALIGN="center" nowrap>28</TD>
+<TD ALIGN="center" nowrap><FONT COLOR=#000000>SP</FONT></TD>
+<TD>最大１５文字（縮小するにはＴ＝トロフィー  Ｓ＝ステークス   Ｈ＝ハンデまたはハンデキャップ）</TD>
+</TR>
+<TR>
+<TD ALIGN="right" nowrap>&nbsp;</TD>
+<TD ALIGN="right" nowrap>13</TD>
+<TD nowrap>特別名７</TD>
+<TD ALIGN="center" nowrap><FONT COLOR=#000000>14</FONT></TD>
+<TD ALIGN="center" nowrap>58</TD>
+<TD ALIGN="center" nowrap><FONT COLOR=#000000>SP</FONT></TD>
+<TD>最大７文字</TD>
+</TR>
+<TR>
+<TD ALIGN="right" nowrap>&nbsp;</TD>
+<TD ALIGN="right" nowrap>14</TD>
+<TD nowrap>グレード</TD>
+<TD ALIGN="center" nowrap><FONT COLOR=#000000>1</FONT></TD>
+<TD ALIGN="center" nowrap>72</TD>
+<TD ALIGN="center" nowrap><FONT COLOR=#000000>SP</FONT></TD>
+<TD><font color="#000000">0=Ｇ１　1=Ｇ２　2=Ｇ３　3=ＪＧ１　4=ＪＧ２　5=ＪＧ３</font></TD>
+</TR>
+<TR>
+<TD ALIGN="right" nowrap>&nbsp;</TD>
+<TD ALIGN="right" nowrap>15</TD>
+<TD nowrap>別定馬齢ハンデ概要コード</TD>
+<TD ALIGN="center" nowrap>2</TD>
+<TD ALIGN="center" nowrap>73</TD>
+<TD ALIGN="center" nowrap>SP</TD>
+<TD>00=別定 01=馬齢 02=ハンデ 03=定量 90=規定(道営のみ）</TD>
+</TR>
+<TR>
+<TD ALIGN="right" nowrap>&nbsp;</TD>
+<TD ALIGN="right" nowrap>16</TD>
+<TD nowrap>別定馬齢ハンデﾞ詳細</TD>
+<TD ALIGN="center" nowrap><FONT COLOR=#000000>18</FONT></TD>
+<TD ALIGN="center" nowrap>75</TD>
+<TD ALIGN="center" nowrap><FONT COLOR=#000000>SP</FONT></TD>
+<TD>別定　馬齢　ハンデ　定量　規定（道営のみ）　牡 55 K , 牝 53 K ( ,牝2K減）</TD>
+</TR>
+<TR>
+<TD ALIGN="right" nowrap>&nbsp;</TD>
+<TD ALIGN="right" nowrap>17</TD>
+<TD nowrap>条件付加１</TD>
+<TD ALIGN="center" nowrap><FONT COLOR=#000000>2</FONT></TD>
+<TD ALIGN="center" nowrap>93</TD>
+<TD ALIGN="center" nowrap><FONT COLOR=#000000>SP</FONT></TD>
+<TD>共通テーブル６参照</TD>
+</TR>
+<TR>
+<TD ALIGN="right" nowrap>&nbsp;</TD>
+<TD ALIGN="right" nowrap>18</TD>
+<TD nowrap>条件付加２</TD>
+<TD ALIGN="center" nowrap><FONT COLOR=#000000>2</FONT></TD>
+<TD ALIGN="center" nowrap>95</TD>
+<TD ALIGN="center" nowrap><FONT COLOR=#000000>SP</FONT></TD>
+<TD>1=○指定 2=○特指 3=□指定 4=○指</TD>
+</TR>
+<TR>
+<TD nowrap align="right">　</TD>
+<TD ALIGN="right" nowrap>19</TD>
+<TD nowrap>条件カット</TD>
+<TD ALIGN="center" nowrap><FONT COLOR=#000000>1</FONT></TD>
+<TD ALIGN="center" nowrap>97</TD>
+<TD ALIGN="center" nowrap><FONT COLOR=#000000>&nbsp;</FONT></TD>
+<TD>番組上の年齢による区分　※サラ・アラブの判別に使用。条件年齢制限がSPの場合には年齢の判別にも使用する。　0=サラ障害 1=サラ2歳(サラ3歳) 2=サラ3歳(サラ4歳) 3=サラ3歳以上(サラ4歳以上) 4=サラ4歳以上(サラ5歳以上) 5=アラブ2歳(アラブ3歳) 6=アラブ3歳(アラブ4歳) 7=アラブ3歳以上(アラブ4歳以上)  (道営・公営)8=サラ障害3歳以上(サラ障害4歳以上) 9=サラ障害4歳以上(サラ障害5歳以上) A=アラブ4歳以上(アラブ5歳以上) B=サラ4歳(サラ5歳) C=アラブ4歳(アラブ5歳) K=サラ系　　※括弧内は馬齢変更前の2000年以前のレース表記</TD>
+</TR>
+<TR>
+<TD nowrap align="right">　</TD>
+<TD ALIGN="right" nowrap>20</TD>
+<TD nowrap>条件年齢制限</TD>
+<TD ALIGN="center" nowrap><FONT COLOR=#000000>1</FONT></TD>
+<TD ALIGN="center" nowrap>98</TD>
+<TD ALIGN="center" nowrap><FONT COLOR=#000000>&nbsp;</FONT></TD>
+<TD><font color="#000000">0=2歳(3歳)　1=3歳(4歳)　2=4歳(5歳)　3=3,4,5歳(4,5,6歳)　4=4,5,6歳(5,6,7歳)　5=3歳以上(4歳以上)　6=4歳以上(5歳以上)  7=3,4歳(4,5歳)  8=4,5歳(5,6歳)　　※3、4、7、8は年齢によって条件が異なる「7の例  サラ3歳500万・4歳以上1000万以下」　　※括弧内は馬齢変更前の2000年以前のレース表記</font></TD>
+</TR>
+<TR>
+<TD ALIGN="right" nowrap>&nbsp;</TD>
+<TD ALIGN="right" nowrap>21</TD>
+<TD nowrap>条件</TD>
+<TD ALIGN="center" nowrap><FONT COLOR=#000000>5</FONT></TD>
+<TD ALIGN="center" nowrap>99</TD>
+<TD ALIGN="center" nowrap><FONT COLOR=#000000>&nbsp;</FONT></TD>
+<TD><font color="#000000">1=新馬、2=未出走、3=未勝利、4=オープン 条件表の中央分のみ</font></TD>
+</TR>
+<TR>
+<TD ALIGN="right" nowrap>&nbsp;</TD>
+<TD ALIGN="right" nowrap>22</TD>
+<TD nowrap>ダ・芝</TD>
+<TD ALIGN="center" nowrap><FONT COLOR=#000000>1</FONT></TD>
+<TD ALIGN="center" nowrap>104</TD>
+<TD ALIGN="center" nowrap><FONT COLOR=#000000>&nbsp;</FONT></TD>
+<TD>0=ダ　1=芝</TD>
+</TR>
+<TR>
+<TD ALIGN="right" nowrap>&nbsp;</TD>
+<TD ALIGN="right" nowrap>23</TD>
+<TD nowrap>右・左</TD>
+<TD ALIGN="center" nowrap><FONT COLOR=#000000>1</FONT></TD>
+<TD ALIGN="center" nowrap>105</TD>
+<TD ALIGN="center" nowrap><FONT COLOR=#000000>&nbsp;</FONT></TD>
+<TD>0=右  1=左　2=直線</TD>
+</TR>
+<TR>
+<TD ALIGN="right" nowrap>&nbsp;</TD>
+<TD ALIGN="right" nowrap>24</TD>
+<TD nowrap>内・外</TD>
+<TD ALIGN="center" nowrap><FONT COLOR=#000000>1</FONT></TD>
+<TD ALIGN="center" nowrap>106</TD>
+<TD ALIGN="center" nowrap><FONT COLOR=#000000>SP</FONT></TD>
+<TD>0=内  1=外  2=外→内  3=タスキ　4=大障害　5=内２週　6=内→外</TD>
+</TR>
+<TR bgcolor="#FFFFCC">
+<TD ALIGN="right" nowrap>更</TD>
+<TD ALIGN="right" nowrap>25</TD>
+<TD nowrap>コース</TD>
+<TD ALIGN="center" nowrap><FONT COLOR=#000000>1</FONT></TD>
+<TD ALIGN="center" nowrap>107</TD>
+<TD ALIGN="center" nowrap><FONT COLOR=#000000>SP</FONT></TD>
+<TD>95年5月13日以降入力　0=A 1=B 2=C 3=D 4=A1 5=A2 6=E</TD>
+</TR>
+<TR>
+<TD ALIGN="right" nowrap>&nbsp;</TD>
+<TD ALIGN="right" nowrap>26</TD>
+<TD nowrap>距離</TD>
+<TD ALIGN="center" nowrap><FONT COLOR=#000000>4</FONT></TD>
+<TD ALIGN="center" nowrap>108</TD>
+<TD ALIGN="center" nowrap><FONT COLOR=#000000>&nbsp;</FONT></TD>
+<TD>単位：ｍ</TD>
+</TR>
+<TR>
+<TD ALIGN="right" nowrap bgcolor="#F0F0F0">&nbsp;</TD>
+<TD ALIGN="right" nowrap bgcolor="#F0F0F0">27</TD>
+<TD nowrap bgcolor="#F0F0F0">予備１</TD>
+<TD ALIGN="center" nowrap bgcolor="#F0F0F0">164</TD>
+<TD ALIGN="center" nowrap bgcolor="#F0F0F0">112</TD>
+<TD ALIGN="center" nowrap bgcolor="#F0F0F0">SP</TD>
+<TD bgcolor="#F0F0F0">（※出馬表レースデータのレコード（項番27～44）にあたる）</TD>
+</TR>
+<TR>
+<TD ALIGN="right" nowrap>&nbsp;</TD>
+<TD ALIGN="right" nowrap>28</TD>
+<TD nowrap>賞金１着</TD>
+<TD ALIGN="center" nowrap><FONT COLOR=#000000>9</FONT></TD>
+<TD ALIGN="center" nowrap>276</TD>
+<TD ALIGN="center" nowrap><FONT COLOR=#000000>&nbsp;</FONT></TD>
+<TD>単位：円</TD>
+</TR>
+<TR>
+<TD ALIGN="right" nowrap>&nbsp;</TD>
+<TD ALIGN="right" nowrap>29</TD>
+<TD nowrap>　　２着</TD>
+<TD ALIGN="center" nowrap><FONT COLOR=#000000>9</FONT></TD>
+<TD ALIGN="center" nowrap>285</TD>
+<TD ALIGN="center" nowrap><FONT COLOR=#000000>&nbsp;</FONT></TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right" nowrap>&nbsp;</TD>
+<TD ALIGN="right" nowrap>30</TD>
+<TD nowrap>　　３着</TD>
+<TD ALIGN="center" nowrap><FONT COLOR=#000000>9</FONT></TD>
+<TD ALIGN="center" nowrap>294</TD>
+<TD ALIGN="center" nowrap><FONT COLOR=#000000>&nbsp;</FONT></TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right" nowrap>&nbsp;</TD>
+<TD ALIGN="right" nowrap>31</TD>
+<TD nowrap>　　４着</TD>
+<TD ALIGN="center" nowrap><FONT COLOR=#000000>9</FONT></TD>
+<TD ALIGN="center" nowrap>303</TD>
+<TD ALIGN="center" nowrap><FONT COLOR=#000000>&nbsp;</FONT></TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right" nowrap>&nbsp;</TD>
+<TD ALIGN="right" nowrap>32</TD>
+<TD nowrap>　　５着</TD>
+<TD ALIGN="center" nowrap><FONT COLOR=#000000>9</FONT></TD>
+<TD ALIGN="center" nowrap>312</TD>
+<TD ALIGN="center" nowrap><FONT COLOR=#000000>&nbsp;</FONT></TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right" nowrap bgcolor="#F0F0F0">&nbsp;</TD>
+<TD ALIGN="right" nowrap bgcolor="#F0F0F0">33</TD>
+<TD nowrap bgcolor="#F0F0F0">予備２</TD>
+<TD ALIGN="center" nowrap bgcolor="#F0F0F0"><FONT COLOR=#000000>9</FONT></TD>
+<TD ALIGN="center" nowrap bgcolor="#F0F0F0">321</TD>
+<TD ALIGN="center" nowrap bgcolor="#F0F0F0"><FONT COLOR=#000000>SP&nbsp;</FONT></TD>
+<TD bgcolor="#F0F0F0">（※出馬表レースデータの附加賞（項番50）にあたる）</TD>
+</TR>
+<TR>
+<TD ALIGN="right" nowrap bgcolor="#F0F0F0">&nbsp;</TD>
+<TD ALIGN="right" nowrap bgcolor="#F0F0F0">34</TD>
+<TD nowrap bgcolor="#F0F0F0">予備３</TD>
+<TD ALIGN="center" nowrap bgcolor="#F0F0F0">1</TD>
+<TD ALIGN="center" nowrap bgcolor="#F0F0F0">330</TD>
+<TD ALIGN="center" nowrap bgcolor="#F0F0F0">SP</TD>
+<TD bgcolor="#F0F0F0">（※出馬表レースデータの前売りフラグ（項番51）にあたる）</TD>
+</TR>
+<TR>
+<TD ALIGN="right" nowrap bgcolor="#F0F0F0">&nbsp;</TD>
+<TD ALIGN="right" nowrap bgcolor="#F0F0F0">35</TD>
+<TD nowrap bgcolor="#F0F0F0">予備４</TD>
+<TD ALIGN="center" nowrap bgcolor="#F0F0F0"><FONT COLOR=#000000>5</FONT></TD>
+<TD ALIGN="center" nowrap bgcolor="#F0F0F0">331</TD>
+<TD ALIGN="center" nowrap bgcolor="#F0F0F0"><FONT COLOR=#000000>SP&nbsp;</FONT></TD>
+<TD bgcolor="#F0F0F0">（※出馬表レースデータの発走時間（項番52）にあたる）</TD>
+</TR>
+<TR>
+<TD ALIGN="right" nowrap>&nbsp;</TD>
+<TD ALIGN="right" nowrap>36</TD>
+<TD nowrap>頭数</TD>
+<TD ALIGN="center" nowrap><FONT COLOR=#000000>2</FONT></TD>
+<TD ALIGN="center" nowrap>336</TD>
+<TD ALIGN="center" nowrap><FONT COLOR=#000000>&nbsp;</FONT></TD>
+<TD>XX（～99頭までの時に使用でき、100頭以上登録の場合00が入る。その場合頭数２を使用する）</TD>
+</TR>
+<TR>
+<TD ALIGN="right" nowrap bgcolor="#F0F0F0">&nbsp;</TD>
+<TD ALIGN="right" nowrap bgcolor="#F0F0F0">37</TD>
+<TD nowrap bgcolor="#F0F0F0">予備５</TD>
+<TD ALIGN="center" nowrap bgcolor="#F0F0F0"><FONT COLOR=#000000>2</FONT></TD>
+<TD ALIGN="center" nowrap bgcolor="#F0F0F0">338</TD>
+<TD ALIGN="center" nowrap bgcolor="#F0F0F0"><FONT COLOR=#000000>SP&nbsp;</FONT></TD>
+<TD bgcolor="#F0F0F0"><font color="#000000">（※出馬表レースデータの取消頭数（項番54）にあたる）</font></TD>
+</TR>
+<TR>
+<TD ALIGN="right" nowrap bgcolor="#F0F0F0">&nbsp;</TD>
+<TD ALIGN="right" nowrap bgcolor="#F0F0F0">38</TD>
+<TD nowrap bgcolor="#F0F0F0">予備６</TD>
+<TD ALIGN="center" nowrap bgcolor="#F0F0F0"><font color="#000000">8</font></TD>
+<TD ALIGN="center" nowrap bgcolor="#F0F0F0">340</TD>
+<TD ALIGN="center" nowrap bgcolor="#F0F0F0"><FONT COLOR=#000000>SP&nbsp;</FONT></TD>
+<TD bgcolor="#F0F0F0">（※出馬表レースデータの推定タイム（項番55～56）にあたる）</TD>
+</TR>
+<TR>
+<TD ALIGN="right" nowrap bgcolor="#F0F0F0">&nbsp;</TD>
+<TD ALIGN="right" nowrap bgcolor="#F0F0F0">39</TD>
+<TD nowrap bgcolor="#F0F0F0">予備７</TD>
+<TD ALIGN="center" nowrap bgcolor="#F0F0F0"><FONT COLOR=#000000>1</FONT></TD>
+<TD ALIGN="center" nowrap bgcolor="#F0F0F0">348</TD>
+<TD ALIGN="center" nowrap bgcolor="#F0F0F0">SP</TD>
+<TD bgcolor="#F0F0F0">（※出馬表レースデータの予想ペース（項番57）にあたる）</TD>
+</TR>
+<TR>
+<TD ALIGN="right" nowrap>&nbsp;</TD>
+<TD ALIGN="right" nowrap>40</TD>
+<TD nowrap>データ作成年月日</TD>
+<TD ALIGN="center" nowrap><FONT COLOR=#000000>8</FONT></TD>
+<TD ALIGN="center" nowrap>349</TD>
+<TD ALIGN="center" nowrap><FONT COLOR=#000000>&nbsp;</FONT></TD>
+<TD><font color="#000000">YYYYMMDD</font></TD>
+</TR>
+<TR>
+<TD ALIGN="right" nowrap>&nbsp;</TD>
+<TD ALIGN="right" nowrap>41</TD>
+<TD nowrap>頭数２</TD>
+<TD ALIGN="center" nowrap>3</TD>
+<TD ALIGN="center" nowrap>357</TD>
+<TD ALIGN="center" nowrap>&nbsp;</TD>
+<TD>XXX（～99頭の場合でも０埋め左詰で入る）</TD>
+</TR>
+<TR>
+<TD ALIGN="right" nowrap>&nbsp;</TD>
+<TD ALIGN="right" nowrap>42</TD>
+<TD nowrap>予備フィールド</TD>
+<TD ALIGN="center" nowrap>140</TD>
+<TD ALIGN="center" nowrap>360</TD>
+<TD ALIGN="center" nowrap>SP</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right" nowrap>&nbsp;</TD>
+<TD ALIGN="right" nowrap>&nbsp;</TD>
+<TD ALIGN="right" nowrap>&nbsp;</TD>
+<TD ALIGN="center" nowrap>&nbsp;</TD>
+<TD ALIGN="center" nowrap><FONT COLOR=#000000>&nbsp;</FONT></TD>
+<TD ALIGN="center" nowrap>&nbsp;</TD>
+<TD>以下、頭数分繰り返し。最大150回繰り返し（1500バイト）。</TD>
+</TR>
+<TR>
+<TD ALIGN="right" nowrap>&nbsp;</TD>
+<TD ALIGN="right" nowrap>43</TD>
+<TD nowrap>連番</TD>
+<TD ALIGN="center" nowrap>3</TD>
+<TD ALIGN="center" nowrap>500</TD>
+<TD ALIGN="center" nowrap>&nbsp;</TD>
+<TD>XXX</TD>
+</TR>
+<TR>
+<TD ALIGN="right" nowrap>&nbsp;</TD>
+<TD ALIGN="right" nowrap>44</TD>
+<TD nowrap>馬コード</TD>
+<TD ALIGN="center" nowrap>7</TD>
+<TD ALIGN="center" nowrap><FONT COLOR=#000000>503</FONT></TD>
+<TD ALIGN="center" nowrap>&nbsp;</TD>
+<TD>登録馬の馬コード</TD>
+</TR>
+<TR>
+<TD ALIGN="right" nowrap>&nbsp;</TD>
+<TD ALIGN="right" nowrap>192</TD>
+<TD nowrap>データ区切り</TD>
+<TD ALIGN="center" nowrap><FONT COLOR=#000000>2</FONT></TD>
+<TD ALIGN="center" nowrap><font color="#000000">2000</font></TD>
+<TD ALIGN="center" nowrap><FONT COLOR=#000000>&nbsp;</FONT></TD>
+<TD><font color="#000000">CR/LF</font></TD>
+</TR>
+<TR>
+<TD BGCOLOR=#C0C0C0 ALIGN="right" nowrap><FONT COLOR=#000000>&nbsp;</FONT></TD>
+<TD BGCOLOR=#C0C0C0 ALIGN="right" nowrap><FONT COLOR=#000000>&nbsp;</FONT></TD>
+<TD BGCOLOR=#C0C0C0 nowrap><FONT COLOR=#000000>合　計</FONT></TD>
+<TD BGCOLOR=#C0C0C0 ALIGN="center" nowrap>　</TD>
+<TD BGCOLOR=#C0C0C0 ALIGN="center" nowrap><font color="#000000">2002</font></TD>
+<TD BGCOLOR=#C0C0C0 ALIGN="right" nowrap><FONT COLOR=#000000>&nbsp;</FONT></TD>
+<TD BGCOLOR=#C0C0C0 ALIGN="right"><font color="#000000">&nbsp;</font></TD>
+</TR>
+</Table>
+XXX …０埋め左詰１バイト数字<br>
+<br>
+推定タイム、予想ペースなど今後の提供を考慮し予備１～７としました。
+<br>
+<FONT SIZE=-1><I>
+<br>
+更新日 2009/06/09<br>
+競馬道OnLine
+</I></font>
+</BODY>
+</HTML>

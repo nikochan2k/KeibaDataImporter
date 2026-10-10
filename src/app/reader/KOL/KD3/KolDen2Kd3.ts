@@ -9,7 +9,6 @@ import { ShussoubaChoukyou } from "../../../entities/ShussoubaChoukyou";
 import { Kubun } from "../../../entities/ShussoubaJoutai";
 import { ShussoubaYosou } from "../../../entities/ShussoubaYosou";
 import { Bridge } from "../../Bridge";
-import { DataToImport } from "../../DataToImport";
 import {
   readDouble,
   readInt,
@@ -22,11 +21,12 @@ import { ShussoubaInfo } from "../../ShussoubaTool";
 import { Tool } from "../../Tool";
 import { KolBridge } from "../KolBridge";
 import { KolChoukyouTool } from "../KolChoukyouTool";
+import { KolDataToImport } from "../KolDataToImport";
 import { KolShussoubaTool } from "../KolShussoubaTool";
 import { KolTool } from "../KolTool";
 
 @Service()
-export class KolDen2Kd3 extends DataToImport {
+export class KolDen2Kd3 extends KolDataToImport {
   @Inject()
   private choukyouTool: KolChoukyouTool;
 
@@ -57,7 +57,7 @@ export class KolDen2Kd3 extends DataToImport {
       return;
     }
 
-    const dataNengappi = readInt(buffer, 727, 8);
+    const dataNengappi = readInt(buffer, this.at(727), 8);
     const asIs = info.shussouba;
     if (asIs?.KolNengappi && dataNengappi <= asIs.KolNengappi) {
       return;
@@ -98,10 +98,12 @@ export class KolDen2Kd3 extends DataToImport {
     toBe.MinaraiKubun = $K.minaraiKubun.toCodeFromKol(buffer, 204, 1);
     toBe.Norikawari = $S.norikawari.toCodeFromKol(buffer, 205, 1);
     toBe.TorikeshiShubetsu =
-      $S.torikeshiShubetsu.toCodeFromKol(buffer, 254, 1) ||
-      $S.torikeshiShubetsu.toCodeFromKol(buffer, 255, 1);
-    toBe.KyuuyouRiyuu = readStr(buffer, 783, 60);
-    toBe.KyuuyouRiyuuCode = $S.kyuuyouRiyuuCode.toCodeFromKol(buffer, 783, 60);
+      $S.torikeshiShubetsu.toCodeFromKol(buffer, this.at(254), 1) ||
+      (this.has(255) ? $S.torikeshiShubetsu.toCodeFromKol(buffer, this.at(255), 1) : undefined);
+    if (this.has(783)) {
+      toBe.KyuuyouRiyuu = readStr(buffer, this.at(783), 60);
+      toBe.KyuuyouRiyuuCode = $S.kyuuyouRiyuuCode.toCodeFromKol(buffer, this.at(783), 60);
+    }
 
     toBe.KolNengappi = dataNengappi;
 
@@ -120,9 +122,11 @@ export class KolDen2Kd3 extends DataToImport {
   protected async saveShussoubaYosou(buffer: Buffer, shussouba: Shussouba) {
     const toBe = new ShussoubaYosou();
     toBe.Id = shussouba.Id;
-    toBe.KolYosou1 = $SY.shirushi.toCodeFromKol(buffer, 254, 1);
-    toBe.KolYosou2 = $SY.shirushi.toCodeFromKol(buffer, 255, 1);
-    toBe.Rating = readDouble(buffer, 739, 3, 0.1);
+    toBe.KolYosou1 = $SY.shirushi.toCodeFromKol(buffer, this.at(254), 1);
+    if (this.has(255)) {
+      toBe.KolYosou2 = $SY.shirushi.toCodeFromKol(buffer, this.at(255), 1);
+    }
+    toBe.Rating = readDouble(buffer, this.at(739), 3, 0.1);
     const kolBridge = <KolBridge>this.bridge;
     toBe.Kyakushitsu = kolBridge.yosouKyakushitsuMap.get(toBe.Id);
 
@@ -138,31 +142,33 @@ export class KolDen2Kd3 extends DataToImport {
   ) {
     const sc = new ShussoubaChoukyou();
     sc.Id = info.shussouba.Id;
-    sc.ChoukyouTanpyou = readStr(buffer, 694, 24);
-    sc.ChoukyouHonsuuCourse = readPositiveInt(buffer, 718, 3);
-    sc.ChoukyouHonsuuHanro = readPositiveInt(buffer, 721, 3);
-    sc.ChoukyouHonsuuPool = readPositiveInt(buffer, 724, 3);
+    if (this.has(694)) {
+      sc.ChoukyouTanpyou = readStr(buffer, this.at(694), 24);
+      sc.ChoukyouHonsuuCourse = readPositiveInt(buffer, this.at(718), 3);
+      sc.ChoukyouHonsuuHanro = readPositiveInt(buffer, this.at(721), 3);
+      sc.ChoukyouHonsuuPool = readPositiveInt(buffer, this.at(724), 3);
+    }
     await this.choukyouTool.saveShussoubaChoukyou(sc);
 
-    const choukyouAwaseFlag = readPositiveInt(buffer, 607, 1);
-    const choukyouAwase = readStr(buffer, 608, 86);
+    const choukyouAwaseFlag = readPositiveInt(buffer, this.at(607), 1);
+    const choukyouAwase = readStr(buffer, this.at(608), 86);
     await this.choukyouTool.saveChoukyou(
       buffer,
-      256,
+      this.at(256),
       info.uma.Id,
       tanshukuKishuMei,
       choukyouAwaseFlag === 1 ? choukyouAwase : null,
     );
     await this.choukyouTool.saveChoukyou(
       buffer,
-      373,
+      this.at(373),
       info.uma.Id,
       tanshukuKishuMei,
       choukyouAwaseFlag === 2 ? choukyouAwase : null,
     );
     await this.choukyouTool.saveChoukyou(
       buffer,
-      490,
+      this.at(490),
       info.uma.Id,
       tanshukuKishuMei,
       choukyouAwaseFlag === 3 ? choukyouAwase : null,

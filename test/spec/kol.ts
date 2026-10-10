@@ -1,11 +1,18 @@
 import "reflect-metadata";
 import * as fs from "node:fs";
+import * as os from "node:os";
 import * as path from "node:path";
 import * as iconv from "iconv-lite";
 import * as log4js from "log4js";
 import { Container } from "typedi";
 import { dataSource } from "../../src/app/DataSource";
 import { Importer } from "../../src/app/Importer";
+import {
+  kd2Den1Layout,
+  kd2Den2Layout,
+  kd2Sei1Layout,
+} from "../../src/app/reader/KOL/KD2/Kd2Layout";
+import { KolLayout } from "../../src/app/reader/KOL/KolLayout";
 
 export const kolDir = path.resolve(__dirname, "../../docs/kol-spec/KD3");
 
@@ -40,9 +47,9 @@ const plain = (s: string) =>
  * 行は「(空か「新」) 項番 項目名 桁数 アドレス 規 備考」のセルの並びです。
  * 繰り返しの項目は先頭の 1 組だけが載っていて、途中の項番は飛んでいます。
  */
-export function parseKolSpec(kind: string): KolSpec {
+export function parseKolSpec(kind: string, gen: "KD3" | "KD2" = "KD3"): KolSpec {
   const html = iconv.decode(
-    fs.readFileSync(path.join(kolDir, "spec", `kol_${kind}.html`)),
+    fs.readFileSync(path.join(kolDir, "..", gen, "spec", `kol_${kind}.html`)),
     "Windows932",
   );
   const fields: KolField[] = [];
@@ -69,13 +76,97 @@ export function parseKolSpec(kind: string): KolSpec {
   return { fields, tableLength: last ? last.address + last.bytes : 0 };
 }
 
-/** 見本ファイルの一覧。同じ種別に複数ある場合がある(UMA, COM1) */
-export function kolSamples(kind: string) {
+export type KolGen = "KD3" | "KD2";
+
+/** 取り込み対象のファイル名の拡張子 */
+const extOf = (gen: KolGen) => (gen === "KD2" ? "kd2" : "kd3");
+
+/** KD3 の見本ファイルの一覧。同じ種別に複数ある場合がある(UMA, COM1) */
+function kd3Samples(kind: string) {
   const dir = path.join(kolDir, kind);
   if (!fs.existsSync(dir)) {
     return [];
   }
   return fs.readdirSync(dir).map((f) => path.join(dir, f));
+}
+
+/** KD2 の仕様書にある種別 */
+export const kd2Kinds = [
+  "kyu",
+  "kis",
+  "syu",
+  "uma",
+  "ket",
+  "den1",
+  "den2",
+  "ods",
+  "sei1",
+  "sei2",
+  "com1",
+  "kod",
+];
+
+/** KD3 の項目の位置が違う種別の、KD2 での位置。ここにない種別は、KD2 と KD3 でレコードの並びが同じ */
+export const kd2Layouts: { [kind: string]: KolLayout } = {
+  den1: kd2Den1Layout,
+  den2: kd2Den2Layout,
+  sei1: kd2Sei1Layout,
+  // 予備フィールドの長さだけが違う
+  sei2: new KolLayout([
+    { from: 0, delta: 0 },
+    { from: 436, delta: null },
+    { from: 598, delta: -126 },
+  ]),
+  // 「前回出走時のコメント」がない
+  com1: new KolLayout([
+    { from: 0, delta: 0 },
+    { from: 2011, delta: null },
+    { from: 2971, delta: -960 },
+  ]),
+};
+
+/** KD3 のレコードを、KD2 の並びに組み替える (KD2 の見本ファイルがないので、KD3 の見本から作る) */
+export function toKd2Record(kind: string, record: Buffer) {
+  const layout = kd2Layouts[kind];
+  if (!layout) {
+    return record;
+  }
+  const length = parseKolSpec(kind, "KD2").tableLength;
+  const out = Buffer.alloc(length, 0x20);
+  const segments = layout.segments;
+  segments.forEach((segment, i) => {
+    if (segment.delta === null) {
+      return;
+    }
+    const to = i + 1 < segments.length ? segments[i + 1].from : record.length;
+    record.copy(out, segment.from + segment.delta, segment.from, to);
+  });
+  return out;
+}
+
+let kd2Dir: string | undefined;
+
+/** KD2 形式に組み替えた見本ファイルの一覧。後始末は closeKolDb */
+function kd2Samples(kind: string) {
+  if (!kd2Layouts[kind]) {
+    return kd3Samples(kind);
+  }
+  kd2Dir ??= fs.mkdtempSync(path.join(os.tmpdir(), "kol-kd2-"));
+  const spec3 = parseKolSpec(kind).tableLength;
+  return kd3Samples(kind).map((file) => {
+    const data = fs.readFileSync(file);
+    const out: Buffer[] = [];
+    for (let i = 0; i + spec3 <= data.length; i += spec3) {
+      out.push(toKd2Record(kind, data.subarray(i, i + spec3)));
+    }
+    const converted = path.join(kd2Dir as string, `${kind}_${path.basename(file)}`);
+    fs.writeFileSync(converted, Buffer.concat(out));
+    return converted;
+  });
+}
+
+export function kolSamples(kind: string, gen: KolGen = "KD3") {
+  return gen === "KD2" ? kd2Samples(kind) : kd3Samples(kind);
 }
 
 /** 取り込み順 (Importer の並びと同じ) */
@@ -154,15 +245,19 @@ export async function closeKolDb() {
     await dataSource.destroy();
     ready = false;
   }
+  if (kd2Dir) {
+    fs.rmSync(kd2Dir, { recursive: true, force: true });
+    kd2Dir = undefined;
+  }
 }
 
 /** DB を空にして、前提になる種別だけを取り込む。DB はこの呼び出しのあとも残る */
-export async function resetKolDb(kind: string) {
+export async function resetKolDb(kind: string, gen: KolGen = "KD3") {
   await setup();
   await dataSource.synchronize(true);
   const importer = Container.get(Importer);
   for (const pre of kolPrerequisites[kind] || []) {
-    await importer.import({ [`kol_${pre}.kd3`]: kolSamples(pre)[0] });
+    await importer.import({ [`kol_${pre}.${extOf(gen)}`]: kolSamples(pre, gen)[0] });
   }
 }
 
@@ -172,8 +267,8 @@ export async function resetKolDb(kind: string) {
  * 出走馬データなどはレコードの一部を slice して読むので、親のレコード上の位置に直します。
  * 取り込み後の DB はそのまま残ります。
  */
-export async function importKolKind(kind: string): Promise<KolImportResult> {
-  await resetKolDb(kind);
+export async function importKolKind(kind: string, gen: KolGen = "KD3"): Promise<KolImportResult> {
+  await resetKolDb(kind, gen);
   log4js.recording().reset();
 
   const reads: KolRead[] = [];
@@ -201,9 +296,9 @@ export async function importKolKind(kind: string): Promise<KolImportResult> {
 
   const importer = Container.get(Importer);
   try {
-    for (const file of kolSamples(kind)) {
+    for (const file of kolSamples(kind, gen)) {
       // 見本ファイルは同じ種別に複数あるので、取り込み対象の名前(kol_xxx.kd3)は種別から決める
-      await importer.import({ [`kol_${kind}.kd3`]: file });
+      await importer.import({ [`kol_${kind}.${extOf(gen)}`]: file });
     }
   } finally {
     (Buffer.prototype as { copy: unknown }).copy = originalCopy;
@@ -214,6 +309,26 @@ export async function importKolKind(kind: string): Promise<KolImportResult> {
     .filter((e) => ["ERROR", "FATAL"].includes(e.level.levelStr))
     .map((e) => e.data.map(String).join(" "));
   return { reads, errors };
+}
+
+/** 仕様書の項目表が省略している範囲を含めて、読んでよい範囲かどうか */
+export function isInsideSpec(spec: KolSpec, offset: number, length: number, elided: boolean) {
+  const end = offset + length;
+  if (spec.fields.some((f) => f.address <= offset && end <= f.address + f.bytes)) {
+    return true;
+  }
+  if (!elided) {
+    return false;
+  }
+  // 項目表に載っていない範囲 (繰り返しの途中) の内側
+  let prev = 0;
+  for (const f of spec.fields) {
+    if (prev < f.address && prev <= offset && end <= f.address) {
+      return true;
+    }
+    prev = Math.max(prev, f.address + f.bytes);
+  }
+  return false;
 }
 
 /** 見本ファイルのレコード(改行を含む)を取り出す */

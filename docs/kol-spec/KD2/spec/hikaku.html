@@ -1,0 +1,1698 @@
+<HTML>
+<HEAD>
+<meta http-equiv="Content-Type" content="text/html; charset=x-sjis">
+<TITLE>KOL KD2 Data Format</TITLE>
+</HEAD>
+<BODY bgcolor="#F4FFF4">
+<H1><CENTER>項目比較表</CENTER></H1>
+<TABLE>
+<TR><TD><FONT SIZE=+1><B>主要データ項目比較表</B></FONT></TD></TR>
+<TR><TD><form><select size="1" onChange="location=this.options[this.selectedIndex].value">
+<option value="index.html">お知らせ</option>
+<option value="first.html">はじめに</option>
+<option value="kol_sei1.html">競走成績レースデータ</option>
+<option value="kol_sei2.html">競走成績出走馬データ</option>
+<option value="kol_den1.html">出馬表レースデータ</option>
+<option value="kol_den2.html">出馬表出走馬データ</option>
+<option value="kol_uma.html">競走馬データ</option>
+<option value="kol_kis.html">騎手データ</option>
+<option value="kol_kyu.html">厩舎データ</option>
+<option value="kol_ods.html">予想オッズ</option>
+<option value="kol_kod.html">確定オッズ</option>
+<option value="kol_syu.html">種牡馬データ</option>
+<option value="kol_ket.html">３代血統図</option>
+<option value="kol_com1.html">コメントデータ</option>
+<option value="kol_tok1.html">特別登録レースデータ</option>
+<option value="kol_tok2.html">特別登録出走予定馬データ</option>
+<option selected value="hikaku.html">主要データ項目比較表</option>
+<option value="table.html">コードテーブル</option>
+<option value="history.html">改版履歴</option>
+</select></form></TD></TR>
+</TABLE>
+<Table border bgcolor="#FFFFFF" bordercolor="#CCCCCC">
+<TR ALIGN="center">
+<TD BGCOLOR=#C0C0C0 nowrap>成績レースデータ</TD>
+<TD BGCOLOR=#C0C0C0 nowrap>成績出走馬データ</TD>
+<TD BGCOLOR=#C0C0C0 nowrap>出馬表レースデータ</TD>
+<TD BGCOLOR=#C0C0C0 nowrap>出馬表出走馬データ</TD>
+<TD BGCOLOR=#C0C0C0 nowrap>競走馬過去詳細部分</TD>
+<TD BGCOLOR=#C0C0C0 nowrap>予想オッズ</TD>
+<TD BGCOLOR=#C0C0C0 nowrap>確定オッズ</TD>
+<TD BGCOLOR=#C0C0C0 nowrap>特別登録レースデータ</TD>
+<TD BGCOLOR=#C0C0C0 nowrap>特別登録馬データ</TD>
+</TR>
+<TR>
+<TD>開催場所コード</TD>
+<TD>開催場所コード</TD>
+<TD>開催場所コード</TD>
+<TD>開催場所コード</TD>
+<TD>開催場所コード</TD>
+<TD>開催場所コード</TD>
+<TD>開催場所コード</TD>
+<td>開催場所コード</td>
+<td>開催場所コード</td>
+</TR>
+<TR>
+<TD>開催年</TD>
+<TD>開催年</TD>
+<TD>開催年</TD>
+<TD>開催年</TD>
+<TD>開催年</TD>
+<TD>開催年</TD>
+<TD>開催年</TD>
+<td>開催年</td>
+<td>開催年</td>
+</TR>
+<TR>
+<TD>開催回次</TD>
+<TD>開催回次</TD>
+<TD>開催回次</TD>
+<TD>開催回次</TD>
+<TD>開催回次</TD>
+<TD>開催回次</TD>
+<TD>開催回次</TD>
+<td>開催回次</td>
+<td>開催回次</td>
+</TR>
+<TR>
+<TD>開催日次</TD>
+<TD>開催日次</TD>
+<TD>開催日次</TD>
+<TD>開催日次</TD>
+<TD>開催日次</TD>
+<TD>開催日次</TD>
+<TD>開催日次</TD>
+<td>開催日次</td>
+<td>開催日次</td>
+</TR>
+<TR>
+<TD>レース番号</TD>
+<TD>レース番号</TD>
+<TD>レース番号</TD>
+<TD>レース番号</TD>
+<TD>レース番号</TD>
+<TD>レース番号</TD>
+<TD>レース番号</TD>
+<td>レース番号</td>
+<td>レース番号</td>
+</TR>
+<TR>
+<TD>年月日</TD>
+<TD>年月日</TD>
+<TD>年月日</TD>
+<TD>年月日</TD>
+<TD>年月日</TD>
+<TD>年月日</TD>
+<TD>年月日</TD>
+<td>年月日</td>
+<td>年月日</td>
+</TR>
+<TR>
+<TD>曜日コード</TD>
+<TD>曜日コード</TD>
+<TD>曜日コード</TD>
+<TD>曜日コード</TD>
+<TD>曜日コード</TD>
+<TD>曜日コード</TD>
+<TD>曜日コード</TD>
+<td>曜日コード</td>
+<td>曜日コード</td>
+</TR>
+<TR>
+<TD>交流フラグ</TD>
+<TD>&nbsp;</TD>
+<TD>&nbsp;</TD>
+<TD>&nbsp;</TD>
+<TD>交流フラグ</TD>
+<TD>&nbsp;</TD>
+<TD>&nbsp;</TD>
+<TD>&nbsp;</TD>
+<TD>&nbsp;</TD>
+</TR>
+<TR>
+<TD>中央・地方・外国</TD>
+<TD>&nbsp;</TD>
+<TD>中央・地方・外国</TD>
+<TD>&nbsp;</TD>
+<TD>中央・地方・外国</TD>
+<TD>中央・地方・外国</TD>
+<TD>中央・地方・外国</TD>
+<td>中央・地方・外国</td>
+<TD>　</TD>
+</TR>
+<TR>
+<TD>一・特</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD>一・特</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD>一・特</TD>
+<TD>一・特</TD>
+<TD>一・特</TD>
+<td>一・特</td>
+<TD>　</TD>
+</TR>
+<TR>
+<TD>平・障</TD>
+<TD>&nbsp;</TD>
+<TD>平・障</TD>
+<TD>&nbsp;</TD>
+<TD>平・障</TD>
+<TD>平・障</TD>
+<TD>平・障</TD>
+<td>平・障</td>
+<TD>　</TD>
+</TR>
+<TR>
+<TD>重賞回数</TD>
+<TD>&nbsp;</TD>
+<TD>重賞回数</TD>
+<TD>&nbsp;</TD>
+<TD>重賞回数</TD>
+<TD>重賞回数</TD>
+<TD>重賞回数</TD>
+<td>重賞回数</td>
+<TD>　</TD>
+</TR>
+<TR>
+<TD>特別名１５</TD>
+<TD>&nbsp;</TD>
+<TD>特別名１５</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD>特別名１５</TD>
+<TD>特別名１５</TD>
+<TD>特別名１５</TD>
+<td>特別名１５</td>
+<TD>　</TD>
+</TR>
+<TR>
+<TD>特別名７</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD>特別名７</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD>特別名７</TD>
+<TD>特別名７</TD>
+<TD>特別名７</TD>
+<td>特別名７</td>
+<TD>　</TD>
+</TR>
+<TR>
+<TD>グレード</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD>グレード</TD>
+<TD>&nbsp;</TD>
+<TD>グレード</TD>
+<TD>グレード</TD>
+<TD>グレード</TD>
+<td>グレード</td>
+<TD>　</TD>
+</TR>
+<TR>
+<TD>別定馬齢ﾊﾝﾃﾞ概要ｺｰﾄﾞ</TD>
+<TD>&nbsp;</TD>
+<TD>別定馬齢ﾊﾝﾃﾞ概要ｺｰﾄﾞ</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD>別定馬齢ﾊﾝﾃﾞ概要ｺｰﾄﾞ</TD>
+<TD>別定馬齢ﾊﾝﾃﾞ概要ｺｰﾄﾞ</TD>
+<TD>別定馬齢ﾊﾝﾃﾞ概要ｺｰﾄﾞ</TD>
+<td>別定馬齢ﾊﾝﾃﾞ概要ｺｰﾄﾞ</td>
+<TD>　</TD>
+</TR>
+<TR>
+<TD>別定馬齢ﾊﾝﾃﾞ詳細</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD>別定馬齢ﾊﾝﾃﾞ詳細</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD>別定馬齢ﾊﾝﾃﾞ詳細</TD>
+<TD>別定馬齢ﾊﾝﾃﾞ詳細</TD>
+<TD>別定馬齢ﾊﾝﾃﾞ詳細</TD>
+<td>別定馬齢ﾊﾝﾃﾞ詳細</td>
+<TD>　</TD>
+</TR>
+<TR>
+<TD>条件付加１</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD>条件付加１</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD>条件付加１</TD>
+<TD>条件付加１</TD>
+<TD>条件付加１</TD>
+<td>条件付加１</td>
+<TD>　</TD>
+</TR>
+<TR>
+<TD>条件付加２</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD>条件付加２</TD>
+<TD>&nbsp;</TD>
+<TD>条件付加２</TD>
+<TD>条件付加２</TD>
+<TD>条件付加２</TD>
+<td>条件付加２</td>
+<TD>　</TD>
+</TR>
+<TR>
+<TD>条件カット</TD>
+<TD>&nbsp;</TD>
+<TD>条件カット</TD>
+<TD>&nbsp;</TD>
+<TD>条件カット</TD>
+<TD>条件カット</TD>
+<TD>条件カット</TD>
+<td>条件カット</td>
+<TD>　</TD>
+</TR>
+<TR>
+<TD>条件年齢制限</TD>
+<TD>&nbsp;</TD>
+<TD>条件年齢制限</TD>
+<TD>&nbsp;</TD>
+<TD>条件年齢制限</TD>
+<TD>条件年齢制限</TD>
+<TD>条件年齢制限</TD>
+<td>条件年齢制限</td>
+<TD>　</TD>
+</TR>
+<TR>
+<TD>条件1　公営(クラス)</TD>
+<TD>&nbsp;</TD>
+<TD>条件</TD>
+<TD>&nbsp;</TD>
+<TD>条件1　公営(クラス)</TD>
+<TD>条件</TD>
+<TD>条件</TD>
+<td>条件</td>
+<TD>　</TD>
+</TR>
+<TR>
+<TD>組１</TD>
+<TD>&nbsp;</TD>
+<TD>&nbsp;</TD>
+<TD>&nbsp;</TD>
+<TD>組１</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD>以上・以下・～・未満</TD>
+<TD>&nbsp;</TD>
+<TD>&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD>以上・以下・～・未満</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD>条件2　公営(クラス)</TD>
+<TD>&nbsp;</TD>
+<TD>&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD>条件2　公営(クラス)</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD>組２</TD>
+<TD>&nbsp;</TD>
+<TD>&nbsp;</TD>
+<TD>&nbsp;</TD>
+<TD>組２</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD>ダ・芝</TD>
+<TD>&nbsp;</TD>
+<TD>ダ・芝</TD>
+<TD>&nbsp;</TD>
+<TD>ダ・芝</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<td>ダ・芝</td>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD>右・左</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD>右・左</TD>
+<TD>&nbsp;</TD>
+<TD>右・左</TD>
+<TD>&nbsp;</TD>
+<TD>&nbsp;</TD>
+<td>右・左</td>
+<TD>&nbsp;</TD>
+</TR>
+<TR>
+<TD>内・外</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD>内・外</TD>
+<TD>&nbsp;</TD>
+<TD>内・外</TD>
+<TD>&nbsp;</TD>
+<TD>&nbsp;</TD>
+<td>内・外</td>
+<TD>&nbsp;</TD>
+</TR>
+<TR>
+<TD>コース</TD>
+<TD>&nbsp;</TD>
+<TD>コース</TD>
+<TD>&nbsp;</TD>
+<TD>コース</TD>
+<TD>&nbsp;</TD>
+<TD>&nbsp;</TD>
+<td>コース</td>
+<TD>&nbsp;</TD>
+</TR>
+<TR>
+<TD>距離</TD>
+<TD>&nbsp;</TD>
+<TD>距離</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD>距離</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD>&nbsp;</TD>
+<td>距離</td>
+<TD>&nbsp;</TD>
+</TR>
+<TR>
+<TD>コースレコード：レコードフラグ</TD>
+<TD>&nbsp;</TD>
+<TD>コースレコード：レコードフラグ</TD>
+<TD>&nbsp;</TD>
+<TD>&nbsp;</TD>
+<TD>&nbsp;</TD>
+<TD>&nbsp;</TD>
+<TD>&nbsp;</TD>
+<TD>&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">日付</TD>
+<TD>&nbsp;</TD>
+<TD ALIGN="right">日付</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD>&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD>&nbsp;</TD>
+<TD>&nbsp;</TD>
+<TD>&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">タイム</TD>
+<TD>&nbsp;</TD>
+<TD ALIGN="right">タイム</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD>&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD>&nbsp;</TD>
+<TD>&nbsp;</TD>
+<TD>&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">馬名</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">馬名</TD>
+<TD>&nbsp;</TD>
+<TD>&nbsp;</TD>
+<TD>&nbsp;</TD>
+<TD>&nbsp;</TD>
+<TD>&nbsp;</TD>
+<TD>&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">斤量</TD>
+<TD>&nbsp;</TD>
+<TD ALIGN="right">斤量</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD>&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD>&nbsp;</TD>
+<TD>&nbsp;</TD>
+<TD>&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">短縮騎手名</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">短縮騎手名</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD>&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD>&nbsp;</TD>
+<TD>&nbsp;</TD>
+<TD>&nbsp;</TD>
+</TR>
+<TR>
+<TD>距離レコード：日付</TD>
+<TD>&nbsp;</TD>
+<TD>距離レコード：日付</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD>&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD>&nbsp;</TD>
+<TD>&nbsp;</TD>
+<TD>&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">（ＪＲＡレコード）タイム</TD>
+<TD>&nbsp;</TD>
+<TD ALIGN="right">（ＪＲＡレコード）タイム</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">馬名</TD>
+<TD>&nbsp;</TD>
+<TD ALIGN="right">馬名</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD>&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD>&nbsp;</TD>
+<TD>&nbsp;</TD>
+<TD>&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">斤量</TD>
+<TD>&nbsp;</TD>
+<TD ALIGN="right">斤量</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">短縮騎手名</TD>
+<TD>&nbsp;</TD>
+<TD ALIGN="right">短縮騎手名</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">場所</TD>
+<TD>&nbsp;</TD>
+<TD ALIGN="right">場所</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD>&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD>&nbsp;</TD>
+<TD>&nbsp;</TD>
+<TD>&nbsp;</TD>
+</TR>
+<TR>
+<TD>レースレコード：日付</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD>レースレコード：日付</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">（Ｇ１レコード）タイム</TD>
+<TD>&nbsp;</TD>
+<TD ALIGN="right">（Ｇ１レコード）タイム</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">馬名</TD>
+<TD>&nbsp;</TD>
+<TD ALIGN="right">馬名</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD>&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD>&nbsp;</TD>
+<TD>&nbsp;</TD>
+<TD>&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">斤量</TD>
+<TD>&nbsp;</TD>
+<TD ALIGN="right">斤量</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD>&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD>&nbsp;</TD>
+<TD>&nbsp;</TD>
+<TD>&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">短縮騎手名</TD>
+<TD>&nbsp;</TD>
+<TD ALIGN="right">短縮騎手名</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD>&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD>&nbsp;</TD>
+<TD>&nbsp;</TD>
+<TD>&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">場所</TD>
+<TD>&nbsp;</TD>
+<TD ALIGN="right">場所</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD>&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD>&nbsp;</TD>
+<TD>&nbsp;</TD>
+<TD>&nbsp;</TD>
+</TR>
+<TR>
+<TD>賞金１着</TD>
+<TD>&nbsp;</TD>
+<TD>賞金１着</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD>&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD>&nbsp;</TD>
+<td>賞金１着</td>
+<TD>&nbsp;</TD>
+</TR>
+<TR>
+<TD>　　２着</TD>
+<TD>&nbsp;</TD>
+<TD>　　２着</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD>&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD>&nbsp;</TD>
+<td>　　２着</td>
+<TD>&nbsp;</TD>
+</TR>
+<TR>
+<TD>　　３着</TD>
+<TD>&nbsp;</TD>
+<TD>　　３着</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD>&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD>&nbsp;</TD>
+<td>　　３着</td>
+<TD>&nbsp;</TD>
+</TR>
+<TR>
+<TD>　　４着</TD>
+<TD>&nbsp;</TD>
+<TD>　　４着</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD>&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD>&nbsp;</TD>
+<td>　　４着</td>
+<TD>&nbsp;</TD>
+</TR>
+<TR>
+<TD>　　５着</TD>
+<TD>&nbsp;</TD>
+<TD>　　５着</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD>&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD>&nbsp;</TD>
+<td>　　５着</td>
+<TD>&nbsp;</TD>
+</TR>
+<TR>
+<TD>５着同着</TD>
+<TD>&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD>５着同着２</TD>
+<TD>&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD>&nbsp;</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD>&nbsp;</TD>
+<TD>&nbsp;</TD>
+<TD>&nbsp;</TD>
+</TR>
+<TR>
+<TD>附加賞</TD>
+<TD>&nbsp;</TD>
+<TD>附加賞</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD>前売りフラグ</TD>
+<TD>&nbsp;</TD>
+<TD>前売りフラグ</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD>&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD>予定発走時間</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD>発走時間</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD>&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD>&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD>&nbsp;</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD>&nbsp;</TD>
+<TD>予想前売りフラグ</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD>&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD>&nbsp;</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD>&nbsp;</TD>
+<TD>前売りオッズ発表時刻</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD>頭数</TD>
+<TD>&nbsp;</TD>
+<TD>頭数</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD>頭数</TD>
+<TD>頭数</TD>
+<TD>頭数</TD>
+<TD>頭数</TD>
+<TD>　</TD>
+</TR>
+<TR>
+<TD>取消頭数</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD>取消頭数</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD>取消頭数</TD>
+<TD>取消頭数</TD>
+<TD>取消頭数</TD>
+<TD>　</TD>
+<TD>　</TD>
+</TR>
+<TR>
+<TD>推定タイム　良</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD>推定タイム　良</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD>&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD>&nbsp;</TD>
+<TD>　</TD>
+<TD>&nbsp;</TD>
+</TR>
+<TR>
+<TD>
+<div align="right">重・不良</div>
+</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD>
+<div align="right">重・不良</div>
+</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD>&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD>&nbsp;</TD>
+<TD>&nbsp;</TD>
+<TD>&nbsp;</TD>
+</TR>
+<TR>
+<TD>ペース</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD>予想ペース</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD>ペース</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD>天気</TD>
+<TD>&nbsp;</TD>
+<TD>&nbsp;</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD>天気</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD>&nbsp;</TD>
+<TD>&nbsp;</TD>
+<TD>&nbsp;</TD>
+</TR>
+<TR>
+<TD>馬場</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD>馬場</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD>&nbsp;</TD>
+<TD>&nbsp;</TD>
+<TD>&nbsp;</TD>
+</TR>
+<TR>
+<TD>シード</TD>
+<TD>&nbsp;</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD>シード</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD>&nbsp;</TD>
+<TD>&nbsp;</TD>
+<TD>&nbsp;</TD>
+</TR>
+<TR>
+<TD>&nbsp;</TD>
+<TD>&nbsp;</TD>
+<TD>&nbsp;</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD>外国競馬場名</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD>&nbsp;</TD>
+<TD>&nbsp;</TD>
+<TD>&nbsp;</TD>
+</TR>
+<TR>
+<TD>&nbsp;</TD>
+<TD>&nbsp;</TD>
+<TD>データ作成年月日</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD>データ作成年月日</TD>
+<TD>データ作成年月日</TD>
+<TD>データ作成年月日</TD>
+<TD>　</TD>
+</TR>
+<TR>
+<TD>&nbsp;</TD>
+<TD>　</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD>　</TD>
+<TD>　</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD>&nbsp;</TD>
+<TD>頭数２</TD>
+<TD>連番</TD>
+</TR>
+<TR>
+<TD>&nbsp;</TD>
+<TD>枠番</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD>枠番</TD>
+<TD>枠番</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD>&nbsp;</TD>
+<TD>連番</TD>
+<TD>&nbsp;</TD>
+</TR>
+<TR>
+<TD>&nbsp;</TD>
+<TD>馬番</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD>馬番</TD>
+<TD>馬番</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD>&nbsp;</TD>
+<TD>&nbsp;</TD>
+<TD>&nbsp;</TD>
+</TR>
+<TR>
+<TD>&nbsp;</TD>
+<TD>ゲート</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD>ゲート</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD>&nbsp;</TD>
+<TD>&nbsp;</TD>
+<TD>&nbsp;</TD>
+</TR>
+<TR>
+<TD>&nbsp;</TD>
+<TD>馬コード</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD>馬コード</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD>&nbsp;</TD>
+<TD>馬コード</TD>
+<td>馬コード</td>
+</TR>
+<TR>
+<TD>&nbsp;</TD>
+<TD>カナ馬名</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD>カナ馬名</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD>&nbsp;</TD>
+<TD>&nbsp;</TD>
+<td>カナ馬名</td>
+</TR>
+<TR>
+<TD>&nbsp;</TD>
+<TD>馬記号</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD>馬記号</TD>
+<TD>馬記号</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD>&nbsp;</TD>
+<TD>&nbsp;</TD>
+<td>馬記号</td>
+</TR>
+<TR>
+<TD>&nbsp;</TD>
+<TD>性別</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD>性別</TD>
+<TD>性別</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD>&nbsp;</TD>
+<TD>&nbsp;</TD>
+<td>性別</td>
+</TR>
+<TR>
+<TD>&nbsp;</TD>
+<TD>年齢</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD>年齢</TD>
+<TD>年齢</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD>&nbsp;</TD>
+<TD>&nbsp;</TD>
+<td>年齢</td>
+</TR>
+<TR>
+<TD>&nbsp;</TD>
+<TD>馬主名</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD>馬主名</TD>
+<TD>馬主名</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD>&nbsp;</TD>
+<TD>&nbsp;</TD>
+<td>馬主名</td>
+</TR>
+<TR>
+<TD>&nbsp;</TD>
+<TD>縮小馬主名</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD>縮小馬主名</TD>
+<TD>縮小馬主名</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD>&nbsp;</TD>
+<TD>&nbsp;</TD>
+<td>縮小馬主名</td>
+</TR>
+<TR>
+<TD>&nbsp;</TD>
+<TD>予備フィールド</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD>予備フィールド</TD>
+<TD>予備フィールド</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD>&nbsp;</TD>
+<TD>&nbsp;</TD>
+<td>予備フィールド</td>
+</TR>
+<TR>
+<TD>&nbsp;</TD>
+<TD>ブリンカー</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD>ブリンカー</TD>
+<TD>ブリンカー</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD>&nbsp;</TD>
+<TD>&nbsp;</TD>
+<td>ブリンカー</td>
+</TR>
+<TR>
+<TD>&nbsp;</TD>
+<TD>斤量</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD>斤量</TD>
+<TD>斤量</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD>&nbsp;</TD>
+<TD>&nbsp;</TD>
+<td>斤量</td>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD>馬体重</TD>
+<TD ALIGN="center"><FONT COLOR=#000000>&nbsp;</FONT></TD>
+<TD>&nbsp;</TD>
+<TD>馬体重</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD>&nbsp;</TD>
+<TD>増減</TD>
+<TD ALIGN="center"><FONT COLOR=#000000>&nbsp;</FONT></TD>
+<TD>&nbsp;</TD>
+<TD>増減</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD>&nbsp;</TD>
+<TD>&nbsp;</TD>
+<TD>&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD>ﾚｺｰﾄﾞ指数（能力指数）</TD>
+<TD ALIGN="center"><FONT COLOR=#000000>&nbsp;</FONT></TD>
+<TD>&nbsp;</TD>
+<TD>ﾚｺｰﾄﾞ指数（能力指数）</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD>騎手コード</TD>
+<TD ALIGN="center"><FONT COLOR=#000000>&nbsp;</FONT></TD>
+<TD>騎手コード</TD>
+<TD>騎手コード</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">
+<div align="left">予定騎手コード</div>
+</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD>騎手名</TD>
+<TD ALIGN="center"><FONT COLOR=#000000>&nbsp;</FONT></TD>
+<TD>騎手名</TD>
+<TD>騎手名</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<td align="right">
+<div align="left">予定騎手名</div>
+</td>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD>短縮騎手名</TD>
+<TD ALIGN="center"><FONT COLOR=#000000>&nbsp;</FONT></TD>
+<TD>短縮騎手名</TD>
+<TD>短縮騎手名</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<td>短縮騎手名</td>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD>騎手東西別</TD>
+<TD ALIGN="center"><FONT COLOR=#000000>&nbsp;</FONT></TD>
+<TD>騎手東西別</TD>
+<TD>騎手東西別</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<td>予定騎手東西別</td>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD>騎手所属場所コード</TD>
+<TD ALIGN="center"><FONT COLOR=#000000>&nbsp;</FONT></TD>
+<TD>騎手所属場所コード</TD>
+<TD>騎手所属場所コード</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<td>予定騎手所属場所コード</td>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD>騎手所属厩舎コード</TD>
+<TD ALIGN="center"><FONT COLOR=#000000>&nbsp;</FONT></TD>
+<TD>騎手所属厩舎コード</TD>
+<TD>騎手所属厩舎コード</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<td>予定騎手所属厩舎コード</td>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD>見習い区分</TD>
+<TD ALIGN="center"><FONT COLOR=#000000>&nbsp;</FONT></TD>
+<TD>見習い区分</TD>
+<TD>見習い区分</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD>乗り替り</TD>
+<TD ALIGN="center"><FONT COLOR=#000000>&nbsp;</FONT></TD>
+<TD>乗り替り</TD>
+<TD>乗り替り</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD>厩舎コード</TD>
+<TD ALIGN="center"><FONT COLOR=#000000>&nbsp;</FONT></TD>
+<TD>厩舎コード</TD>
+<TD>厩舎コード</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<td>厩舎コード</td>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD>厩舎名</TD>
+<TD ALIGN="center"><FONT COLOR=#000000>&nbsp;</FONT></TD>
+<TD>厩舎名</TD>
+<TD>厩舎名</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<td>厩舎名</td>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD>短縮厩舎名</TD>
+<TD ALIGN="center"><FONT COLOR=#000000>&nbsp;</FONT></TD>
+<TD>短縮厩舎名</TD>
+<TD>短縮厩舎名</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<td>短縮厩舎名</td>
+</TR>
+<TR>
+<TD>&nbsp;</TD>
+<TD>厩舎所属場所コード</TD>
+<TD ALIGN="center"><FONT COLOR=#000000>&nbsp;</FONT></TD>
+<TD>厩舎所属場所コード</TD>
+<TD>厩舎所属場所コード</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD>&nbsp;</TD>
+<TD>&nbsp;</TD>
+<td>厩舎所属場所コード</td>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD>厩舎栗北南別</TD>
+<TD ALIGN="center"><FONT COLOR=#000000>&nbsp;</FONT></TD>
+<TD>厩舎栗北南別</TD>
+<TD>厩舎栗北南別</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<td>厩舎栗北南別</td>
+</TR>
+<TR>
+<TD>&nbsp;</TD>
+<TD>出馬表の予想印</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD>予想</TD>
+<TD>出馬表の予想印</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD>&nbsp;</TD>
+<TD>&nbsp;</TD>
+<TD>&nbsp;</TD>
+</TR>
+<TR>
+<TD>&nbsp;</TD>
+<TD>予想（本紙）</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD>予想（本紙）</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD>&nbsp;</TD>
+<TD>&nbsp;</TD>
+<TD>&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD>人気</TD>
+<TD ALIGN="center"><FONT COLOR=#000000>&nbsp;</FONT></TD>
+<TD>&nbsp;</TD>
+<TD>人気</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD>オッズ</TD>
+<TD ALIGN="center"><FONT COLOR=#000000>&nbsp;</FONT></TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD>オッズ</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD>確定着順</TD>
+<TD ALIGN="center"><FONT COLOR=#000000>&nbsp;</FONT></TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD>確定着順</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD>着順附加</TD>
+<TD ALIGN="center"><FONT COLOR=#000000>&nbsp;</FONT></TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD>着順附加</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD>入線着順</TD>
+<TD ALIGN="center"><FONT COLOR=#000000>&nbsp;</FONT></TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD>入線着順</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD>取消種別</TD>
+<TD ALIGN="center"><FONT COLOR=#000000>&nbsp;</FONT></TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD>取消種別</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD>レコード認識</TD>
+<TD ALIGN="center"><FONT COLOR=#000000>&nbsp;</FONT></TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD>レコード認識</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD>タイム</TD>
+<TD ALIGN="center"><FONT COLOR=#000000>&nbsp;</FONT></TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD>タイム</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD>着差１</TD>
+<TD ALIGN="center"><FONT COLOR=#000000>&nbsp;</FONT></TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD>着差１</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD>着差２</TD>
+<TD ALIGN="center"><FONT COLOR=#000000>&nbsp;</FONT></TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD>着差２</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD>タイム差</TD>
+<TD ALIGN="center"><FONT COLOR=#000000>&nbsp;</FONT></TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD>タイム差</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD>前半３Ｆ</TD>
+<TD ALIGN="center"><FONT COLOR=#000000>&nbsp;</FONT></TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD>前半３Ｆ</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD>後半３Ｆ</TD>
+<TD ALIGN="center"><FONT COLOR=#000000>&nbsp;</FONT></TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD>後半３Ｆ</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD>通過順位１</TD>
+<TD ALIGN="center"><FONT COLOR=#000000>&nbsp;</FONT></TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD>通過順位１</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD>通過順位２</TD>
+<TD ALIGN="center"><FONT COLOR=#000000>&nbsp;</FONT></TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD>通過順位２</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD>通過順位３</TD>
+<TD ALIGN="center"><FONT COLOR=#000000>&nbsp;</FONT></TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD>通過順位３</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD>通過順位４</TD>
+<TD ALIGN="center"><FONT COLOR=#000000>&nbsp;</FONT></TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD>通過順位４</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD>４角位置取り</TD>
+<TD ALIGN="center"><FONT COLOR=#000000>&nbsp;</FONT></TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD>４角位置取り</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD>調教フラグ</TD>
+<TD ALIGN="center"><FONT COLOR=#000000>&nbsp;</FONT></TD>
+<TD>調教フラグ</TD>
+<TD>調教フラグ</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD>追い切り　騎乗者</TD>
+<TD ALIGN="center"><FONT COLOR=#000000>&nbsp;</FONT></TD>
+<TD>調教１(前走追い切り)　騎乗者</TD>
+<TD>追い切り　騎乗者</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD>年月日</TD>
+<TD ALIGN="center"><FONT COLOR=#000000>&nbsp;</FONT></TD>
+<TD>年月日</TD>
+<TD>年月日</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD>場所</TD>
+<TD ALIGN="center"><FONT COLOR=#000000>&nbsp;</FONT></TD>
+<TD>場所</TD>
+<TD>場所</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD>コース</TD>
+<TD ALIGN="center"><FONT COLOR=#000000>&nbsp;</FONT></TD>
+<TD>コース</TD>
+<TD>コース</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD>馬場</TD>
+<TD ALIGN="center"><FONT COLOR=#000000>&nbsp;</FONT></TD>
+<TD>馬場</TD>
+<TD>馬場</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD>８Ｆ</TD>
+<TD ALIGN="center"><FONT COLOR=#000000>&nbsp;</FONT></TD>
+<TD>８Ｆ</TD>
+<TD>８Ｆ</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD>７Ｆ</TD>
+<TD ALIGN="center"><FONT COLOR=#000000>&nbsp;</FONT></TD>
+<TD>７Ｆ</TD>
+<TD>７Ｆ</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD>６Ｆ</TD>
+<TD ALIGN="center"><FONT COLOR=#000000>&nbsp;</FONT></TD>
+<TD>６Ｆ</TD>
+<TD>６Ｆ</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD>５Ｆ</TD>
+<TD ALIGN="center"><FONT COLOR=#000000>&nbsp;</FONT></TD>
+<TD>５Ｆ</TD>
+<TD>５Ｆ</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD>４Ｆ</TD>
+<TD ALIGN="center"><FONT COLOR=#000000>&nbsp;</FONT></TD>
+<TD>４Ｆ</TD>
+<TD>４Ｆ</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD>３Ｆ</TD>
+<TD ALIGN="center"><FONT COLOR=#000000>&nbsp;</FONT></TD>
+<TD>３Ｆ</TD>
+<TD>３Ｆ</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD>１Ｆ</TD>
+<TD ALIGN="center"><FONT COLOR=#000000>&nbsp;</FONT></TD>
+<TD>１Ｆ</TD>
+<TD>１Ｆ</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD>回った位置</TD>
+<TD ALIGN="center"><FONT COLOR=#000000>&nbsp;</FONT></TD>
+<TD>回った位置</TD>
+<TD>回った位置</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD>脚色</TD>
+<TD ALIGN="center"><FONT COLOR=#000000>&nbsp;</FONT></TD>
+<TD>脚色</TD>
+<TD>脚色</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD>調教矢印</TD>
+<TD ALIGN="center"><FONT COLOR=#000000>&nbsp;</FONT></TD>
+<TD>調教矢印</TD>
+<TD>調教矢印</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD>調教例外</TD>
+<TD ALIGN="center"><FONT COLOR=#000000>&nbsp;</FONT></TD>
+<TD>調教例外</TD>
+<TD>調教例外</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="center"><FONT COLOR=#000000>&nbsp;</FONT></TD>
+<TD>調教２</TD>
+<TD>&nbsp;</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="center"><FONT COLOR=#000000>&nbsp;</FONT></TD>
+<TD>調教３（追い切り）</TD>
+<TD>&nbsp;</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="center"><FONT COLOR=#000000>&nbsp;</FONT></TD>
+<TD>調教併せフラグ</TD>
+<TD>&nbsp;</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="center"><FONT COLOR=#000000>&nbsp;</FONT></TD>
+<TD>調教併せ</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="center"><FONT COLOR=#000000>&nbsp;</FONT></TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD>１（２）着馬馬名</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="center"><FONT COLOR=#000000>&nbsp;</FONT></TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD>１（２）着タイム</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD>データ作成年月日</TD>
+<TD ALIGN="center"><FONT COLOR=#000000>&nbsp;</FONT></TD>
+<TD>データ作成年月日</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<td>データ作成年月日</td>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD>生年</TD>
+<TD ALIGN="center"><FONT COLOR=#000000>&nbsp;</FONT></TD>
+<TD>生年</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<td>生年</td>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD>　</TD>
+<TD ALIGN="center">　</TD>
+<TD>レイティング</TD>
+<TD>　</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD>予備フィールド</TD>
+<TD ALIGN="center"><FONT COLOR=#000000>&nbsp;</FONT></TD>
+<TD>予備フィールド</TD>
+<TD>予備フィールド</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD BGCOLOR=#C0C0C0 ALIGN="right">&nbsp;</TD>
+<TD BGCOLOR=#C0C0C0 ALIGN="center">&nbsp;</TD>
+<TD BGCOLOR=#C0C0C0 ALIGN="center">&nbsp;</TD>
+<TD BGCOLOR=#C0C0C0 ALIGN="center">&nbsp;</TD>
+<TD BGCOLOR=#C0C0C0 ALIGN="center">&nbsp;</TD>
+<TD BGCOLOR=#C0C0C0 ALIGN="center">&nbsp;</TD>
+<TD BGCOLOR=#C0C0C0 ALIGN="right">&nbsp;</TD>
+<TD BGCOLOR=#C0C0C0 ALIGN="right">&nbsp;</TD>
+<TD BGCOLOR=#C0C0C0 ALIGN="right">&nbsp;</TD>
+</TR>
+</Table>
+<FONT SIZE=-1><I>
+<BR>
+更新日 2009/06/09<br>
+競馬道OnLine
+</I></font>
+</BODY>
+</HTML>

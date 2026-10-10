@@ -1,0 +1,33 @@
+
+◎添付ファイル一覧
+
+○TXTファイル
+  filelist.txt：このファイルです
+  info.txt：お知らせ [TXT版]
+  readme.txt：はじめに [TXT版]
+  table.txt：コードテーブル [TXT版]
+  history.txt：改版履歴 [TXT版]
+
+
+○HTMLファイル
+  index.html：お知らせ
+  first.html：はじめに
+  kol_sei1.html：競走成績レースデータ仕様 [HTML版]
+  kol_sei2.html：競走成績出走馬データ仕様 [HTML版]
+  kol_den1.html：出馬表レースデータ仕様 [HTML版]
+  kol_den2.html：出馬表出走馬データ仕様 [HTML版]
+  kol_uma.html：競走馬データ仕様 [HTML版]
+  kol_kis.html：騎手データ仕様 [HTML版]
+  kol_kyu.html：厩舎データ仕様 [HTML版]
+  kol_ods.html：予想オッズ仕様 [HTML版]
+  kol_kod.html：確定オッズ仕様 [HTML版]
+  kol_syu.html：種牡馬データ仕様 [HTML版]
+  kol_ket.html：３代血統図仕様 [HTML版]
+  kol_com1.html：騎手厩舎コメント／次走へのメモデータ仕様 [HTML版]
+  kol_tok1.html : 特別登録レースデータ [HTML版]
+  kol_tok2.html : 特別登録予定場データ [HTML版]
+  hikaku.html：主要データ項目比較表 [HTML版]
+  table.html：コードテーブル [HTML版]
+  history.html：改版履歴 [HTML版]
+
+                                                   以上

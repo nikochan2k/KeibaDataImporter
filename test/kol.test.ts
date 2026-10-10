@@ -40,6 +40,7 @@ import {
   closeKolDb,
   field,
   importKolKind,
+  isInsideSpec,
   type KolImportResult,
   kolKinds,
   kolRecords,
@@ -97,31 +98,6 @@ async function saveRecord(kind: Kind, record: Buffer) {
   } finally {
     await reader.teardown();
   }
-}
-
-/** 仕様書(KD3 フォーマット 第11版)の項目表が省略している範囲を含めて、読んでよい範囲かどうか */
-function isInsideSpec(
-  spec: ReturnType<typeof parseKolSpec>,
-  offset: number,
-  length: number,
-  elided: boolean,
-) {
-  const end = offset + length;
-  if (spec.fields.some((f) => f.address <= offset && end <= f.address + f.bytes)) {
-    return true;
-  }
-  if (!elided) {
-    return false;
-  }
-  // 項目表に載っていない範囲 (繰り返しの途中) の内側
-  let prev = 0;
-  for (const f of spec.fields) {
-    if (prev < f.address && prev <= offset && end <= f.address) {
-      return true;
-    }
-    prev = Math.max(prev, f.address + f.bytes);
-  }
-  return false;
 }
 
 /**

@@ -1,0 +1,622 @@
+<HTML>
+<HEAD>
+<meta http-equiv="Content-Type" content="text/html; charset=x-sjis">
+<TITLE>KOL KD2 Data Format</TITLE>
+<style type="text/css">
+<!--
+table {  font-size: 9pt}
+-->
+</style>
+</HEAD>
+<BODY bgcolor="#F4FFF4">
+<H1><CENTER>３代血統図</CENTER></H1>
+<TABLE>
+<TR><TD><FONT SIZE=+1><B>３代血統図 【ファイル名：kol_ket.kd2】</B></FONT></TD></TR>
+<TR><TD><form><select size="1" onChange="location=this.options[this.selectedIndex].value">
+<option value="index.html">お知らせ</option>
+<option value="first.html">はじめに</option>
+<option value="kol_sei1.html">競走成績レースデータ</option>
+<option value="kol_sei2.html">競走成績出走馬データ</option>
+<option value="kol_den1.html">出馬表レースデータ</option>
+<option value="kol_den2.html">出馬表出走馬データ</option>
+<option value="kol_uma.html">競走馬データ</option>
+<option value="kol_kis.html">騎手データ</option>
+<option value="kol_kyu.html">厩舎データ</option>
+<option value="kol_ods.html">予想オッズ</option>
+<option value="kol_kod.html">確定オッズ</option>
+<option value="kol_syu.html">種牡馬データ</option>
+<option selected value="kol_ket.html">３代血統図</option>
+<option value="kol_com1.html">コメントデータ</option>
+<option value="kol_tok1.html">特別登録レースデータ</option>
+<option value="kol_tok2.html">特別登録出走予定馬データ</option>
+<option value="hikaku.html">主要データ項目比較表</option>
+<option value="table.html">コードテーブル</option>
+<option value="history.html">改版履歴</option>
+</select></form></TD></TR>
+</TABLE>
+<Table border bgcolor="#FFFFFF" bordercolor="#CCCCCC" width="100%">
+<tr> 
+    
+<td bgcolor=#C0C0C0 width="13" nowrap>
+<div align="center"><font color="#000000">記</font></div>
+</td>
+<td bgcolor=#C0C0C0 width="27" nowrap>
+<div align="center"><font color="#000000">項番</font></div>
+</td>
+<td bgcolor=#C0C0C0 width="120" nowrap>
+<div align="center"><font color="#000000">項目名</font></div>
+</td>
+<td bgcolor=#C0C0C0 align="center" width="31" nowrap>
+<div align="center"><font color="#000000">桁数</font></div>
+</td>
+<td bgcolor=#C0C0C0 align="center" width="42" nowrap>
+<div align="center"><font color="#000000">アドレス</font></div>
+</td>
+<td bgcolor=#C0C0C0 align="center" width="8" nowrap>
+<div align="center"><font color="#000000">規</font></div>
+</td>
+<td bgcolor=#C0C0C0 width="349" nowrap><font color="#000000">　　備　　　考</font></td>
+</tr>
+
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">1</TD>
+<TD width="120">馬コード</TD>
+<TD ALIGN="center">7</TD>
+<TD ALIGN="center">0</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">2</TD>
+<TD width="120">
+<div align="right">カナ馬名</div>
+</TD>
+<TD ALIGN="center">30</TD>
+<TD ALIGN="center">7</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">3</TD>
+<TD width="120">
+輸入馬フラグ２</TD>
+<TD ALIGN="center">1</TD>
+<TD ALIGN="center">37</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD>1=日本馬　2=持込馬　3=輸入馬　4=招待馬　5=外国馬</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">4</TD>
+<TD width="120">馬コード２</TD>
+<TD ALIGN="center">7</TD>
+<TD ALIGN="center">38</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">5</TD>
+<TD width="120">
+<div align="right">カナ馬名２</div>
+</TD>
+<TD ALIGN="center">34</TD>
+<TD ALIGN="center">45</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD>父馬名</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">6</TD>
+<TD width="120">
+<div align="right">英語馬名２</div>
+</TD>
+<TD ALIGN="center">34</TD>
+<TD ALIGN="center">79</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD>半角欧文、ローマ数字で表記　　詳細は注１を参照。</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">7</TD>
+<TD width="120">
+<div align="right">生年</div>
+</TD>
+<TD ALIGN="center">4</TD>
+<TD ALIGN="center">113</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD>YYYY</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">8</TD>
+<TD width="120">
+<div align="right">毛色コード</div>
+</TD>
+<TD ALIGN="center">2</TD>
+<TD ALIGN="center">117</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD>毛色テーブル参照</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">9</TD>
+<TD width="120">
+<div align="right">血種コード</div>
+</TD>
+<TD ALIGN="center">2</TD>
+<TD ALIGN="center">119</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD>血種テーブル参照</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">10</TD>
+<TD width="120">
+輸入馬フラグ３</TD>
+<TD ALIGN="center">1</TD>
+<TD ALIGN="center">121</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">11</TD>
+<TD width="120">馬コード３</TD>
+<TD ALIGN="center">7</TD>
+<TD ALIGN="center">122</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">12</TD>
+<TD width="120">
+<div align="right">カナ馬名３</div>
+</TD>
+<TD ALIGN="center">34</TD>
+<TD ALIGN="center">129</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD>母馬名</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">13</TD>
+<TD width="120">
+<div align="right">英語馬名３</div>
+</TD>
+<TD ALIGN="center">34</TD>
+<TD ALIGN="center">163</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">14</TD>
+<TD width="120">
+<div align="right">生年</div>
+</TD>
+<TD ALIGN="center">4</TD>
+<TD ALIGN="center">197</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">15</TD>
+<TD width="120">
+<div align="right">毛色コード</div>
+</TD>
+<TD ALIGN="center">2</TD>
+<TD ALIGN="center">201</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">16</TD>
+<TD width="120">
+<div align="right">血種コード</div>
+</TD>
+<TD ALIGN="center">2</TD>
+<TD ALIGN="center">203</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">17</TD>
+<TD width="120">
+輸入馬フラグ４</TD>
+<TD ALIGN="center">1</TD>
+<TD ALIGN="center">205</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">18</TD>
+<TD width="120">馬コード４</TD>
+<TD ALIGN="center">7</TD>
+<TD ALIGN="center">206</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">19</TD>
+<TD width="120">
+<div align="right">カナ又は英語馬名４</div>
+</TD>
+<TD ALIGN="center">34</TD>
+<TD ALIGN="center">213</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD>父父馬名</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">20</TD>
+<TD width="120">輸入馬フラグ５</TD>
+<TD ALIGN="center">1</TD>
+<TD ALIGN="center">247</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">21</TD>
+<TD width="120">馬コード５</TD>
+<TD ALIGN="center">7</TD>
+<TD ALIGN="center">248</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">22</TD>
+<TD width="120">
+<div align="right">カナ又は英語馬名５</div>
+</TD>
+<TD ALIGN="center">34</TD>
+<TD ALIGN="center">255</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD>父母馬名</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">23</TD>
+<TD width="120">輸入馬フラグ６</TD>
+<TD ALIGN="center">1</TD>
+<TD ALIGN="center">289</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">24</TD>
+<TD width="120">
+馬コード６</TD>
+<TD ALIGN="center">7</TD>
+<TD ALIGN="center">290</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">25</TD>
+<TD width="120">
+<div align="right">カナ又は英語馬名６</div>
+</TD>
+<TD ALIGN="center">34</TD>
+<TD ALIGN="center">297</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD>母父馬名</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">26</TD>
+<TD width="120">輸入馬フラグ７</TD>
+<TD ALIGN="center">1</TD>
+<TD ALIGN="center">331</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">27</TD>
+<TD width="120">馬コード７</TD>
+<TD ALIGN="center">7</TD>
+<TD ALIGN="center">332</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">28</TD>
+<TD width="120">
+<div align="right">カナ又は英語馬名７</div>
+</TD>
+<TD ALIGN="center">34</TD>
+<TD ALIGN="center">339</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD>母母馬名</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">29</TD>
+<TD width="120">輸入馬フラグ８</TD>
+<TD ALIGN="center">1</TD>
+<TD ALIGN="center">373</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">30</TD>
+<TD width="120">馬コード８</TD>
+<TD ALIGN="center">7</TD>
+<TD ALIGN="center">374</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">31</TD>
+<TD width="120">
+<div align="right">カナ又は英語馬名８</div>
+</TD>
+<TD ALIGN="center">34</TD>
+<TD ALIGN="center">381</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD>父父父馬名</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">32</TD>
+<TD width="120">輸入馬フラグ９</TD>
+<TD ALIGN="center">1</TD>
+<TD ALIGN="center">415</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">33</TD>
+<TD width="120">馬コード９</TD>
+<TD ALIGN="center">7</TD>
+<TD ALIGN="center">416</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">34</TD>
+<TD width="120">
+<div align="right">カナ又は英語馬名９</div>
+</TD>
+<TD ALIGN="center">34</TD>
+<TD ALIGN="center">423</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD>父父母馬名</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">35</TD>
+<TD width="120">輸入馬フラグ１０</TD>
+<TD ALIGN="center">1</TD>
+<TD ALIGN="center">457</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">36</TD>
+<TD width="120">馬コード１０</TD>
+<TD ALIGN="center">7</TD>
+<TD ALIGN="center">458</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">37</TD>
+<TD width="120">
+<div align="right">カナ又は英語馬名１０</div>
+</TD>
+<TD ALIGN="center">34</TD>
+<TD ALIGN="center">465</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD>父母父馬名</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">38</TD>
+<TD width="120">輸入馬フラグ１１</TD>
+<TD ALIGN="center">1</TD>
+<TD ALIGN="center">499</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">39</TD>
+<TD width="120">馬コード１１</TD>
+<TD ALIGN="center">7</TD>
+<TD ALIGN="center">500</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">40</TD>
+<TD width="120">
+<div align="right">カナ又は英語馬名１１</div>
+</TD>
+<TD ALIGN="center">34</TD>
+<TD ALIGN="center">507</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD>父母母馬名</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">41</TD>
+<TD width="120">輸入馬フラグ１２</TD>
+<TD ALIGN="center">1</TD>
+<TD ALIGN="center">541</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">42</TD>
+<TD width="120">馬コード１２</TD>
+<TD ALIGN="center">7</TD>
+<TD ALIGN="center">542</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">43</TD>
+<TD width="120">
+<div align="right">カナ又は英語馬名１２</div>
+</TD>
+<TD ALIGN="center">34</TD>
+<TD ALIGN="center">549</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD>母父父馬名</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">44</TD>
+<TD width="120">輸入馬フラグ１３</TD>
+<TD ALIGN="center">1</TD>
+<TD ALIGN="center">583</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">45</TD>
+<TD width="120">馬コード１３</TD>
+<TD ALIGN="center">7</TD>
+<TD ALIGN="center">584</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">46</TD>
+<TD width="120">
+<div align="right">カナ又は英語馬名１３</div>
+</TD>
+<TD ALIGN="center">34</TD>
+<TD ALIGN="center">591</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD>母父母馬名</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">47</TD>
+<TD width="120">輸入馬フラグ１４</TD>
+<TD ALIGN="center">1</TD>
+<TD ALIGN="center">625</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">48</TD>
+<TD width="120">馬コード１４</TD>
+<TD ALIGN="center">7</TD>
+<TD ALIGN="center">626</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">49</TD>
+<TD width="120">
+<div align="right">カナ又は英語馬名１４</div>
+</TD>
+<TD ALIGN="center">34</TD>
+<TD ALIGN="center">633</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD>母母父馬名</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">50</TD>
+<TD width="120">輸入馬フラグ１５</TD>
+<TD ALIGN="center">1</TD>
+<TD ALIGN="center">667</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">51</TD>
+<TD width="120">馬コード１５</TD>
+<TD ALIGN="center">7</TD>
+<TD ALIGN="center">668</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">52</TD>
+<TD width="120">
+<div align="right">カナ又は英語馬名１５</div>
+</TD>
+<TD ALIGN="center">34</TD>
+<TD ALIGN="center">675</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD>母母母馬名</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">53</TD>
+<TD width="120">データ作成年月日</TD>
+<TD ALIGN="center">8</TD>
+<TD ALIGN="center">709</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">54</TD>
+<TD width="120">予備フィールド</TD>
+<TD ALIGN="center">120</TD>
+<TD ALIGN="center">717</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">55</TD>
+<TD width="120">データ区切り</TD>
+<TD ALIGN="center">2</TD>
+<TD ALIGN="center">837</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD>CR/LF</TD>
+</TR>
+<TR>
+<TD BGCOLOR=#C0C0C0 ALIGN="right">&nbsp;</TD>
+<TD BGCOLOR=#C0C0C0 ALIGN="right">&nbsp;</TD>
+<TD BGCOLOR=#C0C0C0 width="120">合　計</TD>
+<TD BGCOLOR=#C0C0C0 ALIGN="center">839</TD>
+<TD BGCOLOR=#C0C0C0 ALIGN="center">&nbsp;</TD>
+<TD BGCOLOR=#C0C0C0 ALIGN="center">&nbsp;</TD>
+<TD BGCOLOR=#C0C0C0 ALIGN="right">&nbsp;</TD>
+</TR>
+</Table>
+<FONT SIZE=-1><I>
+<BR>
+更新日 2009/06/09<br>
+競馬道OnLine
+</I></font>
+</BODY>
+</HTML>

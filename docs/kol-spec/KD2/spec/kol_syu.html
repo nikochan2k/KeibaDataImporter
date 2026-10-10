@@ -1,0 +1,1555 @@
+<HTML>
+<HEAD>
+<meta http-equiv="Content-Type" content="text/html; charset=x-sjis">
+<TITLE>KOL KD2 Data Format</TITLE>
+<style type="text/css">
+<!--
+table {  font-size: 9pt}
+-->
+</style>
+</HEAD>
+<BODY bgcolor="#F4FFF4">
+<H1><CENTER>種牡馬データ</CENTER></H1>
+<TABLE>
+<TR><TD><FONT SIZE=+1><B>種牡馬データ 【ファイル名：kol_syu.kd2】</B></FONT></TD></TR>
+<TR><TD><form><select size="1" onChange="location=this.options[this.selectedIndex].value">
+<option value="index.html">お知らせ</option>
+<option value="first.html">はじめに</option>
+<option value="kol_sei1.html">競走成績レースデータ</option>
+<option value="kol_sei2.html">競走成績出走馬データ</option>
+<option value="kol_den1.html">出馬表レースデータ</option>
+<option value="kol_den2.html">出馬表出走馬データ</option>
+<option value="kol_uma.html">競走馬データ</option>
+<option value="kol_kis.html">騎手データ</option>
+<option value="kol_kyu.html">厩舎データ</option>
+<option value="kol_ods.html">予想オッズ</option>
+<option value="kol_kod.html">確定オッズ</option>
+<option selected value="kol_syu.html">種牡馬データ</option>
+<option value="kol_ket.html">３代血統図</option>
+<option value="kol_com1.html">コメントデータ</option>
+<option value="kol_tok1.html">特別登録レースデータ</option>
+<option value="kol_tok2.html">特別登録出走予定馬データ</option>
+<option value="hikaku.html">主要データ項目比較表</option>
+<option value="table.html">コードテーブル</option>
+<option value="history.html">改版履歴</option>
+</select></form></TD></TR>
+</TABLE>
+<Table border bgcolor="#FFFFFF" bordercolor="#CCCCCC" width="100%">
+<tr> 
+    
+<td bgcolor=#C0C0C0 width="13" nowrap>
+<div align="center"><font color="#000000">記</font></div>
+</td>
+<td bgcolor=#C0C0C0 width="27" nowrap>
+<div align="center"><font color="#000000">項番</font></div>
+</td>
+<td bgcolor=#C0C0C0 width="85" nowrap>
+<div align="center"><font color="#000000">項目名</font></div>
+</td>
+<td bgcolor=#C0C0C0 align="center" width="31" nowrap>
+<div align="center"><font color="#000000">桁数</font></div>
+</td>
+<td bgcolor=#C0C0C0 align="center" width="44" nowrap>
+<div align="center"><font color="#000000">アドレス</font></div>
+</td>
+<td bgcolor=#C0C0C0 align="center" width="8" nowrap>
+<div align="center"><font color="#000000">規</font></div>
+</td>
+<td bgcolor=#C0C0C0><font color="#000000">　　備　　　考</font></td>
+</tr>
+
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">1</TD>
+<TD>種牡馬コード</TD>
+<TD ALIGN="center">7</TD>
+<TD ALIGN="center">0</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">2</TD>
+<TD>馬名</TD>
+<TD ALIGN="center">34</TD>
+<TD ALIGN="center">7</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD>カナ優先</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">3</TD>
+<TD>生年</TD>
+<TD ALIGN="center"><FONT COLOR=#000000>4</FONT></TD>
+<TD ALIGN="center">41</TD>
+<TD ALIGN="center"><FONT COLOR=#000000>&nbsp;</FONT></TD>
+<TD>YYYY</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">4</TD>
+<TD>毛色コード</TD>
+<TD ALIGN="center">2</TD>
+<TD ALIGN="center">45</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">5</TD>
+<TD>産地コード</TD>
+<TD ALIGN="center">3</TD>
+<TD ALIGN="center">47</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">6</TD>
+<TD>輸入馬フラグ</TD>
+<TD ALIGN="center">1</TD>
+<TD ALIGN="center">50</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD>1=日本馬　2=持込馬　3=輸入馬　4=招待馬　5=外国馬</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">7</TD>
+<TD>父馬コード</TD>
+<TD ALIGN="center">7</TD>
+<TD ALIGN="center">51</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">8</TD>
+<TD>父馬名</TD>
+<TD ALIGN="center">34</TD>
+<TD ALIGN="center">58</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD>カナ優先</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">9</TD>
+<TD>母馬コード</TD>
+<TD ALIGN="center">7</TD>
+<TD ALIGN="center">92</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">10</TD>
+<TD>母馬名</TD>
+<TD ALIGN="center">34</TD>
+<TD ALIGN="center">99</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD>カナ優先</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">11</TD>
+<TD>距離適性</TD>
+<TD ALIGN="center">1</TD>
+<TD ALIGN="center">133</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD>1=短　2=中　3=長</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">12</TD>
+<TD>重巧拙</TD>
+<TD ALIGN="center">1</TD>
+<TD ALIGN="center">134</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD>1=◎　2=○　3=△</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">13</TD>
+<TD>ダ巧拙</TD>
+<TD ALIGN="center">1</TD>
+<TD ALIGN="center">135</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD>1=◎　2=○　3=△</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">14</TD>
+<TD>死亡年</TD>
+<TD ALIGN="center">4</TD>
+<TD ALIGN="center">136</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD>YYYY</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">15</TD>
+<TD>予備フィールド</TD>
+<TD ALIGN="center">340</TD>
+<TD ALIGN="center">140</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">16</TD>
+<TD>データ作成年月日</TD>
+<TD ALIGN="center">8</TD>
+<TD ALIGN="center">480</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD>YYYYMMDD</TD>
+</TR>
+<TR>
+<TD>　</TD>
+<TD ALIGN="right">17</TD>
+<TD>産駒年齢別成績　２歳馬　１着</TD>
+<TD ALIGN="center">4</TD>
+<TD ALIGN="center">488</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD>2000年以前のデータは３歳馬が対象(馬齢表記変更のため)</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">18</TD>
+<TD>　　　　　　　　　　　　２着</TD>
+<TD ALIGN="center">4</TD>
+<TD ALIGN="center">492</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">19</TD>
+<TD>　　　　　　　　　　　　３着</TD>
+<TD ALIGN="center">4</TD>
+<TD ALIGN="center">496</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">20</TD>
+<TD>　　　　　　　　　　　　着外</TD>
+<TD ALIGN="center">4</TD>
+<TD ALIGN="center">500</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD>　</TD>
+<TD ALIGN="right">21</TD>
+<TD>　　　　　　　　３歳馬　１着</TD>
+<TD ALIGN="center">4</TD>
+<TD ALIGN="center">504</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD>2000年以前のデータは４歳馬が対象(馬齢表記変更のため)</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">22</TD>
+<TD>　　　　　　　　　　　　２着</TD>
+<TD ALIGN="center">4</TD>
+<TD ALIGN="center">508</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">23</TD>
+<TD>　　　　　　　　　　　　３着</TD>
+<TD ALIGN="center">4</TD>
+<TD ALIGN="center">512</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">24</TD>
+<TD>　　　　　　　　　　　　着外</TD>
+<TD ALIGN="center">4</TD>
+<TD ALIGN="center">516</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD>　</TD>
+<TD ALIGN="right">25</TD>
+<TD>　　　　　　４歳馬以上　１着</TD>
+<TD ALIGN="center">4</TD>
+<TD ALIGN="center">520</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD>2000年以前のデータは５歳馬以上が対象(馬齢表記変更のため)</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">26</TD>
+<TD>　　　　　　　　　　　　２着</TD>
+<TD ALIGN="center">4</TD>
+<TD ALIGN="center">524</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">27</TD>
+<TD>　　　　　　　　　　　　３着</TD>
+<TD ALIGN="center">4</TD>
+<TD ALIGN="center">528</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">28</TD>
+<TD>　　　　　　　　　　　　着外</TD>
+<TD ALIGN="center">4</TD>
+<TD ALIGN="center">532</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">29</TD>
+<TD>産駒連対脚質別回数  逃</TD>
+<TD ALIGN="center">4</TD>
+<TD ALIGN="center">536</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD>　※障害は含まない。</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">30</TD>
+<TD>　　　　　　　    　先</TD>
+<TD ALIGN="center">4</TD>
+<TD ALIGN="center">540</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">31</TD>
+<TD>　　　　　　　    　差</TD>
+<TD ALIGN="center">4</TD>
+<TD ALIGN="center">544</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">32</TD>
+<TD>　　　　　　　    　追</TD>
+<TD ALIGN="center">4</TD>
+<TD ALIGN="center">548</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">33</TD>
+<TD>産駒成績　平地芝　１着</TD>
+<TD ALIGN="center">4</TD>
+<TD ALIGN="center">552</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">34</TD>
+<TD>　　　　　　　　　２着</TD>
+<TD ALIGN="center">4</TD>
+<TD ALIGN="center">556</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">35</TD>
+<TD>　　　　　　　　　３着</TD>
+<TD ALIGN="center">4</TD>
+<TD ALIGN="center">560</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">36</TD>
+<TD>　　　　　　　　　着外</TD>
+<TD ALIGN="center">4</TD>
+<TD ALIGN="center">564</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">37</TD>
+<TD>　　　　　平地ダ　１着</TD>
+<TD ALIGN="center">4</TD>
+<TD ALIGN="center">568</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">38</TD>
+<TD>　　　　　　　　　２着</TD>
+<TD ALIGN="center">4</TD>
+<TD ALIGN="center">572</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">39</TD>
+<TD>　　　　　　　　　３着</TD>
+<TD ALIGN="center">4</TD>
+<TD ALIGN="center">576</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">40</TD>
+<TD>　　　　　　　　　着外</TD>
+<TD ALIGN="center">4</TD>
+<TD ALIGN="center">580</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">41</TD>
+<TD>　　　　　障害　　１着</TD>
+<TD ALIGN="center">4</TD>
+<TD ALIGN="center">584</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">42</TD>
+<TD>　　　　　　　　　２着</TD>
+<TD ALIGN="center">4</TD>
+<TD ALIGN="center">588</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">43</TD>
+<TD>　　　　　　　　　３着</TD>
+<TD ALIGN="center">4</TD>
+<TD ALIGN="center">592</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">44</TD>
+<TD>　　　　　　　　　着外</TD>
+<TD ALIGN="center">4</TD>
+<TD ALIGN="center">596</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">45</TD>
+<TD>産駒馬場状態別成績　芝良１着</TD>
+<TD ALIGN="center">4</TD>
+<TD ALIGN="center">600</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">46</TD>
+<TD>　　　　　　　　　　　　２着</TD>
+<TD ALIGN="center">4</TD>
+<TD ALIGN="center">604</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">47</TD>
+<TD>　　　　　　　　　　　　３着</TD>
+<TD ALIGN="center">4</TD>
+<TD ALIGN="center">608</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">48</TD>
+<TD>　　　　　　　　　　　　着外</TD>
+<TD ALIGN="center">4</TD>
+<TD ALIGN="center">612</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">49</TD>
+<TD>　　　　　　　　　芝稍重１着</TD>
+<TD ALIGN="center">4</TD>
+<TD ALIGN="center">616</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">50</TD>
+<TD>　　　　　　　　　　　　２着</TD>
+<TD ALIGN="center">4</TD>
+<TD ALIGN="center">620</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">51</TD>
+<TD>　　　　　　　　　　　　３着</TD>
+<TD ALIGN="center">4</TD>
+<TD ALIGN="center">624</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">52</TD>
+<TD>　　　　　　　　　　　　着外</TD>
+<TD ALIGN="center">4</TD>
+<TD ALIGN="center">628</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">53</TD>
+<TD>　　　　　　　　　　芝重１着</TD>
+<TD ALIGN="center">4</TD>
+<TD ALIGN="center">632</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">54</TD>
+<TD>　　　　　　　　　　　　２着</TD>
+<TD ALIGN="center">4</TD>
+<TD ALIGN="center">636</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">55</TD>
+<TD>　　　　　　　　　　　　３着</TD>
+<TD ALIGN="center">4</TD>
+<TD ALIGN="center">640</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">56</TD>
+<TD>　　　　　　　　　　　　着外</TD>
+<TD ALIGN="center">4</TD>
+<TD ALIGN="center">644</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">57</TD>
+<TD>　　　　　　　　　芝不良１着</TD>
+<TD ALIGN="center">4</TD>
+<TD ALIGN="center">648</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">58</TD>
+<TD>　　　　　　　　　　　　２着</TD>
+<TD ALIGN="center">4</TD>
+<TD ALIGN="center">652</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">59</TD>
+<TD>　　　　　　　　　　　　３着</TD>
+<TD ALIGN="center">4</TD>
+<TD ALIGN="center">656</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">60</TD>
+<TD>　　　　　　　　　　　　着外</TD>
+<TD ALIGN="center">4</TD>
+<TD ALIGN="center">660</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">61</TD>
+<TD>　　　　　　　　　　ダ良１着</TD>
+<TD ALIGN="center">4</TD>
+<TD ALIGN="center">664</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">62</TD>
+<TD>　　　　　　　　　　　　２着</TD>
+<TD ALIGN="center">4</TD>
+<TD ALIGN="center">668</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">63</TD>
+<TD>　　　　　　　　　　　　３着</TD>
+<TD ALIGN="center">4</TD>
+<TD ALIGN="center">672</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">64</TD>
+<TD>　　　　　　　　　　　　着外</TD>
+<TD ALIGN="center">4</TD>
+<TD ALIGN="center">676</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">65</TD>
+<TD>　　　　　　　　　ダ稍重１着</TD>
+<TD ALIGN="center">4</TD>
+<TD ALIGN="center">680</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">66</TD>
+<TD>　　　　　　　　　　　　２着</TD>
+<TD ALIGN="center">4</TD>
+<TD ALIGN="center">684</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">67</TD>
+<TD>　　　　　　　　　　　　３着</TD>
+<TD ALIGN="center">4</TD>
+<TD ALIGN="center">688</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">68</TD>
+<TD>　　　　　　　　　　　　着外</TD>
+<TD ALIGN="center">4</TD>
+<TD ALIGN="center">692</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">69</TD>
+<TD>　　　　　　　　　　ダ重１着</TD>
+<TD ALIGN="center">4</TD>
+<TD ALIGN="center">696</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">70</TD>
+<TD>　　　　　　　　　　　　２着</TD>
+<TD ALIGN="center">4</TD>
+<TD ALIGN="center">700</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">71</TD>
+<TD>　　　　　　　　　　　　３着</TD>
+<TD ALIGN="center">4</TD>
+<TD ALIGN="center">704</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">72</TD>
+<TD>　　　　　　　　　　　　着外</TD>
+<TD ALIGN="center">4</TD>
+<TD ALIGN="center">708</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">73</TD>
+<TD>　　　　　　　　　ダ不良１着</TD>
+<TD ALIGN="center">4</TD>
+<TD ALIGN="center">712</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">74</TD>
+<TD>　　　　　　　　　　　　２着</TD>
+<TD ALIGN="center">4</TD>
+<TD ALIGN="center">716</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">75</TD>
+<TD>　　　　　　　　　　　　３着</TD>
+<TD ALIGN="center">4</TD>
+<TD ALIGN="center">720</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">76</TD>
+<TD>　　　　　　　　　　　　着外</TD>
+<TD ALIGN="center">4</TD>
+<TD ALIGN="center">724</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">77</TD>
+<TD>　　　　　　　　　　障良１着</TD>
+<TD ALIGN="center">4</TD>
+<TD ALIGN="center">728</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">78</TD>
+<TD>　　　　　　　　　　　　２着</TD>
+<TD ALIGN="center">4</TD>
+<TD ALIGN="center">732</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">79</TD>
+<TD>　　　　　　　　　　　　３着</TD>
+<TD ALIGN="center">4</TD>
+<TD ALIGN="center">736</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">80</TD>
+<TD>　　　　　　　　　　　　着外</TD>
+<TD ALIGN="center">4</TD>
+<TD ALIGN="center">740</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">81</TD>
+<TD>　　　　　　　　　障稍重１着</TD>
+<TD ALIGN="center">4</TD>
+<TD ALIGN="center">744</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">82</TD>
+<TD>　　　　　　　　　　　　２着</TD>
+<TD ALIGN="center">4</TD>
+<TD ALIGN="center">748</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">83</TD>
+<TD>　　　　　　　　　　　　３着</TD>
+<TD ALIGN="center">4</TD>
+<TD ALIGN="center">752</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">84</TD>
+<TD>　　　　　　　　　　　　着外</TD>
+<TD ALIGN="center">4</TD>
+<TD ALIGN="center">756</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">85</TD>
+<TD>　　　　　　　　　　障重１着</TD>
+<TD ALIGN="center">4</TD>
+<TD ALIGN="center">760</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">86</TD>
+<TD>　　　　　　　　　　　　２着</TD>
+<TD ALIGN="center">4</TD>
+<TD ALIGN="center">764</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">87</TD>
+<TD>　　　　　　　　　　　　３着</TD>
+<TD ALIGN="center">4</TD>
+<TD ALIGN="center">768</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">88</TD>
+<TD>　　　　　　　　　　　　着外</TD>
+<TD ALIGN="center">4</TD>
+<TD ALIGN="center">772</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">89</TD>
+<TD>　　　　　　　　　障不良１着</TD>
+<TD ALIGN="center">4</TD>
+<TD ALIGN="center">776</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">90</TD>
+<TD>　　　　　　　　　　　　２着</TD>
+<TD ALIGN="center">4</TD>
+<TD ALIGN="center">780</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">91</TD>
+<TD>　　　　　　　　　　　　３着</TD>
+<TD ALIGN="center">4</TD>
+<TD ALIGN="center">784</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">92</TD>
+<TD>　　　　　　　　　　　　着外</TD>
+<TD ALIGN="center">4</TD>
+<TD ALIGN="center">788</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">93</TD>
+<TD>産駒距離別成績　芝　～1000ｍ　１着
+</TD>
+<TD ALIGN="center">4</TD>
+<TD ALIGN="center">792</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">94</TD>
+<TD>　　　　　　　　　　　　２着</TD>
+<TD ALIGN="center">4</TD>
+<TD ALIGN="center">796</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">95</TD>
+<TD>　　　　　　　　　　　　３着</TD>
+<TD ALIGN="center">4</TD>
+<TD ALIGN="center">800</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">96</TD>
+<TD>　　　　　　　　　　　　着外</TD>
+<TD ALIGN="center">4</TD>
+<TD ALIGN="center">804</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">97</TD>
+<TD>　　　　　1001～1200ｍ　１着</TD>
+<TD ALIGN="center">4</TD>
+<TD ALIGN="center">808</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">98</TD>
+<TD>　　　　　　　　　　　　２着</TD>
+<TD ALIGN="center">4</TD>
+<TD ALIGN="center">812</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">99</TD>
+<TD>　　　　　　　　　　　　３着</TD>
+<TD ALIGN="center">4</TD>
+<TD ALIGN="center">816</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">100</TD>
+<TD>　　　　　　　　　　　　着外</TD>
+<TD ALIGN="center">4</TD>
+<TD ALIGN="center">820</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">101</TD>
+<TD>　　　　　1201～1400ｍ　１着</TD>
+<TD ALIGN="center">4</TD>
+<TD ALIGN="center">824</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">102</TD>
+<TD>　　　　　　　　　　　　２着</TD>
+<TD ALIGN="center">4</TD>
+<TD ALIGN="center">828</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">103</TD>
+<TD>　　　　　　　　　　　　３着</TD>
+<TD ALIGN="center">4</TD>
+<TD ALIGN="center">832</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">104</TD>
+<TD>　　　　　　　　　　　　着外</TD>
+<TD ALIGN="center">4</TD>
+<TD ALIGN="center">836</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">105</TD>
+<TD>　　　　　1401～1600ｍ　１着</TD>
+<TD ALIGN="center">4</TD>
+<TD ALIGN="center">840</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">106</TD>
+<TD>　　　　　　　　　　　　２着</TD>
+<TD ALIGN="center">4</TD>
+<TD ALIGN="center">844</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">107</TD>
+<TD>　　　　　　　　　　　　３着</TD>
+<TD ALIGN="center">4</TD>
+<TD ALIGN="center">848</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">108</TD>
+<TD>　　　　　　　　　　　　着外</TD>
+<TD ALIGN="center">4</TD>
+<TD ALIGN="center">852</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">109</TD>
+<TD>　　　　　1601～1800ｍ　１着</TD>
+<TD ALIGN="center">4</TD>
+<TD ALIGN="center">856</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">110</TD>
+<TD>　　　　　　　　　　　　２着</TD>
+<TD ALIGN="center">4</TD>
+<TD ALIGN="center">860</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">111</TD>
+<TD>　　　　　　　　　　　　３着</TD>
+<TD ALIGN="center">4</TD>
+<TD ALIGN="center">864</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">112</TD>
+<TD>　　　　　　　　　　　　着外</TD>
+<TD ALIGN="center">4</TD>
+<TD ALIGN="center">868</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">113</TD>
+<TD>　　　　　1801～2000ｍ　１着</TD>
+<TD ALIGN="center">4</TD>
+<TD ALIGN="center">872</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">114</TD>
+<TD>　　　　　　　　　　　　２着</TD>
+<TD ALIGN="center">4</TD>
+<TD ALIGN="center">876</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">115</TD>
+<TD>　　　　　　　　　　　　３着</TD>
+<TD ALIGN="center">4</TD>
+<TD ALIGN="center">880</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">116</TD>
+<TD>　　　　　　　　　　　　着外</TD>
+<TD ALIGN="center">4</TD>
+<TD ALIGN="center">884</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">117</TD>
+<TD>　　　　　2001～2200ｍ　１着</TD>
+<TD ALIGN="center">4</TD>
+<TD ALIGN="center">888</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">118</TD>
+<TD>　　　　　　　　　　　　２着</TD>
+<TD ALIGN="center">4</TD>
+<TD ALIGN="center">892</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">119</TD>
+<TD>　　　　　　　　　　　　３着</TD>
+<TD ALIGN="center">4</TD>
+<TD ALIGN="center">896</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">120</TD>
+<TD>　　　　　　　　　　　　着外</TD>
+<TD ALIGN="center">4</TD>
+<TD ALIGN="center">900</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">121</TD>
+<TD>　　　　　2201ｍ～　　　１着</TD>
+<TD ALIGN="center">4</TD>
+<TD ALIGN="center">904</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">122</TD>
+<TD>　　　　　　　　　　　　２着</TD>
+<TD ALIGN="center">4</TD>
+<TD ALIGN="center">908</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">123</TD>
+<TD>　　　　　　　　　　　　３着</TD>
+<TD ALIGN="center">4</TD>
+<TD ALIGN="center">912</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">124</TD>
+<TD>　　　　　　　　　　　　着外</TD>
+<TD ALIGN="center">4</TD>
+<TD ALIGN="center">916</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">125</TD>
+<TD>産駒距離別成績 ﾀﾞｰﾄ ～1000ｍ １着
+</TD>
+<TD ALIGN="center">4</TD>
+<TD ALIGN="center">920</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">126</TD>
+<TD>　　　　　　　　　　　　２着</TD>
+<TD ALIGN="center">4</TD>
+<TD ALIGN="center">924</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">127</TD>
+<TD>　　　　　　　　　　　　３着</TD>
+<TD ALIGN="center">4</TD>
+<TD ALIGN="center">928</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">128</TD>
+<TD>　　　　　　　　　　　　着外</TD>
+<TD ALIGN="center">4</TD>
+<TD ALIGN="center">932</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">129</TD>
+<TD>　　　　　1001～1200ｍ　１着</TD>
+<TD ALIGN="center">4</TD>
+<TD ALIGN="center">936</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">130</TD>
+<TD>　　　　　　　　　　　　２着</TD>
+<TD ALIGN="center">4</TD>
+<TD ALIGN="center">940</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">131</TD>
+<TD>　　　　　　　　　　　　３着</TD>
+<TD ALIGN="center">4</TD>
+<TD ALIGN="center">944</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">132</TD>
+<TD>　　　　　　　　　　　　着外</TD>
+<TD ALIGN="center">4</TD>
+<TD ALIGN="center">948</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">133</TD>
+<TD>　　　　　1201～1400ｍ　１着</TD>
+<TD ALIGN="center">4</TD>
+<TD ALIGN="center">952</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">134</TD>
+<TD>　　　　　　　　　　　　２着</TD>
+<TD ALIGN="center">4</TD>
+<TD ALIGN="center">956</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">135</TD>
+<TD>　　　　　　　　　　　　３着</TD>
+<TD ALIGN="center">4</TD>
+<TD ALIGN="center">960</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">136</TD>
+<TD>　　　　　　　　　　　　着外</TD>
+<TD ALIGN="center">4</TD>
+<TD ALIGN="center">964</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">137</TD>
+<TD>　　　　　1401～1600ｍ　１着</TD>
+<TD ALIGN="center">4</TD>
+<TD ALIGN="center">968</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">138</TD>
+<TD>　　　　　　　　　　　　２着</TD>
+<TD ALIGN="center">4</TD>
+<TD ALIGN="center">972</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">139</TD>
+<TD>　　　　　　　　　　　　３着</TD>
+<TD ALIGN="center">4</TD>
+<TD ALIGN="center">976</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">140</TD>
+<TD>　　　　　　　　　　　　着外</TD>
+<TD ALIGN="center">4</TD>
+<TD ALIGN="center">980</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">141</TD>
+<TD>　　　　　1601～1800ｍ　１着</TD>
+<TD ALIGN="center">4</TD>
+<TD ALIGN="center">984</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">142</TD>
+<TD>　　　　　　　　　　　　２着</TD>
+<TD ALIGN="center">4</TD>
+<TD ALIGN="center">988</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">143</TD>
+<TD>　　　　　　　　　　　　３着</TD>
+<TD ALIGN="center">4</TD>
+<TD ALIGN="center">992</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">144</TD>
+<TD>　　　　　　　　　　　　着外</TD>
+<TD ALIGN="center">4</TD>
+<TD ALIGN="center">996</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">145</TD>
+<TD>　　　　　1801～2000ｍ　１着</TD>
+<TD ALIGN="center">4</TD>
+<TD ALIGN="center">1000</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">146</TD>
+<TD>　　　　　　　　　　　　２着</TD>
+<TD ALIGN="center">4</TD>
+<TD ALIGN="center">1004</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">147</TD>
+<TD>　　　　　　　　　　　　３着</TD>
+<TD ALIGN="center">4</TD>
+<TD ALIGN="center">1008</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">148</TD>
+<TD>　　　　　　　　　　　　着外</TD>
+<TD ALIGN="center">4</TD>
+<TD ALIGN="center">1012</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">149</TD>
+<TD>　　　　　2001～2200ｍ　１着</TD>
+<TD ALIGN="center">4</TD>
+<TD ALIGN="center">1016</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">150</TD>
+<TD>　　　　　　　　　　　　２着</TD>
+<TD ALIGN="center">4</TD>
+<TD ALIGN="center">1020</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">151</TD>
+<TD>　　　　　　　　　　　　３着</TD>
+<TD ALIGN="center">4</TD>
+<TD ALIGN="center">1024</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">152</TD>
+<TD>　　　　　　　　　　　　着外</TD>
+<TD ALIGN="center">4</TD>
+<TD ALIGN="center">1028</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">153</TD>
+<TD>　　　　　2201ｍ～　　　１着</TD>
+<TD ALIGN="center">4</TD>
+<TD ALIGN="center">1032</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">154</TD>
+<TD>　　　　　　　　　　　　２着</TD>
+<TD ALIGN="center">4</TD>
+<TD ALIGN="center">1036</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">155</TD>
+<TD>　　　　　　　　　　　　３着</TD>
+<TD ALIGN="center">4</TD>
+<TD ALIGN="center">1040</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">156</TD>
+<TD>　　　　　　　　　　　　着外</TD>
+<TD ALIGN="center">4</TD>
+<TD ALIGN="center">1044</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">157</TD>
+<TD>予備フィールド</TD>
+<TD ALIGN="center">200</TD>
+<TD ALIGN="center">1048</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">158</TD>
+<TD>昨年産駒年齢別成績</TD>
+<TD ALIGN="center">48</TD>
+<TD ALIGN="center">1248</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD>&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">170</TD>
+<TD>昨年産駒連対脚質別回数</TD>
+<TD ALIGN="center">16</TD>
+<TD ALIGN="center">1296</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD>&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">174</TD>
+<TD>昨年産駒成績</TD>
+<TD ALIGN="center">48</TD>
+<TD ALIGN="center">1312</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD>&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">186</TD>
+<TD>昨年産駒馬場状態別成績</TD>
+<TD ALIGN="center">192</TD>
+<TD ALIGN="center">1360</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD>&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">234</TD>
+<TD>昨年産駒距離別成績</TD>
+<TD ALIGN="center">256</TD>
+<TD ALIGN="center">1552</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD>&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">298</TD>
+<TD>予備フィールド</TD>
+<TD ALIGN="center">200</TD>
+<TD ALIGN="center">1808</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">299</TD>
+<TD>データ区切り</TD>
+<TD ALIGN="center">2</TD>
+<TD ALIGN="center">2008</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD>CR/LF</TD>
+</TR>
+<TR>
+<TD BGCOLOR=#C0C0C0 ALIGN="right">&nbsp;</TD>
+<TD BGCOLOR=#C0C0C0 ALIGN="right">&nbsp;</TD>
+<TD BGCOLOR=#C0C0C0>合　計</TD>
+<TD BGCOLOR=#C0C0C0 ALIGN="center">2010</TD>
+<TD BGCOLOR=#C0C0C0 ALIGN="center">&nbsp;</TD>
+<TD BGCOLOR=#C0C0C0 ALIGN="center">&nbsp;</TD>
+<TD BGCOLOR=#C0C0C0>&nbsp;</TD>
+</TR>
+</Table>
+<FONT SIZE=-1><I>
+<BR>
+更新日 2009/06/09<br>
+競馬道OnLine
+</I></font>
+</BODY>
+</HTML>
