@@ -2,6 +2,7 @@
   "name": "keiba-data-importer",
   "version": "0.0.1",
   "description": "Keiba Data Importer",
+  "type": "module",
   "main": "src/app/main.ts",
   "scripts": {
     "start": "bun src/app/main.ts",
