@@ -29,6 +29,7 @@ export class Ukc extends JrdbData {
   public async save(buffer: Buffer) {
     const seibetsu = $U.seibetsu.toCodeFromJrdb(buffer, 44, 1);
     let uma = new Uma();
+    uma.KettouTourokuBangou = readStr(buffer, 0, 8);
     const bamei = readStr(buffer, 8, 36);
     if (this.tool.isEnglish(bamei)) {
       uma.EigoBamei = bamei;
@@ -37,7 +38,6 @@ export class Ukc extends JrdbData {
     }
     uma.Seibetsu = seibetsu;
     uma.Keiro = $U.keiro.toCodeFromJrdb(buffer, 45, 2);
-    uma.Seibetsu = seibetsu;
     const chichiUma = await this.saveOyaUma(buffer, 49, $U.Seibetsu.Boba, 165);
     uma.ChichiUmaId = chichiUma && chichiUma.Id;
     const hahaChichiUma = await this.saveOyaUma(buffer, 121, $U.Seibetsu.Boba, 173);

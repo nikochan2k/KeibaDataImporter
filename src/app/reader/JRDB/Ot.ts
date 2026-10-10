@@ -36,7 +36,7 @@ export class Ot extends JrdbData {
         for (let bangou3 = bangou2 + 1; bangou3 <= 18; bangou3++) {
           const odds1 = readPositiveDouble(buffer, offset, 6);
           offset += 6;
-          if (!odds1) {
+          if (!odds1 || 9999.9 <= odds1) { // 9999.9 は取消
             continue;
           }
           const oddsHaitou = new OddsHaitou();

@@ -4,7 +4,6 @@ import { Logger } from "log4js";
 import * as path from "path";
 import * as process from "process";
 import "reflect-metadata";
-import * as rimraf from "rimraf";
 import * as tmp from "tmp";
 import { Inject, Service } from "typedi";
 import * as unzipper from "unzipper";
@@ -272,10 +271,10 @@ export class Traversal {
   }
 
   protected rmdir(dir: string) {
-    rimraf(dir, (error) => {
-      if (error) {
-        this.logger.warn(error.stack);
-      }
-    });
+    try {
+      fs.rmSync(dir, { recursive: true, force: true });
+    } catch (error) {
+      this.logger.warn(error.stack);
+    }
   }
 }

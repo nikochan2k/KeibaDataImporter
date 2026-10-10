@@ -51,6 +51,10 @@ export class Shussouba {
   @Column("smallint", { nullable: true })
   public Norikawari?: number;
 
+  /** ブリンカー(1:初装着, 2:再装着, 3:ブリンカー)。装着なしは null */
+  @Column("tinyint", { nullable: true })
+  public Blinker?: number;
+
   /* JRDB 競走馬データ */
 
   @Column("smallint", { nullable: true })

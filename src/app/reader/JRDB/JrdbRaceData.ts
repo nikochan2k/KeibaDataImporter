@@ -29,8 +29,8 @@ export abstract class JrdbRaceData extends JrdbKaisaiData {
       return null;
     }
     this.setRace(buffer, toBe);
-    const asIs = await this.jrdbRaceTool.getRace(buffer);
-    return await this.tool.saveOrUpdate(Race, asIs, toBe);
+    const asIs = await this.jrdbRaceTool.getRace(buffer, kaisai.Id);
+    return await this.tool.saveOrUpdate(Race, asIs, toBe, this.keepExisting);
   }
 
   protected setRace(buffer: Buffer, toBe: Race) {
@@ -45,7 +45,7 @@ export abstract class JrdbRaceData extends JrdbKaisaiData {
     toBe.Id = raceId;
     this.setRaceSeiseki(buffer, toBe);
     const asIs = await this.entityManager.findOneBy(RaceSeiseki, { Id: raceId });
-    await this.tool.saveOrUpdate(RaceSeiseki, asIs, toBe);
+    await this.tool.saveOrUpdate(RaceSeiseki, asIs, toBe, this.keepExisting);
   }
 
   protected setRaceSeiseki(buffer: Buffer, toBe: RaceSeiseki) {

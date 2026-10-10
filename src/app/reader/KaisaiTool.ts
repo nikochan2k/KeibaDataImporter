@@ -45,18 +45,19 @@ export abstract class KaisaiTool {
     return id;
   }
 
-  protected generateKaisaiKeyWith(nen: number, kaiji: number, nichiji: number) {
+  protected generateKaisaiKeyWith(nen: number, kaiji: number, nichiji: number, basho: number) {
     const yy = nen - 1970;
     const key = yy * (2 ** (5 + 5 + 7))
       + kaiji * (2 ** (5 + 7))
-      + nichiji * (2 ** 7);
+      + nichiji * (2 ** 7)
+      + basho;
     return key;
   }
 
   protected generateKaisaiKey(info: KaisaiInfo) {
     const kaiji = info.kaiji || 0;
     const nichiji = info.nichiji || 0;
-    return this.generateKaisaiKeyWith(info.nen, kaiji, nichiji);
+    return this.generateKaisaiKeyWith(info.nen, kaiji, nichiji, info.basho);
   }
 
   public getKaisaiId(buffer: Buffer) {
@@ -94,8 +95,8 @@ export abstract class KaisaiTool {
 
   public setYoubi(kaisai: Kaisai) {
     if (!kaisai.Youbi) {
-      const date = new Date(kaisai.Nen, kaisai.Gatsu, kaisai.Nichi);
-      kaisai.Youbi = (date.getDay() + 1) % 7 + 1
+      const date = new Date(Date.UTC(kaisai.Nen, kaisai.Gatsu - 1, kaisai.Nichi));
+      kaisai.Youbi = (date.getUTCDay() + 1) % 7 + 1
     }
   }
 

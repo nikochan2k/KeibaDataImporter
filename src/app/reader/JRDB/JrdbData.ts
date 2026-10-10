@@ -10,6 +10,12 @@ export abstract class JrdbData extends DataToImport {
   @Inject()
   protected bridge: Bridge;
 
+  /**
+   * true のとき、空白の項目で既存の値を消さない。
+   * 速報版のように、一部の項目が空白で提供されるデータで使う。
+   */
+  protected keepExisting = false;
+
   protected async setup() {
     const result = JrdbData.YYMMDD.exec(this.bridge.basename);
     if (!result) {

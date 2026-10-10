@@ -18,13 +18,13 @@ export abstract class Cy$ extends JrdbShussoubaData {
   protected async saveShussoubaChoukyou(buffer: Buffer, shussouba: Shussouba) {
     const toBe = new ShussoubaChoukyou();
     toBe.Id = shussouba.Id;
-    this.setChoukyou(buffer, toBe);
+    await this.setChoukyou(buffer, toBe);
 
     const asIs = await this.entityManager.findOneBy(ShussoubaChoukyou, { Id: toBe.Id });
     await this.tool.saveOrUpdate(ShussoubaChoukyou, asIs, toBe);
   }
 
-  protected setChoukyou(buffer: Buffer, sc: ShussoubaChoukyou) {
+  protected async setChoukyou(buffer: Buffer, sc: ShussoubaChoukyou) {
     sc.ChoukyouType = $CH.choukyouType.toCodeFromJrdb(buffer, 10, 2);
     sc.Choukyouryou = $CH.choukyouryou.toCodeFromJrdb(buffer, 10, 2);
     sc.ChoukyouTsuyosa = $CH.choukyouTsuyosa.toCodeFromJrdb(buffer, 10, 2);

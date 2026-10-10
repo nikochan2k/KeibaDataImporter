@@ -23,7 +23,9 @@ import {
   readPositiveDouble,
   readPositiveInt,
   readStr,
-  readStrWithNoSpace
+  readStrWithNoSpace,
+  readTime,
+  readSignedInt
 } from "../Reader";
 import { ShussoubaInfo } from "../ShussoubaTool";
 
@@ -67,15 +69,23 @@ export abstract class Se$ extends JrdbShussoubaData {
     return this.choukyoushiDao.saveChoukyoushi(choukyoushi, choukyoushiMei);
   }
 
+  protected setRace(buffer: Buffer, toBe: Race) {
+    this.jrdbRaceTool.setRaceJouken(buffer, toBe, 62, 71);
+    toBe.Tousuu = readPositiveInt(buffer, 130, 2);
+    toBe.Course = $R.course.toCodeFromJrdb(buffer, 339, 1);
+  }
+
   protected async saveRaceRelated(buffer: Buffer, race: Race) {
     await this.saveRaceSeiseki(buffer, race.Id);
+    await this.jrdbRaceTool.saveRaceMei(buffer, 80, 50, race);
+    await this.jrdbRaceTool.saveRaceMei(buffer, 132, 8, race);
   }
 
   protected setRaceSeiseki(buffer: Buffer, toBe: RaceSeiseki) {
     toBe.Baba = $R.baba.toCodeFromJrdb(buffer, 69, 1);
     toBe.BabaSokudo = $R.babaSokudo.toCodeFromJrdb(buffer, 70, 1);
     toBe.Pace = $R.pace.toCodeFromJrdb(buffer, 221, 1);
-    toBe.PaceShisuu = readDouble(buffer, 238, 5, 0.1);
+    toBe.PaceShisuu = readDouble(buffer, 238, 5);
     toBe.Tenki = $R.tenki.toCodeFromJrdb(buffer, 338, 1);
   }
 
@@ -92,13 +102,13 @@ export abstract class Se$ extends JrdbShussoubaData {
     toBe.Id = shussoubaId;
     await this.setShussoubaSeiseki(buffer, toBe);
     const asIs = await this.entityManager.findOneBy(ShussoubaSeiseki, { Id: toBe.Id });
-    await this.tool.saveOrUpdate(ShussoubaSeiseki, asIs, toBe);
+    await this.tool.saveOrUpdate(ShussoubaSeiseki, asIs, toBe, this.keepExisting);
   }
 
   protected async setShussoubaSeiseki(buffer: Buffer, toBe: ShussoubaSeiseki) {
     toBe.KakuteiChakujun = readPositiveInt(buffer, 140, 2);
     toBe.ChakujunFuka = $S.chakujunFuka.toCodeFromJrdb(buffer, 142, 1);
-    toBe.Time = readPositiveDouble(buffer, 143, 4, 0.1);
+    toBe.Time = readTime(buffer, 143, 4);
     toBe.Kinryou = readPositiveDouble(buffer, 147, 3, 0.1);
     const kyori = readInt(buffer, 62, 4);
     if (1200 <= kyori) {
@@ -115,9 +125,13 @@ export abstract class Se$ extends JrdbShussoubaData {
       toBe.Douchuu = toBe.Time - toBe.Ten3F - toBe.Agari3F;
     }
     const kishu = await this.jrdbShussoubaTool.saveKishu(buffer, 322, 150);
-    toBe.KishuId = kishu.Id;
+    toBe.KishuId = kishu ? kishu.Id : null;
     toBe.Bataijuu = readPositiveInt(buffer, 332, 3);
-    toBe.Zougen = readInt(buffer, 335, 3);
+    toBe.Zougen = readSignedInt(buffer, 335, 3);
+    toBe.Chaku12TimeSa = readDouble(buffer, 255, 3, 0.1);
+    toBe.Ten3FSentouSa = readDouble(buffer, 316, 3, 0.1);
+    toBe.Agari3FSentouSa = readDouble(buffer, 319, 3, 0.1);
+    toBe.Bikou = readStr(buffer, 264, 24);
   }
 
   protected async saveShussoubaHyouka(buffer: Buffer, shussoubaId: number) {
@@ -126,7 +140,7 @@ export abstract class Se$ extends JrdbShussoubaData {
     this.setShussoubaHyouka(buffer, toBe);
 
     const asIs = await this.entityManager.findOneBy(ShussoubaHyouka, { Id: shussoubaId });
-    await this.tool.saveOrUpdate(ShussoubaHyouka, asIs, toBe);
+    await this.tool.saveOrUpdate(ShussoubaHyouka, asIs, toBe, this.keepExisting);
   }
 
   protected setShussoubaHyouka(buffer: Buffer, toBe: ShussoubaHyouka) {
@@ -145,7 +159,7 @@ export abstract class Se$ extends JrdbShussoubaData {
     toBe.JoushoudoCode = $S.joushoudo.toCodeFromJrdb(buffer, 216, 1);
     toBe.ClassCode = $S.classCode.toCodeFromJrdb(buffer, 217, 2);
     toBe.BataiCode = $S.bataiCode.toCodeFromJrdb(buffer, 219, 1);
-    toBe.KehaiCode = $S.bataiCode.toCodeFromJrdb(buffer, 220, 1);
+    toBe.KehaiCode = $S.kehaiCode.toCodeFromJrdb(buffer, 220, 1);
     toBe.Pace = $R.pace.toCodeFromJrdb(buffer, 222, 1);
     toBe.Ten3FShisuu = readDouble(buffer, 223, 5);
     toBe.Agari3FShisuu = readDouble(buffer, 228, 5);
@@ -205,14 +219,14 @@ export abstract class Se$ extends JrdbShussoubaData {
     INNER JOIN ShussoubaSeiseki SS ON S.Id = SS.Id
     INNER JOIN (SELECT RaceId, MIN(Time) AS MinTime FROM Shussouba S_ INNER JOIN ShussoubaSeiseki SS_ ON S_.Id = SS_.Id GROUP BY RaceId HAVING COUNT(TimeSa) = 0) T ON S.RaceId = T.RaceId
   `);
-    rows.forEach(async (row) => {
+    for (const row of rows) {
       await this.entityManager
         .createQueryBuilder()
         .update(ShussoubaSeiseki, { "TimeSa": row.TimeSa })
         .where("Id = :id")
         .setParameter("id", row.Id)
         .execute();
-    });
+    }
     await super.teardown();
   }
 

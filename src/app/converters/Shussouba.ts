@@ -189,6 +189,7 @@ export const bataiCode = new Codes(
     { code: 4, jrdb: "4", naiyou: "普通" },
     { code: 5, jrdb: "5", naiyou: "細い" },
     { code: 6, jrdb: "6", naiyou: "張り" },
+    { code: 7, jrdb: "7", naiyou: "緩い" },
   ]
 );
 
@@ -200,6 +201,8 @@ export const kehaiCode = new Codes(
     { code: 4, jrdb: "4", naiyou: "イレ込" },
     { code: 5, jrdb: "5", naiyou: "気合良" },
     { code: 6, jrdb: "6", naiyou: "気不足" },
+    { code: 7, jrdb: "7", naiyou: "チャカ" },
+    { code: 8, jrdb: "8", naiyou: "イレチ" },
   ]
 );
 

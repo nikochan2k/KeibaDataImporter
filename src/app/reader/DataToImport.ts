@@ -1,7 +1,7 @@
 import * as fs from "fs";
 import * as log4js from "log4js";
 import { EntityManager } from "typeorm";
-import { OrmManager } from "../OrmManager";
+import { OrmManager, runInTransaction } from "../OrmManager";
 import { getLogger } from "../LogUtil";
 
 export abstract class DataToImport {
@@ -25,16 +25,23 @@ export abstract class DataToImport {
 
   public abstract save(buffer: Buffer);
 
+  /**
+   * ファイル全体をひとつのトランザクションで取り込みます。
+   * 途中で失敗したときは、そのファイルの取り込みをすべて取り消します。
+   */
   public async readAll(fd: number) {
     await this.setup();
-    const length = this.getBufferLength();
-    await this.entityManager.transaction(await (async () => {
-      let buf: Buffer;
-      while ((buf = this.readLine(fd, length)) !== null) {
-        await this.save(buf);
-      }
-    }));
-    await this.teardown();
+    try {
+      const length = this.getBufferLength();
+      await runInTransaction(async () => {
+        let buf: Buffer;
+        while ((buf = this.readLine(fd, length)) !== null) {
+          await this.save(buf);
+        }
+      });
+    } finally {
+      await this.teardown();
+    }
   }
 
   protected readLine(fd: number, length: number): Buffer {

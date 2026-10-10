@@ -1,12 +1,14 @@
 import { Service } from "typedi";
 import * as $C from "../../converters/Common";
 import * as $S from "../../converters/Shussouba";
+import { Race } from "../../entities/Race";
 import { RaceSeiseki } from "../../entities/RaceSeiseki";
 import { ShussoubaSeiseki } from "../../entities/ShussoubaSeiseki";
 import { ShussoubaHyouka } from "../../entities/ShussoubaHyouka";
 import { Se$ } from "./Se$";
 import {
   readInt,
+  readJikan,
 } from "../Reader";
 import { Shussouba } from '../../entities/Shussouba';
 
@@ -15,6 +17,11 @@ export class Sed extends Se$ {
 
   protected getBufferLength() {
     return 376;
+  }
+
+  protected setRace(buffer: Buffer, toBe: Race) {
+    super.setRace(buffer, toBe);
+    toBe.HassouJikan = readJikan(buffer, 370);
   }
 
   protected setRaceSeiseki(buffer: Buffer, toBe: RaceSeiseki) {

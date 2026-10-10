@@ -33,4 +33,12 @@ export class Kishu {
 
   @Column("int", { nullable: true })
   public MenkyoMasshouNengappi?: number;
+
+  /** 所属(1:関東, 2:関西, 3:他) */
+  @Column("tinyint", { nullable: true })
+  public Shozoku?: number;
+
+  /** 現在の見習い区分 */
+  @Column("tinyint", { nullable: true })
+  public MinaraiKubun?: number;
 }

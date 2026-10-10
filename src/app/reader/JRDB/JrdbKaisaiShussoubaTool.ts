@@ -12,6 +12,11 @@ import {
 @Service()
 export class JrdbKaisaiShussoubaTool extends JrdbKaisaiTool {
 
+  /** 場コードが中央競馬(京都〜函館)かどうか */
+  public static isJra(basho: number) {
+    return 0 <= basho && basho <= 9;
+  }
+
   protected getKaisaiInfo(buffer: Buffer): KaisaiInfo {
     const basho = $C.basho.toCodeFromJrdb(buffer, 0, 2);
     /* tslint:disable:triple-equals */
@@ -20,13 +25,19 @@ export class JrdbKaisaiShussoubaTool extends JrdbKaisaiTool {
       return null;
     }
     /* tslint:enable:triple-equals */
+    const nen = readInt(buffer, 18, 4);
+    const gatsu = readInt(buffer, 22, 2);
+    const nichi = readInt(buffer, 24, 2);
+    // 地方・外国のレースキーは、回・日が月・日の英字変換になっている。
+    // 変換規則に頼らず、年月日をそのまま回次・日次として使う(どちらも 5 ビットに収まる)。
+    const jra = JrdbKaisaiShussoubaTool.isJra(basho);
     return {
       basho: basho,
-      nen: readInt(buffer, 18, 4),
-      gatsu: readInt(buffer, 22, 2),
-      nichi: readInt(buffer, 24, 2),
-      kaiji: readPositiveInt(buffer, 4, 1),
-      nichiji: readHex(buffer, 5, 1),
+      nen: nen,
+      gatsu: gatsu,
+      nichi: nichi,
+      kaiji: jra ? readPositiveInt(buffer, 4, 1) : gatsu,
+      nichiji: jra ? readHex(buffer, 5, 1) : nichi,
     };
   }
 

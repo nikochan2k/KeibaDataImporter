@@ -19,7 +19,7 @@ export abstract class C$$ extends JrdbData {
     const tanshuku = readStr(buffer, 56, 6);
     toBe.TouzaiBetsu = $C.touzaiBetsu.toCodeFromJrdb(buffer, 62, 1);
     toBe.ShozokuBasho = $C.basho.toCodeFromJrdb(buffer, 63, 4);
-    if (!toBe.ShozokuBasho) {
+    if (toBe.ShozokuBasho == null) {
       toBe.ShozokuBashoMei = readStr(buffer, 63, 4);
     }
     toBe.Seinengappi = readPositiveInt(buffer, 67, 8);

@@ -167,6 +167,10 @@ export class Race {
   @Column("varchar", { nullable: true, length: 5 })
   public YoteiHassouJikan: string;
 
+  /** 実際の発走時間(HH:MM)。TYB、SED で分かる。 */
+  @Column("varchar", { nullable: true, length: 5 })
+  public HassouJikan?: string;
+
   @Column("tinyint", { nullable: true })
   public Tousuu?: number;
 

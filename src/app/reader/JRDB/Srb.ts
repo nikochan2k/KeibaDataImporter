@@ -26,10 +26,11 @@ export class Srb extends Sr$ {
   }
 
   protected async saveRaceTrackBiases(buffer: Buffer, race: Race) {
+    const biasCodes = race.DirtShiba === $R.DirtShiba.Dirt ? $R.trackBiasDirt : $R.trackBias;
     let offset = 320;
     for (let midashi = $R.Midashi.DaiichiCorner; midashi <= $R.Midashi.DaisanCorner; midashi++) {
       for (let ichi = $S.Ichi.Uchi; ichi <= $S.Ichi.Soto; ichi++ , offset++) {
-        const trackBias = $R.trackBias.toCodeFromJrdb(buffer, offset, 1);
+        const trackBias = biasCodes.toCodeFromJrdb(buffer, offset, 1);
         if (trackBias === null) {
           continue;
         }
@@ -38,7 +39,7 @@ export class Srb extends Sr$ {
     }
     for (let midashi = $R.Midashi.DaiyonCorner; midashi <= $R.Midashi.Chokusen; midashi++) {
       for (let ichi = $S.Ichi.Saiuchi; ichi <= $S.Ichi.Ohsoto; ichi++ , offset++) {
-        const trackBias = $R.trackBias.toCodeFromJrdb(buffer, offset, 1);
+        const trackBias = biasCodes.toCodeFromJrdb(buffer, offset, 1);
         if (trackBias === null) {
           continue;
         }

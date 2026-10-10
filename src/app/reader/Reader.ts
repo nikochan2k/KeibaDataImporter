@@ -22,7 +22,7 @@ function normalize(str: string) {
   }
 
   for (let i = 0; i < fromStrings.length; i++) {
-    str = str.replace(fromStrings[i], toStrings[i]);
+    str = str.split(fromStrings[i]).join(toStrings[i]);
   }
 
   let normalized = "";
@@ -80,6 +80,19 @@ export function readInt(buf: Buffer, offset: number, length: number, mul?: numbe
   return isNaN(i) ? null : i * mul;
 }
 
+/**
+ * 符号と数字の間に空白が入りうる整数(例: "+ 2", "-12")を読み取ります。
+ */
+export function readSignedInt(buf: Buffer, offset: number, length: number, mul?: number) {
+  mul = mul || 1;
+  const str = readStr(buf, offset, length);
+  if (str === null) {
+    return null;
+  }
+  const i = parseInt(str.replace(/\s+/g, ""));
+  return isNaN(i) ? null : i * mul;
+}
+
 export function readTime(buf: Buffer, offset: number, length: number) {
   const i = readPositiveInt(buf, offset, length);
   if (!i) {
@@ -89,6 +102,17 @@ export function readTime(buf: Buffer, offset: number, length: number) {
   const ssf = (i % 1000) / 10;
   const time = m * 60 + ssf;
   return time;
+}
+
+/**
+ * HHMM 形式の時刻を "HH:MM" にします。空白や 0000 のときは null です。
+ */
+export function readJikan(buf: Buffer, offset: number) {
+  const str = readStr(buf, offset, 4);
+  if (!str || !/^\d{4}$/.test(str) || str === "0000") {
+    return null;
+  }
+  return str.substring(0, 2) + ":" + str.substring(2);
 }
 
 export function readPositiveInt(buf: Buffer, offset: number, length: number, mul?: number) {

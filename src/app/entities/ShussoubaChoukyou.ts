@@ -52,6 +52,14 @@ export class ShussoubaChoukyou {
   @Column("tinyint", { nullable: true })
   public ChoukyouCoursePool?: number;
 
+  /** 一週前追切の指数 */
+  @Column("smallint", { nullable: true })
+  public IsshuumaeOikiriShisuu?: number;
+
+  /** 一週前追切の調教場所・コース(CHA の追切と同じコード表) */
+  @Column("tinyint", { nullable: true })
+  public IsshuumaeOikiriBasho?: number;
+
   @Column("tinyint", { nullable: true })
   public ChoukyouCourseShougai?: number;
 

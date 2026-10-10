@@ -13,7 +13,7 @@ export class Cyb extends Cy$ {
   }
 
   protected async setChoukyou(buffer: Buffer, sc: ShussoubaChoukyou) {
-    super.setChoukyou(buffer, sc);
+    await super.setChoukyou(buffer, sc);
     sc.ChoukyouCoursePoly = $CH.choukyouCourseShurui.toCodeFromJrdb(buffer, 25, 2);
     sc.ChoukyouKyori = $CH.choukyouKyori.toCodeFromJrdb(buffer, 27, 1);
     sc.ChoukyouJuuten = $CH.choukyouJuuten.toCodeFromJrdb(buffer, 28, 1);
@@ -24,6 +24,8 @@ export class Cyb extends Cy$ {
     sc.ChoukyouComment = readStr(buffer, 37, 40);
     sc.CommentNengappi = readInt(buffer, 77, 8);
     sc.ChoukyouHyouka = $C.hyouka.toCodeFromJrdb(buffer, 85, 1);
+    sc.IsshuumaeOikiriShisuu = readInt(buffer, 86, 3);
+    sc.IsshuumaeOikiriBasho = $CH.basho.toCodeFromJrdb(buffer, 89, 2);
   }
 
 }

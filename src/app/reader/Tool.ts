@@ -17,9 +17,13 @@ export class Tool {
     this.logger = getLogger(this);
   }
 
-  public async saveOrUpdate<T>(entity: EntityTarget<T>, asIs: T, toBe: T, forceKeys?: string[]) {
+  /**
+   * 既存の行があれば差分だけを更新し、なければ保存します。
+   * @param skipNull true のとき、toBe の null で既存の値を消しません(速報版など、項目が空白で提供されるデータ用)
+   */
+  public async saveOrUpdate<T>(entity: EntityTarget<T>, asIs: T, toBe: T, skipNull = false) {
     if (asIs) {
-      const updateSet = this.createUpdateSet(asIs, toBe);
+      const updateSet = this.createUpdateSet(asIs, toBe, skipNull);
       if (0 < Object.keys(updateSet).length) {
         await this.entityManager
           .createQueryBuilder()
@@ -35,13 +39,13 @@ export class Tool {
     return toBe;
   }
 
-  protected createUpdateSet<T>(asIs: T, toBe: T) {
+  protected createUpdateSet<T>(asIs: T, toBe: T, skipNull = false) {
     const updateSet = <T>{};
     const keys = Object.keys(toBe);
     for (let i = 0; i < keys.length; i++) {
       const key = keys[i];
       const toBeValue = toBe[key];
-      if (toBeValue === undefined) {
+      if (toBeValue === undefined || (skipNull && toBeValue === null)) {
         continue;
       }
       if (asIs[key] !== toBeValue) {
@@ -53,10 +57,9 @@ export class Tool {
   }
 
   public getDaysFrom1970With(nen: number, gatsu: number, nichi: number) {
-    const date = new Date(nen, gatsu - 1, nichi);
-    const time = date.getTime();
-    const daysFrom1970 = time / (24 * 60 * 60 * 1000);
-    return daysFrom1970;
+    // 実行環境のタイムゾーンに依存しないよう UTC で計算する(ID が環境で変わらないように)
+    const time = Date.UTC(nen, gatsu - 1, nichi);
+    return time / (24 * 60 * 60 * 1000);
   }
 
   /**
@@ -90,8 +93,8 @@ export class Tool {
     if (!meishou) {
       return meishou;
     }
-    meishou = meishou.replace(/¥(株¥)|㈱|株式会社/, "");
-    meishou = meishou.replace(/¥(有¥)|㈲|有限会社/, "");
+    meishou = meishou.replace(/\(株\)|㈱|株式会社/, "");
+    meishou = meishou.replace(/\(有\)|㈲|有限会社/, "");
     meishou = meishou.replace(/・/g, "");
     meishou = meishou.replace(/氏$/, "");
     return meishou;

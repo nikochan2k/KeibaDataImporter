@@ -28,8 +28,8 @@ export class ShussoubaSeiseki {
   @Column("smallint", { nullable: true })
   public Zougen?: number;
 
-  @Column("mediumint")
-  public KishuId: number;
+  @Column("mediumint", { nullable: true })
+  public KishuId?: number;
 
   @Column("tinyint", { nullable: true })
   public KishuTouzaiBetsu: number;
@@ -90,6 +90,22 @@ export class ShussoubaSeiseki {
 
   @Column("tinyint", { nullable: true })
   public YonCornerIchiDori?: number;
+
+  /** 前3F地点での先頭とのタイム差(秒) */
+  @Column("real", { nullable: true })
+  public Ten3FSentouSa?: number;
+
+  /** 後3F地点での先頭とのタイム差(秒) */
+  @Column("real", { nullable: true })
+  public Agari3FSentouSa?: number;
+
+  /** 1着馬は2着馬との、それ以外は1着馬とのタイム差(秒) */
+  @Column("real", { nullable: true })
+  public Chaku12TimeSa?: number;
+
+  /** 備考(地方競馬場名など) */
+  @Column("varchar", { nullable: true, length: 24 })
+  public Bikou?: string;
 
   /* KOL 騎手厩舎コメント／次走へのメモ */
 

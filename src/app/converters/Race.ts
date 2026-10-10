@@ -236,7 +236,9 @@ export const joukenNenreiSeigen = new Codes(
     { code: 5, kol: "5", jrdb: "13", naiyou: "3歳以上" },
     { code: 6, kol: "6", jrdb: "14", naiyou: "4歳以上" },
     { code: 7, kol: "7", naiyou: "3,4歳" },
-    { code: 8, kol: "8", naiyou: "4,5歳" }
+    { code: 8, kol: "8", naiyou: "4,5歳" },
+    { code: 9, jrdb: "20", naiyou: "障害" },
+    { code: 10, jrdb: "99", naiyou: "その他" }
   ]
 );
 
@@ -285,12 +287,12 @@ export const jouken = new Codes(
     { code: 93, kol: "00093", naiyou: "調教試験" },
     { code: 94, kol: "00094", naiyou: "能力試験" },
     { code: 400, kol: "04000", jrdb: "04", jvdata:"004", naiyou: "400万" },
-    { code: 500, kol: "05000", jrdb: "05", jvdata:"005", naiyou: "500万" },
+    { code: 500, kol: "05000", jrdb: "05", jvdata:"005", naiyou: "1勝クラス(500万)" },
     { code: 800, kol: "08000", jrdb: "08", jvdata:"008", naiyou: "800万" },
     { code: 900, kol: "09000", jrdb: "09", jvdata:"009", naiyou: "900万" },
-    { code: 1000, kol: "10000", jrdb: "10", jvdata:"010", naiyou: "1000万" },
+    { code: 1000, kol: "10000", jrdb: "10", jvdata:"010", naiyou: "2勝クラス(1000万)" },
     { code: 1500, kol: "15000", jrdb: "15", jvdata:"015", naiyou: "1500万" },
-    { code: 1600, kol: "16000", jrdb: "16", jvdata:"016", naiyou: "1600万" },
+    { code: 1600, kol: "16000", jrdb: "16", jvdata:"016", naiyou: "3勝クラス(1600万)" },
     { code: -13, kol: "-0013", jrdb: "A2", jvdata:"702", naiyou: "未出" },
     { code: -14, kol: "-0014", jrdb: "A3", jvdata:"703", naiyou: "未勝" },
     { code: -15, kol: "-0015", jrdb: "A1", jvdata:"701", naiyou: "新馬" },
@@ -367,7 +369,8 @@ export const migiHidari = new Codes(
   [
     { code: 0, kol: "0", jrdb: "1", naiyou: "右" },
     { code: 1, kol: "1", jrdb: "2", naiyou: "左" },
-    { code: 2, kol: "2", jrdb: "3", naiyou: "直線" }
+    { code: 2, kol: "2", jrdb: "3", naiyou: "直線" },
+    { code: 3, jrdb: "9", naiyou: "他" }
   ]
 );
 
@@ -379,7 +382,9 @@ export const uchiSoto = new Codes(
     { code: 3, kol: "3", naiyou: "タヌキ" },
     { code: 4, kol: "4", naiyou: "大障害" },
     { code: 5, kol: "5", naiyou: "内2周" },
-    { code: 6, kol: "6", naiyou: "内→外" }
+    { code: 6, kol: "6", naiyou: "内→外" },
+    { code: 7, jrdb: "3", naiyou: "直ダ" },
+    { code: 8, jrdb: "9", naiyou: "他" }
   ]
 );
 
@@ -476,6 +481,15 @@ export const trackBias = new Codes(
     { code: 3, jrdb: "3", naiyou: "普通" },
     { code: 4, jrdb: "4", naiyou: "荒れ馬場" },
     { code: 5, jrdb: "5", naiyou: "ボロボロの馬場" }
+  ]
+);
+
+/** ダートのトラックバイアス。芝の 1〜5 と区別するため 11 から振る。 */
+export const trackBiasDirt = new Codes(
+  [
+    { code: 11, jrdb: "1", naiyou: "有利" },
+    { code: 12, jrdb: "2", naiyou: "普通" },
+    { code: 13, jrdb: "3", naiyou: "不利" }
   ]
 );
 

@@ -78,11 +78,23 @@ export abstract class RaceTool {
     return race;
   }
 
+  /**
+   * 1区間目の長さを返します。
+   * 距離が200mで割り切れないレースは、端数(100m、150m など)が最初の区間になります。
+   * 距離が不明なときは、1区間目のラップタイムから推定します。
+   */
+  public static firstLapDistance(kyori: number | null | undefined, firstLapTime: number | null) {
+    if (kyori) {
+      return kyori % 200 || 200;
+    }
+    return firstLapTime !== null && firstLapTime < 10.0 ? 100 : 200;
+  }
+
   public async saveRaceLapTime(buffer: Buffer, offset: number, race: Race) {
     let lapTime = readPositiveDouble(buffer, offset, 3, 0.1);
     let kaishiKyori = 0;
-    let shuuryouKyori = (lapTime < 10.0 ? 100 : 200);
-    for (let i = 0; i < 18; i++ , offset += 3, kaishiKyori += 200, shuuryouKyori += 200) {
+    let shuuryouKyori = RaceTool.firstLapDistance(race.Kyori, lapTime);
+    for (let i = 0; i < 18; i++ , offset += 3) {
       lapTime = readPositiveDouble(buffer, offset, 3, 0.1);
       if (!lapTime) {
         break;
@@ -94,6 +106,8 @@ export abstract class RaceTool {
       raceLapTime.ShuuryouKyori = shuuryouKyori;
       raceLapTime.LapTime = lapTime;
       await this.entityManager.save(raceLapTime);
+      kaishiKyori = shuuryouKyori;
+      shuuryouKyori += 200;
     }
   }
 

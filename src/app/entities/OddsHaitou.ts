@@ -41,4 +41,8 @@ export class OddsHaitou {
 
   @Column("tinyint", { nullable: true })
   public Ninki?: number;
+
+  /** オッズを取得した時刻(HH:MM)。直前オッズ(TYB)で分かる。 */
+  @Column("varchar", { nullable: true, length: 5 })
+  public ShutokuJikan?: string;
 }

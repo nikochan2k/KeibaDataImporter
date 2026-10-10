@@ -39,7 +39,7 @@ export class Ov extends JrdbData {
           }
           const odds1 = readPositiveDouble(buffer, offset, 7, 0.1);
           offset += 7;
-          if (!odds1) {
+          if (!odds1 || 9999999 <= Math.round(odds1 * 10)) { // 9999999 は取消
             continue;
           }
           const oddsHaitou = new OddsHaitou();

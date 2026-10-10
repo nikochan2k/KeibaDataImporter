@@ -1,5 +1,6 @@
 import { Inject } from "typedi";
 import { JrdbData } from "./JrdbData";
+import * as $K from "../../converters/Kishu";
 import { KishuDao } from "../../daos/KishuDao";
 import { Kishu } from "../../entities/Kishu";
 import { readInt, readPositiveInt, readStr } from "../Reader";
@@ -21,6 +22,8 @@ export abstract class K$$ extends JrdbData {
     const tanshukuKishuMei = readStr(buffer, 56, 6);
     kishu.Seinengappi = readPositiveInt(buffer, 67, 8);
     kishu.MenkyoKoufuNengappi = readPositiveInt(buffer, 75, 4);
+    kishu.Shozoku = $K.shozoku.toCodeFromJrdb(buffer, 62, 1);
+    kishu.MinaraiKubun = $K.minaraiKubun.toCodeFromJrdb(buffer, 79, 1);
     await this.kishuDao.saveKishu(kishu, kishuMei, tanshukuKishuMei, furigana);
   }
 

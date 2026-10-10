@@ -12,23 +12,24 @@ export abstract class JrdbShussoubaData extends JrdbRaceData {
 
   public async save(buffer: Buffer) {
     await super.save(buffer);
-    const info = await this.jrdbShussoubaTool.getShussoubaInfo(buffer, 8);
+    const raceId = this.jrdbRaceTool.getRaceIdBy(buffer, this.getKaisaiTool());
+    const info = await this.jrdbShussoubaTool.getShussoubaInfo(buffer, 8, raceId);
     if (!info) {
       return;
     }
 
-    info.shussouba = await this.saveShussouba(buffer, info);
+    info.shussouba = await this.saveShussouba(buffer, info, raceId);
     await this.saveShussoubaRelated(buffer, info.shussouba);
   }
 
-  protected async saveShussouba(buffer: Buffer, info: ShussoubaInfo) {
-    const toBe = this.jrdbShussoubaTool.createShussouba(buffer, 8);
+  protected async saveShussouba(buffer: Buffer, info: ShussoubaInfo, raceId: number) {
+    const toBe = this.jrdbShussoubaTool.createShussouba(buffer, 8, raceId);
     if (!toBe) {
       return info.shussouba;
     }
     await this.setShussouba(buffer, toBe, info);
     const asIs = info.shussouba;
-    const shussouba = await this.tool.saveOrUpdate(Shussouba, asIs, toBe);
+    const shussouba = await this.tool.saveOrUpdate(Shussouba, asIs, toBe, this.keepExisting);
     return shussouba;
   }
 

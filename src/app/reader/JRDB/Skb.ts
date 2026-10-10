@@ -19,6 +19,7 @@ export class Skb extends JrdbShussoubaData {
   protected async saveShussoubaRelated(buffer: Buffer, shussouba: Shussouba) {
     await super.saveShussoubaRelated(buffer, shussouba);
     await this.saveShussoubaHyouka(buffer, shussouba.Id);
+    await this.saveShussoubaJoutaiSeries(buffer, shussouba.Id);
   }
 
   protected async saveShussoubaHyouka(buffer: Buffer, shussoubaId: number) {
@@ -40,10 +41,10 @@ export class Skb extends JrdbShussoubaData {
     for (let bangou = 0, offset = 44; bangou < 8; bangou++ , offset += 3) {
       await this.jrdbShussoubaTool.saveShussoubaJoutaiWith(buffer, offset, shussoubaId, Kubun.Bagu);
     }
-    for (let bangou = 0, offset = 69; bangou < 3; bangou++ , offset += 3) {
+    for (let bangou = 0, offset = 68; bangou < 3; bangou++ , offset += 3) {
       await this.jrdbShussoubaTool.saveShussoubaJoutaiWith(buffer, offset, shussoubaId, Kubun.AshimotoSougou);
     }
-    for (let bangou = 0, offset = 78; bangou < 3; bangou++ , offset += 3) {
+    for (let bangou = 0, offset = 77; bangou < 3; bangou++ , offset += 3) {
       await this.jrdbShussoubaTool.saveShussoubaJoutaiWith(buffer, offset, shussoubaId, Kubun.AshimotoHidariMae);
     }
     for (let bangou = 0, offset = 86; bangou < 3; bangou++ , offset += 3) {

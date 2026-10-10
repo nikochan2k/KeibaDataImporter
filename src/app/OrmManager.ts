@@ -1,5 +1,28 @@
+import { AsyncLocalStorage } from "node:async_hooks";
 import { EntityManager } from "typeorm";
 import { dataSource } from "./DataSource";
+
+/**
+ * トランザクション中の EntityManager。
+ * トランザクションの中で実行された処理(非同期の続きも含む)は、DAO や Tool を変更しなくても
+ * 自動的にこの EntityManager を使う。
+ */
+const transactionStorage = new AsyncLocalStorage<EntityManager>();
+
+export function currentManager(): EntityManager {
+  return transactionStorage.getStore() || dataSource.manager;
+}
+
+/**
+ * fn をひとつのトランザクションで実行します。fn が失敗するとロールバックされます。
+ * 入れ子で呼ばれたときは、外側のトランザクションに加わります。
+ */
+export function runInTransaction<T>(fn: () => Promise<T>): Promise<T> {
+  if (transactionStorage.getStore()) {
+    return fn();
+  }
+  return dataSource.transaction((manager) => transactionStorage.run(manager, fn));
+}
 
 /**
  * プロパティに DataSource の EntityManager を差し込むデコレーター。
@@ -7,7 +30,7 @@ import { dataSource } from "./DataSource";
 export function OrmManager() {
   return (target: any, propertyKey: string) => {
     Object.defineProperty(target, propertyKey, {
-      get: (): EntityManager => dataSource.manager,
+      get: (): EntityManager => currentManager(),
       configurable: true
     });
   };
@@ -19,7 +42,7 @@ export function OrmManager() {
 export function OrmRepository(entity: Function) {
   return (target: any, propertyKey: string) => {
     Object.defineProperty(target, propertyKey, {
-      get: () => dataSource.getRepository(entity),
+      get: () => currentManager().getRepository(entity),
       configurable: true
     });
   };

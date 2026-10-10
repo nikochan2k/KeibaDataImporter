@@ -6,7 +6,9 @@ export const shirushi = new Codes(
     { code: 2, kol: "1", jrdb: "2", naiyou: "○" },
     { code: 3, kol: "2", jrdb: "3", naiyou: "▲" },
     { code: 5, kol: "3", jrdb: /5|6/, naiyou: "△" },
-    { code: 6, kol: "4", jrdb: "4", naiyou: "×" }
+    { code: 6, kol: "4", naiyou: "×" },
+    { code: 4, jrdb: "4", naiyou: "注" },
+    { code: 7, jrdb: "9", naiyou: "☆" }
   ]
 );
 
@@ -100,7 +102,7 @@ export const yusouKubun = new Codes(
     { code: 2, jrdb: "2", naiyou: "通常" },
     { code: 3, jrdb: "3", naiyou: "遠征" },
     { code: 4, jrdb: "4", naiyou: "連闘" },
-    { code: 0, jrdb: "5", naiyou: "不明" },
+    { code: 0, jrdb: "0", naiyou: "不明" },
   ]
 );
 

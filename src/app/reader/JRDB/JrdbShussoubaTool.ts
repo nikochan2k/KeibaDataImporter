@@ -5,7 +5,7 @@ import { Kubun } from "../../entities/ShussoubaJoutai";
 import { Kishu } from "../../entities/Kishu";
 import { KishuDao } from "../../daos/KishuDao";
 import { ShussoubaTool } from "../ShussoubaTool";
-import { readStrWithNoSpace, readInt } from "../../reader/Reader";
+import { readStr, readStrWithNoSpace, readPositiveInt } from "../../reader/Reader";
 
 @Service()
 export class JrdbShussoubaTool extends ShussoubaTool {
@@ -32,13 +32,24 @@ export class JrdbShussoubaTool extends ShussoubaTool {
       // TODO ログ
       return;
     }
+    if (code === null || code === undefined) {
+      // 空白の欄は保存しない(未定義のコードは警告のみ)
+      if (readStr(buffer, offset, 3)) {
+        this.logger.warn(`未定義の状態コード: kubun=${kubun}, code=${readStr(buffer, offset, 3)}`);
+      }
+      return;
+    }
     await this.saveShussoubaJoutai(shussoubaId, kubun, code);
   }
 
   public async saveKishu(buffer: Buffer, kishuCodeOffset: number, kishuMeiOffset: number) {
     const kishu = new Kishu();
     const kishuMei = readStrWithNoSpace(buffer, kishuMeiOffset, 12);
-    kishu.JrdbKishuCode = readInt(buffer, kishuCodeOffset, 5);
+    kishu.JrdbKishuCode = readPositiveInt(buffer, kishuCodeOffset, 5);
+    if (!kishu.JrdbKishuCode) {
+      // 地方・外国のレースなど、騎手が不明なとき。中身のない騎手を作らない
+      return null;
+    }
     return this.kishuDao.saveKishu(kishu, kishuMei);
   }
 }

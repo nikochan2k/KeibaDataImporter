@@ -38,7 +38,7 @@ export class Ou extends JrdbData {
         }
         const odds1 = readPositiveDouble(buffer, offset, 6);
         offset += 6;
-        if (!odds1) {
+        if (!odds1 || 9999.9 <= odds1) { // 9999.9 は取消
           continue;
         }
         const oddsHaitou = new OddsHaitou();

@@ -30,6 +30,7 @@ import { Srb } from "./reader/JRDB/Srb";
 import { Tyb } from "./reader/JRDB/Tyb";
 import { Ukc } from "./reader/JRDB/Ukc";
 import { Zec } from "./reader/JRDB/Zec";
+import { Zed } from "./reader/JRDB/Zed";
 import { Zkb } from "./reader/JRDB/Zkb";
 import { KolCom1Kd3 } from "./reader/KOL/KD3/KolCom1Kd3";
 import { KolDen1Kd3 } from "./reader/KOL/KD3/KolDen1Kd3";
@@ -108,6 +109,7 @@ export class Importer {
       { pattern: /bac\d+\.txt$/i, dataToImport: Container.get(Bac) },
       // JRDB 前走データ
       { pattern: /zec\d+\.txt$/i, dataToImport: Container.get(Zec) },
+      { pattern: /zed\d+\.txt$/i, dataToImport: Container.get(Zed) },
       // JRDB 前走拡張データ
       { pattern: /zkb\d+\.txt$/i, dataToImport: Container.get(Zkb) },
       // KD3 出馬表出走馬データ
@@ -153,7 +155,7 @@ export class Importer {
       // KD3 制裁その他データ
       { pattern: /kol_sei3\.kd3$/i, dataToImport: Container.get(KolSei3Kd3) },
       // JRDB 成績拡張データ
-      { pattern: /seb\d+\.txt$/i, dataToImport: Container.get(Skb) },
+      { pattern: /skb\d+\.txt$/i, dataToImport: Container.get(Skb) },
       // JRDB 払戻情報データ
       { pattern: /hja\d+\.txt$/i, dataToImport: Container.get(Hja) },
       { pattern: /hjc\d+\.txt$/i, dataToImport: Container.get(Hjc) },

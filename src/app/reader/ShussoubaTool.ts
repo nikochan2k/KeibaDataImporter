@@ -57,8 +57,8 @@ export abstract class ShussoubaTool {
    * @returns 出走馬ID
    * @memberof RaceTool
    */
-  public getRaceShussoubaId(buffer: Buffer, umabanOffset: number): RaceShussoubaId {
-    const raceId = this.getRaceId(buffer);
+  public getRaceShussoubaId(buffer: Buffer, umabanOffset: number, raceId?: number): RaceShussoubaId {
+    raceId = raceId || this.getRaceId(buffer);
     if (!raceId) {
       this.logger.warn("レースIDがありません: " + raceId);
       return null;
@@ -77,16 +77,16 @@ export abstract class ShussoubaTool {
     };
   }
 
-  public getShussouba(buffer: Buffer, umabanOffset: number) {
-    const rsId = this.getRaceShussoubaId(buffer, umabanOffset);
+  public getShussouba(buffer: Buffer, umabanOffset: number, raceId?: number) {
+    const rsId = this.getRaceShussoubaId(buffer, umabanOffset, raceId);
     if (!rsId) {
       return null;
     }
     return this.entityManager.findOneBy(Shussouba, { Id: rsId.shussoubaId });
   }
 
-  public createShussouba(buffer: Buffer, umabanOffset: number) {
-    const rsId = this.getRaceShussoubaId(buffer, umabanOffset);
+  public createShussouba(buffer: Buffer, umabanOffset: number, raceId?: number) {
+    const rsId = this.getRaceShussoubaId(buffer, umabanOffset, raceId);
     if (!rsId) {
       return null;
     }
@@ -97,8 +97,8 @@ export abstract class ShussoubaTool {
     return shussouba;
   }
 
-  public async getShussoubaInfo(buffer: Buffer, umabanOffset: number): Promise<ShussoubaInfo> {
-    const rsId = this.getRaceShussoubaId(buffer, umabanOffset);
+  public async getShussoubaInfo(buffer: Buffer, umabanOffset: number, raceId?: number): Promise<ShussoubaInfo> {
+    const rsId = this.getRaceShussoubaId(buffer, umabanOffset, raceId);
     if (!rsId) {
       return null;
     }

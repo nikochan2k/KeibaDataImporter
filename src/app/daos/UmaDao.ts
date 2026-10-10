@@ -47,7 +47,7 @@ export class UmaDao {
   public getKyousouba(kyousouba: Kyousouba) {
     const qb = this.kyousoubaRepository
       .createQueryBuilder("k")
-      .where("k.UmaId = umaId")
+      .where("k.UmaId = :umaId")
       .setParameter("umaId", kyousouba.UmaId);
     if (kyousouba.Seibetsu) {
       qb.andWhere("k.Seibetsu = :seibetsu")

@@ -33,7 +33,7 @@ export abstract class OddsHaitouTool {
 
   /**
    * オッズ配当IDを取得します。
-   * オッズ配当IDはレースID(28ビット)、確定(2ビット)、馬券(4ビット)、馬番1(5ビット)、馬番2(5ビット)、馬番3(5ビット)の計49ビットです。
+   * オッズ配当IDはレースID(28ビット)、確定(3ビット)、馬券(4ビット)、馬番1(5ビット)、馬番2(5ビット)、馬番3(5ビット)の計50ビットです。
    * @param {number} raceId レースID
    * @param {Baken} baken 馬券
    * @param {number} bangou1 馬番1
@@ -45,7 +45,7 @@ export abstract class OddsHaitouTool {
   public calculateOddsHaitouId(toBe: OddsHaitou) {
     const bangou2 = toBe.Bangou2 || 0;
     const bangou3 = toBe.Bangou3 || 0;
-    const id = toBe.RaceId * (2 ** (2 + 4 + 5 + 5 + 5))
+    const id = toBe.RaceId * (2 ** (3 + 4 + 5 + 5 + 5))
       + toBe.Kakutei * (2 ** (4 + 5 + 5 + 5))
       + toBe.Baken * (2 ** (5 + 5 + 5))
       + toBe.Bangou1 * (2 ** (5 + 5))
@@ -59,7 +59,7 @@ export abstract class OddsHaitouTool {
     const asIs = await this.entityManager
       .findOneBy(OddsHaitou, { Id: toBe.Id });
     if (asIs) {
-      toBe = await this.tool.saveOrUpdate(OddsHaitou, toBe, asIs);
+      toBe = await this.tool.saveOrUpdate(OddsHaitou, asIs, toBe);
     } else {
       toBe = await this.entityManager.save(toBe);
     }

@@ -29,14 +29,14 @@ export class Hjc extends Hj$ {
   }
 
   protected async saveSanrenpuku(buffer: Buffer, raceId: number) {
-    for (let i = 0, offset = 300; i < 3; i++ , offset += 14) {
+    for (let i = 0, offset = 299; i < 3; i++ , offset += 14) {
       const umaban1 = readPositiveInt(buffer, offset, 2);
       if (!umaban1) {
         continue;
       }
       const oddsHaitou = new OddsHaitou();
       oddsHaitou.RaceId = raceId;
-      oddsHaitou.Baken = Baken.Umatan;
+      oddsHaitou.Baken = Baken.Sanrenpuku;
       oddsHaitou.Kakutei = Kakutei.Kakutei;
       oddsHaitou.Bangou1 = umaban1;
       oddsHaitou.Bangou2 = readPositiveInt(buffer, offset + 2, 2);
@@ -47,14 +47,14 @@ export class Hjc extends Hj$ {
   }
 
   protected async saveSanrentan(buffer: Buffer, raceId: number) {
-    for (let i = 0, offset = 342; i < 3; i++ , offset += 15) {
+    for (let i = 0, offset = 341; i < 6; i++ , offset += 15) {
       const umaban1 = readPositiveInt(buffer, offset, 2);
       if (!umaban1) {
         continue;
       }
       const oddsHaitou = new OddsHaitou();
       oddsHaitou.RaceId = raceId;
-      oddsHaitou.Baken = Baken.Umatan;
+      oddsHaitou.Baken = Baken.Sanrentan;
       oddsHaitou.Kakutei = Kakutei.Kakutei;
       oddsHaitou.Bangou1 = umaban1;
       oddsHaitou.Bangou2 = readPositiveInt(buffer, offset + 2, 2);
