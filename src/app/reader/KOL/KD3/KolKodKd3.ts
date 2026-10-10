@@ -31,7 +31,7 @@ export class KolKodKd3 extends DataToImport {
   }
 
   protected async saveWakuren(buffer: Buffer, raceId: number) {
-    await this.kolOddsHaitouTool.saveTanshouOdds(buffer, 251, raceId, Kakutei.Kakutei);
+    await this.kolOddsHaitouTool.saveWakurenOdds(buffer, 251, raceId, Kakutei.Kakutei);
   }
 
   protected async saveUmaren(buffer: Buffer, raceId: number) {

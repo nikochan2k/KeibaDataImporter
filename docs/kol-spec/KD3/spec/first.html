@@ -1,0 +1,196 @@
+<HTML>
+<HEAD>
+<meta http-equiv="Content-Type" content="text/html; charset=x-sjis">
+<TITLE>KOL KD3 Data Format</TITLE>
+</HEAD>
+<BODY bgcolor="#F4FFF4">
+<center>
+第３世代 競馬道OnLineデータフォーマット<br>
+<font size="7"><strong>ＫＤ３</strong></font><br>
+－ 2010年11月25日発表版 －<br>
+</center>
+<TABLE>
+<TR><TD><FONT SIZE=+1><B>はじめに</B></FONT></TD></TR>
+<TR><TD><form><select size="1" onChange="location=this.options[this.selectedIndex].value">
+<option value="index.html">お知らせ</option>
+<option selected value="first.html">はじめに</option>
+<option value="kol_sei1.html">競走成績レースデータ</option>
+<option value="kol_sei2.html">競走成績出走馬データ</option>
+<option value="kol_sei3.html">制裁その他データ</option>
+<option value="kol_den1.html">出馬表レースデータ</option>
+<option value="kol_den2.html">出馬表出走馬データ</option>
+<option value="kol_uma.html">競走馬データ</option>
+<option value="kol_kis.html">騎手データ</option>
+<option value="kol_kyu.html">厩舎データ</option>
+<option value="kol_ods.html">予想オッズ（単勝・枠連・馬連）</option>
+<option value="kol_ods2.html">予想オッズ２（馬単・３連複）</option>
+<option value="kol_kod.html">確定オッズ（単勝・枠連・馬連）</option>
+<option value="kol_kod2.html">確定オッズ２（複勝・ワイド・馬単・３連複）</option>
+<option value="kol_kod3.html">確定オッズ３（３連単）</option>
+<option value="kol_syu.html">種牡馬データ</option>
+<option value="kol_ket.html">３代血統図</option>
+<option value="kol_ket5.html">５代血統図</option>
+<option value="kol_com1.html">コメントデータ</option>
+<option value="kol_tok1.html">特別登録レースデータ</option>
+<option value="kol_tok2.html">特別登録出走予定馬データ</option>
+<option value="table.html">コードテーブル</option>
+<option value="history.html">改版履歴</option>
+</select></form></TD></TR>
+</TABLE>
+<PRE>
+【ご挨拶】
+日頃より「競馬道OnLine」サービスをご愛顧いただき、有り難うございます。
+競馬道OnLineは、1997年10月にサービスを開始致しまして、大変多くのユーザーの
+皆様をはじめ、ソフト制作者の方々にご支持いただき、お蔭様で順調に伸び続けて
+おります。その間、非常に多くのご意見を賜り、今日まで皆様方の意見に添うよう
+検討を重ねて参りました。競馬道OnLineは、皆様のご意見を重視して、豊富で正確
+なデータ提供を追求し続けます。今後とも引き続き競馬道OnLineを宜しく御願い申
+し上げます。
+
+　　　　　　　　　　　　　　　　　　　　　　　2010/11/25
+　　　　　　　　　　　　　　　　　　　　　　　株式会社インターグロー
+　　　　　　　　　　　　　　　　　　　　　　　株式会社ケイバブック
+
+
+◎本仕様書に関するご注意
+
+仕様は、不測の事態により若干の修正が入る可能性がございます。
+この場合、改めて『競馬道OnLine』ホームページ(http://www.keibado.ne.jp)上の
+「お知らせ」でご連絡させていただきますので、「お知らせ」にご注意ください。
+
+
+◇ファイル名一覧
+
+　＜データファイル名一覧＞
+　　・競走成績レースデータ：kol_sei1.kd3
+　　・競走成績出走馬データ：kol_sei2.kd3
+　　・制裁その他データ：kol_sei3.kd3
+　　　　（競走成績レースデータと競走成績出走馬データ、制裁その他データの３ファ
+　　　　　イルで成績データとします）
+　　・出馬表レースデータ：kol_den1.kd3
+　　・出馬表出走馬データ：kol_den2.kd3
+　　　　（出馬表レースデータと出馬表出走馬データの２ファイルで出馬表
+　　　　　データとします）
+　　・競走馬データ：kol_uma.kd3
+　　・騎手データ：kol_kis.kd3
+　　・厩舎データ：kol_kyu.kd3
+　　・予想オッズ（単勝・枠連・馬連）：kol_ods.kd3
+　　・予想オッズ２（馬単・３連複）：kol_ods2.kd3
+　　　　（上記２つのファイルで予想オッズデータとします）
+　　・確定オッズ（単勝・枠連・馬連）：kol_kod.kd3
+　　・確定オッズ２（複勝・ワイド・馬単・３連複）：kol_kod2.kd3
+　　・確定オッズ３（３連単）：kol_kod3.kd3
+　　　　（上記３つのファイルで確定オッズデータとします）
+　　・種牡馬データ：kol_syu.kd3
+　　・３代血統図：kol_ket.kd3
+　　・５代血統図：kol_ket5.kd3
+　　・騎手厩舎コメント／次走へのメモデータ：kol_com1.kd3
+　　・特別登録レースデータ：kol_tok1.kd3
+　　・特別登録予定馬データ：kol_tok2.kd3
+　　　　（上記２つのファイルで特別登録データとします）
+
+
+　＜販売ダウンロードファイル名＞
+　○単品
+　　　騎手　　　　　　　　　　　：kd3_dkis.lzh
+　　　　格納データ：騎手データ[kol_kis.kd3]
+
+　　　厩舎　　　　　　　　　　　：kd3_ekyu.lzh
+　　　　格納データ：厩舎データ[kol_kyu.kd3]
+
+　　　３代血統図　　　　　　　　：kd3_fket.lzh
+　　　　格納データ：３代血統図[kol_ket.kd3]
+
+　　　５代血統図　　　　　　　　：kd3_fket5.lzh
+　　　　格納データ：５代血統図[kol_ket5.kd3]
+
+　　　種牡馬　　　　　　　　　　：kd3_gsyu.lzh
+　　　　格納データ：種牡馬データ[kol_syu.kd3]
+
+
+　　○パック
+<font color="#CCCCCC">　　　競走成績（１日）　　　　　　：kd3_abyymmdd.lzh
+　　　　格納データ：競走成績レースデータ[kol_sei1.kd3]、
+　　　　　　　　　　競走成績出走馬データ[kol_sei2.kd3]、
+　　　　　　　　　　制裁その他データ[kol_sei3.kd3]</font>
+
+<font color="#CCCCCC">　　　出馬表（１日）　　　　　　　：kd3_bbyymmdd.lzh
+　　　　格納データ：出馬表レースデータ[kol_den1.kd3]、
+　　　　　　　　　　出馬表出走馬データ[kol_den2.kd3]</font>
+
+<font color="#CCCCCC">　　　出馬表＋馬（１競馬場１日）　：kd3_haxxxx.lzh
+　　　　格納データ：出馬表レースデータ[kol_den1.kd3]、
+　　　　　　　　　　出馬表出走馬データ[kol_den2.kd3]、
+　　　　　　　　　　競走馬データ[kol_uma.kd3]
+</font>
+　　　出馬表＋馬（１日）　　　　　：kd3_hb<font color="blue">yymmdd</font>.lzh
+　　　　格納データ：出馬表レースデータ[kol_den1.kd3]、
+　　　　　　　　　　出馬表出走馬データ[kol_den2.kd3]、
+　　　　　　　　　　競走馬データ[kol_uma.kd3]
+
+<font color="#CCCCCC">　　　日曜重賞付出馬表（１日）　　：kd3_bzyymmdd.LZH
+　　　　格納データ：出馬表レースデータ[kol_den1.kd3]、
+　　　　　　　　　　出馬表出走馬データ[kol_den2.kd3]</font>
+
+　　　日曜重賞付出馬表＋馬（１日）：kd3_hz<font color="blue">yymmdd</font>.lzh
+　　　　格納データ：出馬表レースデータ[kol_den1.kd3]、
+　　　　　　　　　　出馬表出走馬データ[kol_den2.kd3]、
+　　　　　　　　　　競走馬データ[kol_uma.kd3]
+
+　　　成績＋馬（１日）　　　　　　：kd3_ib<font color="blue">yymmdd</font>.lzh
+　　　　格納データ：競走成績レースデータ[kol_sei1.kd3]、
+　　　　　　　　　　競走成績出走馬データ[kol_sei2.kd3]、
+　　　　　　　　　　制裁その他データ[kol_sei3.kd3]、
+　　　　　　　　　　競走馬データ[kol_uma.kd3]
+
+　　　予想（前売り）オッズ（１日）：kd3_jb<font color="blue">yymmdd</font>.lzh
+　　　　格納データ：予想オッズ[kol_ods.kd3]、
+　　　　　　　　　　予想オッズ２[kol_ods2.kd3]
+
+　　　確定オッズ（１日）　　　　　：kd3_kd<font color="blue">yymmdd</font>.lzh
+　　　　格納データ：確定オッズ[kol_kod.kd3]、
+　　　　　　　　　　確定オッズ２[kol_kod2.kd3]、
+　　　　　　　　　　確定オッズ３[kol_kod3.kd3]
+　　　　<font color="blue">※07年10月13日分より１ファイル１日に変更となりました。</font>
+
+　　　コメントデータ（成績用）　　：kd3_lb<font color="blue">yymmdd</font>.lzh
+　　　　格納データ：騎手厩舎コメント／次走へのメモデータ[kol_com1.kd3]
+
+　　　コメントデータ（出馬用）　　：kd3_mb<font color="blue">yymmdd</font>.lzh
+　　　　格納データ：騎手厩舎コメント／次走へのメモデータ／
+　　　　　　　　　　前回出走時コメント[kol_com1.kd3]
+
+　　　特別登録データ（１週）　　　：kd3_nd<font color="blue">yymmdd</font>.lzh
+　　　　格納データ：特別登録レースデータ[kol_tok1.kd3]
+　　　　　　　　　　特別登録予定馬データ[kol_tok2.kd3]
+
+　　上記ファイル名の<font color="blue">yymmdd</font>は年月日を表し、週パックの場合には最初の日付で
+　　ファイル名を作成します。xxxxは次のように開催を表します。
+　　　・回(1byte)：回を表す　1～8まで
+　　　・競馬場(2byte)：＜ファイル名用競馬場コード＞参照
+　　　・開催日(1byte)：1～8まで
+
+　＜ファイル名用競馬場コード＞
+　　　記号　競馬場
+　　　SA　　札幌
+　　　HD　　函館
+　　　NI　　新潟
+　　　FU　　福島
+　　　TO　　東京
+　　　NA　　中山
+　　　CH　　中京
+　　　HA　　阪神
+　　　KY　　京都
+　　　KO　　小倉
+
+
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　以上
+
+</PRE>
+<FONT SIZE=-1><I>
+<BR>
+更新日 2010/11/25<br>
+競馬道OnLine
+</I></font>
+</BODY>
+</HTML>

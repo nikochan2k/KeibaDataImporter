@@ -51,8 +51,9 @@ export class KolOddsHaitouTool extends OddsHaitouTool {
   }
 
   public async saveWakurenOdds(buffer: Buffer, offset: number, raceId: number, kakutei: Kakutei) {
+    // １－１、１－２、…、１－８、２－２、…、８－８ の 36 通り
     for (let bangou1 = 1; bangou1 <= 8; bangou1++) {
-      for (let bangou2 = 1; bangou2 <= 8; bangou2++) {
+      for (let bangou2 = bangou1; bangou2 <= 8; bangou2++) {
         const odds1 = this.getOdds(buffer, offset, 5);
         offset += 5;
         if (!odds1) {
@@ -127,6 +128,7 @@ export class KolOddsHaitouTool extends OddsHaitouTool {
         oddsHaitou.Bangou1 = bangou1;
         oddsHaitou.Bangou2 = bangou2;
         oddsHaitou.Odds1 = odds1;
+        oddsHaitou.Odds2 = odds2;
         await this.saveOddsHaitou(oddsHaitou);
       }
     }
@@ -238,7 +240,7 @@ export class KolOddsHaitouTool extends OddsHaitouTool {
       const oddsHaitou = new OddsHaitou();
       oddsHaitou.RaceId = raceId;
       oddsHaitou.Kakutei = kakutei;
-      oddsHaitou.Baken = Baken.Sanrentan;
+      oddsHaitou.Baken = info.baken;
       oddsHaitou.Bangou1 = bangou1;
       oddsHaitou.Bangou2 = bangou2;
       oddsHaitou.Bangou3 = bangou3;

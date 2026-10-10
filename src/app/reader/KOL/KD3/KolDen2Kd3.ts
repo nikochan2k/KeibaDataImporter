@@ -113,7 +113,7 @@ export class KolDen2Kd3 extends DataToImport {
   protected async saveShussoubaJoutai(buffer: Buffer, shussouba: Shussouba) {
     const blinker = readPositiveInt(buffer, 147, 1);
     if (0 < blinker) {
-      this.kolShussoubaTool.saveShussoubaJoutai(shussouba.Id, Kubun.Bagu, Bagu.Blinker);
+      await this.kolShussoubaTool.saveShussoubaJoutai(shussouba.Id, Kubun.Bagu, Bagu.Blinker);
     }
   }
 

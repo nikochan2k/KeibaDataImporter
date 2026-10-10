@@ -24,6 +24,8 @@ import { KolKaisaiTool } from "./KolKaisaiTool";
 export interface RaceLapTimeInfo {
   Offset: number;
   Length: number;
+  /** 値に掛ける数。省略時は 0.1 (0.1 秒単位の整数)。小数点付きの秒(例: "104.9")は 1 */
+  Mul?: number;
   KaishiKyori: number;
   ShuuryouKyori: number;
 }
@@ -127,10 +129,8 @@ export class KolRaceTool extends RaceTool {
       }
       await this.entityManager.getRepository(RaceHassouJoukyou).save(rhj);
 
-      const umabans = /(\([0-9]+\))+/.exec(hassouJoukyou);
-      for (let i = 1; i < umabans.length; i++) {
-        const temp = umabans[i];
-        const umaban = Number.parseInt(temp.replace(/[()]/, ""), 10);
+      for (const m of hassouJoukyou.matchAll(/\((\d+)\)/g)) {
+        const umaban = Number.parseInt(m[1], 10);
         if (0 < umaban) {
           const shj = new ShussoubaHassouJoukyou();
           shj.Id = rhj.Id * 2 ** 6 + umaban;
@@ -147,7 +147,7 @@ export class KolRaceTool extends RaceTool {
     raceLapTime.RaceId = race.Id;
     for (let i = 0; i < infos.length; i++) {
       const info = infos[i];
-      raceLapTime.LapTime = readPositiveDouble(buffer, info.Offset, 3, 0.1);
+      raceLapTime.LapTime = readPositiveDouble(buffer, info.Offset, info.Length, info.Mul ?? 0.1);
       if (raceLapTime.LapTime) {
         raceLapTime.Id = race.Id * 2 ** 5 + i + 1;
         raceLapTime.KaishiKyori = info.KaishiKyori;

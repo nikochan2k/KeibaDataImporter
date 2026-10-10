@@ -50,6 +50,9 @@ export class KolSei2Kd3 extends DataToImport {
 
   public async save(buffer: Buffer) {
     const rsId = this.kolShussoubaTool.getRaceShussoubaId(buffer, 23);
+    if (!rsId) {
+      return;
+    }
     const dataNenggapi = readInt(buffer, 424, 8);
 
     const shussoubaSeiseki = await this.entityManager.findOneBy(ShussoubaSeiseki, {
@@ -77,6 +80,7 @@ export class KolSei2Kd3 extends DataToImport {
       info.uma.Id = kyousouba.UmaId;
     }
 
+    await this.saveShussoubaJoutai(buffer, info.shussouba);
     await this.saveShussoubaSeiseki(buffer, info, shussoubaSeiseki, dataNenggapi);
     await this.saveShussoubaHyouka(buffer, info.shussouba);
     await this.saveShussoubaYosou(buffer, info.shussouba);
@@ -87,7 +91,7 @@ export class KolSei2Kd3 extends DataToImport {
 
   protected async saveShussouba(buffer: Buffer, info: ShussoubaInfo) {
     let toBe = this.kolShussoubaTool.createShussouba(buffer, 23);
-    if (toBe) {
+    if (!toBe) {
       return null;
     }
     toBe.Wakuban = readPositiveInt(buffer, 22, 1);
@@ -107,7 +111,7 @@ export class KolSei2Kd3 extends DataToImport {
   protected async saveShussoubaJoutai(buffer: Buffer, shussouba: Shussouba) {
     const blinker = readPositiveInt(buffer, 149, 1);
     if (0 < blinker) {
-      this.kolShussoubaTool.saveShussoubaJoutai(shussouba.Id, Kubun.Bagu, Bagu.Blinker);
+      await this.kolShussoubaTool.saveShussoubaJoutai(shussouba.Id, Kubun.Bagu, Bagu.Blinker);
     }
   }
 

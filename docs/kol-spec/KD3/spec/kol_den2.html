@@ -1,0 +1,883 @@
+<HTML>
+<HEAD>
+<meta http-equiv="Content-Type" content="text/html; charset=x-sjis">
+<TITLE>KOL KD3 Data Format</TITLE>
+<style type="text/css">
+<!--
+table {  font-size: 9pt}
+-->
+</style>
+</HEAD>
+<BODY bgcolor="#F4FFF4">
+<H1><CENTER>出馬表出走馬データ</CENTER></H1>
+<TABLE>
+<TR>
+  <TD><FONT SIZE=+1><B>出馬表出走馬データ 【ファイル名：kol_den2.kd3】</B></FONT></TD>
+</TR>
+<TR><TD><form><select size="1" onChange="location=this.options[this.selectedIndex].value">
+<option value="index.html">お知らせ</option>
+<option value="first.html">はじめに</option>
+<option value="kol_sei1.html">競走成績レースデータ</option>
+<option value="kol_sei2.html">競走成績出走馬データ</option>
+<option value="kol_sei3.html">制裁その他データ</option>
+<option value="kol_den1.html">出馬表レースデータ</option>
+<option selected value="kol_den2.html">出馬表出走馬データ</option>
+<option value="kol_uma.html">競走馬データ</option>
+<option value="kol_kis.html">騎手データ</option>
+<option value="kol_kyu.html">厩舎データ</option>
+<option value="kol_ods.html">予想オッズ（単勝・枠連・馬連）</option>
+<option value="kol_ods2.html">予想オッズ２（馬単・３連複）</option>
+<option value="kol_kod.html">確定オッズ（単勝・枠連・馬連）</option>
+<option value="kol_kod2.html">確定オッズ２（複勝・ワイド・馬単・３連複）</option>
+<option value="kol_kod3.html">確定オッズ３（３連単）</option>
+<option value="kol_syu.html">種牡馬データ</option>
+<option value="kol_ket.html">３代血統図</option>
+<option value="kol_ket5.html">５代血統図</option>
+<option value="kol_com1.html">コメントデータ</option>
+<option value="kol_tok1.html">特別登録レースデータ</option>
+<option value="kol_tok2.html">特別登録出走予定馬データ</option>
+<option value="table.html">コードテーブル</option>
+<option value="history.html">改版履歴</option>
+</select></form></TD></TR>
+</TABLE>
+<Table bordercolor="#CCCCCC" border="1" bgcolor="#FFFFFF" width="100%">
+<tr> 
+    
+<td bgcolor=#C0C0C0 width="13">
+<div align="center"><font color="#000000">記</font></div>
+</td>
+<td bgcolor=#C0C0C0 width="27" nowrap>
+<div align="center"><font color="#000000">項番</font></div>
+</td>
+<td bgcolor=#C0C0C0 width="120" nowrap>
+<div align="center"><font color="#000000">項目名</font></div>
+</td>
+<td bgcolor=#C0C0C0 align="center" width="31" nowrap>
+<div align="center"><font color="#000000">桁数</font></div>
+</td>
+<td bgcolor=#C0C0C0 align="center" width="44" nowrap>
+<div align="center"><font color="#000000">アドレス</font></div>
+</td>
+<td bgcolor=#C0C0C0 align="center" width="8">
+<div align="center"><font color="#000000">規</font></div>
+</td>
+<td bgcolor=#C0C0C0 width="349"><font color="#000000">　　備　　　考</font></td>
+</tr>
+
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">1</TD>
+<TD nowrap>開催場所コード</TD>
+<TD ALIGN="center">2</TD>
+<TD ALIGN="center">0</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD>場所テーブル参照</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">2</TD>
+<TD nowrap>開催年</TD>
+<TD ALIGN="center">4</TD>
+<TD ALIGN="center">2</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD>YYYY</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">3</TD>
+<TD nowrap>開催回次</TD>
+<TD ALIGN="center">2</TD>
+<TD ALIGN="center">6</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD>XX　例)１回東京２日４Ｒ の「１回」。地方を考慮し２桁。0埋め</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">4</TD>
+<TD nowrap>開催日次</TD>
+<TD ALIGN="center">2</TD>
+<TD ALIGN="center">8</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD>XX　例)１回東京２日４Ｒ の「２日」。地方を考慮し２桁。0埋め</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">5</TD>
+<TD nowrap>レース番号</TD>
+<TD ALIGN="center">2</TD>
+<TD ALIGN="center">10</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD>XX　例)１回東京２日４Ｒ の「４Ｒ」。0埋め</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">6</TD>
+<TD nowrap>年月日</TD>
+<TD ALIGN="center">8</TD>
+<TD ALIGN="center">12</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD>YYYYMMDD</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">7</TD>
+<TD nowrap>曜日コード</TD>
+<TD ALIGN="center">2</TD>
+<TD ALIGN="center">20</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD>01=土 02=日 03=月  04=火  05=水  06=木  07=金  (1byte目が1の時は祝日[例：13=祝日の月曜]、2の時は振替休日[例：23=振替休日の月曜]、3の時は国民の休日[例：33=国民の休日の月曜])</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">8</TD>
+<TD nowrap>枠番</TD>
+<TD ALIGN="center"><FONT COLOR="#000000">1</FONT></TD>
+<TD ALIGN="center">22</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD>1～8</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">9</TD>
+<TD nowrap>馬番</TD>
+<TD ALIGN="center"><FONT COLOR="#000000">2</FONT></TD>
+<TD ALIGN="center">23</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD>01～28</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">10</TD>
+<TD nowrap>馬コード</TD>
+<TD ALIGN="center"><FONT COLOR="#000000">7</FONT></TD>
+<TD ALIGN="center">25</TD>
+<TD ALIGN="center"><FONT COLOR="#000000">&nbsp;</FONT></TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">11</TD>
+<TD nowrap>カナ馬名</TD>
+<TD ALIGN="center"><FONT COLOR="#000000">30</FONT></TD>
+<TD ALIGN="center">32</TD>
+<TD ALIGN="center"><FONT COLOR="#000000">&nbsp;</FONT></TD>
+<TD>全角カタカナ１５文字</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">12</TD>
+<TD nowrap>馬記号</TD>
+<TD ALIGN="center">2</TD>
+<TD ALIGN="center">62</TD>
+<TD ALIGN="center">0</TD>
+<TD>馬記号コード表参照</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">13</TD>
+<TD nowrap>性別</TD>
+<TD ALIGN="center">1</TD>
+<TD ALIGN="center">64</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD>0=牡　1=牝　2=せん　</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">14</TD>
+<TD nowrap>年齢</TD>
+<TD ALIGN="center">2</TD>
+<TD ALIGN="center">65</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD>XX</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">15</TD>
+<TD nowrap>馬主名</TD>
+<TD ALIGN="center">40</TD>
+<TD ALIGN="center">67</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD>全角２０文字</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">16</TD>
+<TD nowrap>短縮馬主名</TD>
+<TD ALIGN="center">20</TD>
+<TD ALIGN="center">107</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD>全角１０文字</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">17</TD>
+<TD nowrap>予備フィールド</TD>
+<TD ALIGN="center">20</TD>
+<TD ALIGN="center">127</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">18</TD>
+<TD nowrap>ブリンカー</TD>
+<TD ALIGN="center">1</TD>
+<TD ALIGN="center">147</TD>
+<TD ALIGN="center">SP</TD>
+<TD>1=ブリンカー</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">19</TD>
+<TD nowrap>斤量</TD>
+<TD ALIGN="center"><FONT COLOR=#000000>3</FONT></TD>
+<TD ALIGN="center">148</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD>負担重量 単位：0.1kg （例）550 (55K)   555(55.5K)</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">20</TD>
+<TD nowrap>騎手コード</TD>
+<TD ALIGN="center"><FONT COLOR=#000000>5</FONT></TD>
+<TD ALIGN="center">151</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">21</TD>
+<TD nowrap>騎手名</TD>
+<TD ALIGN="center"><FONT COLOR=#000000>32</FONT></TD>
+<TD ALIGN="center">156</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD>全角１６文字</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">22</TD>
+<TD nowrap>短縮騎手名</TD>
+<TD ALIGN="center"><FONT COLOR=#000000>8</FONT></TD>
+<TD ALIGN="center">188</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD>３文字表示（例外として４文字あり）</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">23</TD>
+<TD nowrap>騎手東西別</TD>
+<TD ALIGN="center">1</TD>
+<TD ALIGN="center">196</TD>
+<TD ALIGN="center">SP</TD>
+<TD STYLE="vnd.ms-excel.numberformat:h:mm">1:西　2:東　JRA所属騎手のみ使用</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">24</TD>
+<TD nowrap>騎手所属場所コード</TD>
+<TD ALIGN="center">2</TD>
+<TD ALIGN="center">197</TD>
+<TD ALIGN="center">SP</TD>
+<TD>場所コードテーブル表参照  JRA所属騎手は使用せず（騎手東西別が[1:西、2:東]の場合はJRA所属と判断)</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">25</TD>
+<TD nowrap>騎手所属厩舎コード</TD>
+<TD ALIGN="center">5</TD>
+<TD ALIGN="center">199</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD>00000=フリー</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">26</TD>
+<TD nowrap>見習い区分</TD>
+<TD ALIGN="center">1</TD>
+<TD ALIGN="center">204</TD>
+<TD ALIGN="center">SP</TD>
+<TD>1:1kg減　2:2kg減　3:3kg減</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">27</TD>
+<TD nowrap>乗り替り</TD>
+<TD ALIGN="center"><FONT COLOR=#000000>1</FONT></TD>
+<TD ALIGN="center">205</TD>
+<TD ALIGN="center">SP</TD>
+<TD>1=乗り替り</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">28</TD>
+<TD nowrap>厩舎コード</TD>
+<TD ALIGN="center"><FONT COLOR=#000000>5</FONT></TD>
+<TD ALIGN="center">206</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">29</TD>
+<TD nowrap>厩舎名</TD>
+<TD ALIGN="center"><FONT COLOR=#000000>32</FONT></TD>
+<TD ALIGN="center">211</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD>全角１６文字</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">30</TD>
+<TD nowrap>短縮厩舎名</TD>
+<TD ALIGN="center"><FONT COLOR=#000000>8</FONT></TD>
+<TD ALIGN="center">243</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD>３文字表示（例外として４文字あり）</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">31</TD>
+<TD nowrap>厩舎所属場所コード</TD>
+<TD ALIGN="center">2</TD>
+<TD ALIGN="center">251</TD>
+<TD ALIGN="center">SP</TD>
+<TD>場所コードテーブル表参照 JRA所属厩舎は使用せず（厩舎栗北南別が[1:栗東、2:美浦南、3:美浦北]の場合はJRA所属と判断）</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">32</TD>
+<TD nowrap>厩舎栗北南別</TD>
+<TD ALIGN="center">1</TD>
+<TD ALIGN="center">253</TD>
+<TD ALIGN="center">SP</TD>
+<TD>1:栗東、2:美浦南、3:美浦北</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">33</TD>
+<TD nowrap>
+  <p>予想１</p>
+  </TD>
+<TD ALIGN="center">1</TD>
+<TD ALIGN="center">254</TD>
+<TD ALIGN="center">SP</TD>
+<TD>0=◎  1=○  2=▲  3=△  4=×　9=出走取消  競馬ブック予想陣による予想印　中野 秀幸氏(京都、阪神、中京、小倉レース予想担当)  松本 憲二氏(東京、中山、福島、新潟、札幌、函館レース予想担当)</TD>
+</TR>
+<TR bgcolor="#FFFFCC">
+  <TD ALIGN="right">新</TD>
+  <TD ALIGN="right">34</TD>
+  <TD nowrap>予想２</TD>
+  <TD ALIGN="center">1</TD>
+  <TD ALIGN="center">
+    <p>255</p>
+    </TD>
+  <TD ALIGN="center">SP</TD>
+  <TD>0=◎ 1=○ 2=▲ 3=△ 4=×　9=出走取消 競馬ブック予想陣による予想印　※出馬表レースデータ（kol_den1.kd3）の予想２</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">35</TD>
+<TD nowrap>調教フラグ</TD>
+<TD ALIGN="center"><FONT COLOR=#000000>1</FONT></TD>
+<TD ALIGN="center">256</TD>
+<TD ALIGN="center">SP</TD>
+<TD>0=前回　1=追切り</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">36</TD>
+<TD nowrap>(前回)調教１　騎乗者</TD>
+<TD ALIGN="center">8</TD>
+<TD ALIGN="center">257</TD>
+<TD ALIGN="center">SP</TD>
+<TD>ＭＡＸ全角左詰め４文字とし、残りをスペースとする</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">37</TD>
+<TD nowrap>年月日</TD>
+<TD ALIGN="center">8</TD>
+<TD ALIGN="center">265</TD>
+<TD ALIGN="center">SP</TD>
+<TD>YYYYMMDD</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">38</TD>
+<TD nowrap>場所</TD>
+<TD ALIGN="center">6</TD>
+<TD ALIGN="center">273</TD>
+<TD ALIGN="center">SP</TD>
+<TD>例）栗東△△ 美南△△ 美北△△ 函館△△ 笠松△△ プール  など  注)プールは全角カタカナ表記（△は半角スペースを示す）</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">39</TD>
+<TD nowrap>コース</TD>
+<TD ALIGN="center">2</TD>
+<TD ALIGN="center">279</TD>
+<TD ALIGN="center">SP</TD>
+<TD>例）Ａ，Ｂ，Ｃ，CW，Ｄ，Ｅ，本，内，芝，ダ，障，牧，坂，Ｗ，DW，外</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">40</TD>
+<TD nowrap>馬場</TD>
+<TD ALIGN="center">2</TD>
+<TD ALIGN="center">281</TD>
+<TD ALIGN="center">SP</TD>
+<TD>例）良 重 不 稍</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">41</TD>
+<TD nowrap>８Ｆ(１哩)</TD>
+<TD ALIGN="center">6</TD>
+<TD ALIGN="center">283</TD>
+<TD ALIGN="center">SP</TD>
+<TD>△XXX.X  先行する０は省略　　△△－（全角）△△ 、ユキ△△、タスキ、ゲート、モヤ△△（△は半角スペースを示す）</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">42</TD>
+<TD nowrap>７Ｆ</TD>
+<TD ALIGN="center">6</TD>
+<TD ALIGN="center">289</TD>
+<TD ALIGN="center">SP</TD>
+<TD ALIGN="right">&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">43</TD>
+<TD nowrap>６Ｆ</TD>
+<TD ALIGN="center">6</TD>
+<TD ALIGN="center">295</TD>
+<TD ALIGN="center">SP</TD>
+<TD>６Ｆの位置には坂路の場合、回数が入る △△△3回 （数値は半角。△は半角スペースを示す。回数不明時はスペース埋め）プールの場合、周回数が入る △△△6周  （数値は半角。△は半角スペースを示す。周回数不明時はスペース埋め）</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">44</TD>
+<TD nowrap>５Ｆ</TD>
+<TD ALIGN="center">6</TD>
+<TD ALIGN="center">301</TD>
+<TD ALIGN="center">SP</TD>
+<TD>                             （坂路の場合　800m:4Fとなる）</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">45</TD>
+<TD nowrap>４Ｆ(半哩)</TD>
+<TD ALIGN="center">6</TD>
+<TD ALIGN="center">307</TD>
+<TD ALIGN="center">SP</TD>
+<TD>　　　　　　　　　　　　　　　　（坂路の場合　600m:3Fとなる）</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">46</TD>
+<TD nowrap>３Ｆ</TD>
+<TD ALIGN="center">6</TD>
+<TD ALIGN="center">313</TD>
+<TD ALIGN="center">SP</TD>
+<TD>　　　　　　　　　　　　　　　　（坂路の場合　400m:2Fとなる）</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">47</TD>
+<TD nowrap>１Ｆ</TD>
+<TD ALIGN="center">6</TD>
+<TD ALIGN="center">319</TD>
+<TD ALIGN="center">SP</TD>
+<TD>　　　　　　　　　　　　　　　　（坂路の場合　200m:1Fとなる）</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">48</TD>
+<TD nowrap>回った位置</TD>
+<TD ALIGN="center">1</TD>
+<TD ALIGN="center">325</TD>
+<TD ALIGN="center">SP</TD>
+<TD>１(内ラチ沿い)～９(外ラチ沿い) コースを内側の柵(ラチ)からみて９分割して考え、どの辺りを回ってきたかを示す。</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">49</TD>
+<TD nowrap>脚色</TD>
+<TD ALIGN="center">6</TD>
+<TD ALIGN="center">326</TD>
+<TD ALIGN="center">SP</TD>
+<TD>全角３文字固定（スペース含む） 例)一　杯、馬ナリ  など</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">50</TD>
+<TD nowrap>調教矢印</TD>
+<TD ALIGN="center">1</TD>
+<TD ALIGN="center">332</TD>
+<TD ALIGN="center">SP</TD>
+<TD>1=一変　2=平行 3=下降　4=良化　5=下降気味</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">51</TD>
+<TD nowrap>調教例外</TD>
+<TD ALIGN="center">40</TD>
+<TD ALIGN="center">333</TD>
+<TD ALIGN="center">SP</TD>
+<TD>例)中間軽め、キリ、連闘のため中間軽め、雪で見えず、障害練習、海外遠征、キャンター、トレセン調整</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">52</TD>
+<TD nowrap>調教２</TD>
+<TD ALIGN="center">117</TD>
+<TD ALIGN="center">373</TD>
+<TD ALIGN="center">SP</TD>
+<TD>同上</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">53</TD>
+<TD nowrap>調教３</TD>
+<TD ALIGN="center">117</TD>
+<TD ALIGN="center">490</TD>
+<TD ALIGN="center">SP</TD>
+<TD>同上</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">54</TD>
+<TD nowrap>調教併せフラグ</TD>
+<TD ALIGN="center">1</TD>
+<TD ALIGN="center">607</TD>
+<TD ALIGN="center">SP</TD>
+<TD>2=調教２の併せ　3=調教３の併せ</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">55</TD>
+<TD nowrap>調教併せ</TD>
+<TD ALIGN="center">86</TD>
+<TD ALIGN="center">608</TD>
+<TD ALIGN="center">SP</TD>
+<TD>テキスト形式 例)ナリタホマレに0.3秒先着</TD>
+</TR>
+<TR bgcolor="#FFFFCC">
+  <TD ALIGN="right">新</TD>
+  <TD ALIGN="right">56</TD>
+  <TD nowrap>調教短評</TD>
+  <TD ALIGN="center">24</TD>
+  <TD ALIGN="center">694</TD>
+  <TD ALIGN="center">SP</TD>
+  <TD>
+    <p>ブックによる調教短評</p>
+    </TD>
+</TR>
+<TR bgcolor="#FFFFCC">
+  <TD ALIGN="right">新</TD>
+  <TD ALIGN="right">57</TD>
+  <TD nowrap>調教本数　コース</TD>
+  <TD ALIGN="center">3</TD>
+  <TD ALIGN="center">718</TD>
+  <TD ALIGN="center">SP</TD>
+  <TD>前走からの調教本数でコース追いの本数</TD>
+</TR>
+<TR bgcolor="#FFFFCC">
+  <TD ALIGN="right">新</TD>
+  <TD ALIGN="right">58</TD>
+  <TD nowrap>調教本数　坂路</TD>
+  <TD ALIGN="center">3</TD>
+  <TD ALIGN="center">721</TD>
+  <TD ALIGN="center">SP</TD>
+  <TD>前走からの調教本数で坂路追いの本数</TD>
+</TR>
+<TR bgcolor="#FFFFCC">
+  <TD ALIGN="right">新</TD>
+  <TD ALIGN="right">59</TD>
+  <TD nowrap>調教本数　プール</TD>
+  <TD ALIGN="center">3</TD>
+  <TD ALIGN="center">724</TD>
+  <TD ALIGN="center">SP</TD>
+  <TD>前走からの調教本数でプール追いの本数</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">60</TD>
+<TD nowrap>データ作成日</TD>
+<TD ALIGN="center">8</TD>
+<TD ALIGN="center">727</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD>YYYYMMDD</TD>
+</TR>
+<TR>
+<TD>　</TD>
+<TD ALIGN="right">61</TD>
+<TD nowrap>生年</TD>
+<TD ALIGN="center">4</TD>
+<TD ALIGN="center">735</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD>出走馬の生年 YYYY ※2001年以降のデータに設定</TD>
+</TR>
+<TR>
+<TD ALIGN="right">　</TD>
+<TD ALIGN="right">62</TD>
+<TD nowrap>レイティング</TD>
+<TD ALIGN="center">3</TD>
+<TD ALIGN="center">739</TD>
+<TD ALIGN="center">SP</TD>
+<TD>
+<p>ブックレイティング 0.1単位 (例) 559 → 55.9
+ &lt;※&gt;</p>
+</TD>
+</TR>
+<TR bgcolor="#FFFFCC">
+  <TD ALIGN="right">新</TD>
+  <TD ALIGN="right">63</TD>
+  <TD nowrap>スピード指数　中央平地５走前</TD>
+  <TD ALIGN="center">5</TD>
+  <TD ALIGN="center">742</TD>
+  <TD ALIGN="center">SP</TD>
+  <TD>ブックスピード指数　0.1単位　（例）857 → 85.7</TD>
+</TR>
+<TR bgcolor="#FFFFCC">
+  <TD ALIGN="right">新</TD>
+  <TD ALIGN="right">64</TD>
+  <TD nowrap>
+    <div align="right">４走前</div>
+  </TD>
+  <TD ALIGN="center">5</TD>
+  <TD ALIGN="center">747</TD>
+  <TD ALIGN="center">SP</TD>
+  <TD>プラスの時「 XXX.X」　マイナスの時「-XXX.X」</TD>
+</TR>
+<TR bgcolor="#FFFFCC">
+  <TD ALIGN="right">新</TD>
+  <TD ALIGN="right">65</TD>
+  <TD nowrap>
+    <div align="right">３走前</div>
+  </TD>
+  <TD ALIGN="center">5</TD>
+  <TD ALIGN="center">752</TD>
+  <TD ALIGN="center">SP</TD>
+  <TD>&nbsp;</TD>
+</TR>
+<TR bgcolor="#FFFFCC">
+  <TD ALIGN="right">新</TD>
+  <TD ALIGN="right">66</TD>
+  <TD nowrap>
+    <div align="right">２走前</div>
+  </TD>
+  <TD ALIGN="center">5</TD>
+  <TD ALIGN="center">757</TD>
+  <TD ALIGN="center">SP</TD>
+  <TD>&nbsp;</TD>
+</TR>
+<TR bgcolor="#FFFFCC">
+  <TD ALIGN="right">新</TD>
+  <TD ALIGN="right">67</TD>
+  <TD nowrap>
+    <div align="right">前走</div>
+  </TD>
+  <TD ALIGN="center">5</TD>
+  <TD ALIGN="center">762</TD>
+  <TD ALIGN="center">SP</TD>
+  <TD>&nbsp;</TD>
+</TR>
+<TR bgcolor="#FFFFCC">
+  <TD ALIGN="right">新</TD>
+  <TD ALIGN="right">68</TD>
+  <TD nowrap>ローテーション　　８週前</TD>
+  <TD ALIGN="center">2</TD>
+  <TD ALIGN="center">767</TD>
+  <TD ALIGN="center">SP</TD>
+  <TD>過去の出走状況８　01～28、取、☆、…etc　SPは未出走（01～28＝着順、取＝取消、☆＝出馬投票での除外）</TD>
+</TR>
+<TR bgcolor="#FFFFCC">
+  <TD ALIGN="right">新</TD>
+  <TD ALIGN="right">69</TD>
+  <TD nowrap>
+    <div align="right">７週前</div>
+  </TD>
+  <TD ALIGN="center">2</TD>
+  <TD ALIGN="center">769</TD>
+  <TD ALIGN="center">SP</TD>
+  <TD>過去の出走状況７</TD>
+</TR>
+<TR bgcolor="#FFFFCC">
+  <TD ALIGN="right">新</TD>
+  <TD ALIGN="right">70</TD>
+  <TD nowrap>
+    <div align="right">６週前</div>
+  </TD>
+  <TD ALIGN="center">2</TD>
+  <TD ALIGN="center">771</TD>
+  <TD ALIGN="center">SP</TD>
+  <TD>過去の出走状況６</TD>
+</TR>
+<TR bgcolor="#FFFFCC">
+  <TD ALIGN="right">新</TD>
+  <TD ALIGN="right">71</TD>
+  <TD nowrap>
+    <div align="right">５週前</div>
+  </TD>
+  <TD ALIGN="center">2</TD>
+  <TD ALIGN="center">773</TD>
+  <TD ALIGN="center">SP</TD>
+  <TD>過去の出走状況５</TD>
+</TR>
+<TR bgcolor="#FFFFCC">
+  <TD ALIGN="right">新</TD>
+  <TD ALIGN="right">72</TD>
+  <TD nowrap>
+    <div align="right">４週前</div>
+  </TD>
+  <TD ALIGN="center">2</TD>
+  <TD ALIGN="center">775</TD>
+  <TD ALIGN="center">SP</TD>
+  <TD>過去の出走状況４</TD>
+</TR>
+<TR bgcolor="#FFFFCC">
+  <TD ALIGN="right">新</TD>
+  <TD ALIGN="right">73</TD>
+  <TD nowrap>
+    <div align="right">３週前</div>
+  </TD>
+  <TD ALIGN="center">2</TD>
+  <TD ALIGN="center">777</TD>
+  <TD ALIGN="center">SP</TD>
+  <TD>過去の出走状況３</TD>
+</TR>
+<TR bgcolor="#FFFFCC">
+  <TD ALIGN="right">新</TD>
+  <TD ALIGN="right">74</TD>
+  <TD nowrap>
+    <div align="right">２週前</div>
+  </TD>
+  <TD ALIGN="center">2</TD>
+  <TD ALIGN="center">779</TD>
+  <TD ALIGN="center">SP</TD>
+  <TD>過去の出走状況２</TD>
+</TR>
+<TR bgcolor="#FFFFCC">
+  <TD ALIGN="right">新</TD>
+  <TD ALIGN="right">75</TD>
+  <TD nowrap>
+    <div align="right">１週前</div>
+  </TD>
+  <TD ALIGN="center">2</TD>
+  <TD ALIGN="center">781</TD>
+  <TD ALIGN="center">SP</TD>
+  <TD>過去の出走状況１</TD>
+</TR>
+<TR bgcolor="#FFFFCC">
+  <TD ALIGN="right">新</TD>
+  <TD ALIGN="right">76</TD>
+  <TD nowrap>休養理由</TD>
+  <TD ALIGN="center">60</TD>
+  <TD ALIGN="center">783</TD>
+  <TD ALIGN="center">SP</TD>
+  <TD>&nbsp;</TD>
+</TR>
+<TR bgcolor="#FFFFCC">
+  <TD ALIGN="right">新</TD>
+  <TD ALIGN="right">77</TD>
+  <TD nowrap>場所別成績　　　１着</TD>
+  <TD ALIGN="center">3</TD>
+  <TD ALIGN="center">843</TD>
+  <TD ALIGN="center">&nbsp;</TD>
+  <TD>当該競馬場・コースでの成績</TD>
+</TR>
+<TR bgcolor="#FFFFCC">
+  <TD ALIGN="right">新</TD>
+  <TD ALIGN="right">78</TD>
+  <TD nowrap>
+    <div align="right">２着</div>
+  </TD>
+  <TD ALIGN="center">3</TD>
+  <TD ALIGN="center">846</TD>
+  <TD ALIGN="center">&nbsp;</TD>
+  <TD>&nbsp;</TD>
+</TR>
+<TR bgcolor="#FFFFCC">
+  <TD ALIGN="right">新</TD>
+  <TD ALIGN="right">79</TD>
+  <TD nowrap>
+    <div align="right">３着</div>
+  </TD>
+  <TD ALIGN="center">3</TD>
+  <TD ALIGN="center">849</TD>
+  <TD ALIGN="center">&nbsp;</TD>
+  <TD>&nbsp;</TD>
+</TR>
+<TR bgcolor="#FFFFCC">
+  <TD ALIGN="right">新</TD>
+  <TD ALIGN="right">80</TD>
+  <TD nowrap>
+    <div align="right">着外</div>
+  </TD>
+  <TD ALIGN="center">3</TD>
+  <TD ALIGN="center">852</TD>
+  <TD ALIGN="center">&nbsp;</TD>
+  <TD>&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">81</TD>
+<TD nowrap>予備フィールド</TD>
+<TD ALIGN="center">143</TD>
+<TD ALIGN="center">855</TD>
+<TD ALIGN="center">&nbsp;</TD>
+<TD>&nbsp;</TD>
+</TR>
+<TR>
+<TD ALIGN="right">&nbsp;</TD>
+<TD ALIGN="right">82</TD>
+<TD nowrap>データ区切り</TD>
+<TD ALIGN="center"><FONT COLOR="#000000">2</FONT></TD>
+<TD ALIGN="center">998</TD>
+<TD ALIGN="center"><FONT COLOR="#000000">&nbsp;</FONT></TD>
+<TD><font color="#000000">CR/LF</font></TD>
+</TR>
+<TR>
+<TD BGCOLOR="#C0C0C0" ALIGN="right"><FONT COLOR="#000000">&nbsp;</FONT></TD>
+<TD BGCOLOR="#C0C0C0" ALIGN="right"><FONT COLOR="#000000">&nbsp;</FONT></TD>
+<TD BGCOLOR="#C0C0C0" nowrap><FONT COLOR="#000000">合　計</FONT></TD>
+<TD BGCOLOR="#C0C0C0" ALIGN="center"><font color="#000000">1000</font></TD>
+<TD BGCOLOR="#C0C0C0" ALIGN="right"><FONT COLOR="#000000">&nbsp;</FONT></TD>
+<TD BGCOLOR="#C0C0C0" ALIGN="right"><FONT COLOR="#000000">&nbsp;</FONT></TD>
+<TD BGCOLOR="#C0C0C0" ALIGN="right"><font color="#000000">&nbsp;</font></TD>
+</TR>
+</Table>
+<BR><P>
+<BR><P>
+<PRE>
+＜調教出力説明＞
+　　　　　　　　　　　　　　　　　　１哩   ６Ｆ   ５Ｆ   半哩   ３Ｆ   １Ｆ
+　　セイウンエリア
+調教１　　　　調師 前回南Ｄ稍　　　        83.2   67.1   52.7   39.2   11.9⑧一　杯
+調教２　　　　助手   26南Ｄ良　　⑦ 99.4   83.4   －     53.8 キリ     13.1⑨馬ナリ
+調教３　　　　調師    9南Ｄ稍　　　         2回   53.7   39.9   27.0   13.9　一　杯 
+調教３の併せ  ツジノオトメ３Ｆ併0.9先着
+
+⑦ 99.4は、７Ｆの位置に99.4と入っています。見出しが、１哩ですので前に⑦を入れてください。
+△△－(全角)△△　　キリ△△　　タスキは、調教２のようになります。(△は半角スペース)
+坂路の場合、2回と６Ｆの位置に入っている。見出しとは異なるが800～200の時計が５Ｆより入る。
+調教例外は、前回　 中間軽め………１哩の位置より出力する。
+</PRE>
+<BR>
+<PRE>
+＜レイティング説明＞
+この数字は競馬ブックオリジナルのレイティングです。デビュー戦より各馬ごとに
+その対戦メンバー及びレース結果により能力を数値化し、特に近７走の成績を重視して決定される。
+その７走も近走をより重要視することにより、緻密な数値が導かれる。地方主催の交流レースをも
+網羅しており、万全を期している。
+</PRE>
+<FONT SIZE=-1><I>
+<br>
+<br>
+更新日 2009/06/09<br>
+競馬道OnLine
+</I></font>
+</BODY>
+</HTML>

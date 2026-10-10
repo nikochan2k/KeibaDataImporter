@@ -1,0 +1,139 @@
+<HTML>
+<HEAD>
+<meta http-equiv="Content-Type" content="text/html; charset=x-sjis">
+<TITLE>KOL KD3 Data Format</TITLE>
+</HEAD>
+<BODY bgcolor="#F4FFF4">
+<H1><CENTER>改版履歴</CENTER></H1>
+<TABLE>
+<TR><TD><FONT SIZE=+1><B>改版履歴</B></FONT></TD></TR>
+<TR><TD><form><select size="1" onChange="location=this.options[this.selectedIndex].value">
+<option value="index.html">お知らせ</option>
+<option value="first.html">はじめに</option>
+<option value="kol_sei1.html">競走成績レースデータ</option>
+<option value="kol_sei2.html">競走成績出走馬データ</option>
+<option value="kol_sei3.html">制裁その他データ</option>
+<option value="kol_den1.html">出馬表レースデータ</option>
+<option value="kol_den2.html">出馬表出走馬データ</option>
+<option value="kol_uma.html">競走馬データ</option>
+<option value="kol_kis.html">騎手データ</option>
+<option value="kol_kyu.html">厩舎データ</option>
+<option value="kol_ods.html">予想オッズ（単勝・枠連・馬連）</option>
+<option value="kol_ods2.html">予想オッズ２（馬単・３連複）</option>
+<option value="kol_kod.html">確定オッズ（単勝・枠連・馬連）</option>
+<option value="kol_kod2.html">確定オッズ２（複勝・ワイド・馬単・３連複）</option>
+<option value="kol_kod3.html">確定オッズ３（３連単）</option>
+<option value="kol_syu.html">種牡馬データ</option>
+<option value="kol_ket.html">３代血統図</option>
+<option value="kol_ket5.html">５代血統図</option>
+<option value="kol_com1.html">コメントデータ</option>
+<option value="kol_tok1.html">特別登録レースデータ</option>
+<option value="kol_tok2.html">特別登録出走予定馬データ</option>
+<option value="table.html">コードテーブル</option>
+<option selected value="history.html">改版履歴</option>
+</select></form></TD></TR>
+</TABLE>
+<PRE>
+
+【改版履歴】
+2007.10.01　　2007年10月1日発表版
+            第３次ＫＯＬデータフォーマット第一回発表
+
+2007.10.10　　2007年10月10日更新版
+
+
+　　　　　　「騎手厩舎コメント／次走へのメモ」
+　　　　　　　項番22以降のアドレス表記ミスを修正
+
+
+　　　　　　「予想オッズ２（馬単・３連複）」
+　　　　　　　項番目27「予備フィールド」のサイズを変更（92→1677）
+　　　　　　　項番28～333「馬単オッズ」のサイズを変更（7→5）
+
+
+　　　　　　「確定オッズ２（複勝・ワイド・馬単・３連複）」
+　　　　　　　項番23「予備フィールド」のサイズを変更（38→5）
+　　　　　　　項番27「予備フィールド」のサイズを変更（13→39）
+
+
+　　　　　　「確定オッズ３（３連単）」
+　　　　　　　項番27「予備フィールド」のサイズを変更（40→39）
+　　　　　　　項番24以降のアドレス表記ミスを修正
+
+　　　　　　「特別登録レースデータ」
+　　　　　　　項番42に「Ｊｐｎフラグ」を追加
+　　　　　　　項番43「予備フィールド」のサイズを変更（140→139）
+
+　　　　　　「出走馬レースデータ」
+　　　　　　　項番83以降のアドレス表記ミスを修正
+
+　　　　　　「５代血統図」
+　　　　　　　末尾に「データ区切り」を追加
+
+2007.10.11
+　　　　　　「５代血統図」
+　　　　　　　項番196「馬コード４７」の備考においてミスがあったものを修正
+　　　　　　　母母母母母（エリア４７）→父母母母母（エリア４７）
+
+2007.10.15
+　　　　　　「確定オッズ」
+　　　　　　　07年10月13日分よりファイルを１日単位に変更しました。
+
+2007.10.24
+　　　　　　「５代血統図」
+　　　　　　　項番70「英語馬名１１」のアドレス表記ミスを修正
+
+2007.11.02
+　　　　　　「５代血統図」
+　　　　　　　項番02「カナ馬名」の桁数において誤りがあったものを修正
+　　　　　　　桁数30　→　桁数37
+　　　　　　　※11/2再修正
+
+<a name="20080327" id="20080327"></a>2008.03.27　　2008年3月27日発表版
+　　　　　　コードテーブルの場所コードに
+　　　　　　「幌泉」（=113）
+　　　　　　「比国」（=114）
+　　　　　　「星国」（=115）
+　　　　　　「ＵＡＥ」（=116）
+　　　　　　「広島」（=117）
+　　　　　　「南ア国」（=118）
+　　　　　　「むかわ」（=119）
+　　　　　　「安平」（=120）
+　　　　　　「新ひだか」（=121）
+　　　　　　「シリア」（=256）
+　　　　　　「沙国」（=257）
+　　　　　　「韓国」（=258）
+　　　　　　「中国」（=259）
+　　　　　　を追加
+
+<a name="20080626" id="20080626"></a>2008.06.26　　2008年6月26日発表版
+　　　　　　コートテーブルの産地コードに
+　　　　　　「洞爺湖」（=122）
+　　　　　　「露国」（=123）
+　　　　　　を追加
+
+<a name="20081113" id="20081113"></a>2008.11.13　　2008年11月13日発表版
+　　　　　　コードテーブルの場所コードに
+　　　　　　「墺国」（=81）
+　　　　　　を追加
+
+<a name="20090609" id="20090609"></a>2009.06.09　　2009年6月9日発表版
+　　　　　　コードテーブルの産地コードに
+　　　　　　「秋田」（=124）
+　　　　　　を追加
+
+<a name="20101125" id="20101125"></a>2010.11.25　　2010年11月25日発表版
+　　　　　　コードテーブルの場所コードに
+　　　　　　「トルコ」（=82）
+　　　　　　「カタール」（=83）
+　　　　　　を追加
+
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　以上
+</PRE>
+<FONT SIZE=-1><i>
+<br>
+更新日 2010/11/25<br>
+競馬道OnLine
+</i></font>
+</BODY>
+</HTML>

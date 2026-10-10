@@ -54,7 +54,7 @@ export class KolChoukyouTool {
   private choukyouDao: ChoukyouDao;
 
   public async saveShussoubaChoukyou(sc: ShussoubaChoukyou) {
-    this.choukyouDao.save(sc);
+    return await this.choukyouDao.save(sc);
   }
 
   public async saveChoukyou(
@@ -71,7 +71,7 @@ export class KolChoukyouTool {
 
     const choukyou = new Choukyou();
     const dateId = this.tool.getDaysFrom1970(buffer, offset + 9);
-    const buf = buffer.slice(offset + 27, 42);
+    const buf = buffer.subarray(offset + 17, offset + 77);
     const hash = crc16(buf);
     choukyou.Id = umaId * 2 ** (15 + 16) + dateId * 2 ** 16 + hash;
     choukyou.UmaId = umaId;
@@ -101,7 +101,7 @@ export class KolChoukyouTool {
         choukyou.Kaisuu = parseInt(array[0], 10);
       }
     }
-    choukyou.Baba = $CH.baba.toCodeFromKol(buffer, offset + 25, 2); // 307
+    choukyou.Baba = $CH.baba.toCodeFromKol(buffer, offset + 25, 2);
     choukyou.IchiDori = readPositiveInt(buffer, offset + 69, 1);
     const oikiri = readStrWithNoSpace(buffer, offset + 70, 6);
     choukyou.Oikiri = $CH.oikiri.toCodeFromKol(oikiri);
@@ -151,7 +151,7 @@ export class KolChoukyouTool {
     if (choukyou.Type === $CH.ChoukyouType.Hanro) {
       await this.saveChoukyouTime(buffer, choukyou, offset, KolChoukyouTool.hanroFurlongOffsets);
     } else if (
-      $CH.ChoukyouType.Shiba <= choukyou.Type ||
+      $CH.ChoukyouType.Shiba <= choukyou.Type &&
       choukyou.Type <= $CH.ChoukyouType.Shougai
     ) {
       await this.saveChoukyouTime(buffer, choukyou, offset, KolChoukyouTool.courseFurlongOffsets);

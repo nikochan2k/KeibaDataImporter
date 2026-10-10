@@ -62,7 +62,7 @@ export class KolDen1Kd3 extends DataToImport {
       return null;
     }
     toBe.Kyuujitsu = $K.kyuujitsu.toCodeFromKol(buffer, 20, 1);
-    toBe.Youbi = $K.kyuujitsu.toCodeFromKol(buffer, 21, 1);
+    toBe.Youbi = $K.youbi.toCodeFromKol(buffer, 21, 1);
     toBe.KaisaiKubun = this.kolKaisaiTool.convertKaisaiKubunFrom(toBe.Basho);
     toBe.ChuuouChihouGaikoku = $K.chuuouChihouGaikoku.toCodeFromKol(buffer, 22, 1);
     const asIs = await this.kolKaisaiTool.getKaisaiWithId(buffer);
@@ -146,7 +146,7 @@ export class KolDen1Kd3 extends DataToImport {
     toBe.Shoukin3Chaku = readPositiveInt(buffer, 295, 9);
     toBe.Shoukin4Chaku = readPositiveInt(buffer, 304, 9);
     toBe.Shoukin5Chaku = readPositiveInt(buffer, 313, 9);
-    toBe.FukaShou = readPositiveInt(buffer, 351, 9);
+    toBe.FukaShou = readPositiveInt(buffer, 322, 9);
     toBe.MaeuriFlag = $R.maeuriFlag.toCodeFromKol(buffer, 331, 1);
     toBe.YoteiHassouJikan = readStr(buffer, 332, 5);
     toBe.Tousuu = readPositiveInt(buffer, 337, 2);

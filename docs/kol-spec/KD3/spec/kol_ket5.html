@@ -1,0 +1,2587 @@
+<HTML>
+<HEAD>
+<meta http-equiv="Content-Type" content="text/html; charset=x-sjis">
+<TITLE>KOL KD3 Data Format</TITLE>
+</HEAD>
+<BODY bgcolor="#F4FFF4">
+<H1>
+  <CENTER>
+    ５代血統図
+  </CENTER>
+</H1>
+<TABLE>
+  <TR>
+    <TD><FONT SIZE=+1><B>５代血統図 【ファイル名：kol_ket5.kd3】</B></FONT></TD>
+  </TR>
+  <TR>
+    <TD>
+      <form>
+        <select size="1" onChange="location=this.options[this.selectedIndex].value">
+          <option value="index.html">お知らせ</option>
+          <option value="first.html">はじめに</option>
+          <option value="kol_sei1.html">競走成績レースデータ</option>
+          <option value="kol_sei2.html">競走成績出走馬データ</option>
+          <option value="kol_sei3.html">制裁その他データ</option>
+          <option value="kol_den1.html">出馬表レースデータ</option>
+          <option value="kol_den2.html">出馬表出走馬データ</option>
+          <option value="kol_uma.html">競走馬データ</option>
+          <option value="kol_kis.html">騎手データ</option>
+          <option value="kol_kyu.html">厩舎データ</option>
+          <option value="kol_ods.html">予想オッズ（単勝・枠連・馬連）</option>
+          <option value="kol_ods2.html">予想オッズ２（馬単・３連複）</option>
+          <option value="kol_kod.html">確定オッズ（単勝・枠連・馬連）</option>
+          <option value="kol_kod2.html">確定オッズ２（複勝・ワイド・馬単・３連複）</option>
+          <option value="kol_kod3.html">確定オッズ３（３連単）</option>
+          <option value="kol_syu.html">種牡馬データ</option>
+          <option value="kol_ket.html">３代血統図</option>
+          <option selected value="kol_ket5.html">５代血統図</option>
+          <option value="kol_com1.html">コメントデータ</option>
+          <option value="kol_tok1.html">特別登録レースデータ</option>
+          <option value="kol_tok2.html">特別登録出走予定馬データ</option>
+          <option value="table.html">コードテーブル</option>
+          <option value="history.html">改版履歴</option>
+        </select>
+      </form>
+    </TD>
+  </TR>
+</TABLE>
+<Table border bgcolor="#FFFFFF" bordercolor="#CCCCCC" width="100%">
+  <tr>
+    <td bgcolor=#C0C0C0 width="13" nowrap>
+      <div align="center"><font color="#000000">記</font></div>
+    </td>
+    <td bgcolor=#C0C0C0 width="27" nowrap>
+      <div align="center"><font color="#000000">項番</font></div>
+    </td>
+    <td bgcolor=#C0C0C0 width="120" nowrap>
+      <div align="center"><font color="#000000">項目名</font></div>
+    </td>
+    <td bgcolor=#C0C0C0 align="center" width="31" nowrap>
+      <div align="center"><font color="#000000">桁数</font></div>
+    </td>
+    <td bgcolor=#C0C0C0 align="center" width="42" nowrap>
+      <div align="center"><font color="#000000">アドレス</font></div>
+    </td>
+    <td bgcolor=#C0C0C0 align="center" width="8" nowrap>
+      <div align="center"><font color="#000000">規</font></div>
+    </td>
+    <td bgcolor=#C0C0C0 width="349" nowrap><font color="#000000">　　備　　　考</font></td>
+  </tr>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">1</TD>
+    <TD width="120">馬コード</TD>
+    <TD ALIGN="center">7</TD>
+    <TD ALIGN="center">0</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD ALIGN="right">&nbsp;</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">2</TD>
+    <TD width="120"> カナ馬名</TD>
+    <TD ALIGN="center">37</TD>
+    <TD ALIGN="center">7</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD ALIGN="right">&nbsp;</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">3</TD>
+    <TD width="120"> ファミリーナンバー</TD>
+    <TD ALIGN="center">3</TD>
+    <TD ALIGN="center">44</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>サラブレッドの分類方法のひとつで牝系を整理する際の索引番号。　例：ディープインパクトは[2-f]で、２号族のf分枝の意</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">4</TD>
+    <TD width="120">産地コード</TD>
+    <TD ALIGN="center">3</TD>
+    <TD ALIGN="center">47</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD ALIGN="right">&nbsp;</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">5</TD>
+    <TD width="120">
+      <p>馬コード２</p>
+    </TD>
+    <TD ALIGN="center">7</TD>
+    <TD ALIGN="center">50</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>父（エリア２）</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">6</TD>
+    <TD width="120">カナ馬名２</TD>
+    <TD ALIGN="center">40</TD>
+    <TD ALIGN="center">57</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>カタカナ（全角）、漢字、ローマ数字で表記</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">7</TD>
+    <TD width="120">英語馬名２</TD>
+    <TD ALIGN="center">40</TD>
+    <TD ALIGN="center">97</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>半角欧文、ローマ数字で表記</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">8</TD>
+    <TD width="120">生年２</TD>
+    <TD ALIGN="center">4</TD>
+    <TD ALIGN="center">137</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>YYYY</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">9</TD>
+    <TD width="120">
+      <p>毛色コード２</p>
+    </TD>
+    <TD ALIGN="center">2</TD>
+    <TD ALIGN="center">141</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>ブックコード</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">10</TD>
+    <TD width="120">血種コード２</TD>
+    <TD ALIGN="center">2</TD>
+    <TD ALIGN="center">143</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>ブックコード</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">11</TD>
+    <TD width="120">産地コード２</TD>
+    <TD ALIGN="center">3</TD>
+    <TD ALIGN="center">
+      <p>145</p>
+    </TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>USA,IRE,CAN,…</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">12</TD>
+    <TD>
+      <p>馬コード３</p>
+    </TD>
+    <TD ALIGN="center">7</TD>
+    <TD ALIGN="center">148</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>母（エリア３）</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">13</TD>
+    <TD>カナ馬名３</TD>
+    <TD ALIGN="center">40</TD>
+    <TD ALIGN="center">155</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>カタカナ（全角）、漢字、ローマ数字で表記</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">14</TD>
+    <TD>英語馬名３</TD>
+    <TD ALIGN="center">40</TD>
+    <TD ALIGN="center">195</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>半角欧文、ローマ数字で表記</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">15</TD>
+    <TD>生年３</TD>
+    <TD ALIGN="center">4</TD>
+    <TD ALIGN="center">235</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>YYYY</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">16</TD>
+    <TD>毛色コード３</TD>
+    <TD ALIGN="center">2</TD>
+    <TD ALIGN="center">239</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>ブックコード</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">17</TD>
+    <TD>血種コード３</TD>
+    <TD ALIGN="center">2</TD>
+    <TD ALIGN="center">241</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>ブックコード</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">18</TD>
+    <TD>産地コード３</TD>
+    <TD ALIGN="center">3</TD>
+    <TD ALIGN="center">243</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>USA,IRE,CAN,…</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">19</TD>
+    <TD>
+      <p>馬コード４</p>
+    </TD>
+    <TD ALIGN="center">7</TD>
+    <TD ALIGN="center">246</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>父父（エリア４）</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">20</TD>
+    <TD>カナ馬名４</TD>
+    <TD ALIGN="center">40</TD>
+    <TD ALIGN="center">253</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>カタカナ（全角）、漢字、ローマ数字で表記</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">21</TD>
+    <TD>英語馬名４</TD>
+    <TD ALIGN="center">40</TD>
+    <TD ALIGN="center">293</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>半角欧文、ローマ数字で表記</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">22</TD>
+    <TD>生年４</TD>
+    <TD ALIGN="center">4</TD>
+    <TD ALIGN="center">333</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>YYYY</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">23</TD>
+    <TD>毛色コード４</TD>
+    <TD ALIGN="center">2</TD>
+    <TD ALIGN="center">337</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>ブックコード</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">24</TD>
+    <TD>血種コード４</TD>
+    <TD ALIGN="center">2</TD>
+    <TD ALIGN="center">339</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>ブックコード</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">25</TD>
+    <TD>産地コード４</TD>
+    <TD ALIGN="center">3</TD>
+    <TD ALIGN="center">341</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>USA,IRE,CAN,…</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">26</TD>
+    <TD>
+      <p>馬コード５</p>
+    </TD>
+    <TD ALIGN="center">7</TD>
+    <TD ALIGN="center">344</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>父母（エリア５）</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">27</TD>
+    <TD>カナ馬名５</TD>
+    <TD ALIGN="center">40</TD>
+    <TD ALIGN="center">351</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>カタカナ（全角）、漢字、ローマ数字で表記</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">28</TD>
+    <TD>英語馬名５</TD>
+    <TD ALIGN="center">40</TD>
+    <TD ALIGN="center">391</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>半角欧文、ローマ数字で表記</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">29</TD>
+    <TD>生年５</TD>
+    <TD ALIGN="center">4</TD>
+    <TD ALIGN="center">431</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>YYYY</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">30</TD>
+    <TD>毛色コード５</TD>
+    <TD ALIGN="center">2</TD>
+    <TD ALIGN="center">435</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>ブックコード</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">31</TD>
+    <TD>血種コード５</TD>
+    <TD ALIGN="center">2</TD>
+    <TD ALIGN="center">437</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>ブックコード</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">32</TD>
+    <TD>産地コード５</TD>
+    <TD ALIGN="center">3</TD>
+    <TD ALIGN="center">439</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>USA,IRE,CAN,…</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">33</TD>
+    <TD>
+      <p>馬コード６</p>
+    </TD>
+    <TD ALIGN="center">7</TD>
+    <TD ALIGN="center">442</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>母父（エリア６）</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">34</TD>
+    <TD>カナ馬名６</TD>
+    <TD ALIGN="center">40</TD>
+    <TD ALIGN="center">449</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>カタカナ（全角）、漢字、ローマ数字で表記</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">35</TD>
+    <TD>英語馬名６</TD>
+    <TD ALIGN="center">40</TD>
+    <TD ALIGN="center">489</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>半角欧文、ローマ数字で表記</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">36</TD>
+    <TD>生年６</TD>
+    <TD ALIGN="center">4</TD>
+    <TD ALIGN="center">529</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>YYYY</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">37</TD>
+    <TD>毛色コード６</TD>
+    <TD ALIGN="center">2</TD>
+    <TD ALIGN="center">533</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>ブックコード</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">38</TD>
+    <TD>血種コード６</TD>
+    <TD ALIGN="center">2</TD>
+    <TD ALIGN="center">535</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>ブックコード</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">39</TD>
+    <TD>産地コード６</TD>
+    <TD ALIGN="center">3</TD>
+    <TD ALIGN="center">537</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>USA,IRE,CAN,…</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">40</TD>
+    <TD>
+      <p>馬コード７</p>
+    </TD>
+    <TD ALIGN="center">7</TD>
+    <TD ALIGN="center">540</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>母母（エリア７）</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">41</TD>
+    <TD>カナ馬名７</TD>
+    <TD ALIGN="center">40</TD>
+    <TD ALIGN="center">547</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>カタカナ（全角）、漢字、ローマ数字で表記</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">42</TD>
+    <TD>英語馬名７</TD>
+    <TD ALIGN="center">40</TD>
+    <TD ALIGN="center">587</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>半角欧文、ローマ数字で表記</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">43</TD>
+    <TD>生年７</TD>
+    <TD ALIGN="center">4</TD>
+    <TD ALIGN="center">627</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>YYYY</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">44</TD>
+    <TD>毛色コード７</TD>
+    <TD ALIGN="center">2</TD>
+    <TD ALIGN="center">631</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>ブックコード</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">45</TD>
+    <TD>血種コード７</TD>
+    <TD ALIGN="center">2</TD>
+    <TD ALIGN="center">633</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>ブックコード</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">46</TD>
+    <TD>産地コード７</TD>
+    <TD ALIGN="center">3</TD>
+    <TD ALIGN="center">635</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>USA,IRE,CAN,…</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">47</TD>
+    <TD>
+      <p>馬コード８</p>
+    </TD>
+    <TD ALIGN="center">7</TD>
+    <TD ALIGN="center">638</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>父父父（エリア８）</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">48</TD>
+    <TD>カナ馬名８</TD>
+    <TD ALIGN="center">40</TD>
+    <TD ALIGN="center">645</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>カタカナ（全角）、漢字、ローマ数字で表記</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">49</TD>
+    <TD>英語馬名８</TD>
+    <TD ALIGN="center">40</TD>
+    <TD ALIGN="center">685</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>半角欧文、ローマ数字で表記</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">50</TD>
+    <TD>生年８</TD>
+    <TD ALIGN="center">4</TD>
+    <TD ALIGN="center">725</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>YYYY</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">51</TD>
+    <TD>毛色コード８</TD>
+    <TD ALIGN="center">2</TD>
+    <TD ALIGN="center">729</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>ブックコード</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">52</TD>
+    <TD>血種コード８</TD>
+    <TD ALIGN="center">2</TD>
+    <TD ALIGN="center">731</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>ブックコード</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">53</TD>
+    <TD>産地コード８</TD>
+    <TD ALIGN="center">3</TD>
+    <TD ALIGN="center">733</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>USA,IRE,CAN,…</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">54</TD>
+    <TD>
+      <p>馬コード９</p>
+    </TD>
+    <TD ALIGN="center">7</TD>
+    <TD ALIGN="center">736</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>父父母（エリア９）</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">55</TD>
+    <TD>カナ馬名９</TD>
+    <TD ALIGN="center">40</TD>
+    <TD ALIGN="center">743</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>カタカナ（全角）、漢字、ローマ数字で表記</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">56</TD>
+    <TD>英語馬名９</TD>
+    <TD ALIGN="center">40</TD>
+    <TD ALIGN="center">783</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>半角欧文、ローマ数字で表記</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">57</TD>
+    <TD>生年９</TD>
+    <TD ALIGN="center">4</TD>
+    <TD ALIGN="center">823</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>YYYY</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">58</TD>
+    <TD>毛色コード９</TD>
+    <TD ALIGN="center">2</TD>
+    <TD ALIGN="center">827</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>ブックコード</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">59</TD>
+    <TD>血種コード９</TD>
+    <TD ALIGN="center">2</TD>
+    <TD ALIGN="center">829</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>ブックコード</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">60</TD>
+    <TD>産地コード９</TD>
+    <TD ALIGN="center">3</TD>
+    <TD ALIGN="center">831</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>USA,IRE,CAN,…</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">61</TD>
+    <TD>
+      <p>馬コード１０</p>
+    </TD>
+    <TD ALIGN="center">7</TD>
+    <TD ALIGN="center">834</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>父母父（エリア１０）</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">62</TD>
+    <TD>カナ馬名１０</TD>
+    <TD ALIGN="center">40</TD>
+    <TD ALIGN="center">841</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>カタカナ（全角）、漢字、ローマ数字で表記</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">63</TD>
+    <TD>英語馬名１０</TD>
+    <TD ALIGN="center">40</TD>
+    <TD ALIGN="center">881</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>半角欧文、ローマ数字で表記</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">64</TD>
+    <TD>生年１０</TD>
+    <TD ALIGN="center">4</TD>
+    <TD ALIGN="center">921</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>YYYY</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">65</TD>
+    <TD>毛色コード１０</TD>
+    <TD ALIGN="center">2</TD>
+    <TD ALIGN="center">925</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>ブックコード</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">66</TD>
+    <TD>血種コード１０</TD>
+    <TD ALIGN="center">2</TD>
+    <TD ALIGN="center">927</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>ブックコード</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">67</TD>
+    <TD>産地コード１０</TD>
+    <TD ALIGN="center">3</TD>
+    <TD ALIGN="center">929</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>USA,IRE,CAN,…</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">68</TD>
+    <TD>
+      <p>馬コード１１</p>
+    </TD>
+    <TD ALIGN="center">7</TD>
+    <TD ALIGN="center">932</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>父母母（エリア１１）</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">69</TD>
+    <TD>カナ馬名１１</TD>
+    <TD ALIGN="center">40</TD>
+    <TD ALIGN="center">939</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>カタカナ（全角）、漢字、ローマ数字で表記</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">70</TD>
+    <TD>英語馬名１１</TD>
+    <TD ALIGN="center">40</TD>
+    <TD ALIGN="center">979</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>半角欧文、ローマ数字で表記</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">71</TD>
+    <TD>生年１１</TD>
+    <TD ALIGN="center">4</TD>
+    <TD ALIGN="center">1019</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>YYYY</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">72</TD>
+    <TD>毛色コード１１</TD>
+    <TD ALIGN="center">2</TD>
+    <TD ALIGN="center">1023</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>ブックコード</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">73</TD>
+    <TD>血種コード１１</TD>
+    <TD ALIGN="center">2</TD>
+    <TD ALIGN="center">1025</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>ブックコード</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">74</TD>
+    <TD>産地コード１１</TD>
+    <TD ALIGN="center">3</TD>
+    <TD ALIGN="center">1027</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>USA,IRE,CAN,…</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">75</TD>
+    <TD>
+      <p>馬コード１２</p>
+    </TD>
+    <TD ALIGN="center">7</TD>
+    <TD ALIGN="center">1030</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>母父父（エリア１２）</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">76</TD>
+    <TD>カナ馬名１２</TD>
+    <TD ALIGN="center">40</TD>
+    <TD ALIGN="center">1037</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>カタカナ（全角）、漢字、ローマ数字で表記</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">77</TD>
+    <TD>英語馬名１２</TD>
+    <TD ALIGN="center">40</TD>
+    <TD ALIGN="center">1077</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>半角欧文、ローマ数字で表記</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">78</TD>
+    <TD>生年１２</TD>
+    <TD ALIGN="center">4</TD>
+    <TD ALIGN="center">1117</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>YYYY</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">79</TD>
+    <TD>毛色コード１２</TD>
+    <TD ALIGN="center">2</TD>
+    <TD ALIGN="center">1121</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>ブックコード</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">80</TD>
+    <TD>血種コード１２</TD>
+    <TD ALIGN="center">2</TD>
+    <TD ALIGN="center">1123</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>ブックコード</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">81</TD>
+    <TD>産地コード１２</TD>
+    <TD ALIGN="center">3</TD>
+    <TD ALIGN="center">1125</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>USA,IRE,CAN,…</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">82</TD>
+    <TD>
+      <p>馬コード１３</p>
+    </TD>
+    <TD ALIGN="center">7</TD>
+    <TD ALIGN="center">1128</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>母父母（エリア１３）</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">83</TD>
+    <TD>カナ馬名１３</TD>
+    <TD ALIGN="center">40</TD>
+    <TD ALIGN="center">1135</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>カタカナ（全角）、漢字、ローマ数字で表記</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">84</TD>
+    <TD>英語馬名１３</TD>
+    <TD ALIGN="center">40</TD>
+    <TD ALIGN="center">1175</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>半角欧文、ローマ数字で表記</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">85</TD>
+    <TD>生年１３</TD>
+    <TD ALIGN="center">4</TD>
+    <TD ALIGN="center">1215</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>YYYY</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">86</TD>
+    <TD>毛色コード１３</TD>
+    <TD ALIGN="center">2</TD>
+    <TD ALIGN="center">1219</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>ブックコード</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">87</TD>
+    <TD>血種コード１３</TD>
+    <TD ALIGN="center">2</TD>
+    <TD ALIGN="center">1221</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>ブックコード</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">88</TD>
+    <TD>産地コード１３</TD>
+    <TD ALIGN="center">3</TD>
+    <TD ALIGN="center">1223</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>USA,IRE,CAN,…</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">89</TD>
+    <TD>
+      <p>馬コード１４</p>
+    </TD>
+    <TD ALIGN="center">7</TD>
+    <TD ALIGN="center">1226</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>母母父（エリア１４）</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">90</TD>
+    <TD>カナ馬名１４</TD>
+    <TD ALIGN="center">40</TD>
+    <TD ALIGN="center">1233</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>カタカナ（全角）、漢字、ローマ数字で表記</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">91</TD>
+    <TD>英語馬名１４</TD>
+    <TD ALIGN="center">40</TD>
+    <TD ALIGN="center">1273</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>半角欧文、ローマ数字で表記</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">92</TD>
+    <TD>生年１４</TD>
+    <TD ALIGN="center">4</TD>
+    <TD ALIGN="center">1313</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>YYYY</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">93</TD>
+    <TD>毛色コード１４</TD>
+    <TD ALIGN="center">2</TD>
+    <TD ALIGN="center">1317</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>ブックコード</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">94</TD>
+    <TD>血種コード１４</TD>
+    <TD ALIGN="center">2</TD>
+    <TD ALIGN="center">1319</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>ブックコード</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">95</TD>
+    <TD>産地コード１４</TD>
+    <TD ALIGN="center">3</TD>
+    <TD ALIGN="center">1321</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>USA,IRE,CAN,…</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">96</TD>
+    <TD>
+      <p>馬コード１５</p>
+    </TD>
+    <TD ALIGN="center">7</TD>
+    <TD ALIGN="center">1324</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>母母母（エリア１５）</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">97</TD>
+    <TD>カナ馬名１５</TD>
+    <TD ALIGN="center">40</TD>
+    <TD ALIGN="center">1331</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>カタカナ（全角）、漢字、ローマ数字で表記</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">98</TD>
+    <TD>英語馬名１５</TD>
+    <TD ALIGN="center">40</TD>
+    <TD ALIGN="center">1371</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>半角欧文、ローマ数字で表記</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">99</TD>
+    <TD>生年１５</TD>
+    <TD ALIGN="center">4</TD>
+    <TD ALIGN="center">1411</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>YYYY</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">100</TD>
+    <TD>毛色コード１５</TD>
+    <TD ALIGN="center">2</TD>
+    <TD ALIGN="center">1415</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>ブックコード</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">101</TD>
+    <TD>血種コード１５</TD>
+    <TD ALIGN="center">2</TD>
+    <TD ALIGN="center">1417</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>ブックコード</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">102</TD>
+    <TD>産地コード１５</TD>
+    <TD ALIGN="center">3</TD>
+    <TD ALIGN="center">1419</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>USA,IRE,CAN,…</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">103</TD>
+    <TD>
+      <p>馬コード１６</p>
+    </TD>
+    <TD ALIGN="center">7</TD>
+    <TD ALIGN="center">1422</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>父父父父（エリア１６）</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">104</TD>
+    <TD>馬名１６</TD>
+    <TD ALIGN="center">40</TD>
+    <TD ALIGN="center">1429</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>カナまたは英語馬名</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">105</TD>
+    <TD>産地コード１６</TD>
+    <TD ALIGN="center">3</TD>
+    <TD ALIGN="center">1469</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>USA,IRE,CAN,…</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">106</TD>
+    <TD>
+      <p>馬コード１７</p>
+    </TD>
+    <TD ALIGN="center">7</TD>
+    <TD ALIGN="center">1472</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>父父父母（エリア１７）</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">107</TD>
+    <TD>馬名１７</TD>
+    <TD ALIGN="center">40</TD>
+    <TD ALIGN="center">1479</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>カナまたは英語馬名</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">108</TD>
+    <TD>産地コード１７</TD>
+    <TD ALIGN="center">3</TD>
+    <TD ALIGN="center">1519</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>USA,IRE,CAN,…</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">109</TD>
+    <TD>
+      <p>馬コード１８</p>
+    </TD>
+    <TD ALIGN="center">7</TD>
+    <TD ALIGN="center">1522</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>父父母父（エリア１８）</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">110</TD>
+    <TD>馬名１８</TD>
+    <TD ALIGN="center">40</TD>
+    <TD ALIGN="center">1529</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>カナまたは英語馬名</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">111</TD>
+    <TD>産地コード１８</TD>
+    <TD ALIGN="center">3</TD>
+    <TD ALIGN="center">1569</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>USA,IRE,CAN,…</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">112</TD>
+    <TD>
+      <p>馬コード１９</p>
+    </TD>
+    <TD ALIGN="center">7</TD>
+    <TD ALIGN="center">1572</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>父父母母（エリア１９）</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">113</TD>
+    <TD>馬名１９</TD>
+    <TD ALIGN="center">40</TD>
+    <TD ALIGN="center">1579</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>カナまたは英語馬名</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">114</TD>
+    <TD>産地コード１９</TD>
+    <TD ALIGN="center">3</TD>
+    <TD ALIGN="center">1619</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>USA,IRE,CAN,…</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">115</TD>
+    <TD>
+      <p>馬コード２０</p>
+    </TD>
+    <TD ALIGN="center">7</TD>
+    <TD ALIGN="center">1622</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>父母父父（エリア２０）</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">116</TD>
+    <TD>馬名２０</TD>
+    <TD ALIGN="center">40</TD>
+    <TD ALIGN="center">1629</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>カナまたは英語馬名</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">117</TD>
+    <TD>産地コード２０</TD>
+    <TD ALIGN="center">3</TD>
+    <TD ALIGN="center">1669</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>USA,IRE,CAN,…</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">118</TD>
+    <TD>
+      <p>馬コード２１</p>
+    </TD>
+    <TD ALIGN="center">7</TD>
+    <TD ALIGN="center">1672</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>父母父母（エリア２１）</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">119</TD>
+    <TD>馬名２１</TD>
+    <TD ALIGN="center">40</TD>
+    <TD ALIGN="center">1679</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>カナまたは英語馬名</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">120</TD>
+    <TD>産地コード２１</TD>
+    <TD ALIGN="center">3</TD>
+    <TD ALIGN="center">1719</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>USA,IRE,CAN,…</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">121</TD>
+    <TD>
+      <p>馬コード２２</p>
+    </TD>
+    <TD ALIGN="center">7</TD>
+    <TD ALIGN="center">1722</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>父母母父（エリア２２）</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">122</TD>
+    <TD>馬名２２</TD>
+    <TD ALIGN="center">40</TD>
+    <TD ALIGN="center">1729</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>カナまたは英語馬名</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">123</TD>
+    <TD>産地コード２２</TD>
+    <TD ALIGN="center">3</TD>
+    <TD ALIGN="center">1769</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>USA,IRE,CAN,…</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">124</TD>
+    <TD>
+      <p>馬コード２３</p>
+    </TD>
+    <TD ALIGN="center">7</TD>
+    <TD ALIGN="center">1772</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>父母母母（エリア２３）</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">125</TD>
+    <TD>馬名２３</TD>
+    <TD ALIGN="center">40</TD>
+    <TD ALIGN="center">1779</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>カナまたは英語馬名</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">126</TD>
+    <TD>産地コード２３</TD>
+    <TD ALIGN="center">3</TD>
+    <TD ALIGN="center">1819</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>USA,IRE,CAN,…</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">127</TD>
+    <TD>
+      <p>馬コード２４</p>
+    </TD>
+    <TD ALIGN="center">7</TD>
+    <TD ALIGN="center">1822</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>母父父父（エリア２４）</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">128</TD>
+    <TD>馬名２４</TD>
+    <TD ALIGN="center">40</TD>
+    <TD ALIGN="center">1829</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>カナまたは英語馬名</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">129</TD>
+    <TD>産地コード２４</TD>
+    <TD ALIGN="center">3</TD>
+    <TD ALIGN="center">1869</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>USA,IRE,CAN,…</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">130</TD>
+    <TD>
+      <p>馬コード２５</p>
+    </TD>
+    <TD ALIGN="center">7</TD>
+    <TD ALIGN="center">1872</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>母父父母（エリア２５）</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">131</TD>
+    <TD>馬名２５</TD>
+    <TD ALIGN="center">40</TD>
+    <TD ALIGN="center">1879</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>カナまたは英語馬名</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">132</TD>
+    <TD>産地コード２５</TD>
+    <TD ALIGN="center">3</TD>
+    <TD ALIGN="center">1919</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>USA,IRE,CAN,…</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">133</TD>
+    <TD>
+      <p>馬コード２６</p>
+    </TD>
+    <TD ALIGN="center">7</TD>
+    <TD ALIGN="center">1922</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>母父母父（エリア２６）</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">134</TD>
+    <TD>馬名２６</TD>
+    <TD ALIGN="center">40</TD>
+    <TD ALIGN="center">1929</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>カナまたは英語馬名</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">135</TD>
+    <TD>産地コード２６</TD>
+    <TD ALIGN="center">3</TD>
+    <TD ALIGN="center">1969</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>USA,IRE,CAN,…</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">136</TD>
+    <TD>
+      <p>馬コード２７</p>
+    </TD>
+    <TD ALIGN="center">7</TD>
+    <TD ALIGN="center">1972</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>母父母母（エリア２７）</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">137</TD>
+    <TD>馬名２７</TD>
+    <TD ALIGN="center">40</TD>
+    <TD ALIGN="center">1979</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>カナまたは英語馬名</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">138</TD>
+    <TD>産地コード２７</TD>
+    <TD ALIGN="center">3</TD>
+    <TD ALIGN="center">2019</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>USA,IRE,CAN,…</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">139</TD>
+    <TD>
+      <p>馬コード２８</p>
+    </TD>
+    <TD ALIGN="center">7</TD>
+    <TD ALIGN="center">2022</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>母母父父（エリア２８）</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">140</TD>
+    <TD>馬名２８</TD>
+    <TD ALIGN="center">40</TD>
+    <TD ALIGN="center">2029</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>カナまたは英語馬名</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">141</TD>
+    <TD>産地コード２８</TD>
+    <TD ALIGN="center">3</TD>
+    <TD ALIGN="center">2069</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>USA,IRE,CAN,…</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">142</TD>
+    <TD>
+      <p>馬コード２９</p>
+    </TD>
+    <TD ALIGN="center">7</TD>
+    <TD ALIGN="center">2072</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>母母父母（エリア２９）</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">143</TD>
+    <TD>馬名２９</TD>
+    <TD ALIGN="center">40</TD>
+    <TD ALIGN="center">2079</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>カナまたは英語馬名</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">144</TD>
+    <TD>産地コード２９</TD>
+    <TD ALIGN="center">3</TD>
+    <TD ALIGN="center">2119</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>USA,IRE,CAN,…</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">145</TD>
+    <TD>
+      <p>馬コード３０</p>
+    </TD>
+    <TD ALIGN="center">7</TD>
+    <TD ALIGN="center">2122</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>母母母父（エリア３０）</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">146</TD>
+    <TD>馬名３０</TD>
+    <TD ALIGN="center">40</TD>
+    <TD ALIGN="center">2129</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>カナまたは英語馬名</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">147</TD>
+    <TD>産地コード３０</TD>
+    <TD ALIGN="center">3</TD>
+    <TD ALIGN="center">2169</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>USA,IRE,CAN,…</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">148</TD>
+    <TD>
+      <p>馬コード３１</p>
+    </TD>
+    <TD ALIGN="center">7</TD>
+    <TD ALIGN="center">2172</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>母母母母（エリア３１）</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">149</TD>
+    <TD>馬名３１</TD>
+    <TD ALIGN="center">40</TD>
+    <TD ALIGN="center">2179</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>カナまたは英語馬名</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">150</TD>
+    <TD>産地コード３１</TD>
+    <TD ALIGN="center">3</TD>
+    <TD ALIGN="center">2219</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>USA,IRE,CAN,…</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">151</TD>
+    <TD>
+      <p>馬コード３２</p>
+    </TD>
+    <TD ALIGN="center">7</TD>
+    <TD ALIGN="center">2222</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>父父父父父（エリア３２）</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">152</TD>
+    <TD>馬名３２</TD>
+    <TD ALIGN="center">40</TD>
+    <TD ALIGN="center">2229</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>カナまたは英語馬名</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">153</TD>
+    <TD>産地コード３２</TD>
+    <TD ALIGN="center">3</TD>
+    <TD ALIGN="center">2269</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>USA,IRE,CAN,…</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">154</TD>
+    <TD>
+      <p>馬コード３３</p>
+    </TD>
+    <TD ALIGN="center">7</TD>
+    <TD ALIGN="center">2272</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>父父父父母（エリア３３）</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">155</TD>
+    <TD>馬名３３</TD>
+    <TD ALIGN="center">40</TD>
+    <TD ALIGN="center">2279</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>カナまたは英語馬名</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">156</TD>
+    <TD>産地コード３３</TD>
+    <TD ALIGN="center">3</TD>
+    <TD ALIGN="center">2319</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>USA,IRE,CAN,…</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">157</TD>
+    <TD>
+      <p>馬コード３４</p>
+    </TD>
+    <TD ALIGN="center">7</TD>
+    <TD ALIGN="center">2322</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>父父父母父（エリア３４）</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">158</TD>
+    <TD>馬名３４</TD>
+    <TD ALIGN="center">40</TD>
+    <TD ALIGN="center">2329</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>カナまたは英語馬名</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">159</TD>
+    <TD>産地コード３４</TD>
+    <TD ALIGN="center">3</TD>
+    <TD ALIGN="center">2369</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>USA,IRE,CAN,…</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">160</TD>
+    <TD>
+      <p>馬コード３５</p>
+    </TD>
+    <TD ALIGN="center">7</TD>
+    <TD ALIGN="center">2372</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>父父父母母（エリア３５）</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">161</TD>
+    <TD>馬名３５</TD>
+    <TD ALIGN="center">40</TD>
+    <TD ALIGN="center">2379</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>カナまたは英語馬名</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">162</TD>
+    <TD>産地コード３５</TD>
+    <TD ALIGN="center">3</TD>
+    <TD ALIGN="center">2419</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>USA,IRE,CAN,…</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">163</TD>
+    <TD>
+      <p>馬コード３６</p>
+    </TD>
+    <TD ALIGN="center">7</TD>
+    <TD ALIGN="center">2422</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>父父母父父（エリア３６）</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">164</TD>
+    <TD>馬名３６</TD>
+    <TD ALIGN="center">40</TD>
+    <TD ALIGN="center">2429</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>カナまたは英語馬名</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">165</TD>
+    <TD>産地コード３６</TD>
+    <TD ALIGN="center">3</TD>
+    <TD ALIGN="center">2469</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>USA,IRE,CAN,…</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">166</TD>
+    <TD>
+      <p>馬コード３７</p>
+    </TD>
+    <TD ALIGN="center">7</TD>
+    <TD ALIGN="center">2472</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>父父母父母（エリア３７）</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">167</TD>
+    <TD>馬名３７</TD>
+    <TD ALIGN="center">40</TD>
+    <TD ALIGN="center">2479</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>カナまたは英語馬名</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">168</TD>
+    <TD>産地コード３７</TD>
+    <TD ALIGN="center">3</TD>
+    <TD ALIGN="center">2519</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>USA,IRE,CAN,…</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">169</TD>
+    <TD>
+      <p>馬コード３８</p>
+    </TD>
+    <TD ALIGN="center">7</TD>
+    <TD ALIGN="center">2522</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>父父母母父（エリア３８）</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">170</TD>
+    <TD>馬名３８</TD>
+    <TD ALIGN="center">40</TD>
+    <TD ALIGN="center">2529</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>カナまたは英語馬名</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">171</TD>
+    <TD>産地コード３８</TD>
+    <TD ALIGN="center">3</TD>
+    <TD ALIGN="center">2569</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>USA,IRE,CAN,…</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">172</TD>
+    <TD>
+      <p>馬コード３９</p>
+    </TD>
+    <TD ALIGN="center">7</TD>
+    <TD ALIGN="center">2572</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>父父母母母（エリア３９）</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">173</TD>
+    <TD>馬名３９</TD>
+    <TD ALIGN="center">40</TD>
+    <TD ALIGN="center">2579</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>カナまたは英語馬名</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">174</TD>
+    <TD>産地コード３９</TD>
+    <TD ALIGN="center">3</TD>
+    <TD ALIGN="center">2619</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>USA,IRE,CAN,…</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">175</TD>
+    <TD>
+      <p>馬コード４０</p>
+    </TD>
+    <TD ALIGN="center">7</TD>
+    <TD ALIGN="center">2622</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>父母父父父（エリア４０）</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">176</TD>
+    <TD>馬名４０</TD>
+    <TD ALIGN="center">40</TD>
+    <TD ALIGN="center">2629</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>カナまたは英語馬名</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">177</TD>
+    <TD>産地コード４０</TD>
+    <TD ALIGN="center">3</TD>
+    <TD ALIGN="center">2669</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>USA,IRE,CAN,…</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">178</TD>
+    <TD>
+      <p>馬コード４１</p>
+    </TD>
+    <TD ALIGN="center">7</TD>
+    <TD ALIGN="center">2672</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>父母父父母（エリア４１）</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">179</TD>
+    <TD>馬名４１</TD>
+    <TD ALIGN="center">40</TD>
+    <TD ALIGN="center">2679</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>カナまたは英語馬名</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">180</TD>
+    <TD>産地コード４１</TD>
+    <TD ALIGN="center">3</TD>
+    <TD ALIGN="center">2719</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>USA,IRE,CAN,…</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">181</TD>
+    <TD>
+      <p>馬コード４２</p>
+    </TD>
+    <TD ALIGN="center">7</TD>
+    <TD ALIGN="center">2722</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>父母父母父（エリア４２）</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">182</TD>
+    <TD>馬名４２</TD>
+    <TD ALIGN="center">40</TD>
+    <TD ALIGN="center">2729</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>カナまたは英語馬名</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">183</TD>
+    <TD>産地コード４２</TD>
+    <TD ALIGN="center">3</TD>
+    <TD ALIGN="center">2769</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>USA,IRE,CAN,…</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">184</TD>
+    <TD>
+      <p>馬コード４３</p>
+    </TD>
+    <TD ALIGN="center">7</TD>
+    <TD ALIGN="center">2772</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>父母父母母（エリア４３）</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">185</TD>
+    <TD>馬名４３</TD>
+    <TD ALIGN="center">40</TD>
+    <TD ALIGN="center">2779</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>カナまたは英語馬名</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">186</TD>
+    <TD>産地コード４３</TD>
+    <TD ALIGN="center">3</TD>
+    <TD ALIGN="center">2819</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>USA,IRE,CAN,…</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">187</TD>
+    <TD>
+      <p>馬コード４４</p>
+    </TD>
+    <TD ALIGN="center">7</TD>
+    <TD ALIGN="center">2822</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>父母母父父（エリア４４）</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">188</TD>
+    <TD>馬名４４</TD>
+    <TD ALIGN="center">40</TD>
+    <TD ALIGN="center">2829</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>カナまたは英語馬名</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">189</TD>
+    <TD>産地コード４４</TD>
+    <TD ALIGN="center">3</TD>
+    <TD ALIGN="center">2869</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>USA,IRE,CAN,…</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">190</TD>
+    <TD>
+      <p>馬コード４５</p>
+    </TD>
+    <TD ALIGN="center">7</TD>
+    <TD ALIGN="center">2872</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>父母母父母（エリア４５）</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">191</TD>
+    <TD>馬名４５</TD>
+    <TD ALIGN="center">40</TD>
+    <TD ALIGN="center">2879</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>カナまたは英語馬名</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">192</TD>
+    <TD>産地コード４５</TD>
+    <TD ALIGN="center">3</TD>
+    <TD ALIGN="center">2919</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>USA,IRE,CAN,…</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">193</TD>
+    <TD>
+      <p>馬コード４６</p>
+    </TD>
+    <TD ALIGN="center">7</TD>
+    <TD ALIGN="center">2922</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>父母母母父（エリア４６）</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">194</TD>
+    <TD>馬名４６</TD>
+    <TD ALIGN="center">40</TD>
+    <TD ALIGN="center">2929</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>カナまたは英語馬名</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">195</TD>
+    <TD>産地コード４６</TD>
+    <TD ALIGN="center">3</TD>
+    <TD ALIGN="center">2969</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>USA,IRE,CAN,…</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">196</TD>
+    <TD>
+      <p>馬コード４７</p>
+    </TD>
+    <TD ALIGN="center">7</TD>
+    <TD ALIGN="center">2972</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>父母母母母（エリア４７）</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">197</TD>
+    <TD>馬名４７</TD>
+    <TD ALIGN="center">40</TD>
+    <TD ALIGN="center">2979</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>カナまたは英語馬名</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">198</TD>
+    <TD>産地コード４７</TD>
+    <TD ALIGN="center">3</TD>
+    <TD ALIGN="center">3019</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>USA,IRE,CAN,…</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">199</TD>
+    <TD>
+      <p>馬コード４８</p>
+    </TD>
+    <TD ALIGN="center">7</TD>
+    <TD ALIGN="center">3022</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>母父父父父（エリア４８）</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">200</TD>
+    <TD>馬名４８</TD>
+    <TD ALIGN="center">40</TD>
+    <TD ALIGN="center">3029</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>カナまたは英語馬名</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">201</TD>
+    <TD>産地コード４８</TD>
+    <TD ALIGN="center">3</TD>
+    <TD ALIGN="center">3069</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>USA,IRE,CAN,…</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">202</TD>
+    <TD>
+      <p>馬コード４９</p>
+    </TD>
+    <TD ALIGN="center">7</TD>
+    <TD ALIGN="center">3072</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>母父父父母（エリア４９）</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">203</TD>
+    <TD>馬名４９</TD>
+    <TD ALIGN="center">40</TD>
+    <TD ALIGN="center">3079</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>カナまたは英語馬名</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">204</TD>
+    <TD>産地コード４９</TD>
+    <TD ALIGN="center">3</TD>
+    <TD ALIGN="center">3119</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>USA,IRE,CAN,…</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">205</TD>
+    <TD>
+      <p>馬コード５０</p>
+    </TD>
+    <TD ALIGN="center">7</TD>
+    <TD ALIGN="center">3122</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>母父父母父（エリア５０）</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">206</TD>
+    <TD>馬名５０</TD>
+    <TD ALIGN="center">40</TD>
+    <TD ALIGN="center">3129</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>カナまたは英語馬名</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">207</TD>
+    <TD>産地コード５０</TD>
+    <TD ALIGN="center">3</TD>
+    <TD ALIGN="center">3169</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>USA,IRE,CAN,…</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">208</TD>
+    <TD>
+      <p>馬コード５１</p>
+    </TD>
+    <TD ALIGN="center">7</TD>
+    <TD ALIGN="center">3172</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>母父父母母（エリア５１）</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">209</TD>
+    <TD>馬名５１</TD>
+    <TD ALIGN="center">40</TD>
+    <TD ALIGN="center">3179</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>カナまたは英語馬名</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">210</TD>
+    <TD>産地コード５１</TD>
+    <TD ALIGN="center">3</TD>
+    <TD ALIGN="center">3219</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>USA,IRE,CAN,…</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">211</TD>
+    <TD>
+      <p>馬コード５２</p>
+    </TD>
+    <TD ALIGN="center">7</TD>
+    <TD ALIGN="center">3222</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>母父母父父（エリア５２）</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">212</TD>
+    <TD>馬名５２</TD>
+    <TD ALIGN="center">40</TD>
+    <TD ALIGN="center">3229</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>カナまたは英語馬名</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">213</TD>
+    <TD>産地コード５２</TD>
+    <TD ALIGN="center">3</TD>
+    <TD ALIGN="center">3269</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>USA,IRE,CAN,…</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">214</TD>
+    <TD>
+      <p>馬コード５３</p>
+    </TD>
+    <TD ALIGN="center">7</TD>
+    <TD ALIGN="center">3272</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>母父母父母（エリア５３）</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">215</TD>
+    <TD>馬名５３</TD>
+    <TD ALIGN="center">40</TD>
+    <TD ALIGN="center">3279</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>カナまたは英語馬名</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">216</TD>
+    <TD>産地コード５３</TD>
+    <TD ALIGN="center">3</TD>
+    <TD ALIGN="center">3319</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>USA,IRE,CAN,…</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">217</TD>
+    <TD>
+      <p>馬コード５４</p>
+    </TD>
+    <TD ALIGN="center">7</TD>
+    <TD ALIGN="center">3322</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>母父母母父（エリア５４）</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">218</TD>
+    <TD>馬名５４</TD>
+    <TD ALIGN="center">40</TD>
+    <TD ALIGN="center">3329</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>カナまたは英語馬名</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">219</TD>
+    <TD>産地コード５４</TD>
+    <TD ALIGN="center">3</TD>
+    <TD ALIGN="center">3369</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>USA,IRE,CAN,…</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">220</TD>
+    <TD>
+      <p>馬コード５５</p>
+    </TD>
+    <TD ALIGN="center">7</TD>
+    <TD ALIGN="center">3372</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>母父母母母（エリア５５）</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">221</TD>
+    <TD>馬名５５</TD>
+    <TD ALIGN="center">40</TD>
+    <TD ALIGN="center">3379</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>カナまたは英語馬名</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">222</TD>
+    <TD>産地コード５５</TD>
+    <TD ALIGN="center">3</TD>
+    <TD ALIGN="center">3419</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>USA,IRE,CAN,…</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">223</TD>
+    <TD>
+      <p>馬コード５６</p>
+    </TD>
+    <TD ALIGN="center">7</TD>
+    <TD ALIGN="center">3422</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>母母父父父（エリア５６）</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">224</TD>
+    <TD>馬名５６</TD>
+    <TD ALIGN="center">40</TD>
+    <TD ALIGN="center">3429</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>カナまたは英語馬名</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">225</TD>
+    <TD>産地コード５６</TD>
+    <TD ALIGN="center">3</TD>
+    <TD ALIGN="center">3469</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>USA,IRE,CAN,…</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">226</TD>
+    <TD>
+      <p>馬コード５７</p>
+    </TD>
+    <TD ALIGN="center">7</TD>
+    <TD ALIGN="center">3472</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>母母父父母（エリア５７）</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">227</TD>
+    <TD>馬名５７</TD>
+    <TD ALIGN="center">40</TD>
+    <TD ALIGN="center">3479</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>カナまたは英語馬名</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">228</TD>
+    <TD>産地コード５７</TD>
+    <TD ALIGN="center">3</TD>
+    <TD ALIGN="center">3519</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>USA,IRE,CAN,…</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">229</TD>
+    <TD>
+      <p>馬コード５８</p>
+    </TD>
+    <TD ALIGN="center">7</TD>
+    <TD ALIGN="center">3522</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>母母父母父（エリア５８）</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">230</TD>
+    <TD>馬名５８</TD>
+    <TD ALIGN="center">40</TD>
+    <TD ALIGN="center">3529</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>カナまたは英語馬名</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">231</TD>
+    <TD>産地コード５８</TD>
+    <TD ALIGN="center">3</TD>
+    <TD ALIGN="center">3569</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>USA,IRE,CAN,…</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">232</TD>
+    <TD>
+      <p>馬コード５９</p>
+    </TD>
+    <TD ALIGN="center">7</TD>
+    <TD ALIGN="center">3572</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>母母父母母（エリア５９）</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">233</TD>
+    <TD>馬名５９</TD>
+    <TD ALIGN="center">40</TD>
+    <TD ALIGN="center">3579</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>カナまたは英語馬名</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">234</TD>
+    <TD>産地コード５９</TD>
+    <TD ALIGN="center">3</TD>
+    <TD ALIGN="center">3619</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>USA,IRE,CAN,…</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">235</TD>
+    <TD>
+      <p>馬コード６０</p>
+    </TD>
+    <TD ALIGN="center">7</TD>
+    <TD ALIGN="center">3622</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>母母母父父（エリア６０）</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">236</TD>
+    <TD>馬名６０</TD>
+    <TD ALIGN="center">40</TD>
+    <TD ALIGN="center">3629</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>カナまたは英語馬名</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">237</TD>
+    <TD>産地コード６０</TD>
+    <TD ALIGN="center">3</TD>
+    <TD ALIGN="center">3669</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>USA,IRE,CAN,…</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">238</TD>
+    <TD>
+      <p>馬コード６１</p>
+    </TD>
+    <TD ALIGN="center">7</TD>
+    <TD ALIGN="center">3672</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>母母母父母（エリア６１）</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">239</TD>
+    <TD>馬名６１</TD>
+    <TD ALIGN="center">40</TD>
+    <TD ALIGN="center">3679</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>カナまたは英語馬名</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">240</TD>
+    <TD>産地コード６１</TD>
+    <TD ALIGN="center">3</TD>
+    <TD ALIGN="center">3719</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>USA,IRE,CAN,…</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">241</TD>
+    <TD>
+      <p>馬コード６２</p>
+    </TD>
+    <TD ALIGN="center">7</TD>
+    <TD ALIGN="center">3722</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>母母母母父（エリア６２）</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">242</TD>
+    <TD>馬名６２</TD>
+    <TD ALIGN="center">40</TD>
+    <TD ALIGN="center">3729</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>カナまたは英語馬名</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">243</TD>
+    <TD>産地コード６２</TD>
+    <TD ALIGN="center">3</TD>
+    <TD ALIGN="center">3769</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>USA,IRE,CAN,…</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">244</TD>
+    <TD>
+      <p>馬コード６３</p>
+    </TD>
+    <TD ALIGN="center">7</TD>
+    <TD ALIGN="center">3772</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>母母母母母（エリア６３）</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">245</TD>
+    <TD>馬名６３</TD>
+    <TD ALIGN="center">40</TD>
+    <TD ALIGN="center">3779</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>カナまたは英語馬名</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">246</TD>
+    <TD>産地コード６３</TD>
+    <TD ALIGN="center">3</TD>
+    <TD ALIGN="center">3819</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>USA,IRE,CAN,…</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">247</TD>
+    <TD width="120">データ作成年月日</TD>
+    <TD ALIGN="center">8</TD>
+    <TD ALIGN="center">3822</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>YYYYMMDD</RUBY></TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right">&nbsp;</TD>
+    <TD ALIGN="right">248</TD>
+    <TD width="120">予備</RUBY></TD>
+    <TD ALIGN="center">170</TD>
+    <TD ALIGN="center">3830</TD>
+    <TD ALIGN="center">&nbsp;</TD>
+    <TD>&nbsp;</TD>
+  </TR>
+  <TR>
+    <TD ALIGN="right" nowrap>&nbsp;</TD>
+    <TD ALIGN="right" nowrap>249</TD>
+    <TD nowrap>データ区切り</TD>
+    <TD ALIGN="center" nowrap>2</TD>
+    <TD ALIGN="center">4000</TD>
+    <TD ALIGN="center" nowrap>&nbsp;</TD>
+    <TD>CR/LF</TD>
+  </TR>
+  <TR>
+    <TD BGCOLOR="#C0C0C0" ALIGN="right">&nbsp;</TD>
+    <TD BGCOLOR="#C0C0C0" ALIGN="right">&nbsp;</TD>
+    <TD BGCOLOR="#C0C0C0" width="120">合　計</TD>
+    <TD BGCOLOR="#C0C0C0" ALIGN="center">4002</TD>
+    <TD BGCOLOR="#C0C0C0" ALIGN="center">&nbsp;</TD>
+    <TD BGCOLOR="#C0C0C0" ALIGN="center">&nbsp;</TD>
+    <TD BGCOLOR="#C0C0C0" ALIGN="right">&nbsp;</TD>
+  </TR>
+</Table>
+<FONT SIZE=-1> <BR>
+※添え字と表示位置の関係<br>
+</font>
+<table width="50%"  border="1" bordercolor="#CCCCCC" bgcolor="#FFFFFF">
+  <tr align="center" valign="middle">
+    <td rowspan="16">２</td>
+    <td rowspan="8">４</td>
+    <td rowspan="4">８</td>
+    <td rowspan="2">１６</td>
+    <td>３２</td>
+  </tr>
+  <tr align="center" valign="middle">
+    <td>３３</td>
+  </tr>
+  <tr align="center" valign="middle">
+    <td rowspan="2">１７</td>
+    <td>３４</td>
+  </tr>
+  <tr align="center" valign="middle">
+    <td>３５</td>
+  </tr>
+  <tr align="center" valign="middle">
+    <td rowspan="4">９</td>
+    <td rowspan="2">１８</td>
+    <td>３６</td>
+  </tr>
+  <tr align="center" valign="middle">
+    <td>３７</td>
+  </tr>
+  <tr align="center" valign="middle">
+    <td rowspan="2">１９</td>
+    <td>３８</td>
+  </tr>
+  <tr align="center" valign="middle">
+    <td>３９</td>
+  </tr>
+  <tr align="center" valign="middle">
+    <td rowspan="8">５</td>
+    <td rowspan="4">１０</td>
+    <td rowspan="2">２０</td>
+    <td>４０</td>
+  </tr>
+  <tr align="center" valign="middle">
+    <td>４１</td>
+  </tr>
+  <tr align="center" valign="middle">
+    <td rowspan="2">２１</td>
+    <td>４２</td>
+  </tr>
+  <tr align="center" valign="middle">
+    <td>４３</td>
+  </tr>
+  <tr align="center" valign="middle">
+    <td rowspan="4">１１</td>
+    <td rowspan="2">２２</td>
+    <td>４４</td>
+  </tr>
+  <tr align="center" valign="middle">
+    <td>４５</td>
+  </tr>
+  <tr align="center" valign="middle">
+    <td rowspan="2">２３</td>
+    <td>４６</td>
+  </tr>
+  <tr align="center" valign="middle">
+    <td>４７</td>
+  </tr>
+  <tr align="center" valign="middle">
+    <td rowspan="16">３</td>
+    <td rowspan="8">６</td>
+    <td rowspan="4">１２</td>
+    <td rowspan="2">24</td>
+    <td>４８</td>
+  </tr>
+  <tr align="center" valign="middle">
+    <td>４９</td>
+  </tr>
+  <tr align="center" valign="middle">
+    <td rowspan="2">２５</td>
+    <td>５０</td>
+  </tr>
+  <tr align="center" valign="middle">
+    <td>５１</td>
+  </tr>
+  <tr align="center" valign="middle">
+    <td rowspan="4">１３</td>
+    <td rowspan="2">２６</td>
+    <td>５２</td>
+  </tr>
+  <tr align="center" valign="middle">
+    <td>５３</td>
+  </tr>
+  <tr align="center" valign="middle">
+    <td rowspan="2">２７</td>
+    <td>５４</td>
+  </tr>
+  <tr align="center" valign="middle">
+    <td>５５</td>
+  </tr>
+  <tr align="center" valign="middle">
+    <td rowspan="8">７</td>
+    <td rowspan="4">１４</td>
+    <td rowspan="2">２８</td>
+    <td>５６</td>
+  </tr>
+  <tr align="center" valign="middle">
+    <td>５７</td>
+  </tr>
+  <tr align="center" valign="middle">
+    <td rowspan="2">２９</td>
+    <td>５８</td>
+  </tr>
+  <tr align="center" valign="middle">
+    <td>５９</td>
+  </tr>
+  <tr align="center" valign="middle">
+    <td rowspan="4">１５</td>
+    <td rowspan="2">３０</td>
+    <td>６０</td>
+  </tr>
+  <tr align="center" valign="middle">
+    <td>６１</td>
+  </tr>
+  <tr align="center" valign="middle">
+    <td rowspan="2">３１</td>
+    <td>６２</td>
+  </tr>
+  <tr align="center" valign="middle">
+    <td>６３</td>
+  </tr>
+</table>
+<FONT SIZE=-1><br>
+<br>
+<I>
+更新日 2009/06/09<br>
+競馬道OnLine
+</I></font>
+</BODY>
+</HTML>

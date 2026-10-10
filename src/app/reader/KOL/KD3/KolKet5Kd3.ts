@@ -43,7 +43,7 @@ export class KolKet5Kd3 extends DataToImport {
     uma.EigoBamei = eigoBamei;
     uma.Seinen = readInt(buffer, offset + 87, 4);
     uma.Keiro = $U.keiro.toCodeFromKol(buffer, offset + 91, 2);
-    uma.Kesshu = $U.keiro.toCodeFromKol(buffer, offset + 93, 2);
+    uma.Kesshu = $U.kesshu.toCodeFromKol(buffer, offset + 93, 2);
     uma.SanchiCode = readStr(buffer, offset + 95, 3);
     uma.ChichiUmaId = chichiUmaId;
     uma.HahaUmaId = hahaUmaId;
@@ -87,128 +87,128 @@ export class KolKet5Kd3 extends DataToImport {
     uma.KanaBamei = readStr(buffer, 7, 37);
     uma.FamilyNumber = readStr(buffer, 44, 3);
     uma.SanchiCode = readStr(buffer, 47, 3);
-    uma.ChichiUmaId = c.Id;
-    uma.HahaUmaId = h.Id;
+    uma.ChichiUmaId = c?.Id;
+    uma.HahaUmaId = h?.Id;
     await this.umaDao.saveUma(uma);
   }
 
   public async saveH(buffer: Buffer) {
     const hhh = await this.saveHhh(buffer);
     const hhc = await this.saveHhc(buffer);
-    const hh = await this.saveSosenba123(buffer, 540, $U.Seibetsu.Hinba, hhc.Id, hhh.Id);
+    const hh = await this.saveSosenba123(buffer, 540, $U.Seibetsu.Hinba, hhc?.Id, hhh?.Id);
 
     const hch = await this.saveHch(buffer);
     const hcc = await this.saveHcc(buffer);
-    const hc = await this.saveSosenba123(buffer, 442, $U.Seibetsu.Hinba, hcc.Id, hch.Id);
+    const hc = await this.saveSosenba123(buffer, 442, $U.Seibetsu.Boba, hcc?.Id, hch?.Id);
 
-    return await this.saveSosenba123(buffer, 148, $U.Seibetsu.Hinba, hc.Id, hh.Id);
+    return await this.saveSosenba123(buffer, 148, $U.Seibetsu.Hinba, hc?.Id, hh?.Id);
   }
 
   public async saveC(buffer: Buffer) {
     const chh = await this.saveChh(buffer);
     const chc = await this.saveChc(buffer);
-    const ch = await this.saveSosenba123(buffer, 344, $U.Seibetsu.Hinba, chc.Id, chh.Id);
+    const ch = await this.saveSosenba123(buffer, 344, $U.Seibetsu.Hinba, chc?.Id, chh?.Id);
 
     const cch = await this.saveCch(buffer);
     const ccc = await this.saveCcc(buffer);
-    const cc = await this.saveSosenba123(buffer, 246, $U.Seibetsu.Hinba, ccc.Id, cch.Id);
+    const cc = await this.saveSosenba123(buffer, 246, $U.Seibetsu.Boba, ccc?.Id, cch?.Id);
 
-    return await this.saveSosenba123(buffer, 50, $U.Seibetsu.Hinba, cc.Id, ch.Id);
+    return await this.saveSosenba123(buffer, 50, $U.Seibetsu.Boba, cc?.Id, ch?.Id);
   }
 
   public async saveHhh(buffer: Buffer) {
     const hhhhh = await this.saveSosenba45(buffer, 3772, $U.Seibetsu.Hinba);
     const hhhhc = await this.saveSosenba45(buffer, 3722, $U.Seibetsu.Boba);
-    const hhhh = await this.saveSosenba45(buffer, 2172, $U.Seibetsu.Hinba, hhhhc.Id, hhhhh.Id);
+    const hhhh = await this.saveSosenba45(buffer, 2172, $U.Seibetsu.Hinba, hhhhc?.Id, hhhhh?.Id);
 
     const hhhch = await this.saveSosenba45(buffer, 3672, $U.Seibetsu.Hinba);
     const hhhcc = await this.saveSosenba45(buffer, 3622, $U.Seibetsu.Boba);
-    const hhhc = await this.saveSosenba45(buffer, 2122, $U.Seibetsu.Boba, hhhcc.Id, hhhch.Id);
+    const hhhc = await this.saveSosenba45(buffer, 2122, $U.Seibetsu.Boba, hhhcc?.Id, hhhch?.Id);
 
-    return this.saveSosenba123(buffer, 1324, $U.Seibetsu.Hinba, hhhc.Id, hhhh.Id);
+    return this.saveSosenba123(buffer, 1324, $U.Seibetsu.Hinba, hhhc?.Id, hhhh?.Id);
   }
 
   public async saveHhc(buffer: Buffer) {
     const hhchh = await this.saveSosenba45(buffer, 3572, $U.Seibetsu.Hinba);
     const hhchc = await this.saveSosenba45(buffer, 3522, $U.Seibetsu.Boba);
-    const hhch = await this.saveSosenba45(buffer, 2072, $U.Seibetsu.Hinba, hhchc.Id, hhchh.Id);
+    const hhch = await this.saveSosenba45(buffer, 2072, $U.Seibetsu.Hinba, hhchc?.Id, hhchh?.Id);
 
     const hhcch = await this.saveSosenba45(buffer, 3472, $U.Seibetsu.Hinba);
     const hhccc = await this.saveSosenba45(buffer, 3422, $U.Seibetsu.Boba);
-    const hhcc = await this.saveSosenba45(buffer, 2022, $U.Seibetsu.Boba, hhccc.Id, hhcch.Id);
+    const hhcc = await this.saveSosenba45(buffer, 2022, $U.Seibetsu.Boba, hhccc?.Id, hhcch?.Id);
 
-    return this.saveSosenba123(buffer, 1226, $U.Seibetsu.Hinba, hhcc.Id, hhch.Id);
+    return this.saveSosenba123(buffer, 1226, $U.Seibetsu.Boba, hhcc?.Id, hhch?.Id);
   }
 
   public async saveHch(buffer: Buffer) {
     const hchhh = await this.saveSosenba45(buffer, 3372, $U.Seibetsu.Hinba);
     const hchhc = await this.saveSosenba45(buffer, 3322, $U.Seibetsu.Boba);
-    const hchh = await this.saveSosenba45(buffer, 1972, $U.Seibetsu.Hinba, hchhc.Id, hchhh.Id);
+    const hchh = await this.saveSosenba45(buffer, 1972, $U.Seibetsu.Hinba, hchhc?.Id, hchhh?.Id);
 
     const hchch = await this.saveSosenba45(buffer, 3272, $U.Seibetsu.Hinba);
     const hchcc = await this.saveSosenba45(buffer, 3222, $U.Seibetsu.Boba);
-    const hchc = await this.saveSosenba45(buffer, 1922, $U.Seibetsu.Boba, hchcc.Id, hchch.Id);
+    const hchc = await this.saveSosenba45(buffer, 1922, $U.Seibetsu.Boba, hchcc?.Id, hchch?.Id);
 
-    return this.saveSosenba123(buffer, 1128, $U.Seibetsu.Hinba, hchh.Id, hchc.Id);
+    return this.saveSosenba123(buffer, 1128, $U.Seibetsu.Hinba, hchc?.Id, hchh?.Id);
   }
 
   public async saveHcc(buffer: Buffer) {
     const hcchh = await this.saveSosenba45(buffer, 3172, $U.Seibetsu.Hinba);
     const hcchc = await this.saveSosenba45(buffer, 3122, $U.Seibetsu.Boba);
-    const hcch = await this.saveSosenba45(buffer, 1872, $U.Seibetsu.Hinba, hcchc.Id, hcchh.Id);
+    const hcch = await this.saveSosenba45(buffer, 1872, $U.Seibetsu.Hinba, hcchc?.Id, hcchh?.Id);
 
     const hccch = await this.saveSosenba45(buffer, 3072, $U.Seibetsu.Hinba);
     const hcccc = await this.saveSosenba45(buffer, 3022, $U.Seibetsu.Boba);
-    const hccc = await this.saveSosenba45(buffer, 1822, $U.Seibetsu.Boba, hcccc.Id, hccch.Id);
+    const hccc = await this.saveSosenba45(buffer, 1822, $U.Seibetsu.Boba, hcccc?.Id, hccch?.Id);
 
-    return this.saveSosenba123(buffer, 1030, $U.Seibetsu.Hinba, hccc.Id, hcch.Id);
+    return this.saveSosenba123(buffer, 1030, $U.Seibetsu.Boba, hccc?.Id, hcch?.Id);
   }
 
   public async saveChh(buffer: Buffer) {
     const chhhh = await this.saveSosenba45(buffer, 2972, $U.Seibetsu.Hinba);
     const chhhc = await this.saveSosenba45(buffer, 2922, $U.Seibetsu.Boba);
-    const chhh = await this.saveSosenba45(buffer, 1772, $U.Seibetsu.Hinba, chhhc.Id, chhhh.Id);
+    const chhh = await this.saveSosenba45(buffer, 1772, $U.Seibetsu.Hinba, chhhc?.Id, chhhh?.Id);
 
     const chhch = await this.saveSosenba45(buffer, 2872, $U.Seibetsu.Hinba);
     const chhcc = await this.saveSosenba45(buffer, 2822, $U.Seibetsu.Boba);
-    const chhc = await this.saveSosenba45(buffer, 1722, $U.Seibetsu.Boba, chhcc.Id, chhch.Id);
+    const chhc = await this.saveSosenba45(buffer, 1722, $U.Seibetsu.Boba, chhcc?.Id, chhch?.Id);
 
-    return this.saveSosenba123(buffer, 932, $U.Seibetsu.Hinba, chhc.Id, chhh.Id);
+    return this.saveSosenba123(buffer, 932, $U.Seibetsu.Hinba, chhc?.Id, chhh?.Id);
   }
 
   public async saveChc(buffer: Buffer) {
     const chchh = await this.saveSosenba45(buffer, 2772, $U.Seibetsu.Hinba);
     const chchc = await this.saveSosenba45(buffer, 2722, $U.Seibetsu.Boba);
-    const chch = await this.saveSosenba45(buffer, 1672, $U.Seibetsu.Hinba, chchc.Id, chchh.Id);
+    const chch = await this.saveSosenba45(buffer, 1672, $U.Seibetsu.Hinba, chchc?.Id, chchh?.Id);
 
     const chcch = await this.saveSosenba45(buffer, 2672, $U.Seibetsu.Hinba);
     const chccc = await this.saveSosenba45(buffer, 2622, $U.Seibetsu.Boba);
-    const chcc = await this.saveSosenba45(buffer, 1622, $U.Seibetsu.Boba, chccc.Id, chcch.Id);
+    const chcc = await this.saveSosenba45(buffer, 1622, $U.Seibetsu.Boba, chccc?.Id, chcch?.Id);
 
-    return this.saveSosenba123(buffer, 834, $U.Seibetsu.Hinba, chcc.Id, chch.Id);
+    return this.saveSosenba123(buffer, 834, $U.Seibetsu.Boba, chcc?.Id, chch?.Id);
   }
 
   public async saveCch(buffer: Buffer) {
     const cchhh = await this.saveSosenba45(buffer, 2572, $U.Seibetsu.Hinba);
     const cchhc = await this.saveSosenba45(buffer, 2522, $U.Seibetsu.Boba);
-    const cchh = await this.saveSosenba45(buffer, 1572, $U.Seibetsu.Hinba, cchhc.Id, cchhh.Id);
+    const cchh = await this.saveSosenba45(buffer, 1572, $U.Seibetsu.Hinba, cchhc?.Id, cchhh?.Id);
 
     const cchch = await this.saveSosenba45(buffer, 2472, $U.Seibetsu.Hinba);
     const cchcc = await this.saveSosenba45(buffer, 2422, $U.Seibetsu.Boba);
-    const cchc = await this.saveSosenba45(buffer, 1522, $U.Seibetsu.Boba, cchcc.Id, cchch.Id);
+    const cchc = await this.saveSosenba45(buffer, 1522, $U.Seibetsu.Boba, cchcc?.Id, cchch?.Id);
 
-    return this.saveSosenba123(buffer, 736, $U.Seibetsu.Hinba, cchc.Id, cchh.Id);
+    return this.saveSosenba123(buffer, 736, $U.Seibetsu.Hinba, cchc?.Id, cchh?.Id);
   }
 
   public async saveCcc(buffer: Buffer) {
     const ccchh = await this.saveSosenba45(buffer, 2372, $U.Seibetsu.Hinba);
     const ccchc = await this.saveSosenba45(buffer, 2322, $U.Seibetsu.Boba);
-    const ccch = await this.saveSosenba45(buffer, 1472, $U.Seibetsu.Hinba, ccchc.Id, ccchh.Id);
+    const ccch = await this.saveSosenba45(buffer, 1472, $U.Seibetsu.Hinba, ccchc?.Id, ccchh?.Id);
 
     const cccch = await this.saveSosenba45(buffer, 2272, $U.Seibetsu.Hinba);
     const ccccc = await this.saveSosenba45(buffer, 2222, $U.Seibetsu.Boba);
-    const cccc = await this.saveSosenba45(buffer, 1422, $U.Seibetsu.Boba, ccccc.Id, cccch.Id);
+    const cccc = await this.saveSosenba45(buffer, 1422, $U.Seibetsu.Boba, ccccc?.Id, cccch?.Id);
 
-    return this.saveSosenba123(buffer, 638, $U.Seibetsu.Hinba, cccc.Id, ccch.Id);
+    return this.saveSosenba123(buffer, 638, $U.Seibetsu.Boba, cccc?.Id, ccch?.Id);
   }
 }

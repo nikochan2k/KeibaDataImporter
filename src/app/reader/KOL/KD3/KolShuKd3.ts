@@ -6,7 +6,7 @@ import { UmaDao } from "../../../daos/UmaDao";
 import { Uma } from "../../../entities/Uma";
 import { OrmManager } from "../../../OrmManager";
 import { DataToImport } from "../../DataToImport";
-import { readPositiveInt, readStr } from "../../Reader";
+import { readInt, readPositiveInt, readStr } from "../../Reader";
 import { Tool } from "../../Tool";
 import { KolUmaTool } from "../KolUmaTool";
 
@@ -30,6 +30,7 @@ export class KolShuKd3 extends DataToImport {
 
   public async save(buffer: Buffer) {
     const uma = new Uma();
+    uma.KolUmaCode = readInt(buffer, 0, 7);
     const bamei = readStr(buffer, 7, 34);
     if (this.tool.isEnglish(bamei)) {
       uma.EigoBamei = bamei;

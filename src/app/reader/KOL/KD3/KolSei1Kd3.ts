@@ -75,7 +75,7 @@ export class KolSei1Kd3 extends DataToImport {
       return null;
     }
     toBe.Kyuujitsu = $K.kyuujitsu.toCodeFromKol(buffer, 20, 1);
-    toBe.Youbi = $K.kyuujitsu.toCodeFromKol(buffer, 21, 1);
+    toBe.Youbi = $K.youbi.toCodeFromKol(buffer, 21, 1);
     toBe.KaisaiKubun = this.kolKaisaiTool.convertKaisaiKubunFrom(toBe.Basho);
     toBe.ChuuouChihouGaikoku = $K.chuuouChihouGaikoku.toCodeFromKol(buffer, 23, 1);
     const asIs = await this.kolKaisaiTool.getKaisaiWithId(buffer);
@@ -199,7 +199,7 @@ export class KolSei1Kd3 extends DataToImport {
     toBe.Baba = $R.baba.toCodeFromKol(buffer, 380, 1);
     if (race.HeichiShougai === 1) {
       // 障害
-      toBe.ShougaiHeikin1F = readPositiveDouble(buffer, 398, 4, 0.1);
+      toBe.ShougaiHeikin1F = readPositiveDouble(buffer, 398, 4);
     }
     toBe.KolNengappi = dataNengappi;
 
@@ -225,9 +225,9 @@ export class KolSei1Kd3 extends DataToImport {
 
   protected async saveShougaiRaceLapTime(buffer: Buffer, race: Race) {
     await this.kolRaceTool.saveSpecialRaceLapTime(buffer, race, [
-      { Offset: 382, Length: 5, KaishiKyori: race.Kyori - 1600, ShuuryouKyori: race.Kyori },
-      { Offset: 388, Length: 4, KaishiKyori: race.Kyori - 800, ShuuryouKyori: race.Kyori },
-      { Offset: 393, Length: 4, KaishiKyori: race.Kyori - 600, ShuuryouKyori: race.Kyori },
+      { Offset: 382, Length: 5, Mul: 1, KaishiKyori: race.Kyori - 1600, ShuuryouKyori: race.Kyori },
+      { Offset: 388, Length: 4, Mul: 1, KaishiKyori: race.Kyori - 800, ShuuryouKyori: race.Kyori },
+      { Offset: 393, Length: 4, Mul: 1, KaishiKyori: race.Kyori - 600, ShuuryouKyori: race.Kyori },
     ]);
   }
 
@@ -477,7 +477,7 @@ export class KolSei1Kd3 extends DataToImport {
         bangou2Len: 2,
         haitou: 2380,
         haitouLen: 7,
-        ninki: 2345,
+        ninki: 2387,
         ninkiLen: 3,
       },
       {

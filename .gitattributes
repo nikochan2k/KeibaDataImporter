@@ -1,1 +1,4 @@
 * text=auto
+# KOL の見本データと仕様書は固定長・Windows-932 なので、改行を変換しない
+docs/kol-spec/KD3/**/*.kd3 -text
+docs/kol-spec/KD3/spec/*.html -text

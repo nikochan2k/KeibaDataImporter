@@ -20,7 +20,7 @@ export class KolKetKd3 extends DataToImport {
   private umaDao: UmaDao;
 
   protected getBufferLength() {
-    return 2010;
+    return 839;
   }
 
   protected async saveSosenba1(
@@ -44,10 +44,13 @@ export class KolKetKd3 extends DataToImport {
     } else {
       uma.KanaBamei = bamei;
     }
-    uma.EigoBamei = readStr(buffer, offset + 42, 34);
+    const eigoBamei = readStr(buffer, offset + 42, 34);
+    if (eigoBamei) {
+      uma.EigoBamei = eigoBamei;
+    }
     uma.Seinen = readInt(buffer, offset + 76, 4);
     uma.Keiro = $U.keiro.toCodeFromKol(buffer, offset + 80, 2);
-    uma.Kesshu = $U.keiro.toCodeFromKol(buffer, offset + 82, 2);
+    uma.Kesshu = $U.kesshu.toCodeFromKol(buffer, offset + 82, 2);
     uma.ChichiUmaId = chichiUmaId;
     uma.HahaUmaId = hahaUmaId;
 
@@ -84,22 +87,22 @@ export class KolKetKd3 extends DataToImport {
   public async save(buffer: Buffer) {
     const hhh = await this.saveSosenba23(buffer, 667, $U.Seibetsu.Hinba);
     const hhc = await this.saveSosenba23(buffer, 625, $U.Seibetsu.Boba);
-    const hh = await this.saveSosenba23(buffer, 332, $U.Seibetsu.Hinba, hhc.Id, hhh.Id);
+    const hh = await this.saveSosenba23(buffer, 331, $U.Seibetsu.Hinba, hhc?.Id, hhh?.Id);
 
     const hch = await this.saveSosenba23(buffer, 583, $U.Seibetsu.Hinba);
-    const hcc = await this.saveSosenba23(buffer, 542, $U.Seibetsu.Boba);
-    const hc = await this.saveSosenba23(buffer, 289, $U.Seibetsu.Boba, hcc.Id, hch.Id);
+    const hcc = await this.saveSosenba23(buffer, 541, $U.Seibetsu.Boba);
+    const hc = await this.saveSosenba23(buffer, 289, $U.Seibetsu.Boba, hcc?.Id, hch?.Id);
 
     const chh = await this.saveSosenba23(buffer, 499, $U.Seibetsu.Hinba);
     const chc = await this.saveSosenba23(buffer, 457, $U.Seibetsu.Boba);
-    const ch = await this.saveSosenba23(buffer, 247, $U.Seibetsu.Hinba, chc.Id, chh.Id);
+    const ch = await this.saveSosenba23(buffer, 247, $U.Seibetsu.Hinba, chc?.Id, chh?.Id);
 
     const cch = await this.saveSosenba23(buffer, 415, $U.Seibetsu.Hinba);
     const ccc = await this.saveSosenba23(buffer, 373, $U.Seibetsu.Boba);
-    const cc = await this.saveSosenba23(buffer, 205, $U.Seibetsu.Hinba, ccc.Id, cch.Id);
+    const cc = await this.saveSosenba23(buffer, 205, $U.Seibetsu.Boba, ccc?.Id, cch?.Id);
 
-    const h = await this.saveSosenba1(buffer, 121, $U.Seibetsu.Hinba, hc.Id, hh.Id);
-    const c = await this.saveSosenba1(buffer, 37, $U.Seibetsu.Boba, cc.Id, ch.Id);
+    const h = await this.saveSosenba1(buffer, 121, $U.Seibetsu.Hinba, hc?.Id, hh?.Id);
+    const c = await this.saveSosenba1(buffer, 37, $U.Seibetsu.Boba, cc?.Id, ch?.Id);
 
     const uma = new Uma();
     uma.KolUmaCode = readInt(buffer, 0, 7);
@@ -109,8 +112,8 @@ export class KolKetKd3 extends DataToImport {
     } else {
       uma.KanaBamei = bamei;
     }
-    uma.ChichiUmaId = c.Id;
-    uma.HahaUmaId = h.Id;
+    uma.ChichiUmaId = c?.Id;
+    uma.HahaUmaId = h?.Id;
     await this.umaDao.saveUma(uma);
   }
 }

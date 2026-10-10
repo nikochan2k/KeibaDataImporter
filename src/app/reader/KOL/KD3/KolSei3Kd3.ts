@@ -19,8 +19,11 @@ export class KolSei3Kd3 extends DataToImport {
       return;
     }
     const id = this.kolRaceTool.getRaceId(buffer);
+    if (id === null) {
+      return;
+    }
     const asIs = await this.entityManager.findOneBy(RaceSeiseki, { Id: id });
-    if (!asIs.SeisaiNaiyou) {
+    if (asIs && !asIs.SeisaiNaiyou) {
       await this.entityManager
         .createQueryBuilder()
         .update(RaceSeiseki, { SeisaiNaiyou: seisaiNaiyou })
