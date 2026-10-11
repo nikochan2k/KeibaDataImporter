@@ -11,22 +11,7 @@ import {
 import { ImportProgress, type ImportProgressSink } from "../ImportProgress";
 import { getLogger } from "../LogUtil";
 import { Traversal } from "../Traversal";
-
-export type ImportJobStatus = "running" | "completed" | "failed";
-
-export interface ImportJob {
-  id: string;
-  /** 取り込み対象(IMPORT_ROOT からの相対パス) */
-  path: string;
-  status: ImportJobStatus;
-  startedAt: string;
-  finishedAt?: string;
-  currentFile?: string;
-  filesDone: number;
-  errors: { file: string; message: string }[];
-  /** ジョブ自体が失敗したときの理由 */
-  error?: string;
-}
+import type { ImportJob } from "./types";
 
 /** 古いジョブは捨てる。直近これだけを覚えておく */
 const MAX_JOBS = 50;

@@ -1,0 +1,13 @@
+{
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+    "jsx": "react-jsx",
+    "lib": ["esnext", "dom", "dom.iterable"],
+    "types": [],
+    "experimentalDecorators": false,
+    "emitDecoratorMetadata": false,
+    "strict": true,
+    "noImplicitAny": true
+  },
+  "include": ["src", "../src/app/browse/types.ts", "../src/app/api/types.ts"]
+}
