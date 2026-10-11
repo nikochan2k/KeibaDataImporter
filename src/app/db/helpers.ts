@@ -6,6 +6,7 @@ import {
   inArray,
   isNull,
   type SQL,
+  sql,
 } from "drizzle-orm";
 import { getTableConfig, type SQLiteColumn, type SQLiteTable } from "drizzle-orm/sqlite-core";
 import { currentDb, currentSqlite } from "./db";
@@ -130,6 +131,50 @@ export function upsert<T extends SQLiteTable>(
     .onConflictDoUpdate({ target: keys, set: update as never })
     .returning()
     .get() as Row<T>;
+}
+
+/** SQLite の 1 文に渡せる変数の上限 (SQLITE_MAX_VARIABLE_NUMBER) に収まるよう、複数行の追加を分ける大きさ */
+const MAX_VARIABLES = 30000;
+
+/**
+ * 主キーが決まっている複数の行を、まとめて追加または更新する (複数行の INSERT ... ON CONFLICT DO UPDATE)。
+ * save と同じく、undefined の項目は書かず、渡した項目だけ更新する。保存後の行は読み戻さない。
+ * 項目の組が同じ行ごとに 1 文にまとめるので、同じ項目を持つ行が多いほど速い。
+ * 同じ主キーの行が複数あるときは、項目の組が同じ行の中ではあとの行の値が残る (組が違う行どうしの順序は保証しない)。
+ */
+export function upsertAll<T extends SQLiteTable>(table: T, rows: readonly Partial<Row<T>>[]): void {
+  const config = getTableConfig(table);
+  const keys = config.primaryKeys[0]?.columns ?? config.columns.filter((c) => c.primary);
+  const groups = new Map<string, Record<string, unknown>[]>();
+  for (const row of rows) {
+    const values = definedOf(row);
+    const signature = Object.keys(values).join("\0");
+    const group = groups.get(signature);
+    if (group) {
+      group.push(values);
+    } else {
+      groups.set(signature, [values]);
+    }
+  }
+  for (const group of groups.values()) {
+    const names = Object.keys(group[0]);
+    const set = Object.fromEntries(
+      names
+        .filter((name) => !keys.some((k) => k.name === name))
+        .map((name) => [name, sql`excluded.${sql.identifier(name)}`]),
+    );
+    const size = Math.max(1, Math.floor(MAX_VARIABLES / names.length));
+    for (let i = 0; i < group.length; i += size) {
+      const insert = currentDb()
+        .insert(table)
+        .values(group.slice(i, i + size) as never);
+      if (0 < Object.keys(set).length) {
+        insert.onConflictDoUpdate({ target: keys, set: set as never }).run();
+      } else {
+        insert.onConflictDoNothing({ target: keys }).run();
+      }
+    }
+  }
 }
 
 /** 条件に合う行の項目を更新する */

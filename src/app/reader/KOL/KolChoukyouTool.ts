@@ -2,7 +2,7 @@ import * as $CH from "../../converters/Choukyou";
 import { choukyouDao } from "../../daos/ChoukyouDao";
 import { jinmeiDao } from "../../daos/JinmeiDao";
 import { umaDao } from "../../daos/UmaDao";
-import { findBy, findOneBy, save } from "../../db/helpers";
+import { findBy, findOneBy, save, upsertAll } from "../../db/helpers";
 import { Choukyou } from "../../entities/Choukyou";
 import { ChoukyouTime } from "../../entities/ChoukyouTime";
 import { ShussoubaChoukyou } from "../../entities/ShussoubaChoukyou";
@@ -142,8 +142,8 @@ export class KolChoukyouTool {
 
     for (const choukyouTime of times) {
       choukyouTime.ChoukyouId = choukyou.Id;
-      save(ChoukyouTime, choukyouTime);
     }
+    upsertAll(ChoukyouTime, times);
 
     const sc = {} as ShussoubaChoukyou;
     sc.ShussoubaId = shussoubaId;
