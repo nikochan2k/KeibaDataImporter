@@ -1,6 +1,6 @@
 import * as fs from "node:fs";
 import * as path from "node:path";
-import * as iconv from "iconv-lite";
+import { decodeSjis } from "../../src/app/util/Sjis";
 import type { KolField, KolSpec } from "./kol";
 
 export const kd1SpecFile = path.resolve(__dirname, "../../docs/kol-spec/KD1/spec/k-siyou3.txt");
@@ -35,7 +35,7 @@ const half = (s: string) =>
  * 表は「|項番|項目名|桁数|ADDR|規|備考|」の行で、グループの見出し(項番が空の行)や、備考の続きの行は読み飛ばします。
  */
 export function parseKd1Spec(kind: Kd1Kind): Kd1Spec {
-  const text = iconv.decode(fs.readFileSync(kd1SpecFile), "Windows932").replace(/\r/g, "");
+  const text = decodeSjis(fs.readFileSync(kd1SpecFile)).replace(/\r/g, "");
   const fields: KolField[] = [];
   let headerLength = 0;
   let inSection = false;

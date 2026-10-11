@@ -2,7 +2,6 @@ import "reflect-metadata";
 import { afterAll, beforeAll, describe, expect, test } from "bun:test";
 import * as fs from "node:fs";
 import * as path from "node:path";
-import * as iconv from "iconv-lite";
 import { Container } from "typedi";
 import { IsNull } from "typeorm";
 import { Baken, Kakutei } from "../src/app/converters/Common";
@@ -46,6 +45,7 @@ import { Ukc } from "../src/app/reader/JRDB/Ukc";
 import { Zec } from "../src/app/reader/JRDB/Zec";
 import { Zed } from "../src/app/reader/JRDB/Zed";
 import { Zkb } from "../src/app/reader/JRDB/Zkb";
+import { decodeSjis } from "../src/app/util/Sjis";
 import { setFileDate } from "./helpers";
 import { codeTables } from "./spec/code-tables";
 import { specOf } from "./spec/docs";
@@ -235,7 +235,7 @@ function fieldReader(prefix: string) {
       throw new Error(`仕様書に項目がありません: ${name}`);
     }
     const start = slot.start - 1 + index * slot.bytes;
-    return iconv.decode(rec.subarray(start, start + slot.bytes), "Windows932").trim();
+    return decodeSjis(rec.subarray(start, start + slot.bytes)).trim();
   };
 }
 
@@ -340,14 +340,9 @@ describe("仕様書の値と取り込み結果の突き合わせ", () => {
             (s) => s.name.startsWith(`${group}[${i}].`) && !s.name.endsWith("払戻金"),
           );
           const kin = spec.slots.find((s) => s.name === `${group}[${i}].払戻金`);
-          const comboRaw = iconv.decode(
-            rec.subarray(combo.start - 1, combo.start - 1 + combo.bytes),
-            "Windows932",
-          );
+          const comboRaw = decodeSjis(rec.subarray(combo.start - 1, combo.start - 1 + combo.bytes));
           const comboText = comboRaw.trim();
-          const kinText = iconv
-            .decode(rec.subarray(kin.start - 1, kin.start - 1 + kin.bytes), "Windows932")
-            .trim();
+          const kinText = decodeSjis(rec.subarray(kin.start - 1, kin.start - 1 + kin.bytes)).trim();
           if (comboText === "" || !(0 < parseInt(kinText, 10))) {
             continue;
           }

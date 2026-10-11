@@ -1,6 +1,5 @@
 import * as fs from "node:fs";
 import * as path from "node:path";
-import * as iconv from "iconv-lite";
 import * as $CH from "../../src/app/converters/Choukyou";
 import { Codes } from "../../src/app/converters/Codes";
 import * as $C from "../../src/app/converters/Common";
@@ -9,6 +8,7 @@ import * as $S from "../../src/app/converters/Shussouba";
 import * as $SJ from "../../src/app/converters/ShussoubaJoutai";
 import * as $SY from "../../src/app/converters/ShussoubaYosou";
 import * as $U from "../../src/app/converters/Uma";
+import { decodeSjis } from "../../src/app/util/Sjis";
 import { specDir } from "./specs";
 
 export interface TableCode {
@@ -30,8 +30,7 @@ export interface CodeTable {
   noCode?: string[];
 }
 
-const read = (file: string) =>
-  iconv.decode(fs.readFileSync(path.join(specDir, file)), "Windows932");
+const read = (file: string) => decodeSjis(fs.readFileSync(path.join(specDir, file)));
 
 /** 全角の英数字を半角にする(コード表の一部は全角で書かれている) */
 const half = (s: string) =>

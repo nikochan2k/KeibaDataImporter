@@ -1,6 +1,6 @@
 import * as fs from "node:fs";
 import * as path from "node:path";
-import * as iconv from "iconv-lite";
+import { encodeSjis } from "../../src/app/util/Sjis";
 
 export const jravanSpecFile = path.resolve(
   __dirname,
@@ -188,7 +188,7 @@ export class JravanRecord {
   public set(name: string, value: string | number, opts: JravanPut = {}) {
     const { at, bytes } = this.locate(name, opts);
     const text = typeof value === "number" ? String(value).padStart(bytes, "0") : value;
-    const encoded = iconv.encode(text, "Windows932");
+    const encoded = encodeSjis(text);
     if (bytes < encoded.length) {
       throw new Error(`${name} は ${bytes} バイトなのに ${encoded.length} バイト書こうとしました`);
     }

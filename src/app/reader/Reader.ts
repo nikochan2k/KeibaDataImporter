@@ -1,4 +1,4 @@
-import * as iconv from "iconv-lite";
+import { decodeSjis } from "../util/Sjis";
 
 const fromStrings = [
   "ｶﾞ",
@@ -93,7 +93,7 @@ function normalize(str: string) {
 export function readRaw(buffer: Buffer, offset: number, length: number) {
   const chunk = Buffer.alloc(length);
   buffer.copy(chunk, 0, offset, offset + length);
-  const raw = iconv.decode(chunk, "Windows932");
+  const raw = decodeSjis(chunk);
   return raw;
 }
 

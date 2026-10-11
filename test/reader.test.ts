@@ -1,5 +1,4 @@
 import { describe, expect, test } from "bun:test";
-import * as iconv from "iconv-lite";
 import {
   readDouble,
   readInt,
@@ -8,8 +7,9 @@ import {
   readStr,
   readTime,
 } from "../src/app/reader/Reader";
+import { encodeSjis } from "../src/app/util/Sjis";
 
-const buf = (s: string) => iconv.encode(s, "Windows932");
+const buf = (s: string) => encodeSjis(s);
 
 describe("Reader", () => {
   test("readStr は全角を半角にし、空白だけなら null", () => {

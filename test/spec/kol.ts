@@ -2,7 +2,6 @@ import "reflect-metadata";
 import * as fs from "node:fs";
 import * as os from "node:os";
 import * as path from "node:path";
-import * as iconv from "iconv-lite";
 import * as log4js from "log4js";
 import { Container } from "typedi";
 import { dataSource } from "../../src/app/DataSource";
@@ -13,6 +12,7 @@ import {
   kd2Sei1Layout,
 } from "../../src/app/reader/KOL/KD2/Kd2Layout";
 import { KolLayout } from "../../src/app/reader/KOL/KolLayout";
+import { decodeSjis, encodeSjis } from "../../src/app/util/Sjis";
 
 export const kolDir = path.resolve(__dirname, "../../docs/kol-spec/KD3");
 
@@ -48,9 +48,8 @@ const plain = (s: string) =>
  * 繰り返しの項目は先頭の 1 組だけが載っていて、途中の項番は飛んでいます。
  */
 export function parseKolSpec(kind: string, gen: "KD3" | "KD2" = "KD3"): KolSpec {
-  const html = iconv.decode(
+  const html = decodeSjis(
     fs.readFileSync(path.join(kolDir, "..", gen, "spec", `kol_${kind}.html`)),
-    "Windows932",
   );
   const fields: KolField[] = [];
   for (const row of html.match(/<tr[^>]*>[\s\S]*?<\/tr>/gi) || []) {
@@ -377,11 +376,11 @@ export function kolRecords(kind: string, recordLength: number) {
 
 /** レコードの (address, bytes) を Windows-932 の文字列で返す。前後の空白は除く */
 export function field(record: Buffer, address: number, bytes: number) {
-  return iconv.decode(record.subarray(address, address + bytes), "Windows932").trim();
+  return decodeSjis(record.subarray(address, address + bytes)).trim();
 }
 
 /** レコードの (address) に Windows-932 の文字列を書き込む。残りは空白で埋める */
 export function put(record: Buffer, address: number, bytes: number, value: string) {
   record.fill(0x20, address, address + bytes);
-  iconv.encode(value, "Windows932").copy(record, address, 0, bytes);
+  encodeSjis(value).copy(record, address, 0, bytes);
 }

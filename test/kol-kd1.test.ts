@@ -1,6 +1,5 @@
 import "reflect-metadata";
 import { afterAll, describe, expect, setDefaultTimeout, test } from "bun:test";
-import * as iconv from "iconv-lite";
 import { Container } from "typedi";
 import { Baken, Kakutei } from "../src/app/converters/Common";
 import { dataSource } from "../src/app/DataSource";
@@ -34,6 +33,7 @@ import {
   kd2UmaRunFrom,
 } from "../src/app/reader/KOL/KD1/Kd1Layout";
 import { KolRaceTool } from "../src/app/reader/KOL/KolRaceTool";
+import { encodeSjis } from "../src/app/util/Sjis";
 import { type Kd1Kind, kd1Sections, parseKd1Spec } from "./spec/kd1";
 import { closeKolDb, emptyKolDb, importKolFiles, type KolField, parseKolSpec } from "./spec/kol";
 
@@ -343,7 +343,7 @@ function kd1Record(length: number, puts: [number, string][]) {
   record[length - 2] = 0x0d;
   record[length - 1] = 0x0a;
   for (const [at, text] of puts) {
-    const bytes = iconv.encode(text, "Windows932");
+    const bytes = encodeSjis(text);
     expect(at + bytes.length).toBeLessThanOrEqual(length - 2);
     bytes.copy(record, at);
   }
@@ -352,7 +352,7 @@ function kd1Record(length: number, puts: [number, string][]) {
 
 /** 全角の名前を、桁数に収まるよう右に空白を足す (全角の空白は 2 バイト) */
 const name = (text: string, bytes: number) =>
-  text + "　".repeat((bytes - iconv.encode(text, "Windows932").length) / 2);
+  text + "　".repeat((bytes - encodeSjis(text).length) / 2);
 
 /** 2007-10-09 (火) の東京 4 回 2 日 11R */
 const RACE = "042007040211";

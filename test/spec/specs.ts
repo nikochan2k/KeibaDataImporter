@@ -1,6 +1,6 @@
 import * as fs from "node:fs";
 import * as path from "node:path";
-import * as iconv from "iconv-lite";
+import { decodeSjis } from "../../src/app/util/Sjis";
 
 /** 仕様書の 1 項目。繰り返し(OCC)は 1 要素の長さ bytes と個数 occ で表す */
 export interface Slot {
@@ -33,7 +33,7 @@ const isInt = (s: string | undefined) => s !== undefined && /^\d+$/.test(s);
  * 次の行以降に相対位置のない子項目が続く繰り返しグループは、要素ごとに展開します。
  */
 export function parseSpec(file: string): Spec {
-  const text = iconv.decode(fs.readFileSync(path.join(specDir, file)), "Windows932");
+  const text = decodeSjis(fs.readFileSync(path.join(specDir, file)));
   const slots: Slot[] = [];
   let next = 1;
   let recordLength: number | null = null;

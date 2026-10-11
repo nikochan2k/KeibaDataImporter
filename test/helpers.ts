@@ -1,8 +1,8 @@
 import "reflect-metadata";
-import * as iconv from "iconv-lite";
 import { Container } from "typedi";
 import { Bridge } from "../src/app/reader/Bridge";
 import { JrdbBridge } from "../src/app/reader/JRDB/JrdbBridge";
+import { encodeSjis } from "../src/app/util/Sjis";
 
 export type Field = [number, string];
 
@@ -10,7 +10,7 @@ export type Field = [number, string];
 export function record(fields: Field[], length: number) {
   const buf = Buffer.alloc(length, 0x20);
   for (const [pos, value] of fields) {
-    iconv.encode(value, "Windows932").copy(buf, pos - 1);
+    encodeSjis(value).copy(buf, pos - 1);
   }
   buf.write("\r\n", length - 2);
   return buf;
