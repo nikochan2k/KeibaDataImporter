@@ -2,7 +2,7 @@
 
 ## テストの実行ルール
 
-`bun test` は全体で約3分かかる（kol / kol-kd2 / spec の3ファイルで大半）。
+`bun test` は全体で約40秒かかる。
 
 - 作業中は全体を実行しない。変更に関係するテストファイルだけ実行する（例: `bun test test/jrdb-records.test.ts`）。
 - 全体の `bun test` は push の直前に1回だけ実行し、通ってから push する。
