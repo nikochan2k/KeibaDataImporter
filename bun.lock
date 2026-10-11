@@ -8,6 +8,7 @@
         "crc": "^4.3.2",
         "glob": "^13.0.6",
         "iconv-lite": "^0.7.3",
+        "itaiji-normalize": "^0.2.0",
         "log4js": "^6.9.1",
         "reflect-metadata": "^0.2.2",
         "tmp": "^0.2.7",
@@ -150,6 +151,8 @@
     "inherits": ["inherits@2.0.4", "", {}, "sha512-k/vGaX4/Yla3WzyMCvTQOXYeIHvqOKtnqBduzTHpzpQZzAskKMhZ2K+EnBiSM9zGSoIFeMpXKxa4dYeZIQqewQ=="],
 
     "isarray": ["isarray@1.0.0", "", {}, "sha512-VLghIWNM6ELQzo7zwmcg0NmTVyWKYjvIeM83yjp0wRDTmUnrM678fQbcKBo6n2CJEF0szoG//ytg+TKla89ALQ=="],
+
+    "itaiji-normalize": ["itaiji-normalize@0.2.0", "", {}, "sha512-EMvpbQ5ienhlVh90BHmlTVI6Xbq2pxmr2SJtqLUyvfx1OYAO9EGWILYtKacYtsMYDiZq9bb461s0uRgHU3oS3g=="],
 
     "jsonfile": ["jsonfile@6.2.1", "", { "dependencies": { "universalify": "^2.0.0" }, "optionalDependencies": { "graceful-fs": "^4.1.6" } }, "sha512-zwOTdL3rFQ/lRdBnntKVOX6k5cKJwEc1HdilT71BWEu7J41gXIB2MRp+vxduPSwZJPWBxEzv4yH1wYLJGUHX4Q=="],
 

@@ -5,7 +5,7 @@ import { ChoukyoushiMei } from "../entities/ChoukyoushiMei";
 import { Jinmei, JinmeiKubun } from "../entities/Jinmei";
 import { OrmManager, OrmRepository } from "../OrmManager";
 import { Tool } from "../reader/Tool";
-import { JinmeiDao, normalizeJinmei } from "./JinmeiDao";
+import { JinmeiDao, jinmeiMatchingKey } from "./JinmeiDao";
 
 @Service()
 export class ChoukyoushiDao {
@@ -41,7 +41,7 @@ export class ChoukyoushiDao {
       .createQueryBuilder("c")
       .innerJoin(ChoukyoushiMei, "cm", "cm.ChoukyoushiId = c.Id")
       .innerJoin(Jinmei, "j", "j.Id = cm.JinmeiId")
-      .where("j.Meishou = :meishou", { meishou: normalizeJinmei(meishou) })
+      .where("j.MatchingKey = :key", { key: jinmeiMatchingKey(meishou) })
       .getMany();
     return candidates.filter(
       (c) =>

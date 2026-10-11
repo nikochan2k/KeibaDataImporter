@@ -5,7 +5,7 @@ import { Kishu } from "../entities/Kishu";
 import { KishuMei } from "../entities/KishuMei";
 import { OrmManager, OrmRepository } from "../OrmManager";
 import { Tool } from "../reader/Tool";
-import { JinmeiDao, normalizeJinmei } from "./JinmeiDao";
+import { JinmeiDao, jinmeiMatchingKey } from "./JinmeiDao";
 
 @Service()
 export class KishuDao {
@@ -37,7 +37,7 @@ export class KishuDao {
       .createQueryBuilder("k")
       .innerJoin(KishuMei, "km", "km.KishuId = k.Id")
       .innerJoin(Jinmei, "j", "j.Id = km.JinmeiId")
-      .where("j.Meishou = :meishou", { meishou: normalizeJinmei(meishou) })
+      .where("j.MatchingKey = :key", { key: jinmeiMatchingKey(meishou) })
       .getMany();
     return candidates.filter(
       (c) =>

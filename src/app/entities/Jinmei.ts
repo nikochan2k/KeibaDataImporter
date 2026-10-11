@@ -7,6 +7,7 @@ export enum JinmeiKubun {
 }
 
 @Entity("Jinmei")
+@Index("IxJinmei2", (k: Jinmei) => [k.MatchingKey])
 @Index("IxJinmei", (k: Jinmei) => [k.Meishou], { unique: true })
 export class Jinmei {
   @PrimaryGeneratedColumn()
@@ -17,4 +18,8 @@ export class Jinmei {
 
   @Column("varchar", { length: 48 })
   public Meishou: string;
+
+  /** 突き合わせ用のキー (異体字などを揃えたもの) */
+  @Column("varchar", { length: 48, nullable: true })
+  public MatchingKey?: string;
 }

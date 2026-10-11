@@ -4,14 +4,18 @@ import { Container } from "typedi";
 import { Baken, Kakutei } from "../src/app/converters/Common";
 import { dataSource } from "../src/app/DataSource";
 import { ChoukyoushiDao } from "../src/app/daos/ChoukyoushiDao";
+import { JinmeiDao } from "../src/app/daos/JinmeiDao";
 import { KishuDao } from "../src/app/daos/KishuDao";
+import { MeishouDao } from "../src/app/daos/MeishouDao";
 import { Choukyoushi } from "../src/app/entities/Choukyoushi";
+import { JinmeiKubun } from "../src/app/entities/Jinmei";
 import { Kaisai } from "../src/app/entities/Kaisai";
 import { Kishu } from "../src/app/entities/Kishu";
 import { OddsHaitou } from "../src/app/entities/OddsHaitou";
 import { Race } from "../src/app/entities/Race";
 import { RaceLapTime } from "../src/app/entities/RaceLapTime";
 import { RaceSeiseki } from "../src/app/entities/RaceSeiseki";
+import { MeishouKubun } from "../src/app/entities/Shoyuu";
 import { Shussouba } from "../src/app/entities/Shussouba";
 import { ShussoubaSeiseki } from "../src/app/entities/ShussoubaSeiseki";
 import { ShussoubaTsuukaJuni } from "../src/app/entities/ShussoubaTsuukaJuni";
@@ -565,5 +569,27 @@ describe("他の情報源との突き合わせ", () => {
     const list = await repo(Kishu).find();
     expect(list.length).toBe(1);
     expect(list[0].JvDataKishuCode).toBe("02001");
+  });
+
+  test("馬主・生産者の名前も、空白や異体字が違えば同じ行にまとめる", async () => {
+    await emptyKolDb();
+    const dao = Container.get(MeishouDao);
+    const a = await dao.save(MeishouKubun.Full, "髙橋牧場");
+    const b = await dao.save(MeishouKubun.Full, "高橋 牧場");
+    const c = await dao.save(MeishouKubun.Tanshuku, "高橋牧場");
+    expect(b.Id).toBe(a.Id);
+    expect(b.Meishou).toBe("髙橋牧場");
+    // 区分が違えば別の行
+    expect(c.Id).not.toBe(a.Id);
+  });
+
+  test("異体字を揃えるのは突き合わせ用のキーだけで、名前は変えない", async () => {
+    await emptyKolDb();
+    const dao = Container.get(JinmeiDao);
+    const a = await dao.save(JinmeiKubun.Seimei, "髙 橋");
+    const b = await dao.save(JinmeiKubun.Seimei, "高橋");
+    expect(a.Meishou).toBe("髙橋");
+    expect(b.Meishou).toBe("高橋");
+    expect(a.MatchingKey).toBe(b.MatchingKey);
   });
 });
