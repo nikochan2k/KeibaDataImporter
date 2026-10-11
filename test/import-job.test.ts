@@ -11,6 +11,8 @@ let root: string;
 let data: string;
 let outside: string;
 const saved = process.env.IMPORT_ROOT;
+const seisekiJrdb = { source: "JRDB", kind: "成績データ" };
+const umaKol = { source: "KOL", kind: "競走馬データ" };
 
 beforeAll(() => {
   const base = fs.mkdtempSync(path.join(os.tmpdir(), "import-job-"));
@@ -32,12 +34,15 @@ afterAll(() => {
 });
 
 /** traverse の中身を差し替えられる ImportJobService を作る */
-function create(traverse: (entry: string, progress: ImportProgress) => Promise<void>) {
+function create(traverse: (entry: string, progress: ImportProgress) => Promise<void>, total = 0) {
   const progress = new ImportProgress();
   const service = new ImportJobService();
   Object.assign(service, {
     progress,
-    traversal: { traverse: (entry: string) => traverse(entry, progress) },
+    traversal: {
+      countFiles: async () => total,
+      traverse: (entry: string) => traverse(entry, progress),
+    },
   });
   return service;
 }
@@ -53,19 +58,98 @@ async function finished(service: ImportJobService, id: string) {
 describe("ImportJobService", () => {
   test("取り込みの進捗がジョブに反映される", async () => {
     const service = create(async (_entry, progress) => {
-      progress.fileStarted("a.txt");
-      progress.fileFinished("a.txt");
-      progress.fileStarted("b.txt");
-      progress.fileFailed("b.txt", "壊れています");
+      progress.fileStarted("a.txt", umaKol);
+      progress.fileFinished("a.txt", umaKol);
+      progress.fileStarted("b.txt", seisekiJrdb);
+      progress.fileFailed("b.txt", "壊れています", seisekiJrdb);
     });
     const job = service.start(data);
     const done = await finished(service, job.id);
     expect(done.status).toBe("completed");
     expect(done.path).toBe(data);
     expect(done.filesDone).toBe(2);
-    expect(done.errors).toEqual([{ file: "b.txt", message: "壊れています" }]);
+    expect(done.errors).toEqual([{ file: "b.txt", message: "壊れています", ...seisekiJrdb }]);
     expect(done.currentFile).toBeUndefined();
+    expect(done.current).toBeUndefined();
     expect(done.finishedAt).toBeDefined();
+  });
+
+  test("総ファイル数は数え終わるまで未定で、処理済みファイル数が進む", async () => {
+    let release: () => void;
+    const gate = new Promise<void>((resolve) => {
+      release = resolve;
+    });
+    const service = create(async (_entry, progress) => {
+      progress.entryProcessed("a.lzh");
+      await gate;
+      progress.entryProcessed("b.lzh");
+    }, 3);
+    const job = service.start(data);
+    expect(job.totalFiles).toBeUndefined();
+    expect(job.processedFiles).toBe(0);
+    while (service.get(job.id).processedFiles < 1) {
+      await new Promise((resolve) => setTimeout(resolve, 5));
+    }
+    expect(service.get(job.id).totalFiles).toBe(3);
+    release();
+    const done = await finished(service, job.id);
+    expect(done.totalFiles).toBe(3);
+    expect(done.processedFiles).toBe(2);
+  });
+
+  test("取り込み中は、いま何を取り込んでいるかが残る", async () => {
+    let release: () => void;
+    const gate = new Promise<void>((resolve) => {
+      release = resolve;
+    });
+    const service = create(async (_entry, progress) => {
+      progress.fileStarted("sed260101.txt", seisekiJrdb);
+      await gate;
+    });
+    const job = service.start(data);
+    while (!service.get(job.id).current) {
+      await new Promise((resolve) => setTimeout(resolve, 5));
+    }
+    expect(service.get(job.id).current).toEqual(seisekiJrdb);
+    release();
+    expect((await finished(service, job.id)).current).toBeUndefined();
+  });
+
+  test("エラーが一定数に達したら取り込みを止める", async () => {
+    const saved = process.env.IMPORT_MAX_ERRORS;
+    process.env.IMPORT_MAX_ERRORS = "3";
+    try {
+      let reached = 0;
+      const service = create(async (_entry, progress) => {
+        for (let i = 0; i < 10 && !progress.stopReason; i++) {
+          progress.fileFailed(`x${i}.txt`, "壊れています", umaKol);
+          reached++;
+        }
+      });
+      const job = service.start(data);
+      const done = await finished(service, job.id);
+      expect(reached).toBe(3);
+      expect(done.status).toBe("failed");
+      expect(done.errors).toHaveLength(3);
+      expect(done.error).toContain("3 件");
+    } finally {
+      if (saved === undefined) {
+        delete process.env.IMPORT_MAX_ERRORS;
+      } else {
+        process.env.IMPORT_MAX_ERRORS = saved;
+      }
+    }
+  });
+
+  test("zip / lzh を開けない失敗は、データ区分なしのエラーとして残る", async () => {
+    const service = create(async (_entry, progress) => {
+      progress.fileFailed("broken.lzh", "壊れています");
+    });
+    const job = service.start(data);
+    const done = await finished(service, job.id);
+    expect(done.status).toBe("completed");
+    expect(done.filesDone).toBe(0);
+    expect(done.errors).toEqual([{ file: "broken.lzh", message: "壊れています" }]);
   });
 
   test("読み飛ばしたファイルがジョブに残る", async () => {
@@ -93,15 +177,15 @@ describe("ImportJobService", () => {
 
   test("取り込みログを続きから取れる", async () => {
     const service = create(async (_entry, progress) => {
-      progress.fileStarted("a.txt");
-      progress.fileFailed("a.txt", "壊れています");
+      progress.fileStarted("a.txt", umaKol);
+      progress.fileFailed("a.txt", "壊れています", umaKol);
     });
     const job = service.start(data);
     await finished(service, job.id);
     const all = service.logsOf(job.id, 0);
-    expect(all.entries.map((e) => e.level)).toEqual(["info", "info", "error", "info"]);
-    expect(all.next).toBe(4);
-    const rest = service.logsOf(job.id, 2);
+    expect(all.entries.map((e) => e.level)).toEqual(["info", "info", "info", "error", "info"]);
+    expect(all.next).toBe(5);
+    const rest = service.logsOf(job.id, 3);
     expect(rest.entries).toHaveLength(2);
     expect(rest.entries[0].message).toContain("壊れています");
     expect(service.logsOf(job.id, all.next).entries).toEqual([]);
@@ -138,7 +222,7 @@ describe("ImportJobService", () => {
     const job = service.start(data);
     await finished(service, job.id);
     const progress: ImportProgress = Reflect.get(service, "progress");
-    progress.fileFinished("late.txt");
+    progress.fileFinished("late.txt", umaKol);
     expect(service.get(job.id).filesDone).toBe(0);
   });
 

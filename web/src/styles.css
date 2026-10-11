@@ -242,6 +242,46 @@ button:disabled {
   margin-top: 3rem;
 }
 
+.importing .spinner {
+  width: 40px;
+  height: 40px;
+  margin: 0 auto 8px;
+  border: 4px solid var(--line);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin 0.9s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.importing progress {
+  width: min(480px, 100%);
+  height: 12px;
+  accent-color: var(--accent);
+}
+
+.error-history {
+  max-width: 720px;
+  margin: 32px auto 0;
+  text-align: left;
+}
+
+.error-history .errors {
+  max-height: 40vh;
+  overflow-y: auto;
+  list-style: none;
+  padding: 0;
+}
+
+.error-history li {
+  padding: 6px 0;
+  border-bottom: 1px solid var(--line);
+}
+
 @media (max-width: 600px) {
   .topbar {
     gap: 12px;
@@ -255,6 +295,10 @@ button:disabled {
 @media (prefers-reduced-motion: reduce) {
   * {
     transition: none !important;
+  }
+
+  .importing .spinner {
+    animation-duration: 3s;
   }
 }
 

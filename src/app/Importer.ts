@@ -2,6 +2,7 @@ import * as fs from "node:fs";
 import { Inject, Injectable, type OnModuleInit, type Type } from "@nestjs/common";
 import { ModuleRef } from "@nestjs/core";
 import { Logger } from "log4js";
+import type { ImportTarget } from "./api/types";
 import { ImportProgress } from "./ImportProgress";
 import { getLogger } from "./LogUtil";
 import { Bridge } from "./reader/Bridge";
@@ -84,19 +85,20 @@ import { KolSei1 } from "./reader/KOL/KolSei1";
 import { KolSei2 } from "./reader/KOL/KolSei2";
 import { KolShu } from "./reader/KOL/KolShu";
 import { KolUma } from "./reader/KOL/KolUma";
+import { yieldToEventLoop } from "./util/Yield";
 
 export interface Entries {
   [basename: string]: string;
 }
 
-interface Item {
+interface Item extends ImportTarget {
   index: number;
   basename: string;
   dataFile: string;
   dataToImport: DataToImport;
 }
 
-interface Reader {
+interface Reader extends ImportTarget {
   pattern: RegExp;
   type: Type<DataToImport>;
   dataToImport?: DataToImport;
@@ -117,154 +119,139 @@ export class Importer implements OnModuleInit {
   constructor(@Inject(ModuleRef) private moduleRef: ModuleRef) {
     this.logger = getLogger(this);
     this.readers = [
-      // KD2/KD3 厩舎データ
-      { pattern: /kol_kyu\.kd[23]$/i, type: KolKyu },
-      // KD1 厩舎データ
-      { pattern: /kol_kyu\.dat$/i, type: KolKyuKd1 },
-      // JRA-VAN 調教師
-      { pattern: /jracchok\.dat$/i, type: JravanChok },
-      // JRA-VAN 抹消調教師
-      { pattern: /jracdelc\.dat$/i, type: JravanDelc },
-      // JRDB 調教師データ
-      { pattern: /c[zs]a\d+\.txt$/i, type: C$a },
-      // KD2/KD3 騎手データ
-      { pattern: /kol_kis\.kd[23]$/i, type: KolKis },
-      // KD1 騎手データ
-      { pattern: /kol_kis\.dat$/i, type: KolKisKd1 },
-      // JRA-VAN 騎手
-      { pattern: /jrackisi\.dat$/i, type: JravanKisi },
-      // JRA-VAN 抹消騎手
-      { pattern: /jracdelk\.dat$/i, type: JravanDelk },
-      // JRDB 騎手データ
-      { pattern: /k[zs]a\d+\.txt$/i, type: K$a },
-      // KD2/KD3 種牡馬データ
-      { pattern: /kol_syu\.kd[23]$/i, type: KolShu },
-      // KD1 種牡馬データ
-      { pattern: /kol_syu\.dat$/i, type: KolShuKd1 },
-      // KD2/KD3 競走馬データ
-      { pattern: /kol_uma\.kd[23]$/i, type: KolUma },
-      // KD1 競走馬データ
-      { pattern: /kol_uma\.dat$/i, type: KolUmaKd1 },
-      // JRA-VAN 競走馬
-      { pattern: /jracumaj\.dat$/i, type: JravanUmaj },
-      // JRA-VAN 抹消競走馬
-      { pattern: /jracdelu\.dat$/i, type: JravanDelu },
-      // JRA-VAN 年間スケジュール
-      { pattern: /jracsch1\.dat$/i, type: JravanSch1 },
-      // JRDB 馬基本データ
-      { pattern: /ukc\d+\.txt$/i, type: Ukc },
-      // KD2/KD3 3代血統図
-      { pattern: /kol_ket\.kd[23]$/i, type: KolKet },
-      // KD1 3代血統図
-      { pattern: /kol_ket\.dat$/i, type: KolKetKd1 },
-      // KD3 5代血統図
-      { pattern: /kol_ket5\.kd3$/i, type: KolKet5Kd3 },
-      // KD3 出走馬レースデータ
-      { pattern: /kol_den1\.kd3$/i, type: KolDen1 },
-      // KD2 出走馬レースデータ
-      { pattern: /kol_den1\.kd2$/i, type: KolDen1Kd2 },
-      // JRA-VAN 出馬表１
-      { pattern: /jracden1\.dat$/i, type: JravanDen1 },
-      // JRDB 開催データ
-      { pattern: /kaa\d+\.txt$/i, type: Kaa },
-      { pattern: /kab\d+\.txt$/i, type: Kab },
-      // JRDB 番組データ
-      { pattern: /bab\d+\.txt$/i, type: Bab },
-      { pattern: /bac\d+\.txt$/i, type: Bac },
-      // JRDB 前走データ
-      { pattern: /zec\d+\.txt$/i, type: Zec },
-      { pattern: /zed\d+\.txt$/i, type: Zed },
-      // JRDB 前走拡張データ
-      { pattern: /zkb\d+\.txt$/i, type: Zkb },
-      // KD3 出馬表出走馬データ
-      { pattern: /kol_den2\.kd3$/i, type: KolDen2 },
-      // KD2 出馬表出走馬データ
-      { pattern: /kol_den2\.kd2$/i, type: KolDen2Kd2 },
-      // KD1 出馬表(レースと出走馬)
-      { pattern: /kol_den\.dat$/i, type: KolDenKd1 },
-      // JRA-VAN 出馬表２
-      { pattern: /jracden2\.dat$/i, type: JravanDen2 },
-      // JRDB 競走馬データ
-      { pattern: /kyg\d+\.txt$/i, type: Kyg },
-      { pattern: /kyh\d+\.txt$/i, type: Kyh },
-      { pattern: /kyi\d+\.txt$/i, type: Kyi },
-      // JRDB 情報データ
-      { pattern: /joa\d+\.txt$/i, type: Joa },
-      // JRDB 調教分析データ
-      { pattern: /cya\d+\.txt$/i, type: Cya },
-      { pattern: /cyb\d+\.txt$/i, type: Cyb },
-      // JRDB 調教本追切データ
-      { pattern: /cha\d+\.txt$/i, type: Cha },
-      // JRDB 直前情報データ
-      { pattern: /tyb\d+\.txt$/i, type: Tyb },
-      // KD2/KD3 予想オッズ（単勝・枠連・馬連）
-      { pattern: /kol_ods\.kd[23]$/i, type: KolOds },
-      // KD3 予想オッズ２（馬単・３連複）
-      { pattern: /kol_ods2\.kd3$/i, type: KolOds2Kd3 },
-      // JRA-VAN オッズ（単勝・複勝・枠連）
-      { pattern: /jracods1\.dat$/i, type: JravanOds1 },
-      // JRA-VAN オッズ（馬連）
-      { pattern: /jracods3\.dat$/i, type: JravanOds3 },
-      // JRA-VAN オッズ（ワイド）
-      { pattern: /jracods4\.dat$/i, type: JravanOds4 },
-      // JRA-VAN オッズ（馬単）
-      { pattern: /jracods5\.dat$/i, type: JravanOds5 },
-      // JRA-VAN オッズ（3連複）
-      { pattern: /jracods6\.dat$/i, type: JravanOds6 },
-      // JRDB 基準オッズデータ
-      { pattern: /oz\d+\.txt$/i, type: Oz },
-      // JRDB ワイド基準オッズデータ
-      { pattern: /ow\d+\.txt$/i, type: Ow },
-      // JRDB 馬単基準オッズデータ
-      { pattern: /ou\d+\.txt$/i, type: Ou },
-      // JRDB 3連複基準オッズデータ
-      { pattern: /ot\d+\.txt$/i, type: Ot },
-      // JRDB 3連単基準オッズデータ
-
-      { pattern: /ov\d+\.txt$/i, type: Ov },
-      // KD3 競走成績レースデータ
-      { pattern: /kol_sei1\.kd3$/i, type: KolSei1 },
-      // KD2 競走成績レースデータ
-      { pattern: /kol_sei1\.kd2$/i, type: KolSei1Kd2 },
-      // JRA-VAN 成績１
-      { pattern: /jracsei1\.dat$/i, type: JravanSei1 },
-      // JRDB 成績レースデータ
-      { pattern: /sra\d+\.txt$/i, type: Sra },
-      { pattern: /srb\d+\.txt$/i, type: Srb },
-      // KD3 競走成績出走馬データ
-      { pattern: /kol_sei2\.kd3$/i, type: KolSei2 },
-      // KD2 競走成績出走馬データ
-      { pattern: /kol_sei2\.kd2$/i, type: KolSei2Kd2 },
-      // KD1 競走成績(レースと出走馬)
-      { pattern: /kol_sei\.dat$/i, type: KolSeiKd1 },
-      // KD1 競走成績２(19〜28番の出走馬)
-      { pattern: /kol_sei2\.dat$/i, type: KolSei2Kd1 },
-      // JRA-VAN 成績２
-      { pattern: /jracsei2\.dat$/i, type: JravanSei2 },
-      // JRA-VAN 成績Ｈ（馬単・3連複の払戻金）
-      { pattern: /jracseih\.dat$/i, type: JravanSeih },
-      // JRDB 成績データ
-      { pattern: /sec\d+\.txt$/i, type: Sec },
-      { pattern: /sed\d+\.txt$/i, type: Sed },
-      // KD3 制裁その他データ
-      { pattern: /kol_sei3\.kd3$/i, type: KolSei3Kd3 },
-      // JRDB 成績拡張データ
-      { pattern: /skb\d+\.txt$/i, type: Skb },
-      // JRDB 払戻情報データ
-      { pattern: /hja\d+\.txt$/i, type: Hja },
-      { pattern: /hjc\d+\.txt$/i, type: Hjc },
-      // KD3 騎手厩舎コメント／次走へのメモ
-      { pattern: /kol_com1\.kd3$/i, type: KolCom1 },
-      // KD2 騎手厩舎コメント／次走へのメモ
-      { pattern: /kol_com1\.kd2$/i, type: KolCom1Kd2 },
-      // KD2/KD3 確定オッズ（単勝・枠連・馬連）
-      { pattern: /kol_kod\.kd[23]$/i, type: KolKod },
-      // KD3 確定オッズ（複勝・ワイド・馬単・３連複）
-      { pattern: /kol_kod2\.kd3$/i, type: KolKod2Kd3 },
-      // KD3 確定オッズ３（３連単）
-      { pattern: /kol_kod3\.kd3$/i, type: KolKod3Kd3 },
-      // JV-Data (JRA-VAN Data Lab.)。レコード種別は混ざっていてよい
-      { pattern: /\.jvd$/i, type: JvData },
+      { pattern: /kol_kyu\.kd[23]$/i, type: KolKyu, source: "KOL", kind: "厩舎データ" },
+      { pattern: /kol_kyu\.dat$/i, type: KolKyuKd1, source: "KOL", kind: "厩舎データ" },
+      { pattern: /jracchok\.dat$/i, type: JravanChok, source: "JRA-VAN", kind: "調教師" },
+      { pattern: /jracdelc\.dat$/i, type: JravanDelc, source: "JRA-VAN", kind: "抹消調教師" },
+      { pattern: /c[zs]a\d+\.txt$/i, type: C$a, source: "JRDB", kind: "調教師データ" },
+      { pattern: /kol_kis\.kd[23]$/i, type: KolKis, source: "KOL", kind: "騎手データ" },
+      { pattern: /kol_kis\.dat$/i, type: KolKisKd1, source: "KOL", kind: "騎手データ" },
+      { pattern: /jrackisi\.dat$/i, type: JravanKisi, source: "JRA-VAN", kind: "騎手" },
+      { pattern: /jracdelk\.dat$/i, type: JravanDelk, source: "JRA-VAN", kind: "抹消騎手" },
+      { pattern: /k[zs]a\d+\.txt$/i, type: K$a, source: "JRDB", kind: "騎手データ" },
+      { pattern: /kol_syu\.kd[23]$/i, type: KolShu, source: "KOL", kind: "種牡馬データ" },
+      { pattern: /kol_syu\.dat$/i, type: KolShuKd1, source: "KOL", kind: "種牡馬データ" },
+      { pattern: /kol_uma\.kd[23]$/i, type: KolUma, source: "KOL", kind: "競走馬データ" },
+      { pattern: /kol_uma\.dat$/i, type: KolUmaKd1, source: "KOL", kind: "競走馬データ" },
+      { pattern: /jracumaj\.dat$/i, type: JravanUmaj, source: "JRA-VAN", kind: "競走馬" },
+      { pattern: /jracdelu\.dat$/i, type: JravanDelu, source: "JRA-VAN", kind: "抹消競走馬" },
+      { pattern: /jracsch1\.dat$/i, type: JravanSch1, source: "JRA-VAN", kind: "年間スケジュール" },
+      { pattern: /ukc\d+\.txt$/i, type: Ukc, source: "JRDB", kind: "馬基本データ" },
+      { pattern: /kol_ket\.kd[23]$/i, type: KolKet, source: "KOL", kind: "3代血統図" },
+      { pattern: /kol_ket\.dat$/i, type: KolKetKd1, source: "KOL", kind: "3代血統図" },
+      { pattern: /kol_ket5\.kd3$/i, type: KolKet5Kd3, source: "KOL", kind: "5代血統図" },
+      { pattern: /kol_den1\.kd3$/i, type: KolDen1, source: "KOL", kind: "出走馬レースデータ" },
+      { pattern: /kol_den1\.kd2$/i, type: KolDen1Kd2, source: "KOL", kind: "出走馬レースデータ" },
+      { pattern: /jracden1\.dat$/i, type: JravanDen1, source: "JRA-VAN", kind: "出馬表１" },
+      { pattern: /kaa\d+\.txt$/i, type: Kaa, source: "JRDB", kind: "開催データ" },
+      { pattern: /kab\d+\.txt$/i, type: Kab, source: "JRDB", kind: "開催データ" },
+      { pattern: /bab\d+\.txt$/i, type: Bab, source: "JRDB", kind: "番組データ" },
+      { pattern: /bac\d+\.txt$/i, type: Bac, source: "JRDB", kind: "番組データ" },
+      { pattern: /zec\d+\.txt$/i, type: Zec, source: "JRDB", kind: "前走データ" },
+      { pattern: /zed\d+\.txt$/i, type: Zed, source: "JRDB", kind: "前走データ" },
+      { pattern: /zkb\d+\.txt$/i, type: Zkb, source: "JRDB", kind: "前走拡張データ" },
+      { pattern: /kol_den2\.kd3$/i, type: KolDen2, source: "KOL", kind: "出馬表出走馬データ" },
+      { pattern: /kol_den2\.kd2$/i, type: KolDen2Kd2, source: "KOL", kind: "出馬表出走馬データ" },
+      { pattern: /kol_den\.dat$/i, type: KolDenKd1, source: "KOL", kind: "出馬表(レースと出走馬)" },
+      { pattern: /jracden2\.dat$/i, type: JravanDen2, source: "JRA-VAN", kind: "出馬表２" },
+      { pattern: /kyg\d+\.txt$/i, type: Kyg, source: "JRDB", kind: "競走馬データ" },
+      { pattern: /kyh\d+\.txt$/i, type: Kyh, source: "JRDB", kind: "競走馬データ" },
+      { pattern: /kyi\d+\.txt$/i, type: Kyi, source: "JRDB", kind: "競走馬データ" },
+      { pattern: /joa\d+\.txt$/i, type: Joa, source: "JRDB", kind: "情報データ" },
+      { pattern: /cya\d+\.txt$/i, type: Cya, source: "JRDB", kind: "調教分析データ" },
+      { pattern: /cyb\d+\.txt$/i, type: Cyb, source: "JRDB", kind: "調教分析データ" },
+      { pattern: /cha\d+\.txt$/i, type: Cha, source: "JRDB", kind: "調教本追切データ" },
+      { pattern: /tyb\d+\.txt$/i, type: Tyb, source: "JRDB", kind: "直前情報データ" },
+      {
+        pattern: /kol_ods\.kd[23]$/i,
+        type: KolOds,
+        source: "KOL",
+        kind: "予想オッズ（単勝・枠連・馬連）",
+      },
+      {
+        pattern: /kol_ods2\.kd3$/i,
+        type: KolOds2Kd3,
+        source: "KOL",
+        kind: "予想オッズ２（馬単・３連複）",
+      },
+      {
+        pattern: /jracods1\.dat$/i,
+        type: JravanOds1,
+        source: "JRA-VAN",
+        kind: "オッズ（単勝・複勝・枠連）",
+      },
+      { pattern: /jracods3\.dat$/i, type: JravanOds3, source: "JRA-VAN", kind: "オッズ（馬連）" },
+      { pattern: /jracods4\.dat$/i, type: JravanOds4, source: "JRA-VAN", kind: "オッズ（ワイド）" },
+      { pattern: /jracods5\.dat$/i, type: JravanOds5, source: "JRA-VAN", kind: "オッズ（馬単）" },
+      { pattern: /jracods6\.dat$/i, type: JravanOds6, source: "JRA-VAN", kind: "オッズ（3連複）" },
+      { pattern: /oz\d+\.txt$/i, type: Oz, source: "JRDB", kind: "基準オッズデータ" },
+      { pattern: /ow\d+\.txt$/i, type: Ow, source: "JRDB", kind: "ワイド基準オッズデータ" },
+      { pattern: /ou\d+\.txt$/i, type: Ou, source: "JRDB", kind: "馬単基準オッズデータ" },
+      { pattern: /ot\d+\.txt$/i, type: Ot, source: "JRDB", kind: "3連複基準オッズデータ" },
+      { pattern: /ov\d+\.txt$/i, type: Ov, source: "JRDB", kind: "3連単基準オッズデータ" },
+      { pattern: /kol_sei1\.kd3$/i, type: KolSei1, source: "KOL", kind: "競走成績レースデータ" },
+      { pattern: /kol_sei1\.kd2$/i, type: KolSei1Kd2, source: "KOL", kind: "競走成績レースデータ" },
+      { pattern: /jracsei1\.dat$/i, type: JravanSei1, source: "JRA-VAN", kind: "成績１" },
+      { pattern: /sra\d+\.txt$/i, type: Sra, source: "JRDB", kind: "成績レースデータ" },
+      { pattern: /srb\d+\.txt$/i, type: Srb, source: "JRDB", kind: "成績レースデータ" },
+      { pattern: /kol_sei2\.kd3$/i, type: KolSei2, source: "KOL", kind: "競走成績出走馬データ" },
+      { pattern: /kol_sei2\.kd2$/i, type: KolSei2Kd2, source: "KOL", kind: "競走成績出走馬データ" },
+      {
+        pattern: /kol_sei\.dat$/i,
+        type: KolSeiKd1,
+        source: "KOL",
+        kind: "競走成績(レースと出走馬)",
+      },
+      {
+        pattern: /kol_sei2\.dat$/i,
+        type: KolSei2Kd1,
+        source: "KOL",
+        kind: "競走成績２(19〜28番の出走馬)",
+      },
+      { pattern: /jracsei2\.dat$/i, type: JravanSei2, source: "JRA-VAN", kind: "成績２" },
+      {
+        pattern: /jracseih\.dat$/i,
+        type: JravanSeih,
+        source: "JRA-VAN",
+        kind: "成績Ｈ（馬単・3連複の払戻金）",
+      },
+      { pattern: /sec\d+\.txt$/i, type: Sec, source: "JRDB", kind: "成績データ" },
+      { pattern: /sed\d+\.txt$/i, type: Sed, source: "JRDB", kind: "成績データ" },
+      { pattern: /kol_sei3\.kd3$/i, type: KolSei3Kd3, source: "KOL", kind: "制裁その他データ" },
+      { pattern: /skb\d+\.txt$/i, type: Skb, source: "JRDB", kind: "成績拡張データ" },
+      { pattern: /hja\d+\.txt$/i, type: Hja, source: "JRDB", kind: "払戻情報データ" },
+      { pattern: /hjc\d+\.txt$/i, type: Hjc, source: "JRDB", kind: "払戻情報データ" },
+      {
+        pattern: /kol_com1\.kd3$/i,
+        type: KolCom1,
+        source: "KOL",
+        kind: "騎手厩舎コメント／次走へのメモ",
+      },
+      {
+        pattern: /kol_com1\.kd2$/i,
+        type: KolCom1Kd2,
+        source: "KOL",
+        kind: "騎手厩舎コメント／次走へのメモ",
+      },
+      {
+        pattern: /kol_kod\.kd[23]$/i,
+        type: KolKod,
+        source: "KOL",
+        kind: "確定オッズ（単勝・枠連・馬連）",
+      },
+      {
+        pattern: /kol_kod2\.kd3$/i,
+        type: KolKod2Kd3,
+        source: "KOL",
+        kind: "確定オッズ（複勝・ワイド・馬単・３連複）",
+      },
+      {
+        pattern: /kol_kod3\.kd3$/i,
+        type: KolKod3Kd3,
+        source: "KOL",
+        kind: "確定オッズ３（３連単）",
+      },
+      { pattern: /\.jvd$/i, type: JvData, source: "JV-Data", kind: "レコード種別混在" },
     ];
   }
 
@@ -288,6 +275,8 @@ export class Importer implements OnModuleInit {
           basename: basename,
           dataFile: dataFile,
           dataToImport: reader.dataToImport,
+          source: reader.source,
+          kind: reader.kind,
         });
       }
       if (items.length === before) {
@@ -309,7 +298,12 @@ export class Importer implements OnModuleInit {
     });
 
     for (let i = 0; i < items.length; i++) {
+      if (this.progress.stopReason) {
+        break;
+      }
       const item = items[i];
+      const target: ImportTarget = { source: item.source, kind: item.kind };
+      await yieldToEventLoop();
       this.bridge.basename = item.basename;
       const dataToImport = item.dataToImport;
       let fd: number;
@@ -318,12 +312,12 @@ export class Importer implements OnModuleInit {
         if (this.logger.isLevelEnabled("info")) {
           this.logger.info(`"${item.basename}"を取り込んでいます`);
         }
-        this.progress.fileStarted(item.basename);
+        this.progress.fileStarted(item.basename, target);
         await dataToImport.readAll(fd);
-        this.progress.fileFinished(item.basename);
+        this.progress.fileFinished(item.basename, target);
       } catch (e) {
         this.logger.error(e.stack || e);
-        this.progress.fileFailed(item.basename, e?.message ?? String(e));
+        this.progress.fileFailed(item.basename, e?.message ?? String(e), target);
       } finally {
         delete this.bridge.basename;
         fs.closeSync(fd);

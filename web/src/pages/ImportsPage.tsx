@@ -1,4 +1,4 @@
-import { type FormEvent, useEffect, useState } from "react";
+import { type FormEvent, useState } from "react";
 import { type ImportJob, request, useApi } from "../api";
 import { formatDateTime } from "../format";
 import { useImportStatus } from "../ImportStatus";
@@ -9,18 +9,8 @@ export function ImportsPage() {
   const { refresh } = useImportStatus();
   const [path, setPath] = useState("");
   const [message, setMessage] = useState<string>();
-  const [tick, setTick] = useState(0);
-  const jobs = useApi<ImportJob[]>(`/api/imports?t=${tick}`);
-  const running = jobs.data?.some((job) => job.status === "running");
-
-  // 取り込み中だけ、2 秒ごとに状態を読み直す
-  useEffect(() => {
-    if (!running) {
-      return;
-    }
-    const timer = setInterval(() => setTick((t) => t + 1), 2000);
-    return () => clearInterval(timer);
-  }, [running]);
+  // 取り込み中はこのページ自体が取り込み画面に替わる。終わると作り直されるので、そのとき読み直される
+  const jobs = useApi<ImportJob[]>("/api/imports");
 
   const start = async (e: FormEvent) => {
     e.preventDefault();
@@ -31,7 +21,6 @@ export function ImportsPage() {
         headers: { "content-type": "application/json" },
         body: JSON.stringify({ path }),
       });
-      setTick((t) => t + 1);
       refresh();
     } catch (error) {
       setMessage((error as Error).message);
@@ -49,7 +38,7 @@ export function ImportsPage() {
           value={path}
           onChange={(e) => setPath(e.target.value)}
         />{" "}
-        <button type="submit" disabled={!path.trim() || running}>
+        <button type="submit" disabled={!path.trim()}>
           開始
         </button>
       </form>
@@ -64,8 +53,8 @@ export function ImportsPage() {
               <th>対象</th>
               <th>開始</th>
               <th>終了</th>
-              <th className="num">完了ファイル</th>
-              <th>現在のファイル</th>
+              <th className="num">取り込み済み</th>
+              <th>備考</th>
               <th className="num">読み飛ばし</th>
               <th className="num">エラー</th>
             </tr>
@@ -77,9 +66,11 @@ export function ImportsPage() {
                 <td>{job.path}</td>
                 <td>{formatDateTime(job.startedAt)}</td>
                 <td>{formatDateTime(job.finishedAt)}</td>
-                <td className="num">{job.filesDone}</td>
+                <td className="num">
+                  {job.processedFiles}
+                  {job.totalFiles !== undefined && ` / ${job.totalFiles}`}
+                </td>
                 <td>
-                  {job.currentFile}
                   {job.status === "completed" && job.filesDone === 0 && (
                     <span className="error">取り込めたファイルがありませんでした</span>
                   )}
@@ -108,7 +99,11 @@ export function ImportsPage() {
                       <ul className="errors">
                         {job.errors.map((error) => (
                           <li key={`${error.file}:${error.message}`}>
-                            {error.file}: {error.message}
+                            {error.source ? `${error.source} ${error.kind}` : error.file}
+                            {" ("}
+                            {error.file}
+                            {"): "}
+                            {error.message}
                           </li>
                         ))}
                       </ul>

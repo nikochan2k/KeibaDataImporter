@@ -18,7 +18,7 @@ export abstract class JrdbData extends DataToImport {
   protected async setup() {
     const result = JrdbData.YYMMDD.exec(this.bridge.basename);
     if (!result) {
-      console.log(`ファイル名に日付がありません: ${this.bridge.basename}`);
+      this.logger.warn(`ファイル名に日付がありません: ${this.bridge.basename}`);
       return;
     }
     const yy = parseInt(result[1], 10);

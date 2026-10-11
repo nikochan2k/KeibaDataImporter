@@ -12,6 +12,7 @@ import { ImportProgress } from "./ImportProgress";
 import { getLogger } from "./LogUtil";
 import * as ioutil from "./util/IOUtil";
 import { LhaReader } from "./util/LHA";
+import { yieldToEventLoop } from "./util/Yield";
 
 interface ImportFile {
   priority: number;
@@ -141,17 +142,33 @@ export class Traversal {
   }
 
   public async traverse(entry: string) {
+    const checked = this.resolveEntry(entry);
+    if (checked.stat.isDirectory()) {
+      await this.traverseDir(checked.entry);
+    } else {
+      await this.importFile(this.createImportFile(checked.entry));
+    }
+  }
+
+  /** 取り込む対象のファイル数 (zip / lzh / 単独のデータファイル)。importFile が取り込むものだけを数える */
+  public async countFiles(entry: string) {
+    const checked = this.resolveEntry(entry);
+    if (checked.stat.isDirectory()) {
+      const importFiles = await this.listImportFiles(checked.entry, true);
+      return importFiles.filter((importFile) => importFile.priority >= 0).length;
+    }
+    return this.createImportFile(checked.entry).priority >= 0 ? 1 : 0;
+  }
+
+  protected resolveEntry(entry: string) {
     const checked = this.checkPath(path.join(process.cwd(), entry)) || this.checkPath(entry);
     if (!checked) {
       throw new Error(`"${entry}"は見つかりません`);
-    } else if (checked.stat.isDirectory()) {
-      await this.traverseDir(checked.entry);
-    } else if (checked.stat.isFile()) {
-      const importFile = this.createImportFile(checked.entry);
-      await this.importFile(importFile);
-    } else {
+    }
+    if (!checked.stat.isDirectory() && !checked.stat.isFile()) {
       throw new Error(`"${entry}"はファイルでもディレクトリでもありません`);
     }
+    return checked;
   }
 
   protected checkPath(entry: string) {
@@ -173,16 +190,16 @@ export class Traversal {
   }
 
   protected async traverseDir(lzhDir: string) {
-    const pattern = path.join(lzhDir, "**/*.*");
-    const matches = glob.sync(pattern, { nocase: true });
-    const importFiles: ImportFile[] = [];
-    for (let i = 0; i < matches.length; i++) {
-      const filepath = matches[i];
-      const importFile = this.createImportFile(filepath);
-      importFiles.push(importFile);
-    }
+    await this.importFiles(await this.listImportFiles(lzhDir));
+  }
 
-    await this.importFiles(importFiles);
+  /** ディレクトリ配下のファイルを列挙する。数えるだけのときは非同期で、イベントループを止めない */
+  protected async listImportFiles(lzhDir: string, async = false) {
+    const pattern = path.join(lzhDir, "**/*.*");
+    const matches = async
+      ? await glob.glob(pattern, { nocase: true })
+      : glob.sync(pattern, { nocase: true });
+    return matches.map((filepath) => this.createImportFile(filepath));
   }
 
   protected createImportFile(filepath: string) {
@@ -204,6 +221,9 @@ export class Traversal {
     });
 
     for (let i = 0; i < importFiles.length; i++) {
+      if (this.progress.stopReason) {
+        break;
+      }
       const importFile = importFiles[i];
       await this.importFile(importFile);
     }
@@ -216,13 +236,26 @@ export class Traversal {
     }
     const filepath = importFile.path;
     const basename = importFile.basename;
+    try {
+      await yieldToEventLoop();
+      await this.importEntry(filepath, basename);
+    } catch (e) {
+      // 壊れた zip / lzh でジョブ全体を止めず、エラーとして残して次へ進む
+      this.logger.error(e.stack || e);
+      this.progress.fileFailed(basename, e?.message ?? String(e));
+    } finally {
+      this.progress.entryProcessed(basename);
+    }
+  }
+
+  protected async importEntry(filepath: string, basename: string) {
     if (this.logger.isLevelEnabled("info")) {
       this.logger.info(`"${basename}"を解凍しています。`);
     }
     if (/\.lzh$/i.test(basename)) {
-      await this.uncompressLzhFile(importFile.path);
+      await this.uncompressLzhFile(filepath);
     } else if (/\.zip$/i.test(basename)) {
-      await this.uncompressZipFile(importFile.path);
+      await this.uncompressZipFile(filepath);
     } else if (/\.(txt|kd3)$/i.test(basename)) {
       const entries: Entries = {};
       entries[basename] = filepath;

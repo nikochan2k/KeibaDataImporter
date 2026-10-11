@@ -3,6 +3,7 @@ import * as log4js from "log4js";
 import { EntityManager } from "typeorm";
 import { getLogger } from "../LogUtil";
 import { OrmManager, runInTransaction } from "../OrmManager";
+import { createYielder } from "../util/Yield";
 
 export abstract class DataToImport {
   protected logger: log4js.Logger;
@@ -36,9 +37,11 @@ export abstract class DataToImport {
     this.bufEnd = 0;
     try {
       const length = this.getBufferLength();
+      const yielder = createYielder();
       await runInTransaction(async () => {
         for (let buf = this.readLine(fd, length); buf !== null; buf = this.readLine(fd, length)) {
           await this.save(buf);
+          await yielder();
         }
       });
     } finally {

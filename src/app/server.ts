@@ -3,7 +3,7 @@ import { NestFactory } from "@nestjs/core";
 import type { NestExpressApplication } from "@nestjs/platform-express";
 import { AppModule } from "./AppModule";
 import { dataSource } from "./DataSource";
-import { getLogger } from "./LogUtil";
+import { getLogger, silenceLoggers } from "./LogUtil";
 import { serveWeb } from "./serveWeb";
 
 const logger = getLogger("server");
@@ -13,6 +13,7 @@ const port = Number(process.env.PORT) || 3000;
 const host = process.env.HOST || "127.0.0.1";
 
 async function main() {
+  silenceLoggers();
   await dataSource.initialize();
   // 取り込み(書き込み)中も閲覧(読み込み)が止まらないようにする
   await dataSource.query("PRAGMA journal_mode = WAL");

@@ -11,7 +11,13 @@ import {
 import { ImportProgress, type ImportProgressSink } from "../ImportProgress";
 import { getLogger } from "../LogUtil";
 import { Traversal } from "../Traversal";
-import type { ImportJob, ImportLogEntry, ImportLogLevel, ImportLogPage } from "./types";
+import type {
+  ImportJob,
+  ImportLogEntry,
+  ImportLogLevel,
+  ImportLogPage,
+  ImportTarget,
+} from "./types";
 
 /** 読み飛ばしたファイルは、ジョブごとにこれだけ覚えておく */
 const MAX_SKIPPED = 100;
@@ -21,6 +27,18 @@ const MAX_LOGS = 1000;
 
 /** 古いジョブは捨てる。直近これだけを覚えておく */
 const MAX_JOBS = 50;
+
+/** エラーがこの件数に達したら、取り込みを止める。環境変数 IMPORT_MAX_ERRORS で変えられる */
+const DEFAULT_MAX_ERRORS = 20;
+
+function maxErrors() {
+  const value = Number(process.env.IMPORT_MAX_ERRORS);
+  return Number.isInteger(value) && value > 0 ? value : DEFAULT_MAX_ERRORS;
+}
+
+function describe(target: ImportTarget) {
+  return `${target.source} ${target.kind}`;
+}
 
 /**
  * 取り込みジョブを管理する。
@@ -64,6 +82,7 @@ export class ImportJobService {
       path: target,
       status: "running",
       startedAt: new Date().toISOString(),
+      processedFiles: 0,
       filesDone: 0,
       errors: [],
       skipped: [],
@@ -137,19 +156,30 @@ export class ImportJobService {
   }
 
   private async run(job: ImportJob, target: string) {
+    const limit = maxErrors();
     const sink: ImportProgressSink = {
-      fileStarted: (basename) => {
+      fileStarted: (basename, current) => {
         job.currentFile = basename;
-        this.log(job, "info", `${basename} を取り込んでいます`);
+        job.current = current;
+        this.log(job, "info", `${describe(current)} を取り込んでいます (${basename})`);
       },
-      fileFinished: (basename) => {
+      fileFinished: (basename, current) => {
         job.filesDone++;
-        this.log(job, "info", `${basename} を取り込みました`);
+        this.log(job, "info", `${describe(current)} を取り込みました (${basename})`);
       },
-      fileFailed: (file, message) => {
-        job.filesDone++;
-        job.errors.push({ file, message });
-        this.log(job, "error", `${file} の取り込みに失敗しました: ${message}`);
+      fileFailed: (file, message, current) => {
+        if (current) {
+          job.filesDone++;
+        }
+        job.errors.push({ file, message, ...current });
+        this.log(
+          job,
+          "error",
+          `${current ? describe(current) : file} の取り込みに失敗しました (${file}): ${message}`,
+        );
+        if (job.errors.length >= limit) {
+          this.progress.stop(`エラーが ${limit} 件に達したため、取り込みを止めました`);
+        }
       },
       fileSkipped: (file, reason) => {
         job.skippedCount++;
@@ -158,16 +188,27 @@ export class ImportJobService {
           this.log(job, "warn", `${file} を読み飛ばしました: ${reason}`);
         }
       },
+      entryProcessed: () => {
+        job.processedFiles++;
+      },
     };
     this.progress.attach(sink);
     try {
+      job.totalFiles = await this.traversal.countFiles(target);
+      this.log(job, "info", `取り込むファイルは ${job.totalFiles} 個です`);
       await this.traversal.traverse(target);
-      job.status = "completed";
-      this.log(
-        job,
-        "info",
-        `取り込みが終わりました (${job.filesDone} ファイル、エラー ${job.errors.length}、読み飛ばし ${job.skippedCount})`,
-      );
+      if (this.progress.stopReason) {
+        job.status = "failed";
+        job.error = this.progress.stopReason;
+        this.log(job, "error", job.error);
+      } else {
+        job.status = "completed";
+        this.log(
+          job,
+          "info",
+          `取り込みが終わりました (${job.filesDone} ファイル、エラー ${job.errors.length}、読み飛ばし ${job.skippedCount})`,
+        );
+      }
     } catch (e) {
       this.logger.error(e.stack || e);
       job.status = "failed";
@@ -176,6 +217,7 @@ export class ImportJobService {
     } finally {
       this.progress.detach();
       delete job.currentFile;
+      delete job.current;
       job.finishedAt = new Date().toISOString();
       this.running = undefined;
     }
