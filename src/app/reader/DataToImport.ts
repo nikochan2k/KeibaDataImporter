@@ -30,6 +30,10 @@ export abstract class DataToImport {
    */
   public async readAll(fd: number) {
     await this.setup();
+    // 1 行ずつ読むときの読み込み済みのバッファは、ファイルごとに作り直す
+    this.buf = undefined;
+    this.bufBegin = 0;
+    this.bufEnd = 0;
     try {
       const length = this.getBufferLength();
       await runInTransaction(async () => {
@@ -64,11 +68,20 @@ export abstract class DataToImport {
         if (this.bufEnd <= index) {
           // 最後まできたら
           const temp = this.buf;
-          this.buf = Buffer.alloc(this.buf.length);
+          const rest = this.bufEnd - this.bufBegin;
+          // 1 行がバッファに収まらないときは、バッファを広げる
+          this.buf = Buffer.alloc(rest < temp.length ? temp.length : temp.length * 2);
           const offset = temp.copy(this.buf, 0, this.bufBegin, this.bufEnd);
           const length = this.buf.length - offset;
-          this.bufEnd = fs.readSync(fd, this.buf, offset, length, null) + offset;
+          const size = fs.readSync(fd, this.buf, offset, length, null);
+          this.bufEnd = size + offset;
           this.bufBegin = index = 0;
+          if (size === 0) {
+            // ファイルの最後で改行がなければ、残りを最後の行にする
+            const last = this.buf.subarray(0, this.bufEnd);
+            this.bufEnd = 0;
+            return 0 < last.length ? last : null;
+          }
         }
       }
       return null;

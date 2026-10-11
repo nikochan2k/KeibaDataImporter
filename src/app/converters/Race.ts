@@ -2,7 +2,7 @@ import { Codes } from "./Codes";
 
 export const ippanTokubetsu = new Codes([
   { code: 1, kol: "1", jrdb: "5", jvdata: "E", naiyou: "特別" },
-  { code: 2, kol: "2", jrdb: "6", jvdata: "D", naiyou: "準重賞" },
+  { code: 2, kol: "2", jrdb: "6", jvdata: /D|L/, naiyou: "準重賞" },
   { code: 3, kol: "3", jrdb: /1|2|3|4/, jvdata: /A|B|C|F|G|H/, naiyou: "重賞" },
   { code: 0, kol: "0", jrdb: /./, jvdata: /./, naiyou: "一般" },
 ]);
@@ -21,7 +21,7 @@ export const grade = new Codes([
   { code: 1, kol: /0|3/, jrdb: "1", jvdata: /A|F/, naiyou: "G1" },
   { code: 2, kol: /1|4/, jrdb: "2", jvdata: /B|G/, naiyou: "G2" },
   { code: 3, kol: /2|5/, jrdb: "3", jvdata: /C|H/, naiyou: "G3" },
-  { code: 4, jrdb: "6", naiyou: "L", jvdata: "D" },
+  { code: 4, jrdb: "6", naiyou: "L", jvdata: "L" },
 ]);
 
 export const jpnFlag = new Codes([{ code: 1, kol: "1", naiyou: "Jpn" }]);

@@ -2,7 +2,6 @@ import { Inject, Service } from "typedi";
 import { Baken, Kakutei } from "../../../converters/Common";
 import * as $R from "../../../converters/Race";
 import { Race } from "../../../entities/Race";
-import { RaceLapTime } from "../../../entities/RaceLapTime";
 import { RaceSeiseki } from "../../../entities/RaceSeiseki";
 import { DataToImport } from "../../DataToImport";
 import { HaitouInfo } from "../../OddsHaitouTool";
@@ -55,7 +54,7 @@ export class JravanSei1 extends DataToImport {
       if (!this.jravanShussoubaTool.hasUma(uma)) {
         continue;
       }
-      const saved = await this.jravanShussoubaTool.saveShussoubaOf(uma, race, kaisai.Nen);
+      const saved = await this.jravanShussoubaTool.saveJravanShussoubaOf(uma, race, kaisai.Nen);
       if (saved) {
         await this.jravanShussoubaTool.saveSeisekiOf(uma, race, raceNengappi, saved);
       }
@@ -109,32 +108,13 @@ export class JravanSei1 extends DataToImport {
       return;
     }
     // 障害: 1 マイル通過タイム (分と秒)、後 4 ハロン、後 3 ハロン
-    if (!race.Kyori) {
-      return;
-    }
-    const minute = readInt(buffer, 649, 3);
-    const second = readPositiveInt(buffer, 652, 3, 0.1);
-    const laps: { lapTime: number; kaishi: number }[] = [];
-    if (second) {
-      laps.push({ lapTime: (minute || 0) * 60 + second, kaishi: race.Kyori - 1600 });
-    }
-    const ato4 = readPositiveInt(buffer, 655, 3, 0.1);
-    if (ato4) {
-      laps.push({ lapTime: ato4, kaishi: race.Kyori - 800 });
-    }
-    const ato3 = readPositiveInt(buffer, 658, 3, 0.1);
-    if (ato3) {
-      laps.push({ lapTime: ato3, kaishi: race.Kyori - 600 });
-    }
-    for (let i = 0; i < laps.length; i++) {
-      const raceLapTime = new RaceLapTime();
-      raceLapTime.Id = race.Id * 2 ** 5 + i + 1;
-      raceLapTime.RaceId = race.Id;
-      raceLapTime.KaishiKyori = laps[i].kaishi;
-      raceLapTime.ShuuryouKyori = race.Kyori;
-      raceLapTime.LapTime = laps[i].lapTime;
-      await this.entityManager.save(raceLapTime);
-    }
+    await this.jravanRaceTool.saveShougaiLapTime(
+      race,
+      readInt(buffer, 649, 3),
+      readPositiveInt(buffer, 652, 3, 0.1),
+      readPositiveInt(buffer, 655, 3, 0.1),
+      readPositiveInt(buffer, 658, 3, 0.1),
+    );
   }
 
   /** 払戻金の読み取り位置 (単勝・複勝・枠連・馬連・ワイド) */

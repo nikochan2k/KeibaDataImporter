@@ -92,11 +92,11 @@ export abstract class RaceTool {
     return firstLapTime !== null && firstLapTime < 10.0 ? 100 : 200;
   }
 
-  public async saveRaceLapTime(buffer: Buffer, offset: number, race: Race) {
+  public async saveRaceLapTime(buffer: Buffer, offset: number, race: Race, count = 18) {
     let lapTime = readPositiveDouble(buffer, offset, 3, 0.1);
     let kaishiKyori = 0;
     let shuuryouKyori = RaceTool.firstLapDistance(race.Kyori, lapTime);
-    for (let i = 0; i < 18; i++, offset += 3) {
+    for (let i = 0; i < count; i++, offset += 3) {
       lapTime = readPositiveDouble(buffer, offset, 3, 0.1);
       if (!lapTime) {
         break;

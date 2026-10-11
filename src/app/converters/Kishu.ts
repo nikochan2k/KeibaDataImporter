@@ -4,8 +4,8 @@ export const minaraiKubun = new Codes([
   { code: 1, kol: "1", jrdb: "1", jvdata: "1", naiyou: "1kg減", tanshuku: "☆" },
   { code: 2, kol: "2", jrdb: "2", jvdata: "2", naiyou: "2kg減", tanshuku: "△" },
   { code: 3, kol: "3", jrdb: "3", jvdata: "3", naiyou: "3kg減", tanshuku: "▲" },
-  { code: 4, jrdb: "4", naiyou: "特別減量", tanshuku: "★" },
-  { code: 9, jrdb: "9", naiyou: "特別減量", tanshuku: "◇" },
+  { code: 4, jrdb: "4", jvdata: "4", naiyou: "特別減量", tanshuku: "★" },
+  { code: 9, jrdb: "9", jvdata: "9", naiyou: "特別減量", tanshuku: "◇" },
   { code: 0, kol: /.*/, jrdb: /.*/, naiyou: "" },
 ]);
 

@@ -30,7 +30,7 @@ export class JravanSei2 extends DataToImport {
       if (!this.jravanShussoubaTool.hasUma(uma)) {
         continue;
       }
-      const saved = await this.jravanShussoubaTool.saveShussoubaOf(uma, race, nen);
+      const saved = await this.jravanShussoubaTool.saveJravanShussoubaOf(uma, race, nen);
       if (saved) {
         await this.jravanShussoubaTool.saveSeisekiOf(uma, race, raceNengappi, saved);
       }

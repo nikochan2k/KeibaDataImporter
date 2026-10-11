@@ -1,6 +1,6 @@
-import { DirtShiba } from "../../../converters/Race";
+import { DirtShiba } from "../../converters/Race";
 
-export interface JravanTrackInfo {
+export interface JraTrackInfo {
   dirtShiba: DirtShiba;
   /** 0:右 1:左 2:直線 (障害は null) */
   migiHidari: number | null;
@@ -15,10 +15,10 @@ const T = (dirtShiba: DirtShiba, migiHidari: number | null, uchiSoto: number | n
 });
 
 /**
- * コード表 2009 トラックコード。
+ * コード表 2009 トラックコード (JRA-VAN、JV-Data 共通。25〜28 は JV-Data で増えたもの)。
  * 内外の区別が仕様書にない（単に「左」「右」など）ものは、KOL に合わせて「内」としている。
  */
-const tracks: { [code: string]: JravanTrackInfo } = {
+const tracks: { [code: string]: JraTrackInfo } = {
   "10": T(DirtShiba.Shiba, 2, null),
   "11": T(DirtShiba.Shiba, 1, 0),
   "12": T(DirtShiba.Shiba, 1, 1),
@@ -34,6 +34,10 @@ const tracks: { [code: string]: JravanTrackInfo } = {
   "22": T(DirtShiba.Shiba, 0, 1),
   "23": T(DirtShiba.Dirt, 1, 0),
   "24": T(DirtShiba.Dirt, 0, 0),
+  "25": T(DirtShiba.Dirt, 1, 0),
+  "26": T(DirtShiba.Dirt, 0, 1),
+  "27": T(DirtShiba.Dirt, 1, 0),
+  "28": T(DirtShiba.Dirt, 0, 0),
   "29": T(DirtShiba.Dirt, 2, null),
   "51": T(DirtShiba.Shiba, null, null),
   "52": T(DirtShiba.Shiba, null, null),
@@ -47,6 +51,6 @@ const tracks: { [code: string]: JravanTrackInfo } = {
 };
 
 /** トラックコードの内容。海外・地方成績の既定値 "00" や未知のコードは null */
-export function getJravanTrack(code: string): JravanTrackInfo | null {
+export function getJraTrack(code: string): JraTrackInfo | null {
   return tracks[code] ?? null;
 }

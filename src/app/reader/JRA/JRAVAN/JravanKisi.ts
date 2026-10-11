@@ -4,7 +4,7 @@ import { KishuDao } from "../../../daos/KishuDao";
 import { Kishu } from "../../../entities/Kishu";
 import { DataToImport } from "../../DataToImport";
 import { readPositiveInt, readStr, readStrWithNoSpace } from "../../Reader";
-import { JravanTool } from "./JravanTool";
+import { JraTool } from "../JraTool";
 
 /** 騎手 (JracKisi.dat)。近走重賞勝鞍と成績の集計は取り込まない。 */
 @Service()
@@ -13,7 +13,7 @@ export class JravanKisi extends DataToImport {
   private kishuDao: KishuDao;
 
   @Inject()
-  private jravanTool: JravanTool;
+  private jraTool: JraTool;
 
   protected getBufferLength() {
     return 1161;
@@ -34,7 +34,7 @@ export class JravanKisi extends DataToImport {
     }
     // 東西区分 1:東 2:西 3:招待 → 所属 1:関東 2:関西 3:他
     kishu.Shozoku = readPositiveInt(buffer, 88, 1);
-    const shozoku = await this.jravanTool.saveChoukyoushi(buffer, 91, 96);
+    const shozoku = await this.jraTool.saveChoukyoushi(buffer, 91, 96);
     kishu.ShozokuChoukyoushiId = shozoku?.Id;
     kishu.ShoutaiKubun = readPositiveInt(buffer, 104, 1);
     kishu.ShozokuBashoMei = readStr(buffer, 105, 24);

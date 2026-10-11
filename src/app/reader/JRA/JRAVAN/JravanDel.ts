@@ -7,13 +7,13 @@ import { Uma } from "../../../entities/Uma";
 import { DataToImport } from "../../DataToImport";
 import { readPositiveInt, readStr } from "../../Reader";
 import { Tool } from "../../Tool";
-import { JravanTool } from "./JravanTool";
+import { JraTool } from "../JraTool";
 
 /** 抹消競走馬 (JracDelu.dat) */
 @Service()
 export class JravanDelu extends DataToImport {
   @Inject()
-  private jravanTool: JravanTool;
+  private jraTool: JraTool;
 
   @Inject()
   private umaDao: UmaDao;
@@ -23,7 +23,7 @@ export class JravanDelu extends DataToImport {
   }
 
   public async save(buffer: Buffer) {
-    const touroku = this.jravanTool.readTouroku(buffer, 0);
+    const touroku = this.jraTool.readTouroku(buffer, 0);
     const bamei = readStr(buffer, 10, 18);
     if (!touroku && !bamei) {
       return;
@@ -33,7 +33,7 @@ export class JravanDelu extends DataToImport {
       uma.KettouTourokuBangou = touroku.bangou;
       uma.Seinen = touroku.seinen;
     }
-    this.jravanTool.setBamei(uma, bamei);
+    this.jraTool.setBamei(uma, bamei);
     uma.MasshouFlag = MasshouFlag.Massou;
     uma.MasshouNengappi = readPositiveInt(buffer, 28, 8);
     await this.umaDao.saveUma(uma);

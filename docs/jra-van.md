@@ -1,6 +1,6 @@
 # JRA-VAN の取り込み処理
 
-`src/app/reader/JRA/JRAVAN/` に、第3次 JRA-VAN データ(Ver 3.1.1)の蓄積系データの取り込み処理がある。仕様書は [jra-van-spec/](jra-van-spec/README.md)。
+`src/app/reader/JRA/JRAVAN/` に、第3次 JRA-VAN データ(Ver 3.1.1)の蓄積系データの取り込み処理がある。JV-Data との共通部分は `src/app/reader/JRA/` にあり、[jvdata.md](jvdata.md) に書いてある。仕様書は [jra-van-spec/](jra-van-spec/README.md)。
 見本データがないので、実データでの確認はしていない。
 
 ## 取り込むファイル
@@ -42,7 +42,7 @@
 
   名前で見つけた行にコードがなければ、そのコードを書き足す。同じ種類のコードを両方持っていて値が違う行は別人として扱う。この突き合わせは JRA-VAN に限らず、KOL・JRDB の取り込みにも効く。
 - 競馬場・馬記号などのコード表は、内部のコードに揃えてあるので、どの情報源から取り込んでも同じコードになる。
-- コード表は JV-Data と同じ系統なので、`Codes.toCodeFromJravan` は `jravan` の指定がなければ `jvdata` を使う。違うところだけ `jravan` を書く。ただし、馬記号コードは JRDB と同じ番号なので `toCodeFromJrdb`、トラックコードは `JravanTrack.ts` の表で芝ダート・右左・内外にする。
+- コード表は JV-Data と同じ系統なので、`Codes.toCodeFromJravan` は `jravan` の指定がなければ `jvdata` を使う。違うところだけ `jravan` を書く。ただし、馬記号コードは JRDB と同じ番号なので `toCodeFromJrdb`、トラックコードは `JRA/JraTrack.ts` の表で芝ダート・右左・内外にする。
 - 曜日は日付から求める(曜日コード 3 は祝日なので `Kyuujitsu` にする)。
 - 賞金は千円単位なので 1000 倍して円にする(JRDB と同じ)。
 - 後 3 ハロンのタイムは、1994 年 7 月 16 日より後は 60 秒を超える分だけが入っている(`069` は 66.9 秒)ので、200 未満なら 600 を足す。

@@ -21,6 +21,7 @@ import { JravanSei1 } from "./reader/JRA/JRAVAN/JravanSei1";
 import { JravanSei2 } from "./reader/JRA/JRAVAN/JravanSei2";
 import { JravanSeih } from "./reader/JRA/JRAVAN/JravanSeih";
 import { JravanUmaj } from "./reader/JRA/JRAVAN/JravanUmaj";
+import { JvData } from "./reader/JRA/JVData/JvData";
 import { Bab } from "./reader/JRDB/Bab";
 import { Bac } from "./reader/JRDB/Bac";
 import { C$a } from "./reader/JRDB/C$a";
@@ -256,6 +257,8 @@ export class Importer {
       { pattern: /kol_kod2\.kd3$/i, dataToImport: Container.get(KolKod2Kd3) },
       // KD3 確定オッズ３（３連単）
       { pattern: /kol_kod3\.kd3$/i, dataToImport: Container.get(KolKod3Kd3) },
+      // JV-Data (JRA-VAN Data Lab.)。レコード種別は混ざっていてよい
+      { pattern: /\.jvd$/i, dataToImport: Container.get(JvData) },
     ];
   }
 

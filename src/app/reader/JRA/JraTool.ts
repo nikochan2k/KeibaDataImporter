@@ -1,24 +1,24 @@
 import { Inject, Service } from "typedi";
-import * as $U from "../../../converters/Uma";
-import { ChoukyoushiDao } from "../../../daos/ChoukyoushiDao";
-import { KishuDao } from "../../../daos/KishuDao";
-import { UmaDao } from "../../../daos/UmaDao";
-import { Choukyoushi } from "../../../entities/Choukyoushi";
-import { Kishu } from "../../../entities/Kishu";
-import { Kyousouba } from "../../../entities/Kyousouba";
-import { Uma } from "../../../entities/Uma";
-import { readPositiveInt, readStr, readStrWithNoSpace } from "../../Reader";
-import { Tool } from "../../Tool";
+import * as $U from "../../converters/Uma";
+import { ChoukyoushiDao } from "../../daos/ChoukyoushiDao";
+import { KishuDao } from "../../daos/KishuDao";
+import { UmaDao } from "../../daos/UmaDao";
+import { Choukyoushi } from "../../entities/Choukyoushi";
+import { Kishu } from "../../entities/Kishu";
+import { Kyousouba } from "../../entities/Kyousouba";
+import { Uma } from "../../entities/Uma";
+import { readPositiveInt, readStr, readStrWithNoSpace } from "../Reader";
+import { Tool } from "../Tool";
 
 /** 血統登録番号: 生年(西暦)4桁 + 品種1桁 + 数字5桁 */
-export interface JravanTouroku {
+export interface JraTouroku {
   /** JRDB と同じ 8 桁 (生年の下 2 桁 + 品種 + 数字) */
   bangou: string;
   seinen: number;
 }
 
 @Service()
-export class JravanTool {
+export class JraTool {
   @Inject()
   private tool: Tool;
 
@@ -32,7 +32,7 @@ export class JravanTool {
   private choukyoushiDao: ChoukyoushiDao;
 
   /** 血統登録番号を読みます。中央初出走などで「初期値」(全部 0 か空白) のときは null */
-  public readTouroku(buffer: Buffer, offset: number): JravanTouroku | null {
+  public readTouroku(buffer: Buffer, offset: number): JraTouroku | null {
     const str = readStr(buffer, offset, 10);
     if (!str || !/^\d{10}$/.test(str) || /^0+$/.test(str)) {
       return null;
@@ -86,8 +86,9 @@ export class JravanTool {
     bameiOffset: number,
     seibetsuOffset: number,
     choukyoushi: Choukyoushi | null,
+    bameiLength = 18,
   ) {
-    const bamei = readStr(buffer, bameiOffset, 18);
+    const bamei = readStr(buffer, bameiOffset, bameiLength);
     const touroku = this.readTouroku(buffer, toroukuOffset);
     if (!bamei && !touroku) {
       return null;

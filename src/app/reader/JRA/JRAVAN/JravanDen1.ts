@@ -45,7 +45,7 @@ export class JravanDen1 extends DataToImport {
     for (let i = 0; i < 18; i++) {
       const uma = this.jravanShussoubaTool.slice(buffer, 327, i, jravanDenUmaLength);
       if (this.jravanShussoubaTool.hasUma(uma)) {
-        await this.jravanShussoubaTool.saveShussoubaOf(uma, race, kaisai.Nen);
+        await this.jravanShussoubaTool.saveJravanShussoubaOf(uma, race, kaisai.Nen);
       }
     }
   }

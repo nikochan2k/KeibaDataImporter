@@ -216,8 +216,8 @@ export enum TouzaiBetsu {
 }
 
 export const touzaiBetsu = new Codes([
-  { code: TouzaiBetsu.Nishi, kol: "1", jrdb: "2", naiyou: "関西", tanshuku: "西" },
-  { code: TouzaiBetsu.Higashi, kol: "2", jrdb: "1", naiyou: "関東", tanshuku: "東" },
+  { code: TouzaiBetsu.Nishi, kol: "1", jrdb: "2", jvdata: "2", naiyou: "関西", tanshuku: "西" },
+  { code: TouzaiBetsu.Higashi, kol: "2", jrdb: "1", jvdata: "1", naiyou: "関東", tanshuku: "東" },
   { code: TouzaiBetsu.Chihou, jvdata: "3", naiyou: "地方招待", tanshuku: "地方" },
   { code: TouzaiBetsu.Kaigai, jvdata: "4", naiyou: "海外招待", tanshuku: "海外" },
   { code: TouzaiBetsu.Sonota, kol: /.*/, jrdb: /.*/, naiyou: "その他" },

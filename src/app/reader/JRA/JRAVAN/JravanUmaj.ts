@@ -9,7 +9,7 @@ import { Uma } from "../../../entities/Uma";
 import { DataToImport } from "../../DataToImport";
 import { readPositiveInt, readStr } from "../../Reader";
 import { Tool } from "../../Tool";
-import { JravanTool } from "./JravanTool";
+import { JraTool } from "../JraTool";
 
 /**
  * 競走馬 (JracUmaj.dat)。
@@ -21,7 +21,7 @@ export class JravanUmaj extends DataToImport {
   private tool: Tool;
 
   @Inject()
-  private jravanTool: JravanTool;
+  private jraTool: JraTool;
 
   @Inject()
   private umaDao: UmaDao;
@@ -34,7 +34,7 @@ export class JravanUmaj extends DataToImport {
   }
 
   public async save(buffer: Buffer) {
-    const touroku = this.jravanTool.readTouroku(buffer, 0);
+    const touroku = this.jraTool.readTouroku(buffer, 0);
     const bamei = readStr(buffer, 28, 36);
     if (!touroku && !bamei) {
       return;
@@ -51,7 +51,7 @@ export class JravanUmaj extends DataToImport {
     if (touroku) {
       uma.KettouTourokuBangou = touroku.bangou;
     }
-    this.jravanTool.setBamei(uma, bamei);
+    this.jraTool.setBamei(uma, bamei);
     uma.Seinengappi = readPositiveInt(buffer, 64, 8);
     uma.Seinen = uma.Seinengappi ? Math.floor(uma.Seinengappi / 10000) : touroku?.seinen;
     uma.Kesshu = $U.kesshu.toCodeFromJravan(buffer, 72, 1);
@@ -70,11 +70,11 @@ export class JravanUmaj extends DataToImport {
       await this.seisanshaDao.save(uma.Id, MeishouKubun.Full, seisanshaMei);
     }
 
-    const choukyoushi = await this.jravanTool.saveChoukyoushi(buffer, 550, 555);
+    const choukyoushi = await this.jraTool.saveChoukyoushi(buffer, 550, 555);
     let kyousouba = new Kyousouba();
     kyousouba.UmaId = uma.Id;
     kyousouba.Seibetsu = seibetsu;
-    kyousouba.UmaKigou = $U.umaKigou.toCodeFromJrdb(buffer, 76, 2);
+    kyousouba.UmaKigou = $U.umaKigou.toCodeFromJvData(buffer, 76, 2);
     kyousouba.ChoukyoushiId = choukyoushi?.Id;
     kyousouba = await this.umaDao.saveKyousouba(kyousouba);
   }
@@ -91,7 +91,7 @@ export class JravanUmaj extends DataToImport {
       return null;
     }
     const uma = new Uma();
-    this.jravanTool.setBamei(uma, bamei);
+    this.jraTool.setBamei(uma, bamei);
     uma.Seibetsu = seibetsu;
     uma.ChichiUmaId = chichiUma?.Id;
     uma.HahaUmaId = hahaUma?.Id;
