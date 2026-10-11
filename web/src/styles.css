@@ -258,11 +258,31 @@ button:disabled {
   }
 }
 
+.picker {
+  position: relative;
+}
+
+.picker .filters {
+  margin: 0 0 16px;
+}
+
+.popover {
+  position: absolute;
+  top: calc(100% - 8px);
+  left: 0;
+  z-index: 2;
+  width: min(360px, 100%);
+  padding: 8px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  box-shadow: 0 8px 24px rgb(0 0 0 / 0.18);
+}
+
 .calendar {
   display: grid;
   grid-template-columns: repeat(7, minmax(0, 1fr));
   gap: 1px;
-  margin: 0 0 8px;
   background: var(--line);
   border: 1px solid var(--line);
   border-radius: 8px;
@@ -281,8 +301,8 @@ button:disabled {
   display: flex;
   flex-direction: column;
   gap: 2px;
-  min-height: 72px;
-  padding: 4px 8px;
+  min-height: 52px;
+  padding: 2px 4px;
   background: var(--surface);
 }
 

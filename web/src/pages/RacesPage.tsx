@@ -1,3 +1,4 @@
+import { useEffect, useRef, useState } from "react";
 import { Link, useSearchParams } from "react-router";
 import { type RaceDay, type RaceMonth, type RaceSummary, useApi } from "../api";
 import { Async, raceCondition } from "../components";
@@ -10,11 +11,13 @@ function Calendar({
   month,
   days,
   selected,
+  onPick,
 }: {
   year: number;
   month: number;
   days: RaceDay[];
   selected?: { date: string; basho: number };
+  onPick: () => void;
 }) {
   const byDate = new Map(days.map((d) => [d.date, d.bashos]));
   const lastDay = new Date(year, month, 0).getDate();
@@ -42,6 +45,7 @@ function Calendar({
               <Link
                 key={b.basho}
                 to={`/?month=${ym}&date=${date}&basho=${b.basho}`}
+                onClick={onPick}
                 className={selected?.date === date && selected.basho === b.basho ? "active" : undefined}
               >
                 {b.bashoMei ?? b.basho}
@@ -68,9 +72,29 @@ export function RacesPage() {
   const date = params.get("date") ?? undefined;
   const basho = Number(params.get("basho"));
   const valid = days.data?.find((d) => d.date === date)?.bashos.some((b) => b.basho === basho);
-  const races = useApi<RaceSummary[]>(
-    valid ? `/api/races?date=${date}&basho=${basho}` : null,
-  );
+  const races = useApi<RaceSummary[]>(valid ? `/api/races?date=${date}&basho=${basho}` : null);
+  const selectedMei = days.data?.find((d) => d.date === date)?.bashos.find((b) => b.basho === basho)?.bashoMei;
+
+  // カレンダーは、月を選ぶと開き、開催を選ぶと閉じる。まだ何も選んでいなければ最初は開いている
+  const [opened, setOpened] = useState<boolean>();
+  const open = opened ?? !valid;
+  const picker = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (!open) {
+      return;
+    }
+    const close = (e: Event) => {
+      if (e instanceof KeyboardEvent ? e.key === "Escape" : !picker.current?.contains(e.target as Node)) {
+        setOpened(false);
+      }
+    };
+    document.addEventListener("pointerdown", close);
+    document.addEventListener("keydown", close);
+    return () => {
+      document.removeEventListener("pointerdown", close);
+      document.removeEventListener("keydown", close);
+    };
+  }, [open]);
 
   return (
     <>
@@ -80,34 +104,41 @@ export function RacesPage() {
           list.length === 0 ? (
             <p className="muted">レースのデータがありません。取り込みを行ってください</p>
           ) : (
-            <>
+            <div className="picker" ref={picker}>
               <div className="filters">
-                <select value={ym} onChange={(e) => setParams({ month: e.target.value })}>
+                <select
+                  value={ym}
+                  onChange={(e) => {
+                    setParams({ month: e.target.value });
+                    setOpened(true);
+                  }}
+                >
                   {list.map((m, i) => (
                     <option key={keys?.[i]} value={keys?.[i]}>
                       {m.year}年{m.month}月
                     </option>
                   ))}
                 </select>
+                <button type="button" onClick={() => setOpened(!open)} aria-expanded={open}>
+                  {valid && date ? `${date.replaceAll("-", "/")} ${selectedMei ?? basho}` : "開催日を選択"}
+                </button>
               </div>
-              {year !== undefined && month !== undefined && days.data && (
-                <Calendar
-                  year={year}
-                  month={month}
-                  days={days.data}
-                  selected={valid && date ? { date, basho } : undefined}
-                />
+              {open && year !== undefined && month !== undefined && days.data && (
+                <div className="popover">
+                  <Calendar
+                    year={year}
+                    month={month}
+                    days={days.data}
+                    selected={valid && date ? { date, basho } : undefined}
+                    onPick={() => setOpened(false)}
+                  />
+                </div>
               )}
-            </>
+            </div>
           )
         }
       </Async>
       {days.error && <p className="error">{days.error.message}</p>}
-      {valid && date && (
-        <h2>
-          {date.replaceAll("-", "/")} {days.data?.find((d) => d.date === date)?.bashos.find((b) => b.basho === basho)?.bashoMei}
-        </h2>
-      )}
       {valid && (
         <Async state={races}>
           {(list) => (
