@@ -25,7 +25,9 @@ async function main() {
     routes: {
       "/api/*": (request) => {
         const url = new URL(request.url);
-        return fetch(new Request(`http://127.0.0.1:${apiPort}${url.pathname}${url.search}`, request));
+        return fetch(
+          new Request(`http://127.0.0.1:${apiPort}${url.pathname}${url.search}`, request),
+        );
       },
       "/*": index,
     },
