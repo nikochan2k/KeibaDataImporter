@@ -128,16 +128,24 @@ export class Traversal {
 
   private logger: Logger;
 
+  /** 解凍と取り込み(読み取り + DB 書き込み)に使った時間 (ミリ秒) の合計。どちらが遅いかを見るための計測 */
+  private timings = { uncompress: 0, import: 0 };
+
   constructor() {
     this.logger = getLogger(this);
   }
 
   public async traverse(entry: string) {
     const checked = this.resolveEntry(entry);
-    if (checked.stat.isDirectory()) {
-      await this.traverseDir(checked.entry);
-    } else {
-      await this.importFile(this.createImportFile(checked.entry));
+    this.timings = { uncompress: 0, import: 0 };
+    try {
+      if (checked.stat.isDirectory()) {
+        await this.traverseDir(checked.entry);
+      } else {
+        await this.importFile(this.createImportFile(checked.entry));
+      }
+    } finally {
+      this.logTimings();
     }
   }
 
@@ -182,6 +190,19 @@ export class Traversal {
 
   protected async traverseDir(lzhDir: string) {
     await this.importFiles(await this.listImportFiles(lzhDir));
+  }
+
+  protected logTimings() {
+    const { uncompress, import: imported } = this.timings;
+    const total = uncompress + imported;
+    if (total === 0) {
+      return;
+    }
+    const percent = (ms: number) => ((ms / total) * 100).toFixed(1);
+    this.logger.info(
+      `所要時間: 解凍 ${(uncompress / 1000).toFixed(1)}秒 (${percent(uncompress)}%), ` +
+        `取り込み ${(imported / 1000).toFixed(1)}秒 (${percent(imported)}%)`,
+    );
   }
 
   /** ディレクトリ配下のファイルを列挙する。数えるだけのときは非同期で、イベントループを止めない */
@@ -251,7 +272,12 @@ export class Traversal {
     } else if (/\.(txt|kd3)$/i.test(basename)) {
       const entries: Entries = {};
       entries[basename] = filepath;
-      await importer.import(entries);
+      const begin = performance.now();
+      try {
+        await importer.import(entries);
+      } finally {
+        this.timings.import += performance.now() - begin;
+      }
     } else {
       importProgress.fileSkipped(basename, "取り込み対象のファイル形式ではありません");
       if (this.logger.isLevelEnabled("info")) {
@@ -262,15 +288,18 @@ export class Traversal {
 
   protected async uncompressZipFile(zipFile: string) {
     const dataDir = tmp.dirSync();
+    const begin = performance.now();
     await fs
       .createReadStream(zipFile)
       .pipe(unzipper.Extract({ path: dataDir.name }))
       .promise();
+    this.timings.uncompress += performance.now() - begin;
     await this.traverseDataDir(dataDir.name);
   }
 
   protected async uncompressLzhFile(lzhFile: string) {
     const dataDir = tmp.dirSync();
+    const begin = performance.now();
     const buf = fs.readFileSync(lzhFile);
     const view = ioutil.toUint8Array(buf);
     const lhaReader = new LhaReader(view);
@@ -281,6 +310,7 @@ export class Traversal {
       const filepath = path.join(dataDir.name, header.filename);
       fs.writeFileSync(filepath, buffer);
     }
+    this.timings.uncompress += performance.now() - begin;
     await this.traverseDataDir(dataDir.name);
   }
 
@@ -294,9 +324,11 @@ export class Traversal {
       entries[basename] = dataFile;
     });
 
+    const begin = performance.now();
     try {
       await importer.import(entries);
     } finally {
+      this.timings.import += performance.now() - begin;
       this.rmdir(dataDir);
     }
   }
