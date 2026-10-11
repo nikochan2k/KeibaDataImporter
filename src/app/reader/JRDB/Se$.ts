@@ -3,7 +3,7 @@ import * as $R from "../../converters/Race";
 import * as $S from "../../converters/Shussouba";
 import { choukyoushiDao } from "../../daos/ChoukyoushiDao";
 import { umaDao } from "../../daos/UmaDao";
-import { findOneBy, query, save, updateBy } from "../../db/helpers";
+import { query, save, updateBy, upsert } from "../../db/helpers";
 import { Choukyoushi } from "../../entities/Choukyoushi";
 import { Kyousouba } from "../../entities/Kyousouba";
 import { Race } from "../../entities/Race";
@@ -24,7 +24,6 @@ import {
   readTime,
 } from "../Reader";
 import { ShussoubaInfo } from "../ShussoubaTool";
-import { tool } from "../Tool";
 import { jrdbKaisaiShussoubaTool } from "./JrdbKaisaiShussoubaTool";
 import { jrdbOddsHaitouTool } from "./JrdbOddsHaitouTool";
 import { jrdbRaceTool } from "./JrdbRaceTool";
@@ -87,8 +86,7 @@ export abstract class Se$ extends JrdbShussoubaData {
     const toBe = {} as ShussoubaSeiseki;
     toBe.Id = shussoubaId;
     await this.setShussoubaSeiseki(buffer, toBe);
-    const asIs = await findOneBy(ShussoubaSeiseki, { Id: toBe.Id });
-    await tool.saveOrUpdate(ShussoubaSeiseki, asIs, toBe, this.keepExisting);
+    upsert(ShussoubaSeiseki, toBe, this.keepExisting);
   }
 
   protected async setShussoubaSeiseki(buffer: Buffer, toBe: ShussoubaSeiseki) {
@@ -125,8 +123,7 @@ export abstract class Se$ extends JrdbShussoubaData {
     toBe.Id = shussoubaId;
     this.setShussoubaHyouka(buffer, toBe);
 
-    const asIs = await findOneBy(ShussoubaHyouka, { Id: shussoubaId });
-    await tool.saveOrUpdate(ShussoubaHyouka, asIs, toBe, this.keepExisting);
+    upsert(ShussoubaHyouka, toBe, this.keepExisting);
   }
 
   protected setShussoubaHyouka(buffer: Buffer, toBe: ShussoubaHyouka) {

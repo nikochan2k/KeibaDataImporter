@@ -103,6 +103,35 @@ export function save<T extends SQLiteTable>(table: T, row: Partial<Row<T>>): Row
   return row as Row<T>;
 }
 
+/**
+ * 主キーが決まっている行を、読み戻さずに 1 文で追加または更新する (INSERT ... ON CONFLICT DO UPDATE)。
+ * undefined の項目は書かない。skipNull のときは null の項目も書かず、既存の値を消さない。
+ * 保存後の行 (既存の値と合わせたもの) を返す。
+ * 追加の時点で NOT NULL 列が空だと、既存の行があっても失敗するので、NOT NULL 列のある表には使わない。
+ */
+export function upsert<T extends SQLiteTable>(
+  table: T,
+  row: Partial<Row<T>>,
+  skipNull = false,
+): Row<T> {
+  const config = getTableConfig(table);
+  const keys = config.primaryKeys[0]?.columns ?? config.columns.filter((c) => c.primary);
+  const values = Object.fromEntries(
+    Object.entries(definedOf(row)).filter(([, value]) => !(skipNull && value === null)),
+  );
+  const set = Object.fromEntries(
+    Object.entries(values).filter(([key]) => !keys.some((k) => k.name === key)),
+  );
+  // 更新する項目がなくても、既存の行を RETURNING で受け取れるよう、主キーを同じ値で更新する
+  const update = 0 < Object.keys(set).length ? set : { [keys[0].name]: values[keys[0].name] };
+  return currentDb()
+    .insert(table)
+    .values(values as never)
+    .onConflictDoUpdate({ target: keys, set: update as never })
+    .returning()
+    .get() as Row<T>;
+}
+
 /** 条件に合う行の項目を更新する */
 export function updateBy<T extends SQLiteTable>(
   table: T,

@@ -1,9 +1,8 @@
-import { findOneBy } from "../../db/helpers";
+import { upsert } from "../../db/helpers";
 import { Shussouba } from "../../entities/Shussouba";
 import { ShussoubaHyouka } from "../../entities/ShussoubaHyouka";
 import { Kubun } from "../../entities/ShussoubaJoutai";
 import { readStr } from "../Reader";
-import { tool } from "../Tool";
 import { jrdbKaisaiShussoubaTool } from "./JrdbKaisaiShussoubaTool";
 import { JrdbShussoubaData } from "./JrdbShussoubaData";
 import { jrdbShussoubaTool } from "./JrdbShussoubaTool";
@@ -31,8 +30,7 @@ export class Skb extends JrdbShussoubaData {
     toBe.BaguSonotaComment = readStr(buffer, 193, 40);
     toBe.RaceComment = readStr(buffer, 233, 40);
 
-    const asIs = await findOneBy(ShussoubaHyouka, { Id: shussoubaId });
-    await tool.saveOrUpdate(ShussoubaHyouka, asIs, toBe);
+    upsert(ShussoubaHyouka, toBe);
   }
 
   protected async saveShussoubaJoutaiSeries(buffer: Buffer, shussoubaId: number) {

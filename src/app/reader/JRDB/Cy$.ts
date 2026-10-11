@@ -1,8 +1,7 @@
 import * as $CH from "../../converters/Choukyou";
-import { findOneBy } from "../../db/helpers";
+import { upsert } from "../../db/helpers";
 import { Shussouba } from "../../entities/Shussouba";
 import { ShussoubaHyouka } from "../../entities/ShussoubaHyouka";
-import { tool } from "../Tool";
 import { JrdbShussoubaData } from "./JrdbShussoubaData";
 
 /** 調教分析データ(CYA / CYB)。レースに向けた調教の評価なので、出走馬の評価(ShussoubaHyouka)に入れる */
@@ -17,8 +16,7 @@ export abstract class Cy$ extends JrdbShussoubaData {
     toBe.Id = shussouba.Id;
     this.setChoukyou(buffer, toBe);
 
-    const asIs = await findOneBy(ShussoubaHyouka, { Id: toBe.Id });
-    await tool.saveOrUpdate(ShussoubaHyouka, asIs, toBe);
+    upsert(ShussoubaHyouka, toBe);
   }
 
   protected setChoukyou(buffer: Buffer, sc: ShussoubaHyouka) {
