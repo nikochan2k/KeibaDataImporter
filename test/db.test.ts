@@ -1,6 +1,5 @@
 import "reflect-metadata";
 import { afterAll, beforeAll, describe, expect, test } from "bun:test";
-import { Container } from "typedi";
 import { Baken, Kakutei } from "../src/app/converters/Common";
 import { dataSource } from "../src/app/DataSource";
 import { Kishu } from "../src/app/entities/Kishu";
@@ -8,6 +7,7 @@ import { OddsHaitou } from "../src/app/entities/OddsHaitou";
 import { runInTransaction } from "../src/app/OrmManager";
 import { JrdbOddsHaitouTool } from "../src/app/reader/JRDB/JrdbOddsHaitouTool";
 import { Tool } from "../src/app/reader/Tool";
+import { Container } from "./container";
 
 beforeAll(async () => {
   dataSource.setOptions({ database: ":memory:" });

@@ -1,5 +1,5 @@
+import { Inject } from "@nestjs/common";
 import { Logger } from "log4js";
-import { Inject } from "typedi";
 import { EntityManager } from "typeorm";
 import { Baken, Kakutei } from "../converters/Common";
 import { OddsHaitou } from "../entities/OddsHaitou";

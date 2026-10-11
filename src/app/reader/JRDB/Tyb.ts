@@ -1,4 +1,4 @@
-import { Inject, Service } from "typedi";
+import { Inject, Injectable } from "@nestjs/common";
 import { EntityManager } from "typeorm";
 import * as $C from "../../converters/Common";
 import * as $K from "../../converters/Kishu";
@@ -24,7 +24,7 @@ import { JrdbData } from "./JrdbData";
 import { JrdbOddsHaitouTool } from "./JrdbOddsHaitouTool";
 import { JrdbShussoubaTool } from "./JrdbShussoubaTool";
 
-@Service()
+@Injectable()
 export class Tyb extends JrdbData {
   @OrmManager()
   protected entityManager: EntityManager;

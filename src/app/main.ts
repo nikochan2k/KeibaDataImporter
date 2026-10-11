@@ -1,5 +1,6 @@
 import "reflect-metadata";
-import { Container } from "typedi";
+import { NestFactory } from "@nestjs/core";
+import { AppModule } from "./AppModule";
 import { dataSource } from "./DataSource";
 import { getLogger } from "./LogUtil";
 import { Traversal } from "./Traversal";
@@ -15,8 +16,12 @@ dataSource
   .initialize()
   .then(async (con) => {
     await con.synchronize(false);
-    const traversal = Container.get(Traversal);
-    await traversal.traverse(dirName);
+    const app = await NestFactory.createApplicationContext(AppModule, { logger: false });
+    try {
+      await app.get(Traversal).traverse(dirName);
+    } finally {
+      await app.close();
+    }
     await con.destroy();
   })
   .catch((reason) => {

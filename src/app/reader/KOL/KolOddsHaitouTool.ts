@@ -1,11 +1,11 @@
-import { Service } from "typedi";
+import { Injectable } from "@nestjs/common";
 import { Baken, Kakutei } from "../../converters/Common";
 import { OddsHaitou } from "../../entities/OddsHaitou";
 import { Shussouba } from "../../entities/Shussouba";
 import { OddsHaitouTool } from "../OddsHaitouTool";
 import { readPositiveDouble, readPositiveInt, readStr } from "../Reader";
 
-@Service()
+@Injectable()
 export class KolOddsHaitouTool extends OddsHaitouTool {
   public async saveKakuteiNinkiOdds(
     buffer: Buffer,

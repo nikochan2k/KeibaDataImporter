@@ -1,4 +1,5 @@
-import { Container, Service } from "typedi";
+import { Inject, Injectable, type OnModuleInit } from "@nestjs/common";
+import { ModuleRef } from "@nestjs/core";
 import { DataToImport } from "../../DataToImport";
 import { readRaw } from "../../Reader";
 import { JvdataCh } from "./JvdataCh";
@@ -17,28 +18,32 @@ import { JvdataYs } from "./JvdataYs";
  * 先頭 2 バイトのレコード種別 ID で、取り込み処理を振り分ける。
  * 取り込み処理のないレコード種別(特別登録馬、票数、坂路調教、マイニング予想など)は読み飛ばす。
  */
-@Service()
-export class JvData extends DataToImport {
+@Injectable()
+export class JvData extends DataToImport implements OnModuleInit {
   private records: Map<string, JvdataRecord>;
 
-  constructor() {
+  constructor(@Inject(ModuleRef) private moduleRef: ModuleRef) {
     super();
+  }
+
+  public onModuleInit() {
     this.records = new Map();
-    for (const record of [
-      Container.get(JvdataRa),
-      Container.get(JvdataSe),
-      Container.get(JvdataHr),
-      Container.get(JvdataO1),
-      Container.get(JvdataO2),
-      Container.get(JvdataO3),
-      Container.get(JvdataO4),
-      Container.get(JvdataO5),
-      Container.get(JvdataO6),
-      Container.get(JvdataUm),
-      Container.get(JvdataKs),
-      Container.get(JvdataCh),
-      Container.get(JvdataYs),
+    for (const type of [
+      JvdataRa,
+      JvdataSe,
+      JvdataHr,
+      JvdataO1,
+      JvdataO2,
+      JvdataO3,
+      JvdataO4,
+      JvdataO5,
+      JvdataO6,
+      JvdataUm,
+      JvdataKs,
+      JvdataCh,
+      JvdataYs,
     ]) {
+      const record = this.moduleRef.get<JvdataRecord>(type, { strict: false });
       this.records.set(record.id, record);
     }
   }

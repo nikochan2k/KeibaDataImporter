@@ -1,6 +1,5 @@
 import "reflect-metadata";
 import { afterAll, describe, expect, setDefaultTimeout, test } from "bun:test";
-import { Container } from "typedi";
 import { Baken, Kakutei, TouzaiBetsu, touzaiBetsu } from "../src/app/converters/Common";
 import * as $K from "../src/app/converters/Kishu";
 import * as $R from "../src/app/converters/Race";
@@ -37,6 +36,7 @@ import { JvdataRa } from "../src/app/reader/JRA/JVData/JvdataRa";
 import { JvdataSe } from "../src/app/reader/JRA/JVData/JvdataSe";
 import { JvdataUm } from "../src/app/reader/JRA/JVData/JvdataUm";
 import { JvdataYs } from "../src/app/reader/JRA/JVData/JvdataYs";
+import { Container } from "./container";
 import { JvdataRecord, parseJvdataCodes, parseJvdataSpec } from "./spec/jvdata";
 import { closeKolDb, emptyKolDb, importKolFiles } from "./spec/kol";
 

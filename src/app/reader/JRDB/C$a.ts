@@ -1,7 +1,7 @@
-import { Service } from "typedi";
+import { Injectable } from "@nestjs/common";
 import { C$$ } from "./C$$";
 
-@Service()
+@Injectable()
 export class C$a extends C$$ {
   protected getBufferLength() {
     return 272;

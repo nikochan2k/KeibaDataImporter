@@ -1,10 +1,10 @@
-import { Inject, Service } from "typedi";
+import { Inject, Injectable } from "@nestjs/common";
 import { RaceSeiseki } from "../../../entities/RaceSeiseki";
 import { DataToImport } from "../../DataToImport";
 import { readStr } from "../../Reader";
 import { KolRaceTool } from "../KolRaceTool";
 
-@Service()
+@Injectable()
 export class KolSei3Kd3 extends DataToImport {
   @Inject()
   private kolRaceTool: KolRaceTool;

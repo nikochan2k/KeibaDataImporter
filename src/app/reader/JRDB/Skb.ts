@@ -1,11 +1,11 @@
-import { Service } from "typedi";
+import { Injectable } from "@nestjs/common";
 import { Shussouba } from "../../entities/Shussouba";
 import { ShussoubaHyouka } from "../../entities/ShussoubaHyouka";
 import { Kubun } from "../../entities/ShussoubaJoutai";
 import { readStr } from "../Reader";
 import { JrdbShussoubaData } from "./JrdbShussoubaData";
 
-@Service()
+@Injectable()
 export class Skb extends JrdbShussoubaData {
   protected getBufferLength() {
     return 304;

@@ -1,11 +1,11 @@
-import { Inject, Service } from "typedi";
+import { Inject, Injectable } from "@nestjs/common";
 import { Repository } from "typeorm";
 import { MeishouKubun, Shoyuu } from "../entities/Shoyuu";
 import { OrmRepository } from "../OrmManager";
 import { Tool } from "../reader/Tool";
 import { jinmeiMatchingKey } from "./JinmeiDao";
 
-@Service()
+@Injectable()
 export class MeishouDao {
   @OrmRepository(Shoyuu)
   private repository: Repository<Shoyuu>;

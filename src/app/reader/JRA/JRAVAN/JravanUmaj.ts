@@ -1,4 +1,4 @@
-import { Inject, Service } from "typedi";
+import { Inject, Injectable } from "@nestjs/common";
 import * as $C from "../../../converters/Common";
 import * as $U from "../../../converters/Uma";
 import { SeisanshaDao } from "../../../daos/SeisanshaDao";
@@ -15,7 +15,7 @@ import { JraTool } from "../JraTool";
  * 競走馬 (JracUmaj.dat)。
  * 過去 5 走・前 6〜55 走の出走情報は取り込まない (レースの成績は成績１・２から取り込む)。
  */
-@Service()
+@Injectable()
 export class JravanUmaj extends DataToImport {
   @Inject()
   private tool: Tool;

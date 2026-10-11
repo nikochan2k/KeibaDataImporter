@@ -1,4 +1,4 @@
-import { Inject, Service } from "typedi";
+import { Inject, Injectable } from "@nestjs/common";
 import { EntityManager } from "typeorm";
 import * as $U from "../../../converters/Uma";
 import { UmaDao } from "../../../daos/UmaDao";
@@ -8,7 +8,7 @@ import { DataToImport } from "../../DataToImport";
 import { readInt, readStr } from "../../Reader";
 import { Tool } from "../../Tool";
 
-@Service()
+@Injectable()
 export class KolKet5Kd3 extends DataToImport {
   @Inject()
   private tool: Tool;

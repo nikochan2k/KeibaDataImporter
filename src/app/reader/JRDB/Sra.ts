@@ -1,7 +1,7 @@
-import { Service } from "typedi";
+import { Injectable } from "@nestjs/common";
 import { Sr$ } from "./Sr$";
 
-@Service()
+@Injectable()
 export class Sra extends Sr$ {
   protected getBufferLength() {
     return 408;

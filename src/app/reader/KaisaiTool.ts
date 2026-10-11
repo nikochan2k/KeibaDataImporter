@@ -1,5 +1,5 @@
+import { Inject } from "@nestjs/common";
 import { Logger } from "log4js";
-import { Inject } from "typedi";
 import { EntityManager } from "typeorm";
 import { Kaisai } from "../entities/Kaisai";
 import { getLogger } from "../LogUtil";

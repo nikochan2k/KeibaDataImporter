@@ -1,4 +1,4 @@
-import { Inject, Service } from "typedi";
+import { Inject, Injectable } from "@nestjs/common";
 import { EntityManager } from "typeorm";
 import * as $CH from "../../converters/Choukyou";
 import { ChoukyouDao } from "../../daos/ChoukyouDao";
@@ -17,7 +17,7 @@ interface FurlongOffset {
   offset: number;
 }
 
-@Service()
+@Injectable()
 export class KolChoukyouTool {
   private static readonly courseFurlongOffsets: FurlongOffset[] = [
     { f: 8, offset: 27 },

@@ -1,4 +1,4 @@
-import { Inject, Service } from "typedi";
+import { Inject, Injectable } from "@nestjs/common";
 import * as $S from "../../converters/Shussouba";
 import * as $SJ from "../../converters/ShussoubaYosou";
 import { HoubokusakiDao } from "../../daos/HoubokusakiDao";
@@ -8,7 +8,7 @@ import { readInt, readStr } from "../Reader";
 import { ShussoubaInfo } from "../ShussoubaTool";
 import { Kyh } from "./Kyh";
 
-@Service()
+@Injectable()
 export class Kyi extends Kyh {
   @Inject()
   private houbokusakiDao: HoubokusakiDao;

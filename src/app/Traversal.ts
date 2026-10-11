@@ -4,8 +4,8 @@ import * as process from "node:process";
 import * as glob from "glob";
 import { Logger } from "log4js";
 import "reflect-metadata";
+import { Inject, Injectable } from "@nestjs/common";
 import * as tmp from "tmp";
-import { Inject, Service } from "typedi";
 import * as unzipper from "unzipper";
 import { Entries, Importer } from "./Importer";
 import { getLogger } from "./LogUtil";
@@ -18,7 +18,7 @@ interface ImportFile {
   basename: string;
 }
 
-@Service()
+@Injectable()
 export class Traversal {
   private static PRIORITIES: RegExp[] = [
     // KD3厩舎データ

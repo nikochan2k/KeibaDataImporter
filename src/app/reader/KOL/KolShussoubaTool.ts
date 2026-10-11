@@ -1,11 +1,11 @@
-import { Inject, Service } from "typedi";
+import { Inject, Injectable } from "@nestjs/common";
 import { Shussouba } from "../../entities/Shussouba";
 import { ShussoubaTsuukaJuni } from "../../entities/ShussoubaTsuukaJuni";
 import { readPositiveDouble, readPositiveInt } from "../Reader";
 import { ShussoubaTool } from "../ShussoubaTool";
 import { KolRaceTool } from "./KolRaceTool";
 
-@Service()
+@Injectable()
 export class KolShussoubaTool extends ShussoubaTool {
   @Inject()
   private kolRaceTool: KolRaceTool;

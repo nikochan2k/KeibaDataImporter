@@ -1,11 +1,11 @@
-import { Inject, Service } from "typedi";
+import { Inject, Injectable } from "@nestjs/common";
 import { Repository } from "typeorm";
 import { TokubetsuMeiDao } from "../daos/TokubetsuMeiDao";
 import { RaceMei } from "../entities/RaceMei";
 import { Record } from "../entities/Record";
 import { OrmRepository } from "../OrmManager";
 
-@Service()
+@Injectable()
 export class RaceDao {
   @OrmRepository(Record)
   private recordRepository: Repository<Record>;

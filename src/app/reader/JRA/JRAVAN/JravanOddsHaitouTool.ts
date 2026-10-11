@@ -1,4 +1,4 @@
-import { Service } from "typedi";
+import { Injectable } from "@nestjs/common";
 import { Baken, Kakutei } from "../../../converters/Common";
 import { JraOddsHaitouTool } from "../JraOddsHaitouTool";
 
@@ -22,7 +22,7 @@ function* combinations(count: number, size: number, ordered: boolean): Generator
   yield* pick([]);
 }
 
-@Service()
+@Injectable()
 export class JravanOddsHaitouTool extends JraOddsHaitouTool {
   /** 単勝・馬連・馬単・3連複のように、オッズが 1 つの賭式 */
   public async saveOdds(

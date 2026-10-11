@@ -1,7 +1,6 @@
 import "reflect-metadata";
 import { afterAll, describe, expect, setDefaultTimeout, test } from "bun:test";
 import * as fs from "node:fs";
-import { Container } from "typedi";
 import { dataSource } from "../src/app/DataSource";
 import { kd2Den1Layout, kd2Den2Layout, kd2Sei1Layout } from "../src/app/reader/KOL/KD2/Kd2Layout";
 import { KolCom1Kd2 } from "../src/app/reader/KOL/KD2/KolCom1Kd2";
@@ -16,6 +15,7 @@ import { KolKyu } from "../src/app/reader/KOL/KolKyu";
 import { KolOds } from "../src/app/reader/KOL/KolOds";
 import { KolShu } from "../src/app/reader/KOL/KolShu";
 import { KolUma } from "../src/app/reader/KOL/KolUma";
+import { Container } from "./container";
 import {
   closeKolDb,
   importKolKind,

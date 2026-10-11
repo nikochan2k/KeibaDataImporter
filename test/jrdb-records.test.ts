@@ -1,7 +1,6 @@
 import type { EntityTarget, ObjectLiteral } from "typeorm";
 import "reflect-metadata";
 import { afterAll, beforeAll, describe, expect, test } from "bun:test";
-import { Container } from "typedi";
 import { Baken, Kakutei } from "../src/app/converters/Common";
 import { dataSource } from "../src/app/DataSource";
 import { Choukyou } from "../src/app/entities/Choukyou";
@@ -22,6 +21,7 @@ import { K$a } from "../src/app/reader/JRDB/K$a";
 import { Sed } from "../src/app/reader/JRDB/Sed";
 import { Tyb } from "../src/app/reader/JRDB/Tyb";
 import { KolChoukyouTool } from "../src/app/reader/KOL/KolChoukyouTool";
+import { Container } from "./container";
 import { base, Field, record, setFileDate } from "./helpers";
 
 /** レースキー(中山 2024年 3回4日 11R)と馬番5 */

@@ -1,11 +1,11 @@
-import { Inject, Service } from "typedi";
+import { Inject, Injectable } from "@nestjs/common";
 import { Repository } from "typeorm";
 import { MeishouDao } from "../daos/MeishouDao";
 import { Seisansha } from "../entities/Seisansha";
 import { MeishouKubun } from "../entities/Shoyuu";
 import { OrmRepository } from "../OrmManager";
 
-@Service()
+@Injectable()
 export class SeisanshaDao {
   @OrmRepository(Seisansha)
   private repository: Repository<Seisansha>;

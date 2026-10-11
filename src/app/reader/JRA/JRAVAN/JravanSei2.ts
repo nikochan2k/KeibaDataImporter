@@ -1,11 +1,11 @@
-import { Inject, Service } from "typedi";
+import { Inject, Injectable } from "@nestjs/common";
 import { DataToImport } from "../../DataToImport";
 import { readInt, readPositiveInt } from "../../Reader";
 import { JravanRaceTool } from "./JravanRaceTool";
 import { JravanShussoubaTool, jravanSeiUmaLength } from "./JravanShussoubaTool";
 
 /** 成績２ (JracSei2.dat): 出馬登録馬が 18 頭を超える場合の馬番 19〜28 の成績・着順 */
-@Service()
+@Injectable()
 export class JravanSei2 extends DataToImport {
   @Inject()
   private jravanRaceTool: JravanRaceTool;

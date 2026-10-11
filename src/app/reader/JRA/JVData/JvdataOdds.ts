@@ -1,4 +1,4 @@
-import { Inject, Service } from "typedi";
+import { Inject, Injectable } from "@nestjs/common";
 import { Baken, Kakutei } from "../../../converters/Common";
 import { JvdataOddsHaitouTool, jvdataOddsLayouts } from "./JvdataOddsHaitouTool";
 import { JvdataRaceTool } from "./JvdataRaceTool";
@@ -46,7 +46,7 @@ abstract class JvdataOdds extends JvdataRecord {
 }
 
 /** オッズ1 (O1): 単勝・複勝・枠連 */
-@Service()
+@Injectable()
 export class JvdataO1 extends JvdataOdds {
   public readonly id = "O1";
   public readonly length = 962;
@@ -61,7 +61,7 @@ export class JvdataO1 extends JvdataOdds {
 }
 
 /** オッズ2 (O2): 馬連 */
-@Service()
+@Injectable()
 export class JvdataO2 extends JvdataOdds {
   public readonly id = "O2";
   public readonly length = 2042;
@@ -81,7 +81,7 @@ export class JvdataO2 extends JvdataOdds {
 }
 
 /** オッズ3 (O3): ワイド */
-@Service()
+@Injectable()
 export class JvdataO3 extends JvdataOdds {
   public readonly id = "O3";
   public readonly length = 2654;
@@ -101,7 +101,7 @@ export class JvdataO3 extends JvdataOdds {
 }
 
 /** オッズ4 (O4): 馬単 */
-@Service()
+@Injectable()
 export class JvdataO4 extends JvdataOdds {
   public readonly id = "O4";
   public readonly length = 4031;
@@ -121,7 +121,7 @@ export class JvdataO4 extends JvdataOdds {
 }
 
 /** オッズ5 (O5): 3連複 */
-@Service()
+@Injectable()
 export class JvdataO5 extends JvdataOdds {
   public readonly id = "O5";
   public readonly length = 12293;
@@ -134,7 +134,7 @@ export class JvdataO5 extends JvdataOdds {
 }
 
 /** オッズ6 (O6): 3連単 */
-@Service()
+@Injectable()
 export class JvdataO6 extends JvdataOdds {
   public readonly id = "O6";
   public readonly length = 83285;

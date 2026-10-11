@@ -1,4 +1,4 @@
-import { Inject, Service } from "typedi";
+import { Inject, Injectable } from "@nestjs/common";
 import * as $C from "../../converters/Common";
 import * as $R from "../../converters/Race";
 import { JinmeiDao } from "../../daos/JinmeiDao";
@@ -28,7 +28,7 @@ export interface RaceLapTimeInfo {
   ShuuryouKyori: number;
 }
 
-@Service()
+@Injectable()
 export class KolRaceTool extends RaceTool {
   @Inject()
   private kolKaisaiTool: KolKaisaiTool;

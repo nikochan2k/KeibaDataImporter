@@ -1,4 +1,4 @@
-import { Inject, Service } from "typedi";
+import { Inject, Injectable } from "@nestjs/common";
 import * as $C from "../../converters/Common";
 import * as $K from "../../converters/Kishu";
 import * as $S from "../../converters/Shussouba";
@@ -26,7 +26,7 @@ import { KolOddsHaitouTool } from "./KolOddsHaitouTool";
 import { KolShussoubaTool } from "./KolShussoubaTool";
 import { KolTool } from "./KolTool";
 
-@Service()
+@Injectable()
 export class KolSei2 extends DataToImport {
   @Inject()
   private choukyouTool: KolChoukyouTool;

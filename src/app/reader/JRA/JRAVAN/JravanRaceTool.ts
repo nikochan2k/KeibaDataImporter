@@ -1,4 +1,4 @@
-import { Inject, Service } from "typedi";
+import { Inject, Injectable } from "@nestjs/common";
 import * as $C from "../../../converters/Common";
 import { JinmeiDao } from "../../../daos/JinmeiDao";
 import { UmaDao } from "../../../daos/UmaDao";
@@ -20,7 +20,7 @@ import { JravanKaisaiTool } from "./JravanKaisaiTool";
 /**
  * 特別登録馬・出馬表１・成績１・オッズ・票数に共通する、先頭 148 バイトまでのレース情報を読みます。
  */
-@Service()
+@Injectable()
 export class JravanRaceTool extends JraRaceTool {
   @Inject()
   private jravanKaisaiTool: JravanKaisaiTool;

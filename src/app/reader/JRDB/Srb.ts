@@ -1,4 +1,4 @@
-import { Service } from "typedi";
+import { Injectable } from "@nestjs/common";
 import * as $R from "../../converters/Race";
 import * as $S from "../../converters/Shussouba";
 import { Race } from "../../entities/Race";
@@ -7,7 +7,7 @@ import { RaceTrackBias } from "../../entities/RaceTrackBias";
 import { readPositiveInt, readStr } from "../Reader";
 import { Sr$ } from "./Sr$";
 
-@Service()
+@Injectable()
 export class Srb extends Sr$ {
   protected getBufferLength() {
     return 852;

@@ -1,4 +1,4 @@
-import { Inject, Service } from "typedi";
+import { Inject, Injectable } from "@nestjs/common";
 import * as $K from "../../../converters/Kishu";
 import { KishuDao } from "../../../daos/KishuDao";
 import { Kishu } from "../../../entities/Kishu";
@@ -10,7 +10,7 @@ import { JvdataRecord } from "./JvdataRecord";
  * 騎手マスタ (KS)。
  * 初騎乗・初勝利・最近の重賞勝利の情報と、成績の集計は取り込まない。
  */
-@Service()
+@Injectable()
 export class JvdataKs extends JvdataRecord {
   public readonly id = "KS";
   public readonly length = 4173;

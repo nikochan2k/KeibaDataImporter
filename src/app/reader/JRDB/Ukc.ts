@@ -1,4 +1,4 @@
-import { Inject, Service } from "typedi";
+import { Inject, Injectable } from "@nestjs/common";
 import * as $C from "../../converters/Common";
 import * as $U from "../../converters/Uma";
 import { SeisanshaDao } from "../../daos/SeisanshaDao";
@@ -10,7 +10,7 @@ import { readInt, readStr } from "../Reader";
 import { Tool } from "../Tool";
 import { JrdbData } from "./JrdbData";
 
-@Service()
+@Injectable()
 export class Ukc extends JrdbData {
   @Inject()
   protected tool: Tool;

@@ -1,4 +1,4 @@
-import { Inject, Service } from "typedi";
+import { Inject, Injectable } from "@nestjs/common";
 import * as $SJ from "../../converters/ShussoubaJoutai";
 import { KishuDao } from "../../daos/KishuDao";
 import { Kishu } from "../../entities/Kishu";
@@ -7,7 +7,7 @@ import { readPositiveInt, readStr, readStrWithNoSpace } from "../../reader/Reade
 import { ShussoubaTool } from "../ShussoubaTool";
 import { JrdbRaceTool } from "./JrdbRaceTool";
 
-@Service()
+@Injectable()
 export class JrdbShussoubaTool extends ShussoubaTool {
   @Inject()
   private jrdbRaceTool: JrdbRaceTool;

@@ -1,9 +1,9 @@
-import { Service } from "typedi";
+import { Injectable } from "@nestjs/common";
 import { Repository } from "typeorm";
 import { Houbokusaki } from "../entities/Houbokusaki";
 import { OrmRepository } from "../OrmManager";
 
-@Service()
+@Injectable()
 export class HoubokusakiDao {
   @OrmRepository(Houbokusaki)
   private repository: Repository<Houbokusaki>;

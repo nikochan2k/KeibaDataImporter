@@ -1,4 +1,4 @@
-import { Inject, Service } from "typedi";
+import { Inject, Injectable } from "@nestjs/common";
 import { Baken, Kakutei } from "../../../converters/Common";
 import { DataToImport } from "../../DataToImport";
 import { JravanOddsHaitouTool } from "./JravanOddsHaitouTool";
@@ -27,7 +27,7 @@ abstract class JravanOds extends DataToImport {
 }
 
 /** オッズ１ (JracOds1.dat): 単勝・複勝・枠連 */
-@Service()
+@Injectable()
 export class JravanOds1 extends JravanOds {
   protected getBufferLength() {
     return 491;
@@ -42,7 +42,7 @@ export class JravanOds1 extends JravanOds {
 }
 
 /** オッズ３ (JracOds3.dat): 馬連 */
-@Service()
+@Injectable()
 export class JravanOds3 extends JravanOds {
   protected getBufferLength() {
     return 894;
@@ -54,7 +54,7 @@ export class JravanOds3 extends JravanOds {
 }
 
 /** オッズ４ (JracOds4.dat): ワイド */
-@Service()
+@Injectable()
 export class JravanOds4 extends JravanOds {
   protected getBufferLength() {
     return 1659;
@@ -73,7 +73,7 @@ export class JravanOds4 extends JravanOds {
 }
 
 /** オッズ５ (JracOds5.dat): 馬単 */
-@Service()
+@Injectable()
 export class JravanOds5 extends JravanOds {
   protected getBufferLength() {
     return 1659;
@@ -85,7 +85,7 @@ export class JravanOds5 extends JravanOds {
 }
 
 /** オッズ６ (JracOds6.dat): 3連複 */
-@Service()
+@Injectable()
 export class JravanOds6 extends JravanOds {
   protected getBufferLength() {
     return 4209;

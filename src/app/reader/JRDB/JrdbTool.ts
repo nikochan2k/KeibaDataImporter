@@ -1,4 +1,4 @@
-import { Service } from "typedi";
+import { Injectable } from "@nestjs/common";
 import * as $C from "../../converters/Common";
 import { Tool } from "../Tool";
 
@@ -11,7 +11,7 @@ export interface OddsHaitouInfo {
   HaitoukinOffset?: number;
 }
 
-@Service()
+@Injectable()
 export class JrdbTool extends Tool {
   public getDateFromFilename(basename: string) {
     const execed = /^[^0-9]+([0-9]{6})\.txt$/.exec(basename);

@@ -1,4 +1,4 @@
-import { Inject, Service } from "typedi";
+import { Inject, Injectable } from "@nestjs/common";
 import * as $R from "../../../converters/Race";
 import { Race } from "../../../entities/Race";
 import { RaceSeiseki } from "../../../entities/RaceSeiseki";
@@ -18,7 +18,7 @@ import { JvdataRecord } from "./JvdataRecord";
  * 変更前の値(変更前グレード、距離、トラック、発走時刻など)、前 3・4 ハロン、コーナー通過順位、
  * レコード更新区分は取り込まない。
  */
-@Service()
+@Injectable()
 export class JvdataRa extends JvdataRecord {
   public readonly id = "RA";
   public readonly length = 1272;

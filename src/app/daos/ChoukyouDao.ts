@@ -1,10 +1,10 @@
-import { Inject, Service } from "typedi";
+import { Inject, Injectable } from "@nestjs/common";
 import { EntityManager } from "typeorm";
 import { ShussoubaChoukyou } from "../entities/ShussoubaChoukyou";
 import { OrmManager } from "../OrmManager";
 import { Tool } from "../reader/Tool";
 
-@Service()
+@Injectable()
 export class ChoukyouDao {
   @OrmManager()
   private entityManager: EntityManager;

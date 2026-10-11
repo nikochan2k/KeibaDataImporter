@@ -1,4 +1,4 @@
-import { Inject } from "typedi";
+import { Inject } from "@nestjs/common";
 import { Shussouba } from "../../entities/Shussouba";
 import { ShussoubaInfo } from "../ShussoubaTool";
 import { JrdbRaceData } from "./JrdbRaceData";

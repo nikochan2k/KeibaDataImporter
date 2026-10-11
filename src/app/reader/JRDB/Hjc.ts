@@ -1,10 +1,10 @@
-import { Service } from "typedi";
+import { Injectable } from "@nestjs/common";
 import { Baken, Kakutei } from "../../converters/Common";
 import { OddsHaitou } from "../../entities/OddsHaitou";
 import { readPositiveInt } from "../Reader";
 import { Hj$ } from "./Hj$";
 
-@Service()
+@Injectable()
 export class Hjc extends Hj$ {
   protected getBufferLength() {
     return 444;

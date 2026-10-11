@@ -1,5 +1,5 @@
 import "reflect-metadata";
-import { Inject, Service } from "typedi";
+import { Inject, Injectable } from "@nestjs/common";
 import * as $C from "../../converters/Common";
 import * as $K from "../../converters/Kaisai";
 import * as $KI from "../../converters/Kishu";
@@ -39,7 +39,7 @@ import { KolShussoubaTool } from "./KolShussoubaTool";
 import { KolTool } from "./KolTool";
 import { KolUmaTool } from "./KolUmaTool";
 
-@Service()
+@Injectable()
 export class KolUma extends DataToImport {
   private static readonly raceOffsets = [1064, 1654, 2244, 2834, 3424];
 

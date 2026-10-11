@@ -1,4 +1,4 @@
-import { Inject, Service } from "typedi";
+import { Inject, Injectable } from "@nestjs/common";
 import { EntityManager, Repository } from "typeorm";
 import * as $U from "../converters/Uma";
 import { Kyousouba } from "../entities/Kyousouba";
@@ -6,7 +6,7 @@ import { Uma } from "../entities/Uma";
 import { OrmManager, OrmRepository } from "../OrmManager";
 import { Tool } from "../reader/Tool";
 
-@Service()
+@Injectable()
 export class UmaDao {
   @OrmManager()
   protected entityManager: EntityManager;

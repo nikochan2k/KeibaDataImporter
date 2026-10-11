@@ -1,11 +1,11 @@
-import { Inject, Service } from "typedi";
+import { Inject, Injectable } from "@nestjs/common";
 import * as $C from "../../converters/Common";
 import { Bridge } from "../Bridge";
 import { KaisaiInfo, KaisaiTool } from "../KaisaiTool";
 import { readHex, readPositiveInt, readRaw } from "../Reader";
 import { JrdbBridge } from "./JrdbBridge";
 
-@Service()
+@Injectable()
 export class JrdbKaisaiTool extends KaisaiTool {
   @Inject()
   private bridge: Bridge;

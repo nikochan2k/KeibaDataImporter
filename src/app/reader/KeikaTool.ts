@@ -1,5 +1,5 @@
+import { Inject, Injectable } from "@nestjs/common";
 import { Logger } from "log4js";
-import { Inject, Service } from "typedi";
 import { EntityManager } from "typeorm";
 import { RaceKeika } from "../entities/RaceKeika";
 import { ShussoubaKeika } from "../entities/ShussoubaKeika";
@@ -7,7 +7,7 @@ import { getLogger } from "../LogUtil";
 import { OrmManager } from "../OrmManager";
 import { Tool } from "./Tool";
 
-@Service()
+@Injectable()
 export class KeikaTool {
   protected logger: Logger;
 

@@ -1,4 +1,4 @@
-import { Service } from "typedi";
+import { Injectable } from "@nestjs/common";
 import * as $C from "../../converters/Common";
 import * as $S from "../../converters/Shussouba";
 import { Race } from "../../entities/Race";
@@ -9,7 +9,7 @@ import { ShussoubaSeiseki } from "../../entities/ShussoubaSeiseki";
 import { readInt, readJikan } from "../Reader";
 import { Se$ } from "./Se$";
 
-@Service()
+@Injectable()
 export class Sed extends Se$ {
   protected getBufferLength() {
     return 376;

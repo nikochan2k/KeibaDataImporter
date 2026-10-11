@@ -1,4 +1,4 @@
-import { Inject, Service } from "typedi";
+import { Inject, Injectable } from "@nestjs/common";
 import * as $CH from "../../converters/Choukyou";
 import * as $R from "../../converters/Race";
 import { ChoukyouDao } from "../../daos/ChoukyouDao";
@@ -11,7 +11,7 @@ import { getChoukyouId } from "../Tool";
 import { JrdbShussoubaData } from "./JrdbShussoubaData";
 
 /** 調教本追切データ。本追切の調教を Choukyou に入れ、出走馬と本追切として結びつける */
-@Service()
+@Injectable()
 export class Cha extends JrdbShussoubaData {
   @Inject()
   private choukyouDao: ChoukyouDao;

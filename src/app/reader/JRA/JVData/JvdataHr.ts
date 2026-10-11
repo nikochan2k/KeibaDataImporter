@@ -1,4 +1,4 @@
-import { Inject, Service } from "typedi";
+import { Inject, Injectable } from "@nestjs/common";
 import { Kakutei } from "../../../converters/Common";
 import { JvdataOddsHaitouTool } from "./JvdataOddsHaitouTool";
 import { JvdataRaceTool } from "./JvdataRaceTool";
@@ -8,7 +8,7 @@ import { JvdataRecord } from "./JvdataRecord";
  * 払戻 (HR)。単勝・複勝・枠連・馬連・ワイド・馬単・3連複・3連単の払戻金と人気順。
  * 不成立・特払・返還のフラグと返還馬番は取り込まない。
  */
-@Service()
+@Injectable()
 export class JvdataHr extends JvdataRecord {
   public readonly id = "HR";
   public readonly length = 719;

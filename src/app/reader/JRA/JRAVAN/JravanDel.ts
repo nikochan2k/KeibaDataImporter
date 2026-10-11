@@ -1,4 +1,4 @@
-import { Inject, Service } from "typedi";
+import { Inject, Injectable } from "@nestjs/common";
 import { MasshouFlag } from "../../../converters/Common";
 import { UmaDao } from "../../../daos/UmaDao";
 import { Choukyoushi } from "../../../entities/Choukyoushi";
@@ -10,7 +10,7 @@ import { Tool } from "../../Tool";
 import { JraTool } from "../JraTool";
 
 /** 抹消競走馬 (JracDelu.dat) */
-@Service()
+@Injectable()
 export class JravanDelu extends DataToImport {
   @Inject()
   private jraTool: JraTool;
@@ -41,7 +41,7 @@ export class JravanDelu extends DataToImport {
 }
 
 /** 抹消騎手 (JracDelk.dat) */
-@Service()
+@Injectable()
 export class JravanDelk extends DataToImport {
   @Inject()
   private tool: Tool;
@@ -64,7 +64,7 @@ export class JravanDelk extends DataToImport {
 }
 
 /** 抹消調教師 (JracDelc.dat) */
-@Service()
+@Injectable()
 export class JravanDelc extends DataToImport {
   @Inject()
   private tool: Tool;

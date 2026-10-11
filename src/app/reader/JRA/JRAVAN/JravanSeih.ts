@@ -1,4 +1,4 @@
-import { Inject, Service } from "typedi";
+import { Inject, Injectable } from "@nestjs/common";
 import { Baken, Kakutei } from "../../../converters/Common";
 import { DataToImport } from "../../DataToImport";
 import { HaitouInfo } from "../../OddsHaitouTool";
@@ -6,7 +6,7 @@ import { JravanOddsHaitouTool } from "./JravanOddsHaitouTool";
 import { JravanRaceTool } from "./JravanRaceTool";
 
 /** 成績Ｈ (JracSeih.dat): 馬単・3連複の払戻金 */
-@Service()
+@Injectable()
 export class JravanSeih extends DataToImport {
   @Inject()
   private jravanRaceTool: JravanRaceTool;

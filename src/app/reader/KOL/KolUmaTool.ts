@@ -1,11 +1,11 @@
-import { Inject, Service } from "typedi";
+import { Inject, Injectable } from "@nestjs/common";
 import * as $U from "../../converters/Uma";
 import { UmaDao } from "../../daos/UmaDao";
 import { Uma } from "../../entities/Uma";
 import { readInt, readStr } from "../Reader";
 import { Tool } from "../Tool";
 
-@Service()
+@Injectable()
 export class KolUmaTool {
   @Inject()
   private tool: Tool;

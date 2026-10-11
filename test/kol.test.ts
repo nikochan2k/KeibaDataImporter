@@ -1,7 +1,6 @@
 import "reflect-metadata";
 import { afterAll, beforeAll, describe, expect, setDefaultTimeout, test } from "bun:test";
 import * as fs from "node:fs";
-import { Container } from "typedi";
 import { In } from "typeorm";
 import { Baken, Kakutei } from "../src/app/converters/Common";
 import * as $U from "../src/app/converters/Uma";
@@ -38,6 +37,7 @@ import { KolSei1 } from "../src/app/reader/KOL/KolSei1";
 import { KolSei2 } from "../src/app/reader/KOL/KolSei2";
 import { KolShu } from "../src/app/reader/KOL/KolShu";
 import { KolUma } from "../src/app/reader/KOL/KolUma";
+import { Container } from "./container";
 import {
   closeKolDb,
   field,

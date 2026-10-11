@@ -1,10 +1,10 @@
-import { Service } from "typedi";
+import { Injectable } from "@nestjs/common";
 import * as $C from "../../converters/Common";
 import { KaisaiInfo } from "../KaisaiTool";
 import { readHex, readInt, readPositiveInt, readRaw } from "../Reader";
 import { JrdbKaisaiTool } from "./JrdbKaisaiTool";
 
-@Service()
+@Injectable()
 export class JrdbKaisaiShussoubaTool extends JrdbKaisaiTool {
   /** 場コードが中央競馬(京都〜函館)かどうか */
   public static isJra(basho: number) {

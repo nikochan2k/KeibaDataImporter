@@ -1,4 +1,4 @@
-import { Inject } from "typedi";
+import { Inject } from "@nestjs/common";
 import { Bridge } from "../Bridge";
 import { DataToImport } from "../DataToImport";
 import { JrdbBridge } from "./JrdbBridge";

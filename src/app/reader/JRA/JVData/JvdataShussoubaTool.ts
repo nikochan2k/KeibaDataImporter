@@ -1,4 +1,4 @@
-import { Inject, Service } from "typedi";
+import { Inject, Injectable } from "@nestjs/common";
 import { HeichiShougai } from "../../../converters/Race";
 import { BanushiDao } from "../../../daos/BanushiDao";
 import { Race } from "../../../entities/Race";
@@ -40,7 +40,7 @@ const seisekiOffsets: JraSeisekiOffsets = {
 };
 
 /** 馬毎レース情報 (SE) */
-@Service()
+@Injectable()
 export class JvdataShussoubaTool extends JraShussoubaTool {
   @Inject()
   private jvdataRaceTool: JvdataRaceTool;

@@ -1,4 +1,4 @@
-import { Service } from "typedi";
+import { Injectable } from "@nestjs/common";
 import { Baken, Kakutei } from "../../../converters/Common";
 import { HaitouInfo } from "../../OddsHaitouTool";
 import { readPositiveInt } from "../../Reader";
@@ -30,7 +30,7 @@ export const jvdataOddsLayouts = {
   sanrentan: { bangouCount: 3, bangouLength: 2, oddsLength: 7, ninkiLength: 4 },
 } satisfies { [name: string]: JvdataOddsLayout };
 
-@Service()
+@Injectable()
 export class JvdataOddsHaitouTool extends JraOddsHaitouTool {
   /**
    * オッズの繰り返しを保存します。JV-Data のオッズは、組番ごとに馬番が入っている。

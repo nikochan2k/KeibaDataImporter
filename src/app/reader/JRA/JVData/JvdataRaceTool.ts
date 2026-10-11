@@ -1,4 +1,4 @@
-import { Inject, Service } from "typedi";
+import { Inject, Injectable } from "@nestjs/common";
 import { Race } from "../../../entities/Race";
 import { readJikan, readPositiveInt, readRaw } from "../../Reader";
 import { JraRaceTool } from "../JraRaceTool";
@@ -15,7 +15,7 @@ export function hasSeiseki(kubun: string) {
   return /^[3-7AB]$/.test(kubun);
 }
 
-@Service()
+@Injectable()
 export class JvdataRaceTool extends JraRaceTool {
   @Inject()
   private jvdataKaisaiTool: JvdataKaisaiTool;

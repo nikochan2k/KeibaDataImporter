@@ -1,4 +1,4 @@
-import { Inject } from "typedi";
+import { Inject } from "@nestjs/common";
 import { Baken, Kakutei } from "../../converters/Common";
 import { OddsHaitou } from "../../entities/OddsHaitou";
 import { readPositiveInt } from "../Reader";

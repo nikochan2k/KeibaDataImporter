@@ -1,11 +1,11 @@
-import { Service } from "typedi";
+import { Injectable } from "@nestjs/common";
 import * as $CH from "../../converters/Choukyou";
 import * as $C from "../../converters/Common";
 import { ShussoubaHyouka } from "../../entities/ShussoubaHyouka";
 import { readInt, readStr } from "../Reader";
 import { Cy$ } from "./Cy$";
 
-@Service()
+@Injectable()
 export class Cya extends Cy$ {
   protected getBufferLength() {
     return 88;

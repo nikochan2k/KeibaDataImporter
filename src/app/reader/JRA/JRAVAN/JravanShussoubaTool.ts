@@ -1,4 +1,4 @@
-import { Inject, Service } from "typedi";
+import { Inject, Injectable } from "@nestjs/common";
 import { HeichiShougai } from "../../../converters/Race";
 import { Race } from "../../../entities/Race";
 import { Shussouba } from "../../../entities/Shussouba";
@@ -40,7 +40,7 @@ const seisekiOffsets: JraSeisekiOffsets = {
  * 出馬表・成績の馬番ごとの情報 (先頭 63 バイトは共通) を読みます。
  * buffer はその馬番の情報だけを切り出したものです。
  */
-@Service()
+@Injectable()
 export class JravanShussoubaTool extends JraShussoubaTool {
   @Inject()
   private jravanRaceTool: JravanRaceTool;

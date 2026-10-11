@@ -3,7 +3,6 @@ import * as fs from "node:fs";
 import * as os from "node:os";
 import * as path from "node:path";
 import * as log4js from "log4js";
-import { Container } from "typedi";
 import { dataSource } from "../../src/app/DataSource";
 import { Importer } from "../../src/app/Importer";
 import {
@@ -13,6 +12,7 @@ import {
 } from "../../src/app/reader/KOL/KD2/Kd2Layout";
 import { KolLayout } from "../../src/app/reader/KOL/KolLayout";
 import { decodeSjis, encodeSjis } from "../../src/app/util/Sjis";
+import { Container } from "../container";
 
 export const kolDir = path.resolve(__dirname, "../../docs/kol-spec/KD3");
 

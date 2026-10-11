@@ -1,6 +1,5 @@
 import "reflect-metadata";
 import { afterAll, describe, expect, setDefaultTimeout, test } from "bun:test";
-import { Container } from "typedi";
 import { Baken, Kakutei } from "../src/app/converters/Common";
 import { dataSource } from "../src/app/DataSource";
 import { ChoukyoushiDao } from "../src/app/daos/ChoukyoushiDao";
@@ -37,6 +36,7 @@ import { JravanSei1 } from "../src/app/reader/JRA/JRAVAN/JravanSei1";
 import { JravanSei2 } from "../src/app/reader/JRA/JRAVAN/JravanSei2";
 import { JravanSeih } from "../src/app/reader/JRA/JRAVAN/JravanSeih";
 import { JravanUmaj } from "../src/app/reader/JRA/JRAVAN/JravanUmaj";
+import { Container } from "./container";
 import { JravanRecord, parseJravanSpec } from "./spec/jravan";
 import { closeKolDb, emptyKolDb, importKolFiles } from "./spec/kol";
 

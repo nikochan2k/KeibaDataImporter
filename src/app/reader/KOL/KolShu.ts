@@ -1,4 +1,4 @@
-import { Inject, Service } from "typedi";
+import { Inject, Injectable } from "@nestjs/common";
 import { EntityManager } from "typeorm";
 import * as $C from "../../converters/Common";
 import * as $U from "../../converters/Uma";
@@ -10,7 +10,7 @@ import { readInt, readPositiveInt, readStr } from "../Reader";
 import { Tool } from "../Tool";
 import { KolUmaTool } from "./KolUmaTool";
 
-@Service()
+@Injectable()
 export class KolShu extends DataToImport {
   @OrmManager()
   protected entityManager: EntityManager;

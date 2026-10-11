@@ -1,4 +1,4 @@
-import { Inject } from "typedi";
+import { Inject } from "@nestjs/common";
 import { Race } from "../../entities/Race";
 import { RaceKeika } from "../../entities/RaceKeika";
 import { KeikaTool } from "../KeikaTool";

@@ -1,9 +1,9 @@
-import { Service } from "typedi";
+import { Injectable } from "@nestjs/common";
 import { KaisaiInfo } from "../KaisaiTool";
 import { readHex, readInt, readPositiveInt } from "../Reader";
 import { JrdbKaisaiTool } from "./JrdbKaisaiTool";
 
-@Service()
+@Injectable()
 export class JrdbKaisaiRaceTool extends JrdbKaisaiTool {
   protected getKaisaiInfo(buffer: Buffer): KaisaiInfo {
     return {

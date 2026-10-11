@@ -1,6 +1,5 @@
 import "reflect-metadata";
 import { afterAll, describe, expect, setDefaultTimeout, test } from "bun:test";
-import { Container } from "typedi";
 import { Baken, Kakutei } from "../src/app/converters/Common";
 import { dataSource } from "../src/app/DataSource";
 import { Choukyoushi } from "../src/app/entities/Choukyoushi";
@@ -34,6 +33,7 @@ import {
 } from "../src/app/reader/KOL/KD1/Kd1Layout";
 import { KolRaceTool } from "../src/app/reader/KOL/KolRaceTool";
 import { encodeSjis } from "../src/app/util/Sjis";
+import { Container } from "./container";
 import { type Kd1Kind, kd1Sections, parseKd1Spec } from "./spec/kd1";
 import { closeKolDb, emptyKolDb, importKolFiles, type KolField, parseKolSpec } from "./spec/kol";
 

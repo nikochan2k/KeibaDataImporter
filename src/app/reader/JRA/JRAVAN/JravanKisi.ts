@@ -1,4 +1,4 @@
-import { Inject, Service } from "typedi";
+import { Inject, Injectable } from "@nestjs/common";
 import * as $K from "../../../converters/Kishu";
 import { KishuDao } from "../../../daos/KishuDao";
 import { Kishu } from "../../../entities/Kishu";
@@ -7,7 +7,7 @@ import { readPositiveInt, readStr, readStrWithNoSpace } from "../../Reader";
 import { JraTool } from "../JraTool";
 
 /** 騎手 (JracKisi.dat)。近走重賞勝鞍と成績の集計は取り込まない。 */
-@Service()
+@Injectable()
 export class JravanKisi extends DataToImport {
   @Inject()
   private kishuDao: KishuDao;

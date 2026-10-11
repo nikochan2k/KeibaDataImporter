@@ -1,4 +1,4 @@
-import { Inject, Service } from "typedi";
+import { Inject, Injectable } from "@nestjs/common";
 import { DataToImport } from "../../DataToImport";
 import { KolUma } from "../KolUma";
 import { copyFields, newRecord } from "./Kd1Convert";
@@ -14,7 +14,7 @@ import {
 } from "./Kd1Layout";
 
 /** KD1 競走馬データ。KD2/KD3 の並びに組み替えて、KolUma に渡す */
-@Service()
+@Injectable()
 export class KolUmaKd1 extends DataToImport {
   @Inject()
   private reader: KolUma;

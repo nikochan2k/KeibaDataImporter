@@ -1,4 +1,4 @@
-import { Inject } from "typedi";
+import { Inject } from "@nestjs/common";
 import * as $C from "../../converters/Common";
 import { ChoukyoushiDao } from "../../daos/ChoukyoushiDao";
 import { Choukyoushi } from "../../entities/Choukyoushi";

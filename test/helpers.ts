@@ -1,8 +1,8 @@
 import "reflect-metadata";
-import { Container } from "typedi";
 import { Bridge } from "../src/app/reader/Bridge";
 import { JrdbBridge } from "../src/app/reader/JRDB/JrdbBridge";
 import { encodeSjis } from "../src/app/util/Sjis";
+import { Container } from "./container";
 
 export type Field = [number, string];
 

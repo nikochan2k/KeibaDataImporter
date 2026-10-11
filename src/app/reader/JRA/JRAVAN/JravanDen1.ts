@@ -1,4 +1,4 @@
-import { Inject, Service } from "typedi";
+import { Inject, Injectable } from "@nestjs/common";
 import { Race } from "../../../entities/Race";
 import { DataToImport } from "../../DataToImport";
 import { readJikan, readPositiveInt, readRaw } from "../../Reader";
@@ -6,7 +6,7 @@ import { JravanRaceTool } from "./JravanRaceTool";
 import { JravanShussoubaTool, jravanDenUmaLength } from "./JravanShussoubaTool";
 
 /** 出馬表１ (JracDen1.dat): 出馬登録馬の一覧 (馬番 1〜18) */
-@Service()
+@Injectable()
 export class JravanDen1 extends DataToImport {
   @Inject()
   private jravanRaceTool: JravanRaceTool;

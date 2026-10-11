@@ -1,5 +1,5 @@
-import { Service } from "typedi";
+import { Injectable } from "@nestjs/common";
 import { Skb } from "./Skb";
 
-@Service()
+@Injectable()
 export class Zkb extends Skb {}

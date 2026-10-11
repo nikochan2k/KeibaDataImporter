@@ -1,4 +1,4 @@
-import { Inject, Service } from "typedi";
+import { Inject, Injectable } from "@nestjs/common";
 import { Bridge } from "../../Bridge";
 import { DataToImport } from "../../DataToImport";
 import { KolDen1Kd2 } from "../KD2/KolDen1Kd2";
@@ -20,7 +20,7 @@ import {
  * KD1 の出馬表 (KOL_DEN.DAT)。レースと出走馬 18 頭が 1 レコードに入っている。
  * KD2 の出馬表レースデータと出馬表出走馬データに分けて、KolDen1Kd2, KolDen2Kd2 に渡す。
  */
-@Service()
+@Injectable()
 export class KolDenKd1 extends DataToImport {
   @Inject()
   private den1: KolDen1Kd2;

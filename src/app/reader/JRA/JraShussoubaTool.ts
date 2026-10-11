@@ -1,4 +1,4 @@
-import { Inject } from "typedi";
+import { Inject } from "@nestjs/common";
 import * as $K from "../../converters/Kishu";
 import * as $S from "../../converters/Shussouba";
 import { Bagu } from "../../converters/ShussoubaJoutai";

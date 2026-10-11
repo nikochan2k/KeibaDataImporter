@@ -1,4 +1,4 @@
-import { Inject, Service } from "typedi";
+import { Inject, Injectable } from "@nestjs/common";
 import * as $C from "../../../converters/Common";
 import { ChoukyoushiDao } from "../../../daos/ChoukyoushiDao";
 import { Choukyoushi } from "../../../entities/Choukyoushi";
@@ -9,7 +9,7 @@ import { JvdataRecord } from "./JvdataRecord";
  * 調教師マスタ (CH)。
  * 最近の重賞勝利の情報と、成績の集計は取り込まない。
  */
-@Service()
+@Injectable()
 export class JvdataCh extends JvdataRecord {
   public readonly id = "CH";
   public readonly length = 3862;

@@ -1,4 +1,4 @@
-import { Inject, Service } from "typedi";
+import { Inject, Injectable } from "@nestjs/common";
 import { EntityManager, Repository } from "typeorm";
 import { Jinmei, JinmeiKubun } from "../entities/Jinmei";
 import { Kishu } from "../entities/Kishu";
@@ -7,7 +7,7 @@ import { OrmManager, OrmRepository } from "../OrmManager";
 import { Tool } from "../reader/Tool";
 import { JinmeiDao, jinmeiMatchingKey } from "./JinmeiDao";
 
-@Service()
+@Injectable()
 export class KishuDao {
   @OrmManager()
   protected entityManager: EntityManager;

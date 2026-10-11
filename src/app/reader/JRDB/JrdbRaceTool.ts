@@ -1,4 +1,4 @@
-import { Inject, Service } from "typedi";
+import { Inject, Injectable } from "@nestjs/common";
 import * as $R from "../../converters/Race";
 import { Race } from "../../entities/Race";
 import { KaisaiTool } from "../KaisaiTool";
@@ -6,7 +6,7 @@ import { RaceTool } from "../RaceTool";
 import { readPositiveInt, readRaw, readStr } from "../Reader";
 import { JrdbKaisaiTool } from "./JrdbKaisaiTool";
 
-@Service()
+@Injectable()
 export class JrdbRaceTool extends RaceTool {
   @Inject()
   private jrdbKaisaiTool: JrdbKaisaiTool;

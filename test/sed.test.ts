@@ -1,6 +1,5 @@
 import "reflect-metadata";
 import { afterAll, beforeAll, expect, test } from "bun:test";
-import { Container } from "typedi";
 import { dataSource } from "../src/app/DataSource";
 import { Kaisai } from "../src/app/entities/Kaisai";
 import { Race } from "../src/app/entities/Race";
@@ -8,6 +7,7 @@ import { RaceSeiseki } from "../src/app/entities/RaceSeiseki";
 import { ShussoubaSeiseki } from "../src/app/entities/ShussoubaSeiseki";
 import { Sec } from "../src/app/reader/JRDB/Sec";
 import { Sed } from "../src/app/reader/JRDB/Sed";
+import { Container } from "./container";
 import { base, Field, record } from "./helpers";
 
 const sedRecord = (fields: Field[], length = 376) => record(fields, length);

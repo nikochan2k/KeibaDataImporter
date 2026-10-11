@@ -1,4 +1,4 @@
-import { Inject, Service } from "typedi";
+import { Inject, Injectable } from "@nestjs/common";
 import * as $U from "../../converters/Uma";
 import { ChoukyoushiDao } from "../../daos/ChoukyoushiDao";
 import { KishuDao } from "../../daos/KishuDao";
@@ -17,7 +17,7 @@ export interface JraTouroku {
   seinen: number;
 }
 
-@Service()
+@Injectable()
 export class JraTool {
   @Inject()
   private tool: Tool;

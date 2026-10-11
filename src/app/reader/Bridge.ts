@@ -1,6 +1,6 @@
-import { Service } from "typedi";
+import { Injectable } from "@nestjs/common";
 
-@Service()
+@Injectable()
 export class Bridge {
   basename: string;
 }

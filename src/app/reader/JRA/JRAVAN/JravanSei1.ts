@@ -1,4 +1,4 @@
-import { Inject, Service } from "typedi";
+import { Inject, Injectable } from "@nestjs/common";
 import { Baken, Kakutei } from "../../../converters/Common";
 import * as $R from "../../../converters/Race";
 import { Race } from "../../../entities/Race";
@@ -12,7 +12,7 @@ import { JravanRaceTool } from "./JravanRaceTool";
 import { JravanShussoubaTool, jravanSeiUmaLength } from "./JravanShussoubaTool";
 
 /** 成績１ (JracSei1.dat): 成績・着順・払戻金 (馬番 1〜18) */
-@Service()
+@Injectable()
 export class JravanSei1 extends DataToImport {
   @Inject()
   private tool: Tool;

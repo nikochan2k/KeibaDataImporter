@@ -1,4 +1,4 @@
-import { Inject, Service } from "typedi";
+import { Inject, Injectable } from "@nestjs/common";
 import * as $C from "../../../converters/Common";
 import * as $U from "../../../converters/Uma";
 import { SeisanshaDao } from "../../../daos/SeisanshaDao";
@@ -26,7 +26,7 @@ const parentsOf: { [index: number]: [number, number] } = {
  * 馬主、賞金や着回数の累計、脚質傾向、繁殖登録番号は取り込まない
  * (馬主は出走馬ごと、レースの成績は馬毎レース情報から取り込む)。
  */
-@Service()
+@Injectable()
 export class JvdataUm extends JvdataRecord {
   public readonly id = "UM";
   public readonly length = 1609;
