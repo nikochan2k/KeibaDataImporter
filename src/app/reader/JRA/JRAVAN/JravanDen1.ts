@@ -1,29 +1,21 @@
-import { Inject, Injectable } from "@nestjs/common";
 import { Race } from "../../../entities/Race";
 import { DataToImport } from "../../DataToImport";
 import { readJikan, readPositiveInt, readRaw } from "../../Reader";
-import { JravanRaceTool } from "./JravanRaceTool";
-import { JravanShussoubaTool, jravanDenUmaLength } from "./JravanShussoubaTool";
+import { jravanRaceTool } from "./JravanRaceTool";
+import { jravanDenUmaLength, jravanShussoubaTool } from "./JravanShussoubaTool";
 
 /** 出馬表１ (JracDen1.dat): 出馬登録馬の一覧 (馬番 1〜18) */
-@Injectable()
 export class JravanDen1 extends DataToImport {
-  @Inject()
-  private jravanRaceTool: JravanRaceTool;
-
-  @Inject()
-  private jravanShussoubaTool: JravanShussoubaTool;
-
   protected getBufferLength() {
     return 1463;
   }
 
   public async save(buffer: Buffer) {
-    const kaisai = await this.jravanRaceTool.saveKaisai(buffer);
+    const kaisai = await jravanRaceTool.saveKaisai(buffer);
     if (!kaisai) {
       return;
     }
-    const toBe = await this.jravanRaceTool.createRaceWith(buffer, kaisai.Id);
+    const toBe = await jravanRaceTool.createRaceWith(buffer, kaisai.Id);
     if (!toBe) {
       return;
     }
@@ -39,13 +31,13 @@ export class JravanDen1 extends DataToImport {
     toBe.FukaShou = readPositiveInt(buffer, 197, 7, 1000);
 
     const asIs = await this.entityManager.findOneBy(Race, { Id: toBe.Id });
-    const race = await this.jravanRaceTool.saveOrUpdateRace(asIs, toBe);
-    await this.jravanRaceTool.saveRaceMeiOf(buffer, 17, 60, race);
+    const race = await jravanRaceTool.saveOrUpdateRace(asIs, toBe);
+    await jravanRaceTool.saveRaceMeiOf(buffer, 17, 60, race);
 
     for (let i = 0; i < 18; i++) {
-      const uma = this.jravanShussoubaTool.slice(buffer, 327, i, jravanDenUmaLength);
-      if (this.jravanShussoubaTool.hasUma(uma)) {
-        await this.jravanShussoubaTool.saveJravanShussoubaOf(uma, race, kaisai.Nen);
+      const uma = jravanShussoubaTool.slice(buffer, 327, i, jravanDenUmaLength);
+      if (jravanShussoubaTool.hasUma(uma)) {
+        await jravanShussoubaTool.saveJravanShussoubaOf(uma, race, kaisai.Nen);
       }
     }
   }

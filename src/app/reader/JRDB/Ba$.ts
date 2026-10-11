@@ -4,11 +4,13 @@ import { Kaisai } from "../../entities/Kaisai";
 import { Race } from "../../entities/Race";
 import { KaisaiTool } from "../KaisaiTool";
 import { readJikan, readPositiveInt, readStr } from "../Reader";
+import { jrdbKaisaiRaceTool } from "./JrdbKaisaiRaceTool";
 import { JrdbRaceData } from "./JrdbRaceData";
+import { jrdbRaceTool } from "./JrdbRaceTool";
 
 export abstract class Ba$ extends JrdbRaceData {
   protected getKaisaiTool(): KaisaiTool {
-    return this.jrdbKaisaiRaceTool;
+    return jrdbKaisaiRaceTool;
   }
 
   protected setKaisai(buffer: Buffer, toBe: Kaisai) {
@@ -17,7 +19,7 @@ export abstract class Ba$ extends JrdbRaceData {
 
   protected setRace(buffer: Buffer, toBe: Race) {
     toBe.YoteiHassouJikan = readJikan(buffer, 16);
-    this.jrdbRaceTool.setRaceJouken(buffer, toBe, 20, 27);
+    jrdbRaceTool.setRaceJouken(buffer, toBe, 20, 27);
     const kaisuu = readStr(buffer, 86, 8);
     const execed = /\d+/.exec(kaisuu);
     if (execed) {
@@ -41,8 +43,8 @@ export abstract class Ba$ extends JrdbRaceData {
   }
 
   protected async saveRaceMei(buffer: Buffer, race: Race) {
-    await this.jrdbRaceTool.saveRaceMei(buffer, 36, 50, race);
-    await this.jrdbRaceTool.saveRaceMei(buffer, 98, 8, race);
-    await this.jrdbRaceTool.saveRaceMei(buffer, 106, 18, race);
+    await jrdbRaceTool.saveRaceMei(buffer, 36, 50, race);
+    await jrdbRaceTool.saveRaceMei(buffer, 98, 8, race);
+    await jrdbRaceTool.saveRaceMei(buffer, 106, 18, race);
   }
 }

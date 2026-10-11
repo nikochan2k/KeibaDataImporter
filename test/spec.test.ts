@@ -20,9 +20,9 @@ import { Cyb } from "../src/app/reader/JRDB/Cyb";
 import { Hja } from "../src/app/reader/JRDB/Hja";
 import { Hjc } from "../src/app/reader/JRDB/Hjc";
 import { Joa } from "../src/app/reader/JRDB/Joa";
-import { JrdbKaisaiShussoubaTool } from "../src/app/reader/JRDB/JrdbKaisaiShussoubaTool";
-import { JrdbRaceTool } from "../src/app/reader/JRDB/JrdbRaceTool";
-import { JrdbShussoubaTool } from "../src/app/reader/JRDB/JrdbShussoubaTool";
+import { jrdbKaisaiShussoubaTool } from "../src/app/reader/JRDB/JrdbKaisaiShussoubaTool";
+import { jrdbRaceTool } from "../src/app/reader/JRDB/JrdbRaceTool";
+import { jrdbShussoubaTool } from "../src/app/reader/JRDB/JrdbShussoubaTool";
 import { K$a } from "../src/app/reader/JRDB/K$a";
 import { Kaa } from "../src/app/reader/JRDB/Kaa";
 import { Kab } from "../src/app/reader/JRDB/Kab";
@@ -45,7 +45,6 @@ import { Zec } from "../src/app/reader/JRDB/Zec";
 import { Zed } from "../src/app/reader/JRDB/Zed";
 import { Zkb } from "../src/app/reader/JRDB/Zkb";
 import { decodeSjis } from "../src/app/util/Sjis";
-import { Container } from "./container";
 import { setFileDate } from "./helpers";
 import { codeTables } from "./spec/code-tables";
 import { specOf } from "./spec/docs";
@@ -132,7 +131,7 @@ describe("仕様書の項目表", () => {
 describe("レコード長", () => {
   for (const [prefix, cls] of Object.entries(readers)) {
     test(`${prefix}: リーダーのレコード長が仕様書と一致する`, () => {
-      const reader = Container.get(cls) as unknown as { getBufferLength(): number };
+      const reader = new cls() as unknown as { getBufferLength(): number };
       expect(reader.getBufferLength()).toBe(specFor(prefix).tableLength);
     });
   }
@@ -176,8 +175,8 @@ describe("見本データの取り込み", () => {
       // 競走記号は、全部の変換器を順に試して合致しないものが null になる(正常)
       if (
         u.caller.startsWith("JrdbRaceTool.ts") &&
-        u.caller !== "JrdbRaceTool.ts:55" &&
-        u.caller !== "JrdbRaceTool.ts:81"
+        u.caller !== "JrdbRaceTool.ts:50" &&
+        u.caller !== "JrdbRaceTool.ts:76"
       ) {
         continue;
       }
@@ -190,17 +189,17 @@ describe("見本データの取り込み", () => {
     const unexpected = [...counts.keys()].filter(
       (k) =>
         // 障害(3)の芝ダ区分、重賞(4)・特別(5)のグレードは、別の項目で持つので null で正しい
-        !/JrdbRaceTool\.ts:(55|81)/.test(k) &&
+        !/JrdbRaceTool\.ts:(50|76)/.test(k) &&
         // 調教コース A1(連闘) は調教場所を持たない(種類で持つ)
         !/cha Cha\.ts:17 "A1"/.test(k) &&
         // 地方の調教師の所属(東西の区分がない)
-        !/Ky\$\.ts:80 /.test(k) &&
+        !/Ky\$\.ts:69 /.test(k) &&
         // 産地名の「追分」(コード表にない地名)
-        !/ukc Ukc\.ts:47 /.test(k) &&
+        !/ukc Ukc\.ts:36 /.test(k) &&
         // 見本データに現れる、コード表にない印(7, 8)や距離適性(4, 7)
-        !/ky[ghi] Ky\$\.ts:(137|160|223) /.test(k) &&
+        !/ky[ghi] Ky\$\.ts:(126|149|212) /.test(k) &&
         // 見本データ自体の不整合
-        !/kyg JrdbShussoubaTool\.ts:30 "2 {2}"/.test(k),
+        !/kyg JrdbShussoubaTool\.ts:22 "2 {2}"/.test(k),
     );
     expect(unexpected).toEqual([]);
   });
@@ -266,11 +265,8 @@ const time = (v: string) => {
 };
 
 const findShussouba = async (rec: Buffer) => {
-  const raceId = Container.get(JrdbRaceTool).getRaceIdBy(
-    rec,
-    Container.get(JrdbKaisaiShussoubaTool),
-  );
-  const info = await Container.get(JrdbShussoubaTool).getShussoubaInfo(rec, 8, raceId);
+  const raceId = jrdbRaceTool.getRaceIdBy(rec, jrdbKaisaiShussoubaTool);
+  const info = await jrdbShussoubaTool.getShussoubaInfo(rec, 8, raceId);
   return { raceId, shussouba: info.shussouba };
 };
 
@@ -303,8 +299,8 @@ describe("仕様書の値と取り込み結果の突き合わせ", () => {
     setFileDate(2015, 7, 12);
     let checked = 0;
     for (const rec of records("kyi", "Kyi")) {
-      const raceId = Container.get(JrdbRaceTool).getRaceId(rec);
-      const info = await Container.get(JrdbShussoubaTool).getShussoubaInfo(rec, 8, raceId);
+      const raceId = jrdbRaceTool.getRaceId(rec);
+      const info = await jrdbShussoubaTool.getShussoubaInfo(rec, 8, raceId);
       expect(info.shussouba).toBeTruthy();
       const shussouba = await dataSource.manager.findOneBy(Shussouba, { Id: info.shussouba.Id });
       expect(shussouba.Wakuban).toBe(parseInt(f(rec, "枠番"), 10));
@@ -333,7 +329,7 @@ describe("仕様書の値と取り込み結果の突き合わせ", () => {
     let checked = 0;
     const mismatches: string[] = [];
     for (const rec of records("hjc", "Hjc")) {
-      const raceId = Container.get(JrdbRaceTool).getRaceId(rec);
+      const raceId = jrdbRaceTool.getRaceId(rec);
       for (const [group, occ, baken] of groups) {
         for (let i = 1; i <= occ; i++) {
           const combo = spec.slots.find(
@@ -384,7 +380,7 @@ describe("仕様書の値と取り込み結果の突き合わせ", () => {
     let wakuren = 0;
     let umaren = 0;
     for (const rec of records("oz", "Oz")) {
-      const raceId = Container.get(JrdbRaceTool).getRaceId(rec);
+      const raceId = jrdbRaceTool.getRaceId(rec);
       const tousuu = parseInt(f(rec, "登録頭数"), 10);
       const expected = (tousuu * (tousuu - 1)) / 2;
       const count = (baken: Baken) =>

@@ -1,12 +1,11 @@
-import { Inject, Injectable } from "@nestjs/common";
 import { HeichiShougai } from "../../../converters/Race";
 import { Race } from "../../../entities/Race";
 import { Shussouba } from "../../../entities/Shussouba";
-import { KolShussoubaTool } from "../../KOL/KolShussoubaTool";
+import { kolShussoubaTool } from "../../KOL/KolShussoubaTool";
 import { readPositiveInt, readSignedInt } from "../../Reader";
 import { JraSeisekiOffsets, JraShussoubaOffsets, JraShussoubaTool } from "../JraShussoubaTool";
-import { JravanOddsHaitouTool } from "./JravanOddsHaitouTool";
-import { JravanRaceTool } from "./JravanRaceTool";
+import { jravanOddsHaitouTool } from "./JravanOddsHaitouTool";
+import { jravanRaceTool } from "./JravanRaceTool";
 
 /** 出馬表・成績の馬番ごとの情報の長さ */
 export const jravanDenUmaLength = 63;
@@ -40,19 +39,9 @@ const seisekiOffsets: JraSeisekiOffsets = {
  * 出馬表・成績の馬番ごとの情報 (先頭 63 バイトは共通) を読みます。
  * buffer はその馬番の情報だけを切り出したものです。
  */
-@Injectable()
 export class JravanShussoubaTool extends JraShussoubaTool {
-  @Inject()
-  private jravanRaceTool: JravanRaceTool;
-
-  @Inject()
-  private oddsHaitouTool: JravanOddsHaitouTool;
-
-  @Inject()
-  private kolShussoubaTool: KolShussoubaTool;
-
   protected getRaceId(buffer: Buffer) {
-    return this.jravanRaceTool.getRaceId(buffer);
+    return jravanRaceTool.getRaceId(buffer);
   }
 
   /** 該当馬番のデータがない(全項目が空白)ときは false */
@@ -106,7 +95,9 @@ export class JravanShussoubaTool extends JraShussoubaTool {
     }
     await this.saveSeiseki(toBe);
 
-    await this.oddsHaitouTool.saveKakuteiNinkiOdds(buffer, race.Id, shussouba.Umaban, 95, 97);
-    await this.kolShussoubaTool.saveShussoubaTsuukaJuni(buffer, 70, shussouba);
+    await jravanOddsHaitouTool.saveKakuteiNinkiOdds(buffer, race.Id, shussouba.Umaban, 95, 97);
+    await kolShussoubaTool.saveShussoubaTsuukaJuni(buffer, 70, shussouba);
   }
 }
+
+export const jravanShussoubaTool = new JravanShussoubaTool();

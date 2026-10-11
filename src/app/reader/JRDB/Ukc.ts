@@ -1,26 +1,15 @@
-import { Inject, Injectable } from "@nestjs/common";
 import * as $C from "../../converters/Common";
 import * as $U from "../../converters/Uma";
-import { SeisanshaDao } from "../../daos/SeisanshaDao";
-import { UmaDao } from "../../daos/UmaDao";
+import { seisanshaDao } from "../../daos/SeisanshaDao";
+import { umaDao } from "../../daos/UmaDao";
 import { Kyousouba } from "../../entities/Kyousouba";
 import { MeishouKubun } from "../../entities/Shoyuu";
 import { Uma } from "../../entities/Uma";
 import { readInt, readStr } from "../Reader";
-import { Tool } from "../Tool";
+import { tool } from "../Tool";
 import { JrdbData } from "./JrdbData";
 
-@Injectable()
 export class Ukc extends JrdbData {
-  @Inject()
-  protected tool: Tool;
-
-  @Inject()
-  private umaDao: UmaDao;
-
-  @Inject()
-  private seisanshaDao: SeisanshaDao;
-
   protected getBufferLength() {
     return 292;
   }
@@ -30,7 +19,7 @@ export class Ukc extends JrdbData {
     let uma = new Uma();
     uma.KettouTourokuBangou = readStr(buffer, 0, 8);
     const bamei = readStr(buffer, 8, 36);
-    if (this.tool.isEnglish(bamei)) {
+    if (tool.isEnglish(bamei)) {
       uma.EigoBamei = bamei;
     } else {
       uma.KanaBamei = bamei;
@@ -49,14 +38,14 @@ export class Ukc extends JrdbData {
     uma.MasshouFlag = $C.masshouFlag.toCodeFromJrdb(buffer, 267, 1);
     uma.ChichiKeitouCode = $U.keitou.toCodeFromJrdb(buffer, 276, 4);
     uma.HahaChichiKeitouCode = $U.keitou.toCodeFromJrdb(buffer, 280, 4);
-    uma = await this.umaDao.saveUma(uma);
+    uma = await umaDao.saveUma(uma);
     await this.saveSeisansha(buffer, uma.Id);
 
     let kyousouba = new Kyousouba();
     kyousouba.UmaId = uma.Id;
     kyousouba.Seibetsu = seibetsu;
     kyousouba.UmaKigou = $U.umaKigou.toCodeFromJrdb(buffer, 47, 2);
-    kyousouba = await this.umaDao.saveKyousouba(kyousouba);
+    kyousouba = await umaDao.saveKyousouba(kyousouba);
     return { Kyousouba: kyousouba, Uma: uma };
   }
 
@@ -72,7 +61,7 @@ export class Ukc extends JrdbData {
       return null;
     }
     const uma = new Uma();
-    if (this.tool.isEnglish(bamei)) {
+    if (tool.isEnglish(bamei)) {
       uma.EigoBamei = bamei;
     } else {
       uma.KanaBamei = bamei;
@@ -80,14 +69,14 @@ export class Ukc extends JrdbData {
     uma.Seinen = readInt(buffer, seinenOffset, 4);
     uma.Seibetsu = seibetsu;
     uma.ChichiUmaId = chichiUma?.Id;
-    return this.umaDao.saveUma(uma);
+    return umaDao.saveUma(uma);
   }
 
   public async saveSeisansha(buffer: Buffer, umaId: number) {
-    const seisanshaMei = this.tool.normalizeHoujinMei(buffer, 219, 40);
+    const seisanshaMei = tool.normalizeHoujinMei(buffer, 219, 40);
     if (!seisanshaMei) {
       return;
     }
-    await this.seisanshaDao.save(umaId, MeishouKubun.Full, seisanshaMei);
+    await seisanshaDao.save(umaId, MeishouKubun.Full, seisanshaMei);
   }
 }

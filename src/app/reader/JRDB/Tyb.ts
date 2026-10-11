@@ -1,4 +1,3 @@
-import { Inject, Injectable } from "@nestjs/common";
 import { EntityManager } from "typeorm";
 import * as $C from "../../converters/Common";
 import * as $K from "../../converters/Kishu";
@@ -19,31 +18,21 @@ import {
   readPositiveInt,
   readSignedInt,
 } from "../Reader";
-import { Tool } from "../Tool";
+import { tool } from "../Tool";
 import { JrdbData } from "./JrdbData";
-import { JrdbOddsHaitouTool } from "./JrdbOddsHaitouTool";
-import { JrdbShussoubaTool } from "./JrdbShussoubaTool";
+import { jrdbOddsHaitouTool } from "./JrdbOddsHaitouTool";
+import { jrdbShussoubaTool } from "./JrdbShussoubaTool";
 
-@Injectable()
 export class Tyb extends JrdbData {
   @OrmManager()
   protected entityManager: EntityManager;
-
-  @Inject()
-  protected tool: Tool;
-
-  @Inject()
-  protected jrdbShussoubaTool: JrdbShussoubaTool;
-
-  @Inject()
-  protected jrdbOddsHaitouTool: JrdbOddsHaitouTool;
 
   protected getBufferLength() {
     return 128;
   }
 
   public async save(buffer: Buffer) {
-    const shussouba = await this.jrdbShussoubaTool.getShussouba(buffer, 8);
+    const shussouba = await jrdbShussoubaTool.getShussouba(buffer, 8);
     if (!shussouba) {
       this.logger.warn("出走馬が見つかりません。");
       return;
@@ -64,7 +53,7 @@ export class Tyb extends JrdbData {
     if (race) {
       const toBe = new Race();
       toBe.HassouJikan = readJikan(buffer, 99);
-      await this.tool.saveOrUpdate(Race, race, toBe, true);
+      await tool.saveOrUpdate(Race, race, toBe, true);
     }
 
     const asIs = await this.entityManager.findOneBy(RaceSeiseki, { Id: raceId });
@@ -73,7 +62,7 @@ export class Tyb extends JrdbData {
     seiseki.Baba = $R.baba.toCodeFromJrdb(buffer, 69, 1);
     seiseki.BabaSokudo = $R.babaSokudo.toCodeFromJrdb(buffer, 70, 1);
     seiseki.Tenki = $R.tenki.toCodeFromJrdb(buffer, 71, 1);
-    await this.tool.saveOrUpdate(RaceSeiseki, asIs, seiseki, true);
+    await tool.saveOrUpdate(RaceSeiseki, asIs, seiseki, true);
   }
 
   protected async saveShussoubaHyouka(buffer: Buffer, shussoubaId: number) {
@@ -82,7 +71,7 @@ export class Tyb extends JrdbData {
     toBe.Id = shussoubaId;
     toBe.BataiCode = $S.bataiCode.toCodeFromJrdb(buffer, 97, 1);
     toBe.KehaiCode = $S.kehaiCode.toCodeFromJrdb(buffer, 98, 1);
-    await this.tool.saveOrUpdate(ShussoubaHyouka, asIs, toBe, true);
+    await tool.saveOrUpdate(ShussoubaHyouka, asIs, toBe, true);
   }
 
   protected async saveShussoubaYosou(buffer: Buffer, shussoubaId: number) {
@@ -102,18 +91,18 @@ export class Tyb extends JrdbData {
     toBe.PaddockShirushi = $SY.shirushi.toCodeFromJrdb(buffer, 95, 1);
     toBe.ChokuzenSougouShirushi = $SY.shirushi.toCodeFromJrdb(buffer, 96, 1);
 
-    await this.tool.saveOrUpdate(ShussoubaYosou, asIs, toBe);
+    await tool.saveOrUpdate(ShussoubaYosou, asIs, toBe);
   }
 
   protected async saveOddsHaitou(buffer: Buffer, shussouba: Shussouba) {
-    await this.jrdbOddsHaitouTool.saveOddsNinki(buffer, shussouba, {
+    await jrdbOddsHaitouTool.saveOddsNinki(buffer, shussouba, {
       Kakutei: $C.Kakutei.Chokuzen,
       Baken: $C.Baken.Tanshou,
       OddsOffset: 72,
       OddsLength: 6,
       JikanOffset: 84,
     });
-    await this.jrdbOddsHaitouTool.saveOddsNinki(buffer, shussouba, {
+    await jrdbOddsHaitouTool.saveOddsNinki(buffer, shussouba, {
       Kakutei: $C.Kakutei.Chokuzen,
       Baken: $C.Baken.Fukushou,
       OddsOffset: 78,
@@ -130,11 +119,11 @@ export class Tyb extends JrdbData {
     toBe.TorikeshiShubetsu = $S.torikeshiShubetsu.toCodeFromJrdb(buffer, 47, 1);
     toBe.Kinryou = readPositiveDouble(buffer, 65, 3, 0.1);
     toBe.MinaraiKubun = $K.minaraiKubun.toCodeFromJrdb(buffer, 68, 1);
-    const kishu = await this.jrdbShussoubaTool.saveKishu(buffer, 48, 53);
+    const kishu = await jrdbShussoubaTool.saveKishu(buffer, 48, 53);
     toBe.KishuId = kishu ? kishu.Id : null;
     toBe.Bataijuu = readPositiveInt(buffer, 88, 3);
     toBe.Zougen = readSignedInt(buffer, 91, 3);
 
-    await this.tool.saveOrUpdate(ShussoubaSeiseki, asIs, toBe);
+    await tool.saveOrUpdate(ShussoubaSeiseki, asIs, toBe);
   }
 }

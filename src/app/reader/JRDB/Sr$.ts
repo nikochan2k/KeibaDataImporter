@@ -1,17 +1,15 @@
-import { Inject } from "@nestjs/common";
 import { Race } from "../../entities/Race";
 import { RaceKeika } from "../../entities/RaceKeika";
-import { KeikaTool } from "../KeikaTool";
+import { keikaTool } from "../KeikaTool";
 import { readStr } from "../Reader";
+import { tool } from "../Tool";
 import { JrdbRaceData } from "./JrdbRaceData";
+import { jrdbRaceTool } from "./JrdbRaceTool";
 
 export abstract class Sr$ extends JrdbRaceData {
-  @Inject()
-  private keikaTool: KeikaTool;
-
   protected async saveRaceRelated(buffer: Buffer, race: Race) {
     await super.saveRaceSeiseki(buffer, race.Id);
-    await this.jrdbRaceTool.saveRaceLapTime(buffer, 8, race);
+    await jrdbRaceTool.saveRaceLapTime(buffer, 8, race);
     await this.saveCornerIchidori(buffer, race);
   }
 
@@ -40,8 +38,8 @@ export abstract class Sr$ extends JrdbRaceData {
     toBe.Midashi2 = midashi2;
     toBe.Keika = keika;
     const asIs = await this.entityManager.findOneBy(RaceKeika, { Id: toBe.Id });
-    await this.tool.saveOrUpdate(RaceKeika, asIs, toBe);
+    await tool.saveOrUpdate(RaceKeika, asIs, toBe);
 
-    await this.keikaTool.parseRaceKeika(toBe);
+    await keikaTool.parseRaceKeika(toBe);
   }
 }

@@ -1,18 +1,13 @@
-import { Inject, Injectable } from "@nestjs/common";
 import * as $S from "../../converters/Shussouba";
 import * as $SJ from "../../converters/ShussoubaYosou";
-import { HoubokusakiDao } from "../../daos/HoubokusakiDao";
+import { houbokusakiDao } from "../../daos/HoubokusakiDao";
 import { Shussouba } from "../../entities/Shussouba";
 import { ShussoubaYosou } from "../../entities/ShussoubaYosou";
 import { readInt, readStr } from "../Reader";
 import { ShussoubaInfo } from "../ShussoubaTool";
 import { Kyh } from "./Kyh";
 
-@Injectable()
 export class Kyi extends Kyh {
-  @Inject()
-  private houbokusakiDao: HoubokusakiDao;
-
   protected getBufferLength(): number {
     return 1024;
   }
@@ -34,7 +29,7 @@ export class Kyi extends Kyh {
     toBe.NyuukyuuNannichimae = readInt(buffer, 569, 3);
     const meishou = readStr(buffer, 572, 50);
     if (meishou) {
-      const houbokusaki = await this.houbokusakiDao.save(meishou);
+      const houbokusaki = await houbokusakiDao.save(meishou);
       toBe.HoubokusakiId = houbokusaki.Id;
     }
     toBe.HoubokusakiRank = $SJ.houbokusakiRank.toCodeFromJrdb(buffer, 622, 1);

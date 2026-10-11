@@ -1,13 +1,11 @@
-import { Inject, Injectable } from "@nestjs/common";
 import { EntityManager, Repository } from "typeorm";
 import { Jinmei, JinmeiKubun } from "../entities/Jinmei";
 import { Kishu } from "../entities/Kishu";
 import { KishuMei } from "../entities/KishuMei";
 import { OrmManager, OrmRepository } from "../OrmManager";
-import { Tool } from "../reader/Tool";
-import { JinmeiDao, jinmeiMatchingKey } from "./JinmeiDao";
+import { tool } from "../reader/Tool";
+import { jinmeiDao, jinmeiMatchingKey } from "./JinmeiDao";
 
-@Injectable()
 export class KishuDao {
   @OrmManager()
   protected entityManager: EntityManager;
@@ -17,12 +15,6 @@ export class KishuDao {
 
   @OrmRepository(KishuMei)
   private kishuMeiRepository: Repository<KishuMei>;
-
-  @Inject()
-  private jinmeiDao: JinmeiDao;
-
-  @Inject()
-  private tool: Tool;
 
   private static readonly codeKeys = ["KolKishuCode", "JrdbKishuCode", "JvDataKishuCode"] as const;
 
@@ -111,7 +103,7 @@ LIMIT
     const asIs = await this.getKishu(toBe, seimei, tanshuku);
     const newCode = !!asIs && KishuDao.codeKeys.some((k) => toBe[k] != null && asIs[k] == null);
     if (!asIs || newCode || (seimei && tanshuku && furigana)) {
-      toBe = await this.tool.saveOrUpdate(Kishu, asIs, toBe);
+      toBe = await tool.saveOrUpdate(Kishu, asIs, toBe);
     } else {
       return asIs;
     }
@@ -132,7 +124,7 @@ LIMIT
   }
 
   protected async saveKishuMei(kishu: Kishu, kubun: JinmeiKubun, meishou: string) {
-    const jinmei = await this.jinmeiDao.save(meishou);
+    const jinmei = await jinmeiDao.save(meishou);
     let kishuMei = await this.kishuMeiRepository.findOneBy({
       KishuId: kishu.Id,
       JinmeiId: jinmei.Id,
@@ -147,3 +139,5 @@ LIMIT
     }
   }
 }
+
+export const kishuDao = new KishuDao();

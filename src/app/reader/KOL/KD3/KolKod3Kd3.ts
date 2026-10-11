@@ -1,23 +1,15 @@
-import { Inject, Injectable } from "@nestjs/common";
 import { Kakutei } from "../../../converters/Common";
 import { DataToImport } from "../../DataToImport";
-import { KolOddsHaitouTool } from "../KolOddsHaitouTool";
-import { KolRaceTool } from "../KolRaceTool";
+import { kolOddsHaitouTool } from "../KolOddsHaitouTool";
+import { kolRaceTool } from "../KolRaceTool";
 
-@Injectable()
 export class KolKod3Kd3 extends DataToImport {
-  @Inject()
-  private kolRaceTool: KolRaceTool;
-
-  @Inject()
-  private kolOddsHaitouTool: KolOddsHaitouTool;
-
   protected getBufferLength() {
     return 49123;
   }
 
   public async save(buffer: Buffer) {
-    const raceId = await this.kolRaceTool.getRaceId(buffer);
+    const raceId = await kolRaceTool.getRaceId(buffer);
     if (!raceId) {
       return;
     }
@@ -25,6 +17,6 @@ export class KolKod3Kd3 extends DataToImport {
   }
 
   protected async saveSanrentan(buffer: Buffer, raceId: number) {
-    await this.kolOddsHaitouTool.saveSanrentanOdds(buffer, 161, raceId, Kakutei.Kakutei);
+    await kolOddsHaitouTool.saveSanrentanOdds(buffer, 161, raceId, Kakutei.Kakutei);
   }
 }

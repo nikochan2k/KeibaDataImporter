@@ -1,20 +1,18 @@
-import { Inject } from "@nestjs/common";
 import { Shussouba } from "../../entities/Shussouba";
 import { ShussoubaInfo } from "../ShussoubaTool";
+import { tool } from "../Tool";
 import { JrdbRaceData } from "./JrdbRaceData";
-import { JrdbShussoubaTool } from "./JrdbShussoubaTool";
+import { jrdbRaceTool } from "./JrdbRaceTool";
+import { jrdbShussoubaTool } from "./JrdbShussoubaTool";
 
 export abstract class JrdbShussoubaData extends JrdbRaceData {
-  @Inject()
-  protected jrdbShussoubaTool: JrdbShussoubaTool;
-
   public async save(buffer: Buffer) {
     await super.save(buffer);
-    const raceId = this.jrdbRaceTool.getRaceIdBy(buffer, this.getKaisaiTool());
+    const raceId = jrdbRaceTool.getRaceIdBy(buffer, this.getKaisaiTool());
     if (raceId == null) {
       return;
     }
-    const info = await this.jrdbShussoubaTool.getShussoubaInfo(buffer, 8, raceId);
+    const info = await jrdbShussoubaTool.getShussoubaInfo(buffer, 8, raceId);
     if (!info) {
       return;
     }
@@ -24,13 +22,13 @@ export abstract class JrdbShussoubaData extends JrdbRaceData {
   }
 
   protected async saveShussouba(buffer: Buffer, info: ShussoubaInfo, raceId: number) {
-    const toBe = this.jrdbShussoubaTool.createShussouba(buffer, 8, raceId);
+    const toBe = jrdbShussoubaTool.createShussouba(buffer, 8, raceId);
     if (!toBe) {
       return info.shussouba;
     }
     await this.setShussouba(buffer, toBe, info);
     const asIs = info.shussouba;
-    const shussouba = await this.tool.saveOrUpdate(Shussouba, asIs, toBe, this.keepExisting);
+    const shussouba = await tool.saveOrUpdate(Shussouba, asIs, toBe, this.keepExisting);
     return shussouba;
   }
 

@@ -36,7 +36,6 @@ import { JvdataRa } from "../src/app/reader/JRA/JVData/JvdataRa";
 import { JvdataSe } from "../src/app/reader/JRA/JVData/JvdataSe";
 import { JvdataUm } from "../src/app/reader/JRA/JVData/JvdataUm";
 import { JvdataYs } from "../src/app/reader/JRA/JVData/JvdataYs";
-import { Container } from "./container";
 import { JvdataRecord, parseJvdataCodes, parseJvdataSpec } from "./spec/jvdata";
 import { closeKolDb, emptyKolDb, importKolFiles } from "./spec/kol";
 
@@ -64,7 +63,7 @@ const handlers = [
 
 describe("JV-Data の仕様書", () => {
   for (const handler of handlers) {
-    const record = Container.get(handler);
+    const record = new handler();
     test(`${record.id}: 取り込み処理のレコード長が仕様書と一致する`, () => {
       expect(record.length).toBe(parseJvdataSpec(record.id).size);
     });

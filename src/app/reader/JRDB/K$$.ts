@@ -1,14 +1,10 @@
-import { Inject } from "@nestjs/common";
 import * as $K from "../../converters/Kishu";
-import { KishuDao } from "../../daos/KishuDao";
+import { kishuDao } from "../../daos/KishuDao";
 import { Kishu } from "../../entities/Kishu";
 import { readInt, readPositiveInt, readStr } from "../Reader";
 import { JrdbData } from "./JrdbData";
 
 export abstract class K$$ extends JrdbData {
-  @Inject()
-  private kishuDao: KishuDao;
-
   public async save(buffer: Buffer) {
     await this.saveKishu(buffer);
   }
@@ -23,6 +19,6 @@ export abstract class K$$ extends JrdbData {
     kishu.MenkyoKoufuNengappi = readPositiveInt(buffer, 75, 4);
     kishu.Shozoku = $K.shozoku.toCodeFromJrdb(buffer, 62, 1);
     kishu.MinaraiKubun = $K.minaraiKubun.toCodeFromJrdb(buffer, 79, 1);
-    await this.kishuDao.saveKishu(kishu, kishuMei, tanshukuKishuMei, furigana);
+    await kishuDao.saveKishu(kishu, kishuMei, tanshukuKishuMei, furigana);
   }
 }

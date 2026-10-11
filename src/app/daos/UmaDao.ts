@@ -1,12 +1,10 @@
-import { Inject, Injectable } from "@nestjs/common";
 import { EntityManager, Repository } from "typeorm";
 import * as $U from "../converters/Uma";
 import { Kyousouba } from "../entities/Kyousouba";
 import { Uma } from "../entities/Uma";
 import { OrmManager, OrmRepository } from "../OrmManager";
-import { Tool } from "../reader/Tool";
+import { tool } from "../reader/Tool";
 
-@Injectable()
 export class UmaDao {
   @OrmManager()
   protected entityManager: EntityManager;
@@ -16,9 +14,6 @@ export class UmaDao {
 
   @OrmRepository(Uma)
   private umaRepository: Repository<Uma>;
-
-  @Inject()
-  private tool: Tool;
 
   private static readonly codeKeys = ["KolUmaCode", "KettouTourokuBangou"] as const;
 
@@ -95,7 +90,7 @@ export class UmaDao {
       toBe.Seibetsu = $U.Seibetsu.Boba;
     }
     const asIs = await this.getUma(toBe);
-    return await this.tool.saveOrUpdate(Uma, asIs, toBe);
+    return await tool.saveOrUpdate(Uma, asIs, toBe);
   }
 
   public async saveKyousouba(toBe: Kyousouba) {
@@ -107,3 +102,5 @@ export class UmaDao {
     }
   }
 }
+
+export const umaDao = new UmaDao();

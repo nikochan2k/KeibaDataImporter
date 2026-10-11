@@ -1,4 +1,3 @@
-import { Inject, Injectable } from "@nestjs/common";
 import { Baken, Kakutei } from "../../converters/Common";
 import * as $K from "../../converters/Kaisai";
 import * as $R from "../../converters/Race";
@@ -7,7 +6,7 @@ import { Kaisai } from "../../entities/Kaisai";
 import { Race } from "../../entities/Race";
 import { RaceKeika } from "../../entities/RaceKeika";
 import { RaceSeiseki } from "../../entities/RaceSeiseki";
-import { KeikaTool } from "../KeikaTool";
+import { keikaTool } from "../KeikaTool";
 import { HaitouInfo } from "../OddsHaitouTool";
 import {
   readInt,
@@ -17,35 +16,19 @@ import {
   readStr,
   readTime,
 } from "../Reader";
-import { Tool } from "../Tool";
+import { tool } from "../Tool";
 import { KolDataToImport } from "./KolDataToImport";
-import { KolKaisaiTool } from "./KolKaisaiTool";
-import { KolOddsHaitouTool } from "./KolOddsHaitouTool";
-import { KolRaceTool } from "./KolRaceTool";
+import { kolKaisaiTool } from "./KolKaisaiTool";
+import { kolOddsHaitouTool } from "./KolOddsHaitouTool";
+import { kolRaceTool } from "./KolRaceTool";
 
-@Injectable()
 export class KolSei1 extends KolDataToImport {
-  @Inject()
-  private tool: Tool;
-
-  @Inject()
-  private keikaTool: KeikaTool;
-
-  @Inject()
-  private kolKaisaiTool: KolKaisaiTool;
-
-  @Inject()
-  private kolRaceTool: KolRaceTool;
-
-  @Inject()
-  private kolOddsHaitouTool: KolOddsHaitouTool;
-
   protected getBufferLength() {
     return 3200;
   }
 
   public async save(buffer: Buffer) {
-    const id = this.kolRaceTool.getRaceId(buffer);
+    const id = kolRaceTool.getRaceId(buffer);
     const dataNengappi = readInt(buffer, this.at(2910), 8);
 
     const raceSeiseki = await this.entityManager.findOneBy(RaceSeiseki, { Id: id });
@@ -71,20 +54,20 @@ export class KolSei1 extends KolDataToImport {
   }
 
   protected async saveKaisai(buffer: Buffer) {
-    const toBe = this.kolKaisaiTool.createKaisai(buffer);
+    const toBe = kolKaisaiTool.createKaisai(buffer);
     if (!toBe) {
       return null;
     }
     toBe.Kyuujitsu = $K.kyuujitsu.toCodeFromKol(buffer, 20, 1);
     toBe.Youbi = $K.youbi.toCodeFromKol(buffer, 21, 1);
-    toBe.KaisaiKubun = this.kolKaisaiTool.convertKaisaiKubunFrom(toBe.Basho);
+    toBe.KaisaiKubun = kolKaisaiTool.convertKaisaiKubunFrom(toBe.Basho);
     toBe.ChuuouChihouGaikoku = $K.chuuouChihouGaikoku.toCodeFromKol(buffer, 23, 1);
-    const asIs = await this.kolKaisaiTool.getKaisaiWithId(buffer);
-    return await this.tool.saveOrUpdate(Kaisai, asIs, toBe);
+    const asIs = await kolKaisaiTool.getKaisaiWithId(buffer);
+    return await tool.saveOrUpdate(Kaisai, asIs, toBe);
   }
 
   protected async saveRace(buffer: Buffer, kaisai: Kaisai, asIs: Race) {
-    const toBe = this.kolRaceTool.createRace(buffer, kaisai.Id);
+    const toBe = kolRaceTool.createRace(buffer, kaisai.Id);
     if (!toBe) {
       return null;
     }
@@ -159,11 +142,11 @@ export class KolSei1 extends KolDataToImport {
     toBe.Course = $R.course.toCodeFromKol(buffer, this.at(119), 1);
     toBe.Kyori = readPositiveInt(buffer, this.at(120), 4);
 
-    const courceRecord = await this.kolRaceTool.getRecord(buffer, this.at(125), 0);
+    const courceRecord = await kolRaceTool.getRecord(buffer, this.at(125), 0);
     toBe.CourseRecordId = courceRecord?.Id;
-    const kyoriRecord = await this.kolRaceTool.getRecord(buffer, this.at(178), this.at(231));
+    const kyoriRecord = await kolRaceTool.getRecord(buffer, this.at(178), this.at(231));
     toBe.KyoriRecordId = kyoriRecord?.Id;
-    const raceRecord = await this.kolRaceTool.getRecord(buffer, this.at(233), this.at(286));
+    const raceRecord = await kolRaceTool.getRecord(buffer, this.at(233), this.at(286));
     toBe.RaceRecordId = raceRecord?.Id;
 
     toBe.FukaShou = readPositiveInt(buffer, this.at(351), 9);
@@ -173,12 +156,12 @@ export class KolSei1 extends KolDataToImport {
     toBe.SuiteiTimeRyou = readTime(buffer, this.at(370), 4);
     toBe.SuiteiTimeOmoFuryou = readTime(buffer, this.at(374), 4);
 
-    return await this.tool.saveOrUpdate(Race, asIs, toBe);
+    return await tool.saveOrUpdate(Race, asIs, toBe);
   }
 
   protected async saveRaceMei(buffer: Buffer, race: Race) {
-    await this.kolRaceTool.saveRaceMei(buffer, 29, 30, race);
-    await this.kolRaceTool.saveRaceMei(buffer, 59, 14, race);
+    await kolRaceTool.saveRaceMei(buffer, 29, 30, race);
+    await kolRaceTool.saveRaceMei(buffer, 59, 14, race);
   }
 
   protected async saveRaceSeiseki(
@@ -206,13 +189,13 @@ export class KolSei1 extends KolDataToImport {
     }
     toBe.KolNengappi = dataNengappi;
 
-    await this.tool.saveOrUpdate(RaceSeiseki, asIs, toBe);
+    await tool.saveOrUpdate(RaceSeiseki, asIs, toBe);
   }
 
   protected async saveRaceLapTime(buffer: Buffer, race: Race) {
     const lapTime1 = readPositiveDouble(buffer, this.at(402), 3, 0.1);
     if (lapTime1) {
-      await this.kolRaceTool.saveRaceLapTime(buffer, this.at(402), race);
+      await kolRaceTool.saveRaceLapTime(buffer, this.at(402), race);
     } else {
       const heichiShougai = $R.heichiShougai.toCodeFromKol(buffer, 25, 1);
       if (heichiShougai === 1) {
@@ -227,7 +210,7 @@ export class KolSei1 extends KolDataToImport {
   }
 
   protected async saveShougaiRaceLapTime(buffer: Buffer, race: Race) {
-    await this.kolRaceTool.saveSpecialRaceLapTime(buffer, race, [
+    await kolRaceTool.saveSpecialRaceLapTime(buffer, race, [
       {
         Offset: this.at(382),
         Length: 5,
@@ -253,7 +236,7 @@ export class KolSei1 extends KolDataToImport {
   }
 
   protected async saveChihouRaceLapTime(buffer: Buffer, race: Race) {
-    await this.kolRaceTool.saveSpecialRaceLapTime(buffer, race, [
+    await kolRaceTool.saveSpecialRaceLapTime(buffer, race, [
       { Offset: this.at(441), Length: 3, KaishiKyori: 0, ShuuryouKyori: 600 },
       { Offset: this.at(444), Length: 3, KaishiKyori: 0, ShuuryouKyori: 800 },
       { Offset: this.at(447), Length: 3, KaishiKyori: 0, ShuuryouKyori: 1000 },
@@ -277,23 +260,18 @@ export class KolSei1 extends KolDataToImport {
       toBe.Midashi2 = midashi2;
       toBe.Keika = keika;
       const asIs = await this.entityManager.findOneBy(RaceKeika, { Id: toBe.Id });
-      await this.tool.saveOrUpdate(RaceKeika, asIs, toBe);
+      await tool.saveOrUpdate(RaceKeika, asIs, toBe);
 
-      await this.keikaTool.parseRaceKeika(toBe);
+      await keikaTool.parseRaceKeika(toBe);
     }
   }
 
   protected async saveRaceHassouJoukyou(buffer: Buffer, race: Race) {
-    await this.kolRaceTool.saveRaceHassouJoukyou(buffer, this.at(1473), race);
+    await kolRaceTool.saveRaceHassouJoukyou(buffer, this.at(1473), race);
   }
 
   protected async saveRaceHaitou(buffer: Buffer, race: Race) {
-    await this.kolOddsHaitouTool.saveRaceHaitou(
-      buffer,
-      race.Id,
-      Kakutei.Kakutei,
-      this.haitouInfos(),
-    );
+    await kolOddsHaitouTool.saveRaceHaitou(buffer, race.Id, Kakutei.Kakutei, this.haitouInfos());
   }
 
   /** 配当の読み取り位置 (KD3 のアドレス) */

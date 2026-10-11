@@ -7,7 +7,6 @@ import { RaceSeiseki } from "../src/app/entities/RaceSeiseki";
 import { ShussoubaSeiseki } from "../src/app/entities/ShussoubaSeiseki";
 import { Sec } from "../src/app/reader/JRDB/Sec";
 import { Sed } from "../src/app/reader/JRDB/Sed";
-import { Container } from "./container";
 import { base, Field, record } from "./helpers";
 
 const sedRecord = (fields: Field[], length = 376) => record(fields, length);
@@ -23,7 +22,7 @@ afterAll(async () => {
 });
 
 test("SED 1 レコードの取り込み", async () => {
-  const sed = Container.get(Sed);
+  const sed = new Sed();
   await sed.save(sedRecord(base));
 
   const kaisai = await dataSource.manager.find(Kaisai);
@@ -47,7 +46,7 @@ test("SED 1 レコードの取り込み", async () => {
 });
 
 test("速報版(SEC)の空白項目で既存の値を消さない", async () => {
-  const sec = Container.get(Sec);
+  const sec = new Sec();
   // 速報版は馬場状態・天候・コース・前3F先頭差などが空白
   const record = sedRecord(
     base.filter(([pos]) => ![70, 339, 340, 317, 320, 256, 265, 371].includes(pos)),
@@ -65,7 +64,7 @@ test("速報版(SEC)の空白項目で既存の値を消さない", async () => 
 });
 
 test("地方レース(回・日が英字)は年月日から開催を決める", async () => {
-  const sed = Container.get(Sed);
+  const sed = new Sed();
   const local = base
     .filter(([pos]) => ![1, 5, 6].includes(pos))
     .concat([
@@ -82,7 +81,7 @@ test("地方レース(回・日が英字)は年月日から開催を決める", 
 });
 
 test("ファイル名の日付と異なる日のレコード(ZED)でも、レコードの日付で保存される", async () => {
-  const sed = Container.get(Sed);
+  const sed = new Sed();
   const old = base.filter(([pos]) => pos !== 19).concat([[19, "20230319"]] as Field[]);
   await sed.save(sedRecord(old));
 
@@ -91,7 +90,7 @@ test("ファイル名の日付と異なる日のレコード(ZED)でも、レコ
 });
 
 test("場コードが空白のレコード(前走データの外国・地方など)は何も保存せずに読み飛ばす", async () => {
-  const sed = Container.get(Sed);
+  const sed = new Sed();
   const before = [await dataSource.manager.count(Kaisai), await dataSource.manager.count(Race)];
   const blank = base.filter(([pos]) => ![1, 5, 6, 7, 9].includes(pos));
   await sed.save(sedRecord(blank));

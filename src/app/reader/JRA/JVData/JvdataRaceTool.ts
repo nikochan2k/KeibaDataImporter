@@ -1,8 +1,7 @@
-import { Inject, Injectable } from "@nestjs/common";
 import { Race } from "../../../entities/Race";
 import { readJikan, readPositiveInt, readRaw } from "../../Reader";
 import { JraRaceTool } from "../JraRaceTool";
-import { JvdataKaisaiTool } from "./JvdataKaisaiTool";
+import { jvdataKaisaiTool } from "./JvdataKaisaiTool";
 
 /** レース詳細 (RA) の曜日コードの位置 */
 export const jvdataYoubiOffset = 27;
@@ -15,13 +14,9 @@ export function hasSeiseki(kubun: string) {
   return /^[3-7AB]$/.test(kubun);
 }
 
-@Injectable()
 export class JvdataRaceTool extends JraRaceTool {
-  @Inject()
-  private jvdataKaisaiTool: JvdataKaisaiTool;
-
   protected get jraKaisaiTool() {
-    return this.jvdataKaisaiTool;
+    return jvdataKaisaiTool;
   }
 
   /**
@@ -80,3 +75,5 @@ export class JvdataRaceTool extends JraRaceTool {
     await this.saveRaceMei(buffer, 604, 6, race);
   }
 }
+
+export const jvdataRaceTool = new JvdataRaceTool();

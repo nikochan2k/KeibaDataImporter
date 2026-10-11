@@ -1,4 +1,3 @@
-import { Injectable } from "@nestjs/common";
 import { Logger } from "log4js";
 import { EntityManager, EntityTarget, ObjectLiteral, QueryDeepPartialEntity } from "typeorm";
 import { getLogger } from "../LogUtil";
@@ -39,7 +38,6 @@ export function getChoukyouId(
   return id;
 }
 
-@Injectable()
 export class Tool {
   protected logger: Logger;
 
@@ -170,3 +168,5 @@ export class Tool {
     return null;
   }
 }
+
+export const tool = new Tool();

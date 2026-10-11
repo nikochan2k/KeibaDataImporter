@@ -1,15 +1,10 @@
-import { Inject, Injectable } from "@nestjs/common";
 import * as $C from "../../converters/Common";
-import { Bridge } from "../Bridge";
+import { bridge } from "../Bridge";
 import { KaisaiInfo, KaisaiTool } from "../KaisaiTool";
 import { readHex, readPositiveInt, readRaw } from "../Reader";
 import { JrdbBridge } from "./JrdbBridge";
 
-@Injectable()
 export class JrdbKaisaiTool extends KaisaiTool {
-  @Inject()
-  private bridge: Bridge;
-
   protected getBasho(buffer: Buffer) {
     const basho = $C.basho.toCodeFromJrdb(buffer, 0, 2);
     /* tslint:disable:triple-equals */
@@ -28,7 +23,7 @@ export class JrdbKaisaiTool extends KaisaiTool {
   }
 
   protected getKaisaiInfo(buffer: Buffer): KaisaiInfo {
-    const jrdbBridge = <JrdbBridge>this.bridge;
+    const jrdbBridge = <JrdbBridge>bridge;
     return {
       basho: this.getBasho(buffer),
       nen: jrdbBridge.nen,
@@ -39,3 +34,5 @@ export class JrdbKaisaiTool extends KaisaiTool {
     };
   }
 }
+
+export const jrdbKaisaiTool = new JrdbKaisaiTool();

@@ -1,18 +1,13 @@
-import { Inject, Injectable } from "@nestjs/common";
 import * as $R from "../../converters/Race";
 import { Race } from "../../entities/Race";
 import { KaisaiTool } from "../KaisaiTool";
 import { RaceTool } from "../RaceTool";
 import { readPositiveInt, readRaw, readStr } from "../Reader";
-import { JrdbKaisaiTool } from "./JrdbKaisaiTool";
+import { jrdbKaisaiTool } from "./JrdbKaisaiTool";
 
-@Injectable()
 export class JrdbRaceTool extends RaceTool {
-  @Inject()
-  private jrdbKaisaiTool: JrdbKaisaiTool;
-
   protected getKaisaiTool() {
-    return this.jrdbKaisaiTool;
+    return jrdbKaisaiTool;
   }
 
   public getRace(buffer: Buffer, kaisaiId?: number) {
@@ -81,3 +76,5 @@ export class JrdbRaceTool extends RaceTool {
     toBe.Grade = $R.grade.toCodeFromJrdb(buffer, shubetsuOffset + 8, 1);
   }
 }
+
+export const jrdbRaceTool = new JrdbRaceTool();

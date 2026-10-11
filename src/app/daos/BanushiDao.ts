@@ -1,17 +1,12 @@
-import { Inject, Injectable } from "@nestjs/common";
 import { Repository } from "typeorm";
-import { MeishouDao } from "../daos/MeishouDao";
 import { Banushi } from "../entities/Banushi";
 import { MeishouKubun } from "../entities/Shoyuu";
 import { OrmRepository } from "../OrmManager";
+import { meishouDao } from "./MeishouDao";
 
-@Injectable()
 export class BanushiDao {
   @OrmRepository(Banushi)
   private repository: Repository<Banushi>;
-
-  @Inject()
-  private meishouDao: MeishouDao;
 
   public async save(
     shussoubaId: number,
@@ -19,7 +14,7 @@ export class BanushiDao {
     meishou: string,
     banushiKaiCode?: number,
   ) {
-    const shoyuu = await this.meishouDao.save(kubun, meishou, banushiKaiCode);
+    const shoyuu = await meishouDao.save(kubun, meishou, banushiKaiCode);
     let banushi = await this.repository.findOneBy({
       ShussoubaId: shussoubaId,
       ShoyuuId: shoyuu.Id,
@@ -33,3 +28,5 @@ export class BanushiDao {
     return banushi;
   }
 }
+
+export const banushiDao = new BanushiDao();

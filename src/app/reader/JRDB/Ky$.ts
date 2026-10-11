@@ -1,4 +1,3 @@
-import { Inject } from "@nestjs/common";
 import * as $CK from "../../converters/Choukyoushi";
 import * as $C from "../../converters/Common";
 import * as $K from "../../converters/Kishu";
@@ -7,9 +6,9 @@ import * as $S from "../../converters/Shussouba";
 import { Bagu } from "../../converters/ShussoubaJoutai";
 import * as $SY from "../../converters/ShussoubaYosou";
 import * as $U from "../../converters/Uma";
-import { BanushiDao } from "../../daos/BanushiDao";
-import { ChoukyoushiDao } from "../../daos/ChoukyoushiDao";
-import { UmaDao } from "../../daos/UmaDao";
+import { banushiDao } from "../../daos/BanushiDao";
+import { choukyoushiDao } from "../../daos/ChoukyoushiDao";
+import { umaDao } from "../../daos/UmaDao";
 import { Choukyoushi } from "../../entities/Choukyoushi";
 import { Kyousouba } from "../../entities/Kyousouba";
 import { MeishouKubun } from "../../entities/Shoyuu";
@@ -28,24 +27,14 @@ import {
   readStrWithNoSpace,
 } from "../Reader";
 import { ShussoubaInfo } from "../ShussoubaTool";
-import { JrdbOddsHaitouTool } from "./JrdbOddsHaitouTool";
+import { tool } from "../Tool";
+import { jrdbOddsHaitouTool } from "./JrdbOddsHaitouTool";
 import { JrdbShussoubaData } from "./JrdbShussoubaData";
+import { jrdbShussoubaTool } from "./JrdbShussoubaTool";
 
 export abstract class Ky$ extends JrdbShussoubaData {
-  @Inject()
-  protected jrdbOddsHaitouTool: JrdbOddsHaitouTool;
-
-  @Inject()
-  private choukyoushiDao: ChoukyoushiDao;
-
-  @Inject()
-  private umaDao: UmaDao;
-
-  @Inject()
-  private banushiDao: BanushiDao;
-
   protected async setShussouba(buffer: Buffer, toBe: Shussouba, info: ShussoubaInfo) {
-    const kishu = await this.jrdbShussoubaTool.saveKishu(buffer, 335, 171);
+    const kishu = await jrdbShussoubaTool.saveKishu(buffer, 335, 171);
     toBe.KishuId = kishu ? kishu.Id : null;
     toBe.Kinryou = readPositiveDouble(buffer, 183, 3, 0.1);
     toBe.MinaraiKubun = $K.minaraiKubun.toCodeFromJrdb(buffer, 186, 1);
@@ -53,7 +42,7 @@ export abstract class Ky$ extends JrdbShussoubaData {
     const kyousouba = await this.saveKyousouba(buffer, info);
     if (info.uma.Seinen) {
       const nen = 2000 + readInt(buffer, 2, 2);
-      toBe.Nenrei = this.tool.calculateNenrei(nen, info.uma.Seinen);
+      toBe.Nenrei = tool.calculateNenrei(nen, info.uma.Seinen);
     }
     toBe.KyousoubaId = kyousouba.Id;
     toBe.Wakuban = readPositiveInt(buffer, 323, 1);
@@ -78,16 +67,16 @@ export abstract class Ky$ extends JrdbShussoubaData {
     choukyoushi.JrdbChoukyoushiCode = readPositiveInt(buffer, 340, 5);
     const choukyoushiMei = readStrWithNoSpace(buffer, 187, 12);
     choukyoushi.TouzaiBetsu = $CK.touzaiBetsu.toCodeFromJrdb(buffer, 199, 4);
-    return this.choukyoushiDao.saveChoukyoushi(choukyoushi, choukyoushiMei);
+    return choukyoushiDao.saveChoukyoushi(choukyoushi, choukyoushiMei);
   }
 
   protected async saveBanushi(buffer: Buffer, shussoubaId: number) {
-    const banushiMei = this.tool.normalizeHoujinMei(buffer, 404, 40);
+    const banushiMei = tool.normalizeHoujinMei(buffer, 404, 40);
     if (!banushiMei) {
       return null;
     }
     const banushiKaiCode = readInt(buffer, 444, 2);
-    await this.banushiDao.save(shussoubaId, MeishouKubun.Full, banushiMei, banushiKaiCode);
+    await banushiDao.save(shussoubaId, MeishouKubun.Full, banushiMei, banushiKaiCode);
   }
 
   protected async saveKyousouba(buffer: Buffer, info: ShussoubaInfo) {
@@ -95,12 +84,12 @@ export abstract class Ky$ extends JrdbShussoubaData {
     let uma = new Uma();
     uma.KettouTourokuBangou = readStr(buffer, 10, 8);
     const bamei = readStr(buffer, 18, 36);
-    if (this.tool.isEnglish(bamei)) {
+    if (tool.isEnglish(bamei)) {
       uma.EigoBamei = bamei;
     } else {
       uma.KanaBamei = bamei;
     }
-    uma = await this.umaDao.saveUma(uma);
+    uma = await umaDao.saveUma(uma);
     info.uma = uma;
     let kyousouba = new Kyousouba();
     kyousouba.UmaId = uma.Id;
@@ -108,14 +97,14 @@ export abstract class Ky$ extends JrdbShussoubaData {
     kyousouba.UmaKigou = $U.umaKigou.toCodeFromJrdb(buffer, 446, 2);
     const choukyoushi = await this.saveChoukyoushi(buffer);
     kyousouba.ChoukyoushiId = choukyoushi?.Id;
-    kyousouba = await this.umaDao.saveKyousouba(kyousouba);
+    kyousouba = await umaDao.saveKyousouba(kyousouba);
     return kyousouba;
   }
 
   protected async saveShussoubaJoutai(buffer: Buffer, shussouba: Shussouba) {
     const blinker = readInt(buffer, 170, 1);
     if (0 < blinker) {
-      await this.jrdbShussoubaTool.saveShussoubaJoutai(shussouba.Id, Kubun.Bagu, Bagu.Blinker);
+      await jrdbShussoubaTool.saveShussoubaJoutai(shussouba.Id, Kubun.Bagu, Bagu.Blinker);
     }
   }
 
@@ -125,7 +114,7 @@ export abstract class Ky$ extends JrdbShussoubaData {
     await this.setShussoubaYosou(buffer, toBe);
 
     const asIs = await this.entityManager.findOneBy(ShussoubaYosou, { Id: shussouba.Id });
-    await this.tool.saveOrUpdate(ShussoubaYosou, asIs, toBe);
+    await tool.saveOrUpdate(ShussoubaYosou, asIs, toBe);
   }
 
   protected async setShussoubaYosou(buffer: Buffer, toBe: ShussoubaYosou) {
@@ -225,7 +214,7 @@ export abstract class Ky$ extends JrdbShussoubaData {
 
   protected async saveShussoubaJoutaiSeries(buffer: Buffer, shussouba: Shussouba) {
     for (let bangou = 0, offset = 501; bangou < 3; bangou++, offset += 3) {
-      await this.jrdbShussoubaTool.saveShussoubaJoutaiWith(
+      await jrdbShussoubaTool.saveShussoubaJoutaiWith(
         buffer,
         offset,
         shussouba.Id,
@@ -233,24 +222,19 @@ export abstract class Ky$ extends JrdbShussoubaData {
       );
     }
     for (let bangou = 0, offset = 510; bangou < 3; bangou++, offset += 3) {
-      await this.jrdbShussoubaTool.saveShussoubaJoutaiWith(
-        buffer,
-        offset,
-        shussouba.Id,
-        Kubun.UmaTokki,
-      );
+      await jrdbShussoubaTool.saveShussoubaJoutaiWith(buffer, offset, shussouba.Id, Kubun.UmaTokki);
     }
   }
 
   protected async saveOddsHaitou(buffer: Buffer, shussouba: Shussouba) {
-    await this.jrdbOddsHaitouTool.saveOddsNinki(buffer, shussouba, {
+    await jrdbOddsHaitouTool.saveOddsNinki(buffer, shussouba, {
       Kakutei: $C.Kakutei.Yosou,
       Baken: $C.Baken.Tanshou,
       OddsOffset: 95,
       OddsLength: 5,
       NinkiOffset: 100,
     });
-    await this.jrdbOddsHaitouTool.saveOddsNinki(buffer, shussouba, {
+    await jrdbOddsHaitouTool.saveOddsNinki(buffer, shussouba, {
       Kakutei: $C.Kakutei.Yosou,
       Baken: $C.Baken.Fukushou,
       OddsOffset: 102,

@@ -2,11 +2,11 @@ import "reflect-metadata";
 import { afterAll, describe, expect, setDefaultTimeout, test } from "bun:test";
 import { Baken, Kakutei } from "../src/app/converters/Common";
 import { dataSource } from "../src/app/DataSource";
-import { ChoukyoushiDao } from "../src/app/daos/ChoukyoushiDao";
-import { JinmeiDao } from "../src/app/daos/JinmeiDao";
-import { KishuDao } from "../src/app/daos/KishuDao";
-import { MeishouDao } from "../src/app/daos/MeishouDao";
-import { UmaDao } from "../src/app/daos/UmaDao";
+import { choukyoushiDao } from "../src/app/daos/ChoukyoushiDao";
+import { jinmeiDao } from "../src/app/daos/JinmeiDao";
+import { kishuDao } from "../src/app/daos/KishuDao";
+import { meishouDao } from "../src/app/daos/MeishouDao";
+import { umaDao } from "../src/app/daos/UmaDao";
 import { Choukyoushi } from "../src/app/entities/Choukyoushi";
 import { Kaisai } from "../src/app/entities/Kaisai";
 import { Kishu } from "../src/app/entities/Kishu";
@@ -36,7 +36,6 @@ import { JravanSei1 } from "../src/app/reader/JRA/JRAVAN/JravanSei1";
 import { JravanSei2 } from "../src/app/reader/JRA/JRAVAN/JravanSei2";
 import { JravanSeih } from "../src/app/reader/JRA/JRAVAN/JravanSeih";
 import { JravanUmaj } from "../src/app/reader/JRA/JRAVAN/JravanUmaj";
-import { Container } from "./container";
 import { JravanRecord, parseJravanSpec } from "./spec/jravan";
 import { closeKolDb, emptyKolDb, importKolFiles } from "./spec/kol";
 
@@ -67,7 +66,7 @@ const readers = {
 describe("JRA-VAN の仕様書", () => {
   for (const [title, reader] of Object.entries(readers)) {
     test(`${title}: 取り込み処理のレコード長が仕様書と一致する`, () => {
-      const instance = Container.get(reader) as unknown as { getBufferLength(): number };
+      const instance = new reader() as unknown as { getBufferLength(): number };
       expect(instance.getBufferLength()).toBe(parseJravanSpec(title).size);
     });
   }
@@ -502,7 +501,7 @@ describe("他の情報源との突き合わせ", () => {
     const kishu = new Kishu();
     kishu.KolKishuCode = 1088;
     kishu.Seinengappi = 19690315;
-    await Container.get(KishuDao).saveKishu(kishu, "武豊", "武豊", "タケユタカ");
+    await kishuDao.saveKishu(kishu, "武豊", "武豊", "タケユタカ");
 
     expect(await importKolFiles({ "JracKisi.dat": kisi().buffer })).toEqual([]);
 
@@ -528,7 +527,7 @@ describe("他の情報源との突き合わせ", () => {
     const other = new Kishu();
     other.JvDataKishuCode = "09999";
     other.Seinengappi = 19690315;
-    await Container.get(KishuDao).saveKishu(other, "武豊", "武豊", "タケユタカ");
+    await kishuDao.saveKishu(other, "武豊", "武豊", "タケユタカ");
 
     expect(await importKolFiles({ "JracKisi.dat": kisi().buffer })).toEqual([]);
     expect((await repo(Kishu).find()).length).toBe(2);
@@ -538,12 +537,7 @@ describe("他の情報源との突き合わせ", () => {
     await emptyKolDb();
     const choukyoushi = new Choukyoushi();
     choukyoushi.KolKyuushaCode = 10001;
-    await Container.get(ChoukyoushiDao).saveChoukyoushi(
-      choukyoushi,
-      "藤沢和雄",
-      "藤沢和",
-      "フジサワカズオ",
-    );
+    await choukyoushiDao.saveChoukyoushi(choukyoushi, "藤沢和雄", "藤沢和", "フジサワカズオ");
     const chok = new JravanRecord("調教師")
       .set("調教師コード", "01234")
       .set("調教師名漢字", "藤沢　和雄")
@@ -560,7 +554,7 @@ describe("他の情報源との突き合わせ", () => {
     await emptyKolDb();
     const kishu = new Kishu();
     kishu.KolKishuCode = 2001;
-    await Container.get(KishuDao).saveKishu(kishu, "髙 橋　一", "髙橋一", "タカハシハジメ");
+    await kishuDao.saveKishu(kishu, "髙 橋　一", "髙橋一", "タカハシハジメ");
     const jra = new JravanRecord("騎手")
       .set("騎手コード", "02001")
       .set("騎手名漢字", "高橋　一")
@@ -573,7 +567,7 @@ describe("他の情報源との突き合わせ", () => {
 
   test("同じ馬名でも、血統登録番号や生年が違えば別の馬", async () => {
     await emptyKolDb();
-    const dao = Container.get(UmaDao);
+    const dao = umaDao;
     const uma = (kettou: string | null, seinen: number | null) => {
       const u = new Uma();
       u.KanaBamei = "テストホース";
@@ -597,7 +591,7 @@ describe("他の情報源との突き合わせ", () => {
 
   test("馬主・生産者の名前も、空白や異体字が違えば同じ行にまとめる", async () => {
     await emptyKolDb();
-    const dao = Container.get(MeishouDao);
+    const dao = meishouDao;
     const a = await dao.save(MeishouKubun.Full, "髙橋牧場");
     const b = await dao.save(MeishouKubun.Full, "高橋 牧場");
     const c = await dao.save(MeishouKubun.Tanshuku, "高橋牧場");
@@ -609,7 +603,7 @@ describe("他の情報源との突き合わせ", () => {
 
   test("異体字・空白だけが違う名前は1行にまとめ、最初の表記を残す", async () => {
     await emptyKolDb();
-    const dao = Container.get(JinmeiDao);
+    const dao = jinmeiDao;
     const a = await dao.save("髙 橋");
     const b = await dao.save("高橋");
     // 突き合わせ用のキーが同じなら同じ行で、名前は最初の表記のまま

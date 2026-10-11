@@ -147,6 +147,25 @@ ORM と同時に変えると原因が追えなくなるので、先に Nest だ�
 
 この時点で TypeORM のデコレーター (`@Entity` など) と `reflect-metadata` は残る。
 
+実施結果 (2026-10-12):
+
+- `bun test`: 430 pass / 7 skip / 0 fail (HTTP の 403 のテストを 1 件足した)。`bun run typecheck` も通る。
+- 見本データの取り込み結果は段階 0 の DB と全テーブルで一致し、エラーも同じ 2 件だった。
+- サーバーを起動し、閲覧 API、400 / 404、画面の配信と画面遷移用の index.html、取り込みジョブの開始から完了まで、Host ヘッダが違うときの 403、SIGINT での停止を確かめた。
+
+計画から変えたこと:
+
+- `bridge.ts` は作らず、`reader/Bridge.ts` に `export const bridge = new Bridge()` を足しただけにした (`JrdbBridge` / `KolBridge` へのキャストは残る)。
+- シングルトンの名前はクラス名の先頭を小文字にしたもの (`UmaDao` → `umaDao`)。`@Inject()` のフィールドは消し、`this.umaDao` を import した `umaDao` に置き換えた。
+  別名で注入していたもの (`oddsHaitouTool: JravanOddsHaitouTool` など) も型のシングルトン名にそろえた。
+- リーダーの中で別のリーダーを使うもの (KD1 の読み取りなど) は、フィールドで `new` する (`private reader = new KolUma()`)。
+- `ImportJobService` は、テストで取り込み処理と進捗を差し替えられるよう、コンストラクターの引数 (既定値はシングルトン) で受け取る。
+- パラメータの検証は Elysia の `t` を使わず、今の `toInt` を残した (`t` だと検証エラーが 422 になり、レスポンスも変わるため)。
+- 静的配信は `@elysiajs/static` を使わず、`http/app.ts` に 20 行ほどで書いた (画面遷移用の index.html の扱いを今と同じにするため)。
+- ローカル限定は `http/localOnly.ts` の `assertLocal(接続元, Host)` にし、テストはこの関数を直接呼ぶ。
+- Nest の例外の代わりに `http/errors.ts` の `HttpError` と、その派生 (`BadRequestError` / `ForbiddenError` / `NotFoundError` / `ConflictError`) を使う。
+- `test/spec.test.ts` の「仕様書にないコード」のテストは、既知の値を `ファイル名:行番号` で除外しているので、`@Inject()` の行を消してずれた行番号を直した。段階 2 でも同じように直す必要がある。
+
 ### 2. TypeORM を Drizzle にする
 
 1. `drizzle-orm`、`drizzle-kit` を入れ、`drizzle.config.ts` (dialect `sqlite`、schema `src/app/db/schema`) を書く。

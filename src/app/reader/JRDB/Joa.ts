@@ -1,20 +1,11 @@
-import { Inject, Injectable } from "@nestjs/common";
 import * as $SY from "../../converters/ShussoubaYosou";
 import { Shussouba } from "../../entities/Shussouba";
 import { ShussoubaYosou } from "../../entities/ShussoubaYosou";
 import { readDouble, readInt } from "../Reader";
-import { Tool } from "../Tool";
+import { tool } from "../Tool";
 import { JrdbShussoubaData } from "./JrdbShussoubaData";
-import { JrdbShussoubaTool } from "./JrdbShussoubaTool";
 
-@Injectable()
 export class Joa extends JrdbShussoubaData {
-  @Inject()
-  protected tool: Tool;
-
-  @Inject()
-  protected jrdbShussoubaTool: JrdbShussoubaTool;
-
   protected getBufferLength() {
     return 116;
   }
@@ -37,6 +28,6 @@ export class Joa extends JrdbShussoubaData {
     toBe.Em = $SY.em.toCodeFromJrdb(buffer, 88, 1);
     toBe.KyuushaBbShirushi = $SY.shirushi.toCodeFromJrdb(buffer, 89, 1);
     toBe.KishuBbShirushi = $SY.shirushi.toCodeFromJrdb(buffer, 100, 1);
-    return await this.tool.saveOrUpdate(ShussoubaYosou, asIs, toBe);
+    return await tool.saveOrUpdate(ShussoubaYosou, asIs, toBe);
   }
 }

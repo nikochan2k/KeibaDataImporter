@@ -1,13 +1,11 @@
-import { Inject, Injectable } from "@nestjs/common";
 import { EntityManager, Repository } from "typeorm";
 import { Choukyoushi } from "../entities/Choukyoushi";
 import { ChoukyoushiMei } from "../entities/ChoukyoushiMei";
 import { Jinmei, JinmeiKubun } from "../entities/Jinmei";
 import { OrmManager, OrmRepository } from "../OrmManager";
-import { Tool } from "../reader/Tool";
-import { JinmeiDao, jinmeiMatchingKey } from "./JinmeiDao";
+import { tool } from "../reader/Tool";
+import { jinmeiDao, jinmeiMatchingKey } from "./JinmeiDao";
 
-@Injectable()
 export class ChoukyoushiDao {
   @OrmManager()
   protected entityManager: EntityManager;
@@ -17,12 +15,6 @@ export class ChoukyoushiDao {
 
   @OrmRepository(ChoukyoushiMei)
   private choukyoushiMeiRepository: Repository<ChoukyoushiMei>;
-
-  @Inject()
-  private jinmeiDao: JinmeiDao;
-
-  @Inject()
-  private tool: Tool;
 
   private static readonly codeKeys = [
     "KolKyuushaCode",
@@ -87,7 +79,7 @@ export class ChoukyoushiDao {
     const newCode =
       !!asIs && ChoukyoushiDao.codeKeys.some((k) => toBe[k] != null && asIs[k] == null);
     if (!asIs || newCode || (seimei && tanshuku && furigana)) {
-      toBe = await this.tool.saveOrUpdate(Choukyoushi, asIs, toBe);
+      toBe = await tool.saveOrUpdate(Choukyoushi, asIs, toBe);
     } else {
       return asIs;
     }
@@ -112,7 +104,7 @@ export class ChoukyoushiDao {
     kubun: JinmeiKubun,
     meishou: string,
   ) {
-    const jinmei = await this.jinmeiDao.save(meishou);
+    const jinmei = await jinmeiDao.save(meishou);
     let choukyoushiMei = await this.choukyoushiMeiRepository.findOneBy({
       ChoukyoushiId: choukyoushi.Id,
       JinmeiId: jinmei.Id,
@@ -127,3 +119,5 @@ export class ChoukyoushiDao {
     }
   }
 }
+
+export const choukyoushiDao = new ChoukyoushiDao();

@@ -1,14 +1,13 @@
-import { Inject, Injectable } from "@nestjs/common";
 import * as $R from "../../../converters/Race";
 import { Race } from "../../../entities/Race";
 import { RaceSeiseki } from "../../../entities/RaceSeiseki";
 import { readInt, readPositiveDouble, readPositiveInt, readRaw } from "../../Reader";
-import { Tool } from "../../Tool";
+import { tool } from "../../Tool";
 import { getJraTrack } from "../JraTrack";
 import {
   hasSeiseki,
-  JvdataRaceTool,
   jvdataHonShoukinOffset,
+  jvdataRaceTool,
   jvdataYoubiOffset,
 } from "./JvdataRaceTool";
 import { JvdataRecord } from "./JvdataRecord";
@@ -18,33 +17,26 @@ import { JvdataRecord } from "./JvdataRecord";
  * 変更前の値(変更前グレード、距離、トラック、発走時刻など)、前 3・4 ハロン、コーナー通過順位、
  * レコード更新区分は取り込まない。
  */
-@Injectable()
 export class JvdataRa extends JvdataRecord {
   public readonly id = "RA";
   public readonly length = 1272;
-
-  @Inject()
-  private tool: Tool;
-
-  @Inject()
-  private jvdataRaceTool: JvdataRaceTool;
 
   public async save(buffer: Buffer) {
     if (!this.isActive(buffer)) {
       return;
     }
-    const kaisai = await this.jvdataRaceTool.saveKaisai(buffer, jvdataYoubiOffset);
+    const kaisai = await jvdataRaceTool.saveKaisai(buffer, jvdataYoubiOffset);
     if (!kaisai) {
       return;
     }
-    const toBe = this.jvdataRaceTool.createRaceWith(buffer, kaisai.Id);
+    const toBe = jvdataRaceTool.createRaceWith(buffer, kaisai.Id);
     if (!toBe) {
       return;
     }
     const asIs = await this.entityManager.findOneBy(Race, { Id: toBe.Id });
     // 出走馬名表のレース詳細は項目が空白なので、既存の値を消さないようにする
-    const race = await this.jvdataRaceTool.saveOrUpdateRace(asIs, toBe, true);
-    await this.jvdataRaceTool.saveRaceMeiOf(buffer, race);
+    const race = await jvdataRaceTool.saveOrUpdateRace(asIs, toBe, true);
+    await jvdataRaceTool.saveRaceMeiOf(buffer, race);
 
     if (hasSeiseki(this.getKubun(buffer))) {
       await this.saveRaceSeiseki(buffer, race);
@@ -76,13 +68,13 @@ export class JvdataRa extends JvdataRecord {
     const dart = $R.baba.toCodeFromJvData(buffer, 889, 1);
     toBe.Baba = (dirt ? (dart ?? shiba) : (shiba ?? dart)) ?? undefined;
     const asIs = await this.entityManager.findOneBy(RaceSeiseki, { Id: race.Id });
-    await this.tool.saveOrUpdate(RaceSeiseki, asIs, toBe, true);
+    await tool.saveOrUpdate(RaceSeiseki, asIs, toBe, true);
   }
 
   private async saveRaceLapTime(buffer: Buffer, race: Race) {
     if (race.HeichiShougai === $R.HeichiShougai.Shougai) {
       // 障害: 先頭馬の 1 マイル通過タイム (分 1 桁と秒 3 桁)、後 4 ハロン、後 3 ハロン
-      await this.jvdataRaceTool.saveShougaiLapTime(
+      await jvdataRaceTool.saveShougaiLapTime(
         race,
         readInt(buffer, 965, 1),
         readPositiveDouble(buffer, 966, 3, 0.1),
@@ -91,6 +83,6 @@ export class JvdataRa extends JvdataRecord {
       );
       return;
     }
-    await this.jvdataRaceTool.saveRaceLapTime(buffer, 890, race, 25);
+    await jvdataRaceTool.saveRaceLapTime(buffer, 890, race, 25);
   }
 }

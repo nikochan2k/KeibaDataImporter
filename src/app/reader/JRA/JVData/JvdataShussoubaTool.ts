@@ -1,14 +1,14 @@
-import { Inject, Injectable } from "@nestjs/common";
 import { HeichiShougai } from "../../../converters/Race";
-import { BanushiDao } from "../../../daos/BanushiDao";
+import { banushiDao } from "../../../daos/BanushiDao";
 import { Race } from "../../../entities/Race";
 import { MeishouKubun } from "../../../entities/Shoyuu";
 import { Shussouba } from "../../../entities/Shussouba";
-import { KolShussoubaTool } from "../../KOL/KolShussoubaTool";
+import { kolShussoubaTool } from "../../KOL/KolShussoubaTool";
 import { readInt, readPositiveInt, readRaw } from "../../Reader";
+import { tool } from "../../Tool";
 import { JraSeisekiOffsets, JraShussoubaOffsets, JraShussoubaTool } from "../JraShussoubaTool";
-import { JvdataOddsHaitouTool } from "./JvdataOddsHaitouTool";
-import { JvdataRaceTool } from "./JvdataRaceTool";
+import { jvdataOddsHaitouTool } from "./JvdataOddsHaitouTool";
+import { jvdataRaceTool } from "./JvdataRaceTool";
 
 /** 馬毎レース情報 (SE) の馬番の位置 */
 export const jvdataUmabanOffset = 28;
@@ -40,22 +40,9 @@ const seisekiOffsets: JraSeisekiOffsets = {
 };
 
 /** 馬毎レース情報 (SE) */
-@Injectable()
 export class JvdataShussoubaTool extends JraShussoubaTool {
-  @Inject()
-  private jvdataRaceTool: JvdataRaceTool;
-
-  @Inject()
-  private jvdataOddsHaitouTool: JvdataOddsHaitouTool;
-
-  @Inject()
-  private kolShussoubaTool: KolShussoubaTool;
-
-  @Inject()
-  private banushiDao: BanushiDao;
-
   protected getRaceId(buffer: Buffer) {
-    return this.jvdataRaceTool.getRaceId(buffer);
+    return jvdataRaceTool.getRaceId(buffer);
   }
 
   /** 馬番。出走馬名表(馬番が決まる前)や、馬番が不明の海外レースは null */
@@ -75,9 +62,9 @@ export class JvdataShussoubaTool extends JraShussoubaTool {
     if (!saved) {
       return null;
     }
-    const banushiMei = this.tool.normalizeHoujinMei(buffer, 104, 64);
+    const banushiMei = tool.normalizeHoujinMei(buffer, 104, 64);
     if (banushiMei) {
-      await this.banushiDao.save(saved.shussouba.Id, MeishouKubun.Full, banushiMei);
+      await banushiDao.save(saved.shussouba.Id, MeishouKubun.Full, banushiMei);
     }
     return saved;
   }
@@ -130,13 +117,9 @@ export class JvdataShussoubaTool extends JraShussoubaTool {
     }
     await this.saveSeiseki(toBe);
 
-    await this.jvdataOddsHaitouTool.saveKakuteiNinkiOdds(
-      buffer,
-      race.Id,
-      shussouba.Umaban,
-      363,
-      359,
-    );
-    await this.kolShussoubaTool.saveShussoubaTsuukaJuni(buffer, 351, shussouba);
+    await jvdataOddsHaitouTool.saveKakuteiNinkiOdds(buffer, race.Id, shussouba.Umaban, 363, 359);
+    await kolShussoubaTool.saveShussoubaTsuukaJuni(buffer, 351, shussouba);
   }
 }
+
+export const jvdataShussoubaTool = new JvdataShussoubaTool();

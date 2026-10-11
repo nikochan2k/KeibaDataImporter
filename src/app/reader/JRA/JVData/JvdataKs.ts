@@ -1,25 +1,17 @@
-import { Inject, Injectable } from "@nestjs/common";
 import * as $K from "../../../converters/Kishu";
-import { KishuDao } from "../../../daos/KishuDao";
+import { kishuDao } from "../../../daos/KishuDao";
 import { Kishu } from "../../../entities/Kishu";
 import { readPositiveInt, readRaw, readStr, readStrWithNoSpace } from "../../Reader";
-import { JraTool } from "../JraTool";
+import { jraTool } from "../JraTool";
 import { JvdataRecord } from "./JvdataRecord";
 
 /**
  * 騎手マスタ (KS)。
  * 初騎乗・初勝利・最近の重賞勝利の情報と、成績の集計は取り込まない。
  */
-@Injectable()
 export class JvdataKs extends JvdataRecord {
   public readonly id = "KS";
   public readonly length = 4173;
-
-  @Inject()
-  private kishuDao: KishuDao;
-
-  @Inject()
-  private jraTool: JraTool;
 
   public async save(buffer: Buffer) {
     if (this.getKubun(buffer) === "0") {
@@ -41,12 +33,12 @@ export class JvdataKs extends JvdataRecord {
     kishu.Shozoku = touzai === null ? undefined : Math.min(touzai, 3);
     kishu.ShoutaiKubun = touzai === 3 ? 1 : touzai === 4 ? 2 : undefined;
     kishu.ShozokuBashoMei = readStr(buffer, 231, 20);
-    const shozoku = await this.jraTool.saveChoukyoushi(buffer, 251, 256);
+    const shozoku = await jraTool.saveChoukyoushi(buffer, 251, 256);
     kishu.ShozokuChoukyoushiId = shozoku?.Id;
     kishu.MinaraiKubun = $K.minaraiKubun.toCodeFromJvData(buffer, 229, 1) ?? 0;
     const kanji = readStrWithNoSpace(buffer, 41, 34);
     const tanshuku = readStrWithNoSpace(buffer, 139, 8);
     const furigana = readStr(buffer, 109, 30);
-    await this.kishuDao.saveKishu(kishu, kanji, tanshuku, furigana);
+    await kishuDao.saveKishu(kishu, kanji, tanshuku, furigana);
   }
 }

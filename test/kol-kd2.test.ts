@@ -15,7 +15,6 @@ import { KolKyu } from "../src/app/reader/KOL/KolKyu";
 import { KolOds } from "../src/app/reader/KOL/KolOds";
 import { KolShu } from "../src/app/reader/KOL/KolShu";
 import { KolUma } from "../src/app/reader/KOL/KolUma";
-import { Container } from "./container";
 import {
   closeKolDb,
   importKolKind,
@@ -54,7 +53,7 @@ describe("KD2 の仕様書", () => {
       const spec = parseKolSpec(kind, "KD2");
 
       test("項目表のレコード長が、取り込み処理のレコード長と一致する", () => {
-        const reader = Container.get(readers[kind as keyof typeof readers]) as unknown as {
+        const reader = new readers[kind as keyof typeof readers]() as unknown as {
           getBufferLength(): number;
         };
         expect(reader.getBufferLength()).toBe(spec.tableLength);

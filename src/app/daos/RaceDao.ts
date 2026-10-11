@@ -1,20 +1,15 @@
-import { Inject, Injectable } from "@nestjs/common";
 import { Repository } from "typeorm";
-import { TokubetsuMeiDao } from "../daos/TokubetsuMeiDao";
 import { RaceMei } from "../entities/RaceMei";
 import { Record } from "../entities/Record";
 import { OrmRepository } from "../OrmManager";
+import { tokubetsuMeiDao } from "./TokubetsuMeiDao";
 
-@Injectable()
 export class RaceDao {
   @OrmRepository(Record)
   private recordRepository: Repository<Record>;
 
   @OrmRepository(RaceMei)
   private raceMeiRepository: Repository<RaceMei>;
-
-  @Inject()
-  private tokubetsuMeiDao: TokubetsuMeiDao;
 
   public async saveRecord(toBe: Record) {
     const asIs = await this.recordRepository
@@ -33,7 +28,7 @@ export class RaceDao {
   }
 
   public async saveRaceMei(raceId: number, meishou: string) {
-    const tokubetsuMei = await this.tokubetsuMeiDao.save(meishou);
+    const tokubetsuMei = await tokubetsuMeiDao.save(meishou);
     let raceMei = await this.raceMeiRepository.findOneBy({
       RaceId: raceId,
       TokubetsuMeiId: tokubetsuMei.Id,
@@ -46,3 +41,5 @@ export class RaceDao {
     }
   }
 }
+
+export const raceDao = new RaceDao();

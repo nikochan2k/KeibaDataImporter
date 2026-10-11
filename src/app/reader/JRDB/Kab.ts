@@ -1,10 +1,8 @@
-import { Injectable } from "@nestjs/common";
 import * as $K from "../../converters/Kaisai";
 import { KaisaiYosou } from "../../entities/KaisaiYosou";
 import { readDouble, readInt } from "../Reader";
 import { Ka$ } from "./Ka$";
 
-@Injectable()
 export class Kab extends Ka$ {
   protected getBufferLength() {
     return 72;

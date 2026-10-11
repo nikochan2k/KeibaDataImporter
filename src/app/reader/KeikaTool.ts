@@ -1,18 +1,13 @@
-import { Inject, Injectable } from "@nestjs/common";
 import { Logger } from "log4js";
 import { EntityManager } from "typeorm";
 import { RaceKeika } from "../entities/RaceKeika";
 import { ShussoubaKeika } from "../entities/ShussoubaKeika";
 import { getLogger } from "../LogUtil";
 import { OrmManager } from "../OrmManager";
-import { Tool } from "./Tool";
+import { tool } from "./Tool";
 
-@Injectable()
 export class KeikaTool {
   protected logger: Logger;
-
-  @Inject()
-  protected tool: Tool;
 
   @OrmManager()
   protected entityManager: EntityManager;
@@ -50,7 +45,7 @@ export class KeikaTool {
     toBe.RaceKeikaId = raceKeika.Id;
     toBe.ShussoubaId = shussoubaId;
     const asIs = await this.entityManager.findOneBy(ShussoubaKeika, { Id: toBe.Id });
-    await this.tool.saveOrUpdate(ShussoubaKeika, asIs, toBe);
+    await tool.saveOrUpdate(ShussoubaKeika, asIs, toBe);
   }
 
   public async parseRaceKeika(raceKeika: RaceKeika) {
@@ -129,3 +124,5 @@ export class KeikaTool {
     }
   }
 }
+
+export const keikaTool = new KeikaTool();

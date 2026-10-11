@@ -4,7 +4,7 @@ import * as os from "node:os";
 import * as path from "node:path";
 import * as log4js from "log4js";
 import { dataSource } from "../../src/app/DataSource";
-import { Importer } from "../../src/app/Importer";
+import { importer } from "../../src/app/Importer";
 import {
   kd2Den1Layout,
   kd2Den2Layout,
@@ -12,7 +12,6 @@ import {
 } from "../../src/app/reader/KOL/KD2/Kd2Layout";
 import { KolLayout } from "../../src/app/reader/KOL/KolLayout";
 import { decodeSjis, encodeSjis } from "../../src/app/util/Sjis";
-import { Container } from "../container";
 
 export const kolDir = path.resolve(__dirname, "../../docs/kol-spec/KD3");
 
@@ -254,7 +253,6 @@ export async function closeKolDb() {
 export async function resetKolDb(kind: string, gen: KolGen = "KD3") {
   await setup();
   await dataSource.synchronize(true);
-  const importer = Container.get(Importer);
   for (const pre of kolPrerequisites[kind] || []) {
     await importer.import({ [`kol_${pre}.${extOf(gen)}`]: kolSamples(pre, gen)[0] });
   }
@@ -281,7 +279,7 @@ export async function importKolFiles(entries: { [basename: string]: Buffer }) {
       files[basename] = path.join(dir, basename);
       fs.writeFileSync(files[basename], content);
     }
-    await Container.get(Importer).import(files);
+    await importer.import(files);
   } finally {
     fs.rmSync(dir, { recursive: true, force: true });
   }
@@ -324,8 +322,6 @@ export async function importKolKind(kind: string, gen: KolGen = "KD3"): Promise<
     }
     return originalCopy.call(this, target, ts, ss, se);
   };
-
-  const importer = Container.get(Importer);
   try {
     for (const file of kolSamples(kind, gen)) {
       // 見本ファイルは同じ種別に複数あるので、取り込み対象の名前(kol_xxx.kd3)は種別から決める

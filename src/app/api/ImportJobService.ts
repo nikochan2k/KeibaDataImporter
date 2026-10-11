@@ -1,16 +1,10 @@
 import { randomUUID } from "node:crypto";
 import * as fs from "node:fs";
 import * as path from "node:path";
-import {
-  BadRequestException,
-  ConflictException,
-  Inject,
-  Injectable,
-  NotFoundException,
-} from "@nestjs/common";
-import { ImportProgress, type ImportProgressSink } from "../ImportProgress";
+import { BadRequestError, ConflictError, NotFoundError } from "../http/errors";
+import { type ImportProgress, type ImportProgressSink, importProgress } from "../ImportProgress";
 import { getLogger } from "../LogUtil";
-import { Traversal } from "../Traversal";
+import { traversal as defaultTraversal, type Traversal } from "../Traversal";
 import type {
   ImportJob,
   ImportLogEntry,
@@ -44,7 +38,6 @@ function describe(target: ImportTarget) {
  * 取り込みジョブを管理する。
  * Bridge などの状態が共有されていて、SQLite の書き込みも一本なので、同時に走らせるのはひとつだけ。
  */
-@Injectable()
 export class ImportJobService {
   private logger = getLogger(this);
 
@@ -55,11 +48,11 @@ export class ImportJobService {
   /** ジョブごとのログ。dropped は捨てた行数で、行の通し番号はその続きから数える */
   private logs = new Map<string, { dropped: number; entries: ImportLogEntry[] }>();
 
-  @Inject()
-  private traversal: Traversal;
-
-  @Inject()
-  private progress: ImportProgress;
+  /** テストでは取り込み処理と進捗を差し替える */
+  constructor(
+    private traversal: Pick<Traversal, "countFiles" | "traverse"> = defaultTraversal,
+    private progress: ImportProgress = importProgress,
+  ) {}
 
   /** 取り込みを許す最上位のディレクトリ。環境変数 IMPORT_ROOT で決める。未設定なら制限しない */
   public get root() {
@@ -70,11 +63,11 @@ export class ImportJobService {
   /** ジョブを開始して、すぐ返す。取り込みはバックグラウンドで進む */
   public start(requested: unknown): ImportJob {
     if (typeof requested !== "string" || requested.trim() === "") {
-      throw new BadRequestException("path は必須です");
+      throw new BadRequestError("path は必須です");
     }
     const target = this.resolve(requested);
     if (this.running) {
-      throw new ConflictException(`取り込み中です (job: ${this.running.id})`);
+      throw new ConflictError(`取り込み中です (job: ${this.running.id})`);
     }
 
     const job: ImportJob = {
@@ -104,7 +97,7 @@ export class ImportJobService {
   public get(id: string): ImportJob {
     const job = this.jobs.get(id);
     if (!job) {
-      throw new NotFoundException(`ジョブが見つかりません: ${id}`);
+      throw new NotFoundError(`ジョブが見つかりません: ${id}`);
     }
     return job;
   }
@@ -135,21 +128,19 @@ export class ImportJobService {
   /** 絶対パスだけを受け付ける。存在しないパスや、IMPORT_ROOT が設定されていればその外も受け付けない */
   private resolve(requested: string) {
     if (!path.isAbsolute(requested)) {
-      throw new BadRequestException(`"${requested}" は絶対パスで指定してください`);
+      throw new BadRequestError(`"${requested}" は絶対パスで指定してください`);
     }
     let target: string;
     try {
       target = fs.realpathSync(requested);
     } catch {
-      throw new BadRequestException(`"${requested}" が見つかりません`);
+      throw new BadRequestError(`"${requested}" が見つかりません`);
     }
     const root = this.root;
     if (root) {
       const relative = path.relative(root, target);
       if (relative.startsWith("..") || path.isAbsolute(relative)) {
-        throw new BadRequestException(
-          `"${requested}" は取り込み対象の範囲外です (${root} の配下のみ)`,
-        );
+        throw new BadRequestError(`"${requested}" は取り込み対象の範囲外です (${root} の配下のみ)`);
       }
     }
     return target;
@@ -237,3 +228,5 @@ export class ImportJobService {
     }
   }
 }
+
+export const importJobService = new ImportJobService();

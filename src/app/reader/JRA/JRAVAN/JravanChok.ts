@@ -1,15 +1,10 @@
-import { Inject, Injectable } from "@nestjs/common";
-import { ChoukyoushiDao } from "../../../daos/ChoukyoushiDao";
+import { choukyoushiDao } from "../../../daos/ChoukyoushiDao";
 import { Choukyoushi } from "../../../entities/Choukyoushi";
 import { DataToImport } from "../../DataToImport";
 import { readPositiveInt, readStr, readStrWithNoSpace } from "../../Reader";
 
 /** 調教師 (JracChok.dat)。近走重賞勝鞍と成績の集計は取り込まない。 */
-@Injectable()
 export class JravanChok extends DataToImport {
-  @Inject()
-  private choukyoushiDao: ChoukyoushiDao;
-
   protected getBufferLength() {
     return 906;
   }
@@ -35,6 +30,6 @@ export class JravanChok extends DataToImport {
     const kanji = readStrWithNoSpace(buffer, 22, 32);
     const tanshuku = readStrWithNoSpace(buffer, 72, 8);
     const furigana = readStr(buffer, 54, 18);
-    await this.choukyoushiDao.saveChoukyoushi(choukyoushi, kanji, tanshuku, furigana);
+    await choukyoushiDao.saveChoukyoushi(choukyoushi, kanji, tanshuku, furigana);
   }
 }

@@ -4,11 +4,10 @@ import * as process from "node:process";
 import * as glob from "glob";
 import { Logger } from "log4js";
 import "reflect-metadata";
-import { Inject, Injectable } from "@nestjs/common";
 import * as tmp from "tmp";
 import * as unzipper from "unzipper";
-import { Entries, Importer } from "./Importer";
-import { ImportProgress } from "./ImportProgress";
+import { Entries, importer } from "./Importer";
+import { importProgress } from "./ImportProgress";
 import { getLogger } from "./LogUtil";
 import * as ioutil from "./util/IOUtil";
 import { LhaReader } from "./util/LHA";
@@ -20,7 +19,6 @@ interface ImportFile {
   basename: string;
 }
 
-@Injectable()
 export class Traversal {
   private static PRIORITIES: RegExp[] = [
     // KD3厩舎データ
@@ -131,12 +129,6 @@ export class Traversal {
 
   private logger: Logger;
 
-  @Inject()
-  private importer: Importer;
-
-  @Inject()
-  private progress: ImportProgress;
-
   constructor() {
     this.logger = getLogger(this);
   }
@@ -221,7 +213,7 @@ export class Traversal {
     });
 
     for (let i = 0; i < importFiles.length; i++) {
-      if (this.progress.stopReason) {
+      if (importProgress.stopReason) {
         break;
       }
       const importFile = importFiles[i];
@@ -231,21 +223,21 @@ export class Traversal {
 
   protected async importFile(importFile: ImportFile) {
     if (importFile.priority < 0) {
-      this.progress.fileSkipped(importFile.basename, "取り込み対象のファイル名ではありません");
+      importProgress.fileSkipped(importFile.basename, "取り込み対象のファイル名ではありません");
       return;
     }
     const filepath = importFile.path;
     const basename = importFile.basename;
-    this.progress.entryStarted(basename);
+    importProgress.entryStarted(basename);
     try {
       await yieldToEventLoop();
       await this.importEntry(filepath, basename);
     } catch (e) {
       // 壊れた zip / lzh でジョブ全体を止めず、エラーとして残して次へ進む
       this.logger.error(e.stack || e);
-      this.progress.fileFailed(basename, e?.message ?? String(e));
+      importProgress.fileFailed(basename, e?.message ?? String(e));
     } finally {
-      this.progress.entryProcessed(basename);
+      importProgress.entryProcessed(basename);
     }
   }
 
@@ -260,9 +252,9 @@ export class Traversal {
     } else if (/\.(txt|kd3)$/i.test(basename)) {
       const entries: Entries = {};
       entries[basename] = filepath;
-      await this.importer.import(entries);
+      await importer.import(entries);
     } else {
-      this.progress.fileSkipped(basename, "取り込み対象のファイル形式ではありません");
+      importProgress.fileSkipped(basename, "取り込み対象のファイル形式ではありません");
       if (this.logger.isLevelEnabled("info")) {
         this.logger.info(`"${basename}"は取り込み対象ファイルではありません。`);
       }
@@ -304,7 +296,7 @@ export class Traversal {
     });
 
     try {
-      await this.importer.import(entries);
+      await importer.import(entries);
     } finally {
       this.rmdir(dataDir);
     }
@@ -318,3 +310,5 @@ export class Traversal {
     }
   }
 }
+
+export const traversal = new Traversal();

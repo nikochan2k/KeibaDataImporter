@@ -20,8 +20,7 @@ import { Hjc } from "../src/app/reader/JRDB/Hjc";
 import { K$a } from "../src/app/reader/JRDB/K$a";
 import { Sed } from "../src/app/reader/JRDB/Sed";
 import { Tyb } from "../src/app/reader/JRDB/Tyb";
-import { KolChoukyouTool } from "../src/app/reader/KOL/KolChoukyouTool";
-import { Container } from "./container";
+import { kolChoukyouTool } from "../src/app/reader/KOL/KolChoukyouTool";
 import { base, Field, record, setFileDate } from "./helpers";
 
 /** レースキー(中山 2024年 3回4日 11R)と馬番5 */
@@ -40,7 +39,7 @@ beforeAll(async () => {
   await dataSource.synchronize();
   setFileDate(2024, 4, 7);
   // 出走馬を用意する(レースキーに年月日がない TYB や CYB は、出走馬が先にいる前提)
-  await Container.get(Sed).save(record(base, 376));
+  await new Sed().save(record(base, 376));
 });
 
 afterAll(async () => {
@@ -74,7 +73,7 @@ describe("TYB 直前情報", () => {
   ] as Field[];
 
   test("レース、出走馬、オッズ、状態コードに反映される", async () => {
-    await Container.get(Tyb).save(record(tyb, 128));
+    await new Tyb().save(record(tyb, 128));
 
     const race = await find(Race, {});
     expect(race.HassouJikan).toBe("15:40");
@@ -120,7 +119,7 @@ describe("TYB 直前情報", () => {
   test("出走馬がいないレコードは読み飛ばす", async () => {
     const before = await dataSource.manager.count(OddsHaitou);
     const unknown = tyb.map(([p, v]) => (p === 9 ? [9, "12"] : [p, v])) as Field[];
-    await Container.get(Tyb).save(record(unknown, 128));
+    await new Tyb().save(record(unknown, 128));
     expect(await dataSource.manager.count(OddsHaitou)).toBe(before);
   });
 });
@@ -153,7 +152,7 @@ describe("HJC 払戻", () => {
   ] as Field[];
 
   test("すべての馬券種の払戻が保存される", async () => {
-    await Container.get(Hjc).save(record(hjc, 444));
+    await new Hjc().save(record(hjc, 444));
     const race = await find(Race, {});
     const get = async (baken: Baken, b1: number, b2?: number, b3?: number) => {
       const where: Record<string, unknown> = {
@@ -179,7 +178,7 @@ describe("HJC 払戻", () => {
 
   test("再取り込みで払戻が更新される", async () => {
     const changed = hjc.map(([p, v]) => (p === 11 ? [11, "0000310"] : [p, v])) as Field[];
-    await Container.get(Hjc).save(record(changed, 444));
+    await new Hjc().save(record(changed, 444));
     const race = await find(Race, {});
     const tan = await find(OddsHaitou, {
       RaceId: race.Id,
@@ -206,7 +205,7 @@ describe("CYB 調教分析", () => {
       [87, "100"],
       [90, "36"],
     ] as Field[];
-    await Container.get(Cyb).save(record(cyb, 96));
+    await new Cyb().save(record(cyb, 96));
 
     const race = await find(Race, {});
     const shussouba = await find(Shussouba, { RaceId: race.Id });
@@ -261,14 +260,8 @@ describe("CHA 調教本追切", () => {
       ],
       120,
     );
-    await Container.get(KolChoukyouTool).saveChoukyou(
-      kol,
-      0,
-      shussouba.Id,
-      kyousouba.UmaId,
-      "テスト",
-    );
-    await Container.get(Cha).save(record(cha, 64));
+    await kolChoukyouTool.saveChoukyou(kol, 0, shussouba.Id, kyousouba.UmaId, "テスト");
+    await new Cha().save(record(cha, 64));
 
     const choukyou = await dataSource.manager.findBy(Choukyou, { UmaId: kyousouba.UmaId });
     expect(choukyou.length).toBe(1);
@@ -302,7 +295,7 @@ describe("KSA 騎手マスタ", () => {
     );
 
   test("所属と見習い区分が保存される", async () => {
-    await Container.get(K$a).save(ksa("10500", "2", "4"));
+    await new K$a().save(ksa("10500", "2", "4"));
     const kishu = await find(Kishu, { JrdbKishuCode: 10500 });
     expect(kishu.Shozoku).toBe(2);
     expect(kishu.MinaraiKubun).toBe(4);
@@ -311,7 +304,7 @@ describe("KSA 騎手マスタ", () => {
   });
 
   test("見習いでなくなると見習い区分が更新される", async () => {
-    await Container.get(K$a).save(ksa("10500", "2", " "));
+    await new K$a().save(ksa("10500", "2", " "));
     const kishu = await find(Kishu, { JrdbKishuCode: 10500 });
     expect(kishu.MinaraiKubun).toBe(0);
     expect(await dataSource.manager.countBy(Kishu, { JrdbKishuCode: 10500 })).toBe(1);

@@ -1,18 +1,13 @@
-import { Inject, Injectable } from "@nestjs/common";
 import { EntityManager } from "typeorm";
-import { KishuDao } from "../../daos/KishuDao";
+import { kishuDao } from "../../daos/KishuDao";
 import { Kishu } from "../../entities/Kishu";
 import { OrmManager } from "../../OrmManager";
 import { DataToImport } from "../DataToImport";
 import { readInt, readStr } from "../Reader";
 
-@Injectable()
 export class KolKis extends DataToImport {
   @OrmManager()
   protected entityManager: EntityManager;
-
-  @Inject()
-  private kishuDao: KishuDao;
 
   protected getBufferLength() {
     return 1729;
@@ -26,6 +21,6 @@ export class KolKis extends DataToImport {
     const kishuMei = readStr(buffer, 5, 32);
     const tanshukuKishuMei = readStr(buffer, 37, 8);
     const furigana = readStr(buffer, 45, 48);
-    kishu = await this.kishuDao.saveKishu(kishu, kishuMei, tanshukuKishuMei, furigana);
+    kishu = await kishuDao.saveKishu(kishu, kishuMei, tanshukuKishuMei, furigana);
   }
 }

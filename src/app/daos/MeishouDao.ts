@@ -1,17 +1,12 @@
-import { Inject, Injectable } from "@nestjs/common";
 import { Repository } from "typeorm";
 import { MeishouKubun, Shoyuu } from "../entities/Shoyuu";
 import { OrmRepository } from "../OrmManager";
-import { Tool } from "../reader/Tool";
+import { tool } from "../reader/Tool";
 import { jinmeiMatchingKey } from "./JinmeiDao";
 
-@Injectable()
 export class MeishouDao {
   @OrmRepository(Shoyuu)
   private repository: Repository<Shoyuu>;
-
-  @Inject()
-  protected tool: Tool;
 
   public async save(kubun: MeishouKubun, namae: string, banushiKaiCode?: number) {
     // 表記が違っても(空白、異体字)同じ名前なら、同じ行にまとめる
@@ -26,6 +21,8 @@ export class MeishouDao {
       toBe.Meishou = namae;
     }
     toBe.BanushiKaiCode = banushiKaiCode;
-    return this.tool.saveOrUpdate(Shoyuu, asIs, toBe);
+    return tool.saveOrUpdate(Shoyuu, asIs, toBe);
   }
 }
+
+export const meishouDao = new MeishouDao();

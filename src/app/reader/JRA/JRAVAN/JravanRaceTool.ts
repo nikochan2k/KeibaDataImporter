@@ -1,7 +1,7 @@
-import { Inject, Injectable } from "@nestjs/common";
 import * as $C from "../../../converters/Common";
-import { JinmeiDao } from "../../../daos/JinmeiDao";
-import { UmaDao } from "../../../daos/UmaDao";
+import { jinmeiDao } from "../../../daos/JinmeiDao";
+import { raceDao } from "../../../daos/RaceDao";
+import { umaDao } from "../../../daos/UmaDao";
 import { Race } from "../../../entities/Race";
 import { Record } from "../../../entities/Record";
 import { Uma } from "../../../entities/Uma";
@@ -14,28 +14,15 @@ import {
   readTime,
 } from "../../Reader";
 import { JraRaceTool } from "../JraRaceTool";
-import { JraTool } from "../JraTool";
-import { JravanKaisaiTool } from "./JravanKaisaiTool";
+import { jraTool } from "../JraTool";
+import { jravanKaisaiTool } from "./JravanKaisaiTool";
 
 /**
  * 特別登録馬・出馬表１・成績１・オッズ・票数に共通する、先頭 148 バイトまでのレース情報を読みます。
  */
-@Injectable()
 export class JravanRaceTool extends JraRaceTool {
-  @Inject()
-  private jravanKaisaiTool: JravanKaisaiTool;
-
-  @Inject()
-  private jraTool: JraTool;
-
-  @Inject()
-  private umaDao: UmaDao;
-
-  @Inject()
-  private jinmeiDao: JinmeiDao;
-
   protected get jraKaisaiTool() {
-    return this.jravanKaisaiTool;
+    return jravanKaisaiTool;
   }
 
   /** 開催を保存します。曜日コードは、特に指定がなければ 17 バイト目 */
@@ -82,13 +69,13 @@ export class JravanRaceTool extends JraRaceTool {
       return null;
     }
     let uma = new Uma();
-    const touroku = this.jraTool.readTouroku(buffer, offset + 25);
+    const touroku = jraTool.readTouroku(buffer, offset + 25);
     if (touroku) {
       uma.KettouTourokuBangou = touroku.bangou;
       uma.Seinen = touroku.seinen;
     }
-    this.jraTool.setBamei(uma, bamei);
-    uma = await this.umaDao.saveUma(uma);
+    jraTool.setBamei(uma, bamei);
+    uma = await umaDao.saveUma(uma);
 
     const record = new Record();
     record.Nengappi = nengappi;
@@ -96,9 +83,11 @@ export class JravanRaceTool extends JraRaceTool {
     record.UmaId = uma.Id;
     record.Kinryou = readPositiveDouble(buffer, offset + 54, 3, 0.1);
     const tanshuku = readStrWithNoSpace(buffer, offset + 62, 8);
-    const jinmei = await this.jinmeiDao.save(tanshuku);
+    const jinmei = await jinmeiDao.save(tanshuku);
     record.TanshukuKishuMeiId = jinmei.Id;
     record.Basho = $C.basho.toCodeFromJravan(buffer, offset + 13, 2);
-    return this.raceDao.saveRecord(record);
+    return raceDao.saveRecord(record);
   }
 }
+
+export const jravanRaceTool = new JravanRaceTool();

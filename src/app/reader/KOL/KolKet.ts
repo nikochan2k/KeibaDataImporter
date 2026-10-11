@@ -1,23 +1,15 @@
-import { Inject, Injectable } from "@nestjs/common";
 import { EntityManager } from "typeorm";
 import * as $U from "../../converters/Uma";
-import { UmaDao } from "../../daos/UmaDao";
+import { umaDao } from "../../daos/UmaDao";
 import { Uma } from "../../entities/Uma";
 import { OrmManager } from "../../OrmManager";
 import { DataToImport } from "../DataToImport";
 import { readInt, readStr } from "../Reader";
-import { Tool } from "../Tool";
+import { tool } from "../Tool";
 
-@Injectable()
 export class KolKet extends DataToImport {
   @OrmManager()
   protected entityManager: EntityManager;
-
-  @Inject()
-  private tool: Tool;
-
-  @Inject()
-  private umaDao: UmaDao;
 
   protected getBufferLength() {
     return 839;
@@ -39,7 +31,7 @@ export class KolKet extends DataToImport {
     uma.Seibetsu = seibetsu;
     uma.YunyuubaFlag = $U.yunyuubaFlag.toCodeFromKol(buffer, offset, 1);
     uma.KolUmaCode = readInt(buffer, offset + 1, 7);
-    if (this.tool.isEnglish(bamei)) {
+    if (tool.isEnglish(bamei)) {
       uma.EigoBamei = bamei;
     } else {
       uma.KanaBamei = bamei;
@@ -54,7 +46,7 @@ export class KolKet extends DataToImport {
     uma.ChichiUmaId = chichiUmaId;
     uma.HahaUmaId = hahaUmaId;
 
-    return this.umaDao.saveUma(uma);
+    return umaDao.saveUma(uma);
   }
 
   protected async saveSosenba23(
@@ -73,7 +65,7 @@ export class KolKet extends DataToImport {
     uma.Seibetsu = seibetsu;
     uma.YunyuubaFlag = $U.yunyuubaFlag.toCodeFromKol(buffer, offset, 1);
     uma.KolUmaCode = readInt(buffer, offset + 1, 7);
-    if (this.tool.isEnglish(bamei)) {
+    if (tool.isEnglish(bamei)) {
       uma.EigoBamei = bamei;
     } else {
       uma.KanaBamei = bamei;
@@ -81,7 +73,7 @@ export class KolKet extends DataToImport {
     uma.ChichiUmaId = chichiUmaId;
     uma.HahaUmaId = hahaUmaId;
 
-    return this.umaDao.saveUma(uma);
+    return umaDao.saveUma(uma);
   }
 
   public async save(buffer: Buffer) {
@@ -107,13 +99,13 @@ export class KolKet extends DataToImport {
     const uma = new Uma();
     uma.KolUmaCode = readInt(buffer, 0, 7);
     const bamei = readStr(buffer, 7, 30);
-    if (this.tool.isEnglish(bamei)) {
+    if (tool.isEnglish(bamei)) {
       uma.EigoBamei = bamei;
     } else {
       uma.KanaBamei = bamei;
     }
     uma.ChichiUmaId = c?.Id;
     uma.HahaUmaId = h?.Id;
-    await this.umaDao.saveUma(uma);
+    await umaDao.saveUma(uma);
   }
 }

@@ -31,9 +31,8 @@ import {
   kd2Length,
   kd2UmaRunFrom,
 } from "../src/app/reader/KOL/KD1/Kd1Layout";
-import { KolRaceTool } from "../src/app/reader/KOL/KolRaceTool";
+import { kolRaceTool } from "../src/app/reader/KOL/KolRaceTool";
 import { encodeSjis } from "../src/app/util/Sjis";
-import { Container } from "./container";
 import { type Kd1Kind, kd1Sections, parseKd1Spec } from "./spec/kd1";
 import { closeKolDb, emptyKolDb, importKolFiles, type KolField, parseKolSpec } from "./spec/kol";
 
@@ -359,7 +358,7 @@ const RACE = "042007040211";
 
 const repo = <T extends object>(e: new () => T) => dataSource.getRepository(e);
 
-const raceId = () => Container.get(KolRaceTool).getRaceId(Buffer.from(`${RACE}20071009`));
+const raceId = () => kolRaceTool.getRaceId(Buffer.from(`${RACE}20071009`));
 
 /** 出走馬 1 頭分 (KD1 の出馬表の 76 バイト) */
 function denHorse(umaban: number, code: number, bamei: string): [number, string][] {
@@ -652,7 +651,7 @@ describe("KD1 形式のファイルの取り込み", () => {
     const chichi = await repo(Uma).findOneBy({ KolUmaCode: 1000100 });
     expect(uma?.ChichiUmaId).toBe(chichi?.Id);
 
-    const id = Container.get(KolRaceTool).getRaceId(Buffer.from(`${runRace}20070922`));
+    const id = kolRaceTool.getRaceId(Buffer.from(`${runRace}20070922`));
     expect((await repo(Race).findOneBy({ Id: id }))?.Kyori).toBe(1600);
     const seiseki = await repo(ShussoubaSeiseki).findOneBy({ Id: id * 64 + 5 });
     expect(seiseki?.KakuteiChakujun).toBe(3);

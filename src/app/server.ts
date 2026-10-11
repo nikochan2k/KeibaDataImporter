@@ -1,10 +1,7 @@
 import "reflect-metadata";
-import { NestFactory } from "@nestjs/core";
-import type { NestExpressApplication } from "@nestjs/platform-express";
-import { AppModule } from "./AppModule";
 import { dataSource } from "./DataSource";
+import { createApp } from "./http/app";
 import { getLogger, silenceLoggers } from "./LogUtil";
-import { serveWeb } from "./serveWeb";
 
 const logger = getLogger("server");
 
@@ -19,16 +16,11 @@ async function main() {
   await dataSource.query("PRAGMA journal_mode = WAL");
   await dataSource.synchronize(false);
 
-  const app = await NestFactory.create<NestExpressApplication>(AppModule, {
-    logger: ["error", "warn"],
-  });
-  serveWeb(app);
-  app.enableShutdownHooks();
-  await app.listen(port, host);
+  const app = createApp().listen({ hostname: host, port });
   logger.info(`http://${host}:${port} で待ち受けています`);
 
   const shutdown = async () => {
-    await app.close();
+    await app.stop();
     await dataSource.destroy();
     process.exit(0);
   };

@@ -5,9 +5,8 @@ import * as path from "node:path";
 import * as log4js from "log4js";
 import { Codes } from "../../src/app/converters/Codes";
 import { dataSource } from "../../src/app/DataSource";
-import { Importer } from "../../src/app/Importer";
+import { importer } from "../../src/app/Importer";
 import { Sed } from "../../src/app/reader/JRDB/Sed";
-import { Container } from "../container";
 import { base, record, setFileDate } from "../helpers";
 import { specOf } from "./docs";
 import { parseSpec, specDir } from "./specs";
@@ -80,7 +79,7 @@ async function seedShussoubaForTyb(file: string, basename: string) {
   const date = `20${m[1]}${m[2]}${m[3]}`;
   setFileDate(+`20${m[1]}`, +m[2], +m[3]);
   const data = fs.readFileSync(file);
-  const sed = Container.get(Sed);
+  const sed = new Sed();
   for (let i = 0; i * 128 < data.length; i++) {
     const rec = data.subarray(i * 128, (i + 1) * 128);
     const key = rec.toString("latin1", 0, 8);
@@ -157,7 +156,6 @@ export async function importSamples(onlyPrefixes?: string[], excludePrefixes: st
   };
 
   const files = sampleFiles();
-  const importer = Container.get(Importer);
   try {
     for (const [basename, file] of Object.entries(files)) {
       const prefix = basename.match(/^[A-Za-z]+/)[0].toLowerCase();

@@ -23,7 +23,7 @@ import { KolKod2Kd3 } from "../src/app/reader/KOL/KD3/KolKod2Kd3";
 import { KolKod3Kd3 } from "../src/app/reader/KOL/KD3/KolKod3Kd3";
 import { KolOds2Kd3 } from "../src/app/reader/KOL/KD3/KolOds2Kd3";
 import { KolSei3Kd3 } from "../src/app/reader/KOL/KD3/KolSei3Kd3";
-import { KolChoukyouTool } from "../src/app/reader/KOL/KolChoukyouTool";
+import { kolChoukyouTool } from "../src/app/reader/KOL/KolChoukyouTool";
 import { KolCom1 } from "../src/app/reader/KOL/KolCom1";
 import { KolDen1 } from "../src/app/reader/KOL/KolDen1";
 import { KolDen2 } from "../src/app/reader/KOL/KolDen2";
@@ -32,12 +32,11 @@ import { KolKis } from "../src/app/reader/KOL/KolKis";
 import { KolKod } from "../src/app/reader/KOL/KolKod";
 import { KolKyu } from "../src/app/reader/KOL/KolKyu";
 import { KolOds } from "../src/app/reader/KOL/KolOds";
-import { KolRaceTool } from "../src/app/reader/KOL/KolRaceTool";
+import { kolRaceTool } from "../src/app/reader/KOL/KolRaceTool";
 import { KolSei1 } from "../src/app/reader/KOL/KolSei1";
 import { KolSei2 } from "../src/app/reader/KOL/KolSei2";
 import { KolShu } from "../src/app/reader/KOL/KolShu";
 import { KolUma } from "../src/app/reader/KOL/KolUma";
-import { Container } from "./container";
 import {
   closeKolDb,
   field,
@@ -85,7 +84,7 @@ interface Saver {
   getBufferLength(): number;
 }
 
-const readerOf = (kind: Kind) => Container.get(readers[kind]) as unknown as Saver;
+const readerOf = (kind: Kind) => new readers[kind]() as unknown as Saver;
 
 /** 1 レコードだけ取り込む。ファイル単位の準備 (setup) と後始末 (teardown) も行う */
 async function saveRecord(kind: Kind, record: Buffer) {
@@ -184,7 +183,7 @@ describe("KD3 見本ファイルの取り込み", () => {
 });
 
 describe("取り込み結果が見本ファイルと一致する", () => {
-  const raceTool = () => Container.get(KolRaceTool);
+  const raceTool = () => kolRaceTool;
   const repo = <T extends object>(e: new () => T) => dataSource.getRepository(e);
 
   describe("SEI1 (競走成績レースデータ)", () => {
@@ -591,7 +590,7 @@ describe("取り込み結果が見本ファイルと一致する", () => {
     };
     /** 出走馬Id は馬Id * 10 + n とする(n で別のレースを表す) */
     const saveChoukyou = (b: Buffer, umaId: number, n = 0) =>
-      Container.get(KolChoukyouTool).saveChoukyou(b, 0, umaId * 10 + n, umaId, "テスト");
+      kolChoukyouTool.saveChoukyou(b, 0, umaId * 10 + n, umaId, "テスト");
 
     beforeAll(async () => {
       await resetKolDb("kyu");

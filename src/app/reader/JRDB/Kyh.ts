@@ -1,4 +1,3 @@
-import { Injectable } from "@nestjs/common";
 import * as $S from "../../converters/Shussouba";
 import * as $SJ from "../../converters/ShussoubaYosou";
 import { Shussouba } from "../../entities/Shussouba";
@@ -6,7 +5,6 @@ import { ShussoubaYosou } from "../../entities/ShussoubaYosou";
 import { ShussoubaInfo } from "../ShussoubaTool";
 import { Ky$ } from "./Ky$";
 
-@Injectable()
 export class Kyh extends Ky$ {
   protected getBufferLength(): number {
     return 552;

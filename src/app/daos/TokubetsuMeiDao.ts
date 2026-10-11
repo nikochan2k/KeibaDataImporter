@@ -1,9 +1,7 @@
-import { Injectable } from "@nestjs/common";
 import { Repository } from "typeorm";
 import { TokubetsuMei } from "../entities/TokubetsuMei";
 import { OrmRepository } from "../OrmManager";
 
-@Injectable()
 export class TokubetsuMeiDao {
   @OrmRepository(TokubetsuMei)
   private repository: Repository<TokubetsuMei>;
@@ -18,3 +16,5 @@ export class TokubetsuMeiDao {
     return tokubetsuMei;
   }
 }
+
+export const tokubetsuMeiDao = new TokubetsuMeiDao();

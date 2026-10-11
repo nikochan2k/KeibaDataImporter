@@ -1,23 +1,15 @@
-import { Inject, Injectable } from "@nestjs/common";
 import { Kakutei } from "../../../converters/Common";
 import { DataToImport } from "../../DataToImport";
-import { KolOddsHaitouTool } from "../KolOddsHaitouTool";
-import { KolRaceTool } from "../KolRaceTool";
+import { kolOddsHaitouTool } from "../KolOddsHaitouTool";
+import { kolRaceTool } from "../KolRaceTool";
 
-@Injectable()
 export class KolKod2Kd3 extends DataToImport {
-  @Inject()
-  private kolRaceTool: KolRaceTool;
-
-  @Inject()
-  private kolOddsHaitouTool: KolOddsHaitouTool;
-
   protected getBufferLength() {
     return 9043;
   }
 
   public async save(buffer: Buffer) {
-    const raceId = await this.kolRaceTool.getRaceId(buffer);
+    const raceId = await kolRaceTool.getRaceId(buffer);
     if (!raceId) {
       return;
     }
@@ -28,18 +20,18 @@ export class KolKod2Kd3 extends DataToImport {
   }
 
   protected async saveFukushou(buffer: Buffer, raceId: number) {
-    await this.kolOddsHaitouTool.saveFukushouOdds(buffer, 161, raceId, Kakutei.Kakutei);
+    await kolOddsHaitouTool.saveFukushouOdds(buffer, 161, raceId, Kakutei.Kakutei);
   }
 
   protected async saveWide(buffer: Buffer, raceId: number) {
-    await this.kolOddsHaitouTool.saveWideOdds(buffer, 269, raceId, Kakutei.Kakutei);
+    await kolOddsHaitouTool.saveWideOdds(buffer, 269, raceId, Kakutei.Kakutei);
   }
 
   protected async saveUmatan(buffer: Buffer, raceId: number) {
-    await this.kolOddsHaitouTool.saveUmatanOdds(buffer, 1799, raceId, Kakutei.Kakutei);
+    await kolOddsHaitouTool.saveUmatanOdds(buffer, 1799, raceId, Kakutei.Kakutei);
   }
 
   protected async saveSanrenpuku(buffer: Buffer, raceId: number) {
-    await this.kolOddsHaitouTool.saveSanrenpukuOdds(buffer, 3329, raceId, Kakutei.Kakutei);
+    await kolOddsHaitouTool.saveSanrenpukuOdds(buffer, 3329, raceId, Kakutei.Kakutei);
   }
 }

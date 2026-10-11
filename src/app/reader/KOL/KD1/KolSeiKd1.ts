@@ -1,4 +1,3 @@
-import { Inject, Injectable } from "@nestjs/common";
 import { DataToImport } from "../../DataToImport";
 import { KolSei1Kd2 } from "../KD2/KolSei1Kd2";
 import { KolSei2Kd2 } from "../KD2/KolSei2Kd2";
@@ -17,13 +16,10 @@ import {
  * KD1 の競走成績 (KOL_SEI.DAT)。レースと出走馬 18 頭が 1 レコードに入っている。
  * KD2 の競走成績レースデータと競走成績出走馬データに分けて、KolSei1Kd2, KolSei2Kd2 に渡す。
  */
-@Injectable()
 export class KolSeiKd1 extends DataToImport {
-  @Inject()
-  private sei1: KolSei1Kd2;
+  private sei1 = new KolSei1Kd2();
 
-  @Inject()
-  private sei2: KolSei2Kd2;
+  private sei2 = new KolSei2Kd2();
 
   protected getBufferLength() {
     return kd1Length.sei;

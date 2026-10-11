@@ -1,29 +1,21 @@
-import { Inject, Injectable } from "@nestjs/common";
 import { Baken, Kakutei } from "../../../converters/Common";
 import { DataToImport } from "../../DataToImport";
 import { HaitouInfo } from "../../OddsHaitouTool";
-import { JravanOddsHaitouTool } from "./JravanOddsHaitouTool";
-import { JravanRaceTool } from "./JravanRaceTool";
+import { jravanOddsHaitouTool } from "./JravanOddsHaitouTool";
+import { jravanRaceTool } from "./JravanRaceTool";
 
 /** 成績Ｈ (JracSeih.dat): 馬単・3連複の払戻金 */
-@Injectable()
 export class JravanSeih extends DataToImport {
-  @Inject()
-  private jravanRaceTool: JravanRaceTool;
-
-  @Inject()
-  private jravanOddsHaitouTool: JravanOddsHaitouTool;
-
   protected getBufferLength() {
     return 159;
   }
 
   public async save(buffer: Buffer) {
-    const raceId = this.jravanRaceTool.getRaceId(buffer);
+    const raceId = jravanRaceTool.getRaceId(buffer);
     if (!raceId) {
       return;
     }
-    await this.jravanOddsHaitouTool.saveRaceHaitou(
+    await jravanOddsHaitouTool.saveRaceHaitou(
       buffer,
       raceId,
       Kakutei.Kakutei,

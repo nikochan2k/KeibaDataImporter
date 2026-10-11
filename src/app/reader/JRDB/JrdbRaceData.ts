@@ -1,18 +1,11 @@
-import { Inject } from "@nestjs/common";
 import { Kaisai } from "../../entities/Kaisai";
 import { Race } from "../../entities/Race";
 import { RaceSeiseki } from "../../entities/RaceSeiseki";
+import { tool } from "../Tool";
 import { JrdbKaisaiData } from "./JrdbKaisaiData";
-import { JrdbRaceTool } from "./JrdbRaceTool";
-import { JrdbTool } from "./JrdbTool";
+import { jrdbRaceTool } from "./JrdbRaceTool";
 
 export abstract class JrdbRaceData extends JrdbKaisaiData {
-  @Inject()
-  protected jrdbTool: JrdbTool;
-
-  @Inject()
-  protected jrdbRaceTool: JrdbRaceTool;
-
   public async save(buffer: Buffer) {
     const kaisai = await this.saveKaisai(buffer);
     if (!kaisai) {
@@ -26,13 +19,13 @@ export abstract class JrdbRaceData extends JrdbKaisaiData {
   }
 
   protected async saveRace(buffer: Buffer, kaisai: Kaisai) {
-    const toBe = this.jrdbRaceTool.createRace(buffer, kaisai.Id);
+    const toBe = jrdbRaceTool.createRace(buffer, kaisai.Id);
     if (!toBe) {
       return null;
     }
     this.setRace(buffer, toBe);
-    const asIs = await this.jrdbRaceTool.getRace(buffer, kaisai.Id);
-    return await this.tool.saveOrUpdate(Race, asIs, toBe, this.keepExisting);
+    const asIs = await jrdbRaceTool.getRace(buffer, kaisai.Id);
+    return await tool.saveOrUpdate(Race, asIs, toBe, this.keepExisting);
   }
 
   protected setRace(_buffer: Buffer, _toBe: Race) {}
@@ -46,7 +39,7 @@ export abstract class JrdbRaceData extends JrdbKaisaiData {
     toBe.Id = raceId;
     this.setRaceSeiseki(buffer, toBe);
     const asIs = await this.entityManager.findOneBy(RaceSeiseki, { Id: raceId });
-    await this.tool.saveOrUpdate(RaceSeiseki, asIs, toBe, this.keepExisting);
+    await tool.saveOrUpdate(RaceSeiseki, asIs, toBe, this.keepExisting);
   }
 
   protected setRaceSeiseki(_buffer: Buffer, _toBe: RaceSeiseki) {}

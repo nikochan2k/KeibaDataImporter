@@ -5,9 +5,8 @@ import { dataSource } from "../src/app/DataSource";
 import { Kishu } from "../src/app/entities/Kishu";
 import { OddsHaitou } from "../src/app/entities/OddsHaitou";
 import { runInTransaction } from "../src/app/OrmManager";
-import { JrdbOddsHaitouTool } from "../src/app/reader/JRDB/JrdbOddsHaitouTool";
-import { Tool } from "../src/app/reader/Tool";
-import { Container } from "./container";
+import { jrdbOddsHaitouTool } from "../src/app/reader/JRDB/JrdbOddsHaitouTool";
+import { tool } from "../src/app/reader/Tool";
 
 beforeAll(async () => {
   dataSource.setOptions({ database: ":memory:" });
@@ -21,7 +20,6 @@ afterAll(async () => {
 
 describe("トランザクション", () => {
   test("失敗するとロールバックされる", async () => {
-    const tool = Container.get(Tool);
     await expect(
       runInTransaction(async () => {
         await tool.saveOrUpdate(Kishu, null, Object.assign(new Kishu(), { JrdbKishuCode: 1 }));
@@ -32,7 +30,6 @@ describe("トランザクション", () => {
   });
 
   test("成功するとコミットされる", async () => {
-    const tool = Container.get(Tool);
     await runInTransaction(async () => {
       await tool.saveOrUpdate(Kishu, null, Object.assign(new Kishu(), { JrdbKishuCode: 2 }));
     });
@@ -42,14 +39,12 @@ describe("トランザクション", () => {
 
 describe("saveOrUpdate", () => {
   test("既存の行を更新する(引数は asIs, toBe の順)", async () => {
-    const tool = Container.get(Tool);
     const asIs = await dataSource.manager.findOneBy(Kishu, { JrdbKishuCode: 2 });
     await tool.saveOrUpdate(Kishu, asIs, Object.assign(new Kishu(), { Shozoku: 2 }));
     expect((await dataSource.manager.findOneBy(Kishu, { JrdbKishuCode: 2 })).Shozoku).toBe(2);
   });
 
   test("skipNull のときは null で既存の値を消さない", async () => {
-    const tool = Container.get(Tool);
     const asIs = await dataSource.manager.findOneBy(Kishu, { JrdbKishuCode: 2 });
     await tool.saveOrUpdate(Kishu, asIs, Object.assign(new Kishu(), { Shozoku: null }), true);
     expect((await dataSource.manager.findOneBy(Kishu, { JrdbKishuCode: 2 })).Shozoku).toBe(2);
@@ -61,7 +56,7 @@ describe("saveOrUpdate", () => {
 
 describe("オッズ配当", () => {
   test("再取り込みで値が更新される", async () => {
-    const tool = Container.get(JrdbOddsHaitouTool);
+    const tool = jrdbOddsHaitouTool;
     const make = (odds: number) =>
       Object.assign(new OddsHaitou(), {
         RaceId: 100,

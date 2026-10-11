@@ -1,23 +1,15 @@
-import { Inject, Injectable } from "@nestjs/common";
 import { EntityManager } from "typeorm";
 import * as $U from "../../../converters/Uma";
-import { UmaDao } from "../../../daos/UmaDao";
+import { umaDao } from "../../../daos/UmaDao";
 import { Uma } from "../../../entities/Uma";
 import { OrmManager } from "../../../OrmManager";
 import { DataToImport } from "../../DataToImport";
 import { readInt, readStr } from "../../Reader";
-import { Tool } from "../../Tool";
+import { tool } from "../../Tool";
 
-@Injectable()
 export class KolKet5Kd3 extends DataToImport {
-  @Inject()
-  private tool: Tool;
-
   @OrmManager()
   protected entityManager: EntityManager;
-
-  @Inject()
-  private umaDao: UmaDao;
 
   protected getBufferLength() {
     return 4002;
@@ -48,7 +40,7 @@ export class KolKet5Kd3 extends DataToImport {
     uma.ChichiUmaId = chichiUmaId;
     uma.HahaUmaId = hahaUmaId;
 
-    return this.umaDao.saveUma(uma);
+    return umaDao.saveUma(uma);
   }
 
   protected async saveSosenba45(
@@ -66,7 +58,7 @@ export class KolKet5Kd3 extends DataToImport {
     const uma = new Uma();
     uma.Seibetsu = seibetsu;
     uma.KolUmaCode = readInt(buffer, offset, 7);
-    if (this.tool.isEnglish(bamei)) {
+    if (tool.isEnglish(bamei)) {
       uma.EigoBamei = bamei;
     } else {
       uma.KanaBamei = bamei;
@@ -75,7 +67,7 @@ export class KolKet5Kd3 extends DataToImport {
     uma.ChichiUmaId = chichiUmaId;
     uma.HahaUmaId = hahaUmaId;
 
-    return this.umaDao.saveUma(uma);
+    return umaDao.saveUma(uma);
   }
 
   public async save(buffer: Buffer) {
@@ -89,7 +81,7 @@ export class KolKet5Kd3 extends DataToImport {
     uma.SanchiCode = readStr(buffer, 47, 3);
     uma.ChichiUmaId = c?.Id;
     uma.HahaUmaId = h?.Id;
-    await this.umaDao.saveUma(uma);
+    await umaDao.saveUma(uma);
   }
 
   public async saveH(buffer: Buffer) {

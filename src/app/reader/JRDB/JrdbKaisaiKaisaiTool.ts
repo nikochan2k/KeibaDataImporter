@@ -1,9 +1,7 @@
-import { Injectable } from "@nestjs/common";
 import { KaisaiInfo } from "../KaisaiTool";
 import { readHex, readInt, readPositiveInt } from "../Reader";
 import { JrdbKaisaiTool } from "./JrdbKaisaiTool";
 
-@Injectable()
 export class JrdbKaisaiKaisaiTool extends JrdbKaisaiTool {
   protected getKaisaiInfo(buffer: Buffer): KaisaiInfo {
     return {
@@ -16,3 +14,5 @@ export class JrdbKaisaiKaisaiTool extends JrdbKaisaiTool {
     };
   }
 }
+
+export const jrdbKaisaiKaisaiTool = new JrdbKaisaiKaisaiTool();

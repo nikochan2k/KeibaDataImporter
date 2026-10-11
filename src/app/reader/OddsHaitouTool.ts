@@ -1,11 +1,10 @@
-import { Inject } from "@nestjs/common";
 import { Logger } from "log4js";
 import { EntityManager } from "typeorm";
 import { Baken, Kakutei } from "../converters/Common";
 import { OddsHaitou } from "../entities/OddsHaitou";
 import { OrmManager } from "../OrmManager";
 import { readPositiveInt } from "./Reader";
-import { Tool } from "./Tool";
+import { tool } from "./Tool";
 
 export interface HaitouInfo {
   baken: Baken;
@@ -27,9 +26,6 @@ export abstract class OddsHaitouTool {
 
   @OrmManager()
   protected entityManager: EntityManager;
-
-  @Inject()
-  protected tool: Tool;
 
   /**
    * オッズ配当IDを取得します。
@@ -59,7 +55,7 @@ export abstract class OddsHaitouTool {
     toBe.Id = this.calculateOddsHaitouId(toBe);
     const asIs = await this.entityManager.findOneBy(OddsHaitou, { Id: toBe.Id });
     if (asIs) {
-      toBe = await this.tool.saveOrUpdate(OddsHaitou, asIs, toBe);
+      toBe = await tool.saveOrUpdate(OddsHaitou, asIs, toBe);
     } else {
       toBe = await this.entityManager.save(toBe);
     }

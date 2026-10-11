@@ -1,8 +1,7 @@
 import "reflect-metadata";
-import { Bridge } from "../src/app/reader/Bridge";
+import { bridge } from "../src/app/reader/Bridge";
 import { JrdbBridge } from "../src/app/reader/JRDB/JrdbBridge";
 import { encodeSjis } from "../src/app/util/Sjis";
-import { Container } from "./container";
 
 export type Field = [number, string];
 
@@ -53,8 +52,8 @@ export const base: Field[] = [
 
 /** 取り込み対象ファイルの日付(ファイル名の日付)を設定する。KYI や TYB のようにレコードに年月日がないデータで使う。 */
 export function setFileDate(nen: number, gatsu: number, nichi: number) {
-  const bridge = Container.get(Bridge) as JrdbBridge;
-  bridge.nen = nen;
-  bridge.gatsu = gatsu;
-  bridge.nichi = nichi;
+  const jrdbBridge = bridge as JrdbBridge;
+  jrdbBridge.nen = nen;
+  jrdbBridge.gatsu = gatsu;
+  jrdbBridge.nichi = nichi;
 }

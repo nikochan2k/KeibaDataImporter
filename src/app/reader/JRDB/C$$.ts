@@ -1,14 +1,10 @@
-import { Inject } from "@nestjs/common";
 import * as $C from "../../converters/Common";
-import { ChoukyoushiDao } from "../../daos/ChoukyoushiDao";
+import { choukyoushiDao } from "../../daos/ChoukyoushiDao";
 import { Choukyoushi } from "../../entities/Choukyoushi";
 import { readInt, readPositiveInt, readStr } from "../Reader";
 import { JrdbData } from "./JrdbData";
 
 export abstract class C$$ extends JrdbData {
-  @Inject()
-  private choukyoushiDao: ChoukyoushiDao;
-
   public async save(buffer: Buffer) {
     const toBe = new Choukyoushi();
     toBe.JrdbChoukyoushiCode = readInt(buffer, 0, 5);
@@ -23,6 +19,6 @@ export abstract class C$$ extends JrdbData {
     }
     toBe.Seinengappi = readPositiveInt(buffer, 67, 8);
     toBe.HatsuMenkyoNen = readPositiveInt(buffer, 75, 4);
-    await this.choukyoushiDao.saveChoukyoushi(toBe, choukyoushiMei, tanshuku, furigana);
+    await choukyoushiDao.saveChoukyoushi(toBe, choukyoushiMei, tanshuku, furigana);
   }
 }

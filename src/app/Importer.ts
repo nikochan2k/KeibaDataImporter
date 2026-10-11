@@ -1,11 +1,9 @@
 import * as fs from "node:fs";
-import { Inject, Injectable, type OnModuleInit, type Type } from "@nestjs/common";
-import { ModuleRef } from "@nestjs/core";
 import { Logger } from "log4js";
 import type { ImportTarget } from "./api/types";
-import { ImportProgress } from "./ImportProgress";
+import { importProgress } from "./ImportProgress";
 import { getLogger } from "./LogUtil";
-import { Bridge } from "./reader/Bridge";
+import { bridge } from "./reader/Bridge";
 import { DataToImport } from "./reader/DataToImport";
 import { JravanChok } from "./reader/JRA/JRAVAN/JravanChok";
 import { JravanDelc, JravanDelk, JravanDelu } from "./reader/JRA/JRAVAN/JravanDel";
@@ -100,23 +98,16 @@ interface Item extends ImportTarget {
 
 interface Reader extends ImportTarget {
   pattern: RegExp;
-  type: Type<DataToImport>;
+  type: new () => DataToImport;
   dataToImport?: DataToImport;
 }
 
-@Injectable()
-export class Importer implements OnModuleInit {
+export class Importer {
   private logger: Logger;
 
   private readers: Reader[];
 
-  @Inject()
-  private bridge: Bridge;
-
-  @Inject()
-  private progress: ImportProgress;
-
-  constructor(@Inject(ModuleRef) private moduleRef: ModuleRef) {
+  constructor() {
     this.logger = getLogger(this);
     this.readers = [
       { pattern: /kol_kyu\.kd[23]$/i, type: KolKyu, source: "KOL", kind: "厩舎データ" },
@@ -253,11 +244,8 @@ export class Importer implements OnModuleInit {
       },
       { pattern: /\.jvd$/i, type: JvData, source: "JV-Data", kind: "レコード種別混在" },
     ];
-  }
-
-  public onModuleInit() {
     for (const reader of this.readers) {
-      reader.dataToImport = this.moduleRef.get(reader.type, { strict: false });
+      reader.dataToImport = new reader.type();
     }
   }
 
@@ -280,7 +268,7 @@ export class Importer implements OnModuleInit {
         });
       }
       if (items.length === before) {
-        this.progress.fileSkipped(basename, "ファイル名に対応する読み取り処理がありません");
+        importProgress.fileSkipped(basename, "ファイル名に対応する読み取り処理がありません");
       }
     }
 
@@ -298,13 +286,13 @@ export class Importer implements OnModuleInit {
     });
 
     for (let i = 0; i < items.length; i++) {
-      if (this.progress.stopReason) {
+      if (importProgress.stopReason) {
         break;
       }
       const item = items[i];
       const target: ImportTarget = { source: item.source, kind: item.kind };
       await yieldToEventLoop();
-      this.bridge.basename = item.basename;
+      bridge.basename = item.basename;
       const dataToImport = item.dataToImport;
       let fd: number;
       try {
@@ -312,16 +300,18 @@ export class Importer implements OnModuleInit {
         if (this.logger.isLevelEnabled("info")) {
           this.logger.info(`"${item.basename}"を取り込んでいます`);
         }
-        this.progress.fileStarted(item.basename, target);
+        importProgress.fileStarted(item.basename, target);
         await dataToImport.readAll(fd);
-        this.progress.fileFinished(item.basename, target);
+        importProgress.fileFinished(item.basename, target);
       } catch (e) {
         this.logger.error(e.stack || e);
-        this.progress.fileFailed(item.basename, e?.message ?? String(e), target);
+        importProgress.fileFailed(item.basename, e?.message ?? String(e), target);
       } finally {
-        delete this.bridge.basename;
+        delete bridge.basename;
         fs.closeSync(fd);
       }
     }
   }
 }
+
+export const importer = new Importer();

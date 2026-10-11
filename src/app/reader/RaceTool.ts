@@ -1,13 +1,12 @@
-import { Inject } from "@nestjs/common";
 import { Logger } from "log4js";
 import { EntityManager } from "typeorm";
-import { RaceDao } from "../daos/RaceDao";
+import { raceDao } from "../daos/RaceDao";
 import { Race } from "../entities/Race";
 import { RaceLapTime } from "../entities/RaceLapTime";
 import { getLogger } from "../LogUtil";
 import { OrmManager } from "../OrmManager";
 import { readPositiveDouble } from "./Reader";
-import { Tool } from "./Tool";
+import { tool } from "./Tool";
 
 /**
  * ラップタイムの ID を返します。どの情報源から取り込んでも同じ区間が同じ ID になるよう、区間の距離で作ります。
@@ -34,12 +33,6 @@ export abstract class RaceTool {
 
   @OrmManager()
   protected entityManager: EntityManager;
-
-  @Inject()
-  protected raceDao: RaceDao;
-
-  @Inject()
-  protected tool: Tool;
 
   constructor() {
     this.logger = getLogger(this);
@@ -146,9 +139,9 @@ export abstract class RaceTool {
   }
 
   public async saveRaceMei(buffer: Buffer, offset: number, length: number, race: Race) {
-    const meishou = this.tool.normalizeTokubetsuMei(buffer, offset, length);
+    const meishou = tool.normalizeTokubetsuMei(buffer, offset, length);
     if (meishou) {
-      await this.raceDao.saveRaceMei(race.Id, meishou);
+      await raceDao.saveRaceMei(race.Id, meishou);
     }
   }
 }

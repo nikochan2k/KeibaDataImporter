@@ -1,31 +1,12 @@
-import { Inject } from "@nestjs/common";
 import { Kaisai } from "../../entities/Kaisai";
 import { KaisaiTool } from "../KaisaiTool";
-import { Tool } from "../Tool";
+import { tool } from "../Tool";
 import { JrdbData } from "./JrdbData";
-import { JrdbKaisaiKaisaiTool } from "./JrdbKaisaiKaisaiTool";
-import { JrdbKaisaiRaceTool } from "./JrdbKaisaiRaceTool";
-import { JrdbKaisaiShussoubaTool } from "./JrdbKaisaiShussoubaTool";
-import { JrdbKaisaiTool } from "./JrdbKaisaiTool";
+import { jrdbKaisaiTool } from "./JrdbKaisaiTool";
 
 export abstract class JrdbKaisaiData extends JrdbData {
-  @Inject()
-  protected tool: Tool;
-
-  @Inject()
-  protected jrdbKaisaiTool: JrdbKaisaiTool;
-
-  @Inject()
-  protected jrdbKaisaiKaisaiTool: JrdbKaisaiKaisaiTool;
-
-  @Inject()
-  protected jrdbKaisaiRaceTool: JrdbKaisaiRaceTool;
-
-  @Inject()
-  protected jrdbKaisaiShussoubaTool: JrdbKaisaiShussoubaTool;
-
   protected getKaisaiTool(): KaisaiTool {
-    return this.jrdbKaisaiTool;
+    return jrdbKaisaiTool;
   }
 
   public async save(buffer: Buffer) {
@@ -45,7 +26,7 @@ export abstract class JrdbKaisaiData extends JrdbData {
     this.setKaisai(buffer, toBe);
     this.getKaisaiTool().setYoubi(toBe);
     const asIs = await this.getKaisaiTool().getKaisaiWithKey(buffer);
-    const kaisai = await this.tool.saveOrUpdate(Kaisai, asIs, toBe);
+    const kaisai = await tool.saveOrUpdate(Kaisai, asIs, toBe);
     return kaisai;
   }
 

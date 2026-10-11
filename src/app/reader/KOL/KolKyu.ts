@@ -1,20 +1,15 @@
-import { Inject, Injectable } from "@nestjs/common";
 import { EntityManager } from "typeorm";
 import * as $CK from "../../converters/Choukyoushi";
 import * as $C from "../../converters/Common";
-import { ChoukyoushiDao } from "../../daos/ChoukyoushiDao";
+import { choukyoushiDao } from "../../daos/ChoukyoushiDao";
 import { Choukyoushi } from "../../entities/Choukyoushi";
 import { OrmManager } from "../../OrmManager";
 import { DataToImport } from "../DataToImport";
 import { readInt, readStr } from "../Reader";
 
-@Injectable()
 export class KolKyu extends DataToImport {
   @OrmManager()
   protected entityManager: EntityManager;
-
-  @Inject()
-  private choukyoushiDao: ChoukyoushiDao;
 
   protected getBufferLength() {
     return 1248;
@@ -31,6 +26,6 @@ export class KolKyu extends DataToImport {
     const choukyoushiMei = readStr(buffer, 5, 32);
     const tanshuku = readStr(buffer, 37, 8);
     const furigana = readStr(buffer, 45, 48);
-    await this.choukyoushiDao.saveChoukyoushi(choukyoushi, choukyoushiMei, tanshuku, furigana);
+    await choukyoushiDao.saveChoukyoushi(choukyoushi, choukyoushiMei, tanshuku, furigana);
   }
 }

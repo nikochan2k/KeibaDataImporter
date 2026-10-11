@@ -1,4 +1,3 @@
-import { Injectable } from "@nestjs/common";
 import * as $C from "../../converters/Common";
 import { OddsHaitou } from "../../entities/OddsHaitou";
 import { Shussouba } from "../../entities/Shussouba";
@@ -16,7 +15,6 @@ export interface OddsHaitouInfo {
   JikanOffset?: number;
 }
 
-@Injectable()
 export class JrdbOddsHaitouTool extends OddsHaitouTool {
   public async saveOddsNinki(buffer: Buffer, shussouba: Shussouba, info: OddsHaitouInfo) {
     const oddsHaitou = new OddsHaitou();
@@ -36,3 +34,5 @@ export class JrdbOddsHaitouTool extends OddsHaitouTool {
     await this.saveOddsHaitou(oddsHaitou);
   }
 }
+
+export const jrdbOddsHaitouTool = new JrdbOddsHaitouTool();

@@ -1,8 +1,8 @@
-import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common";
 import { basho } from "../converters/Common";
 import * as $R from "../converters/Race";
 import { seibetsu } from "../converters/Uma";
 import { dataSource } from "../DataSource";
+import { BadRequestError, NotFoundError } from "../http/errors";
 import type { RaceDay, RaceEntry, RaceMonth, RaceSummary, UmaStart, UmaSummary } from "./types";
 
 /** 数値コードを表示用の名前にする。値がなければ null */
@@ -68,7 +68,6 @@ function escapeLike(text: string) {
 }
 
 /** 取り込み済みのデータを読む。書き込みはしない */
-@Injectable()
 export class BrowseService {
   /** レースのある年月。新しい月が先 */
   public async raceMonths(): Promise<RaceMonth[]> {
@@ -122,7 +121,7 @@ export class BrowseService {
       [id],
     );
     if (races.length === 0) {
-      throw new NotFoundException(`レースが見つかりません: ${id}`);
+      throw new NotFoundError(`レースが見つかりません: ${id}`);
     }
     const rows: {
       Id: number;
@@ -226,7 +225,7 @@ export class BrowseService {
       [id],
     );
     if (found.length === 0) {
-      throw new NotFoundException(`馬が見つかりません: ${id}`);
+      throw new NotFoundError(`馬が見つかりません: ${id}`);
     }
     const uma = found[0];
 
@@ -271,8 +270,10 @@ export class BrowseService {
   public static parseDate(text: unknown): [number, number, number] {
     const matched = typeof text === "string" ? /^(\d{4})-(\d{2})-(\d{2})$/.exec(text) : null;
     if (!matched) {
-      throw new BadRequestException("date は YYYY-MM-DD で指定してください");
+      throw new BadRequestError("date は YYYY-MM-DD で指定してください");
     }
     return [Number(matched[1]), Number(matched[2]), Number(matched[3])];
   }
 }
+
+export const browseService = new BrowseService();

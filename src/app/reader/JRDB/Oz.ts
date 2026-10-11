@@ -1,30 +1,22 @@
-import { Inject, Injectable } from "@nestjs/common";
 import { EntityManager } from "typeorm";
 import { Baken, Kakutei } from "../../converters/Common";
 import { OddsHaitou } from "../../entities/OddsHaitou";
 import { OrmManager } from "../../OrmManager";
 import { readPositiveDouble, readPositiveInt } from "../Reader";
 import { JrdbData } from "./JrdbData";
-import { JrdbOddsHaitouTool } from "./JrdbOddsHaitouTool";
-import { JrdbRaceTool } from "./JrdbRaceTool";
+import { jrdbOddsHaitouTool } from "./JrdbOddsHaitouTool";
+import { jrdbRaceTool } from "./JrdbRaceTool";
 
-@Injectable()
 export class Oz extends JrdbData {
   @OrmManager()
   protected entityManager: EntityManager;
-
-  @Inject()
-  protected jrdbRaceTool: JrdbRaceTool;
-
-  @Inject()
-  protected jrdbOddsHaitouTool: JrdbOddsHaitouTool;
 
   protected getBufferLength() {
     return 957;
   }
 
   public async save(buffer: Buffer) {
-    const raceId = this.jrdbRaceTool.getRaceId(buffer);
+    const raceId = jrdbRaceTool.getRaceId(buffer);
     await this.saveTanshou(buffer, raceId);
     await this.saveFukushou(buffer, raceId);
     await this.saveUmaren(buffer, raceId);
@@ -51,7 +43,7 @@ export class Oz extends JrdbData {
       oddsHaitou.Baken = Baken.Tanshou;
       oddsHaitou.Bangou1 = bangou;
       oddsHaitou.Odds1 = odds;
-      await this.jrdbOddsHaitouTool.saveOddsHaitou(oddsHaitou);
+      await jrdbOddsHaitouTool.saveOddsHaitou(oddsHaitou);
     }
   }
 
@@ -67,7 +59,7 @@ export class Oz extends JrdbData {
       oddsHaitou.Baken = Baken.Fukushou;
       oddsHaitou.Bangou1 = bangou;
       oddsHaitou.Odds1 = odds;
-      await this.jrdbOddsHaitouTool.saveOddsHaitou(oddsHaitou);
+      await jrdbOddsHaitouTool.saveOddsHaitou(oddsHaitou);
     }
   }
 
@@ -88,7 +80,7 @@ export class Oz extends JrdbData {
         oddsHaitou.Bangou1 = bangou1;
         oddsHaitou.Bangou2 = bangou2;
         oddsHaitou.Odds1 = odds1;
-        await this.jrdbOddsHaitouTool.saveOddsHaitou(oddsHaitou);
+        await jrdbOddsHaitouTool.saveOddsHaitou(oddsHaitou);
       }
     }
   }

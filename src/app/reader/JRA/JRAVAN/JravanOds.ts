@@ -1,22 +1,15 @@
-import { Inject, Injectable } from "@nestjs/common";
 import { Baken, Kakutei } from "../../../converters/Common";
 import { DataToImport } from "../../DataToImport";
-import { JravanOddsHaitouTool } from "./JravanOddsHaitouTool";
-import { JravanRaceTool } from "./JravanRaceTool";
+import { jravanOddsHaitouTool } from "./JravanOddsHaitouTool";
+import { jravanRaceTool } from "./JravanRaceTool";
 
 /**
  * オッズ (JracOds*.dat)。蓄積系のオッズはレース確定後のオッズ。
  * どのオッズも、先頭 98 バイトはレース情報で、オッズは 128 バイト目以降 (オッズ１は 166 バイト目以降) にある。
  */
 abstract class JravanOds extends DataToImport {
-  @Inject()
-  protected jravanRaceTool: JravanRaceTool;
-
-  @Inject()
-  protected jravanOddsHaitouTool: JravanOddsHaitouTool;
-
   public async save(buffer: Buffer) {
-    const raceId = this.jravanRaceTool.getRaceId(buffer);
+    const raceId = jravanRaceTool.getRaceId(buffer);
     if (!raceId) {
       return;
     }
@@ -27,14 +20,13 @@ abstract class JravanOds extends DataToImport {
 }
 
 /** オッズ１ (JracOds1.dat): 単勝・複勝・枠連 */
-@Injectable()
 export class JravanOds1 extends JravanOds {
   protected getBufferLength() {
     return 491;
   }
 
   protected async saveOdds(buffer: Buffer, raceId: number) {
-    const tool = this.jravanOddsHaitouTool;
+    const tool = jravanOddsHaitouTool;
     await tool.saveOdds(buffer, 165, 4, raceId, Kakutei.Kakutei, Baken.Tanshou);
     await tool.saveRangeOdds(buffer, 237, 3, raceId, Kakutei.Kakutei, Baken.Fukushou);
     await tool.saveWakurenOdds(buffer, 345, raceId, Kakutei.Kakutei);
@@ -42,63 +34,45 @@ export class JravanOds1 extends JravanOds {
 }
 
 /** オッズ３ (JracOds3.dat): 馬連 */
-@Injectable()
 export class JravanOds3 extends JravanOds {
   protected getBufferLength() {
     return 894;
   }
 
   protected async saveOdds(buffer: Buffer, raceId: number) {
-    await this.jravanOddsHaitouTool.saveOdds(buffer, 127, 5, raceId, Kakutei.Kakutei, Baken.Umaren);
+    await jravanOddsHaitouTool.saveOdds(buffer, 127, 5, raceId, Kakutei.Kakutei, Baken.Umaren);
   }
 }
 
 /** オッズ４ (JracOds4.dat): ワイド */
-@Injectable()
 export class JravanOds4 extends JravanOds {
   protected getBufferLength() {
     return 1659;
   }
 
   protected async saveOdds(buffer: Buffer, raceId: number) {
-    await this.jravanOddsHaitouTool.saveRangeOdds(
-      buffer,
-      127,
-      5,
-      raceId,
-      Kakutei.Kakutei,
-      Baken.Wide,
-    );
+    await jravanOddsHaitouTool.saveRangeOdds(buffer, 127, 5, raceId, Kakutei.Kakutei, Baken.Wide);
   }
 }
 
 /** オッズ５ (JracOds5.dat): 馬単 */
-@Injectable()
 export class JravanOds5 extends JravanOds {
   protected getBufferLength() {
     return 1659;
   }
 
   protected async saveOdds(buffer: Buffer, raceId: number) {
-    await this.jravanOddsHaitouTool.saveOdds(buffer, 127, 5, raceId, Kakutei.Kakutei, Baken.Umatan);
+    await jravanOddsHaitouTool.saveOdds(buffer, 127, 5, raceId, Kakutei.Kakutei, Baken.Umatan);
   }
 }
 
 /** オッズ６ (JracOds6.dat): 3連複 */
-@Injectable()
 export class JravanOds6 extends JravanOds {
   protected getBufferLength() {
     return 4209;
   }
 
   protected async saveOdds(buffer: Buffer, raceId: number) {
-    await this.jravanOddsHaitouTool.saveOdds(
-      buffer,
-      127,
-      5,
-      raceId,
-      Kakutei.Kakutei,
-      Baken.Sanrenpuku,
-    );
+    await jravanOddsHaitouTool.saveOdds(buffer, 127, 5, raceId, Kakutei.Kakutei, Baken.Sanrenpuku);
   }
 }

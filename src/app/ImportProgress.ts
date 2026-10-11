@@ -1,4 +1,3 @@
-import { Injectable } from "@nestjs/common";
 import type { ImportTarget } from "./api/types";
 
 /** 取り込みの進捗を受け取る側 */
@@ -19,7 +18,6 @@ export interface ImportProgressSink {
  * Importer から、いま走っている取り込みジョブへ進捗を伝える。
  * 取り込みは一度にひとつしか動かさないので、受け取る側はひとつだけ取り付ける。
  */
-@Injectable()
 export class ImportProgress implements ImportProgressSink {
   private sink?: ImportProgressSink;
 
@@ -64,3 +62,5 @@ export class ImportProgress implements ImportProgressSink {
     this.sink?.entryProcessed(basename);
   }
 }
+
+export const importProgress = new ImportProgress();

@@ -1,4 +1,3 @@
-import { Injectable } from "@nestjs/common";
 import { toMatchingKey } from "itaiji-normalize";
 import { Repository } from "typeorm";
 import { Jinmei } from "../entities/Jinmei";
@@ -17,7 +16,6 @@ export function jinmeiMatchingKey(meishou: string) {
   return toMatchingKey(stripJinmei(meishou)).key;
 }
 
-@Injectable()
 export class JinmeiDao {
   @OrmRepository(Jinmei)
   private repository: Repository<Jinmei>;
@@ -45,3 +43,5 @@ export class JinmeiDao {
     return jinmei;
   }
 }
+
+export const jinmeiDao = new JinmeiDao();

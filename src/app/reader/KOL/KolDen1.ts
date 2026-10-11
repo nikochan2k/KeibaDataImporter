@@ -1,36 +1,22 @@
-import { Inject, Injectable } from "@nestjs/common";
 import * as $K from "../../converters/Kaisai";
 import * as $R from "../../converters/Race";
 import { Kaisai } from "../../entities/Kaisai";
 import { Race } from "../../entities/Race";
-import { Bridge } from "../Bridge";
+import { bridge } from "../Bridge";
 import { readInt, readPositiveInt, readRaw, readStr, readTime } from "../Reader";
-import { Tool } from "../Tool";
+import { tool } from "../Tool";
 import { KolBridge } from "./KolBridge";
 import { KolDataToImport } from "./KolDataToImport";
-import { KolKaisaiTool } from "./KolKaisaiTool";
-import { KolRaceTool } from "./KolRaceTool";
+import { kolKaisaiTool } from "./KolKaisaiTool";
+import { kolRaceTool } from "./KolRaceTool";
 
-@Injectable()
 export class KolDen1 extends KolDataToImport {
-  @Inject()
-  private tool: Tool;
-
-  @Inject()
-  private kolKaisaiTool: KolKaisaiTool;
-
-  @Inject()
-  private kolRaceTool: KolRaceTool;
-
-  @Inject()
-  private bridge: Bridge;
-
   protected getBufferLength() {
     return 848;
   }
 
   protected async setup() {
-    const kolBridge = <KolBridge>this.bridge;
+    const kolBridge = <KolBridge>bridge;
     kolBridge.yosouKyakushitsuMap = new Map<number, number>();
   }
 
@@ -41,7 +27,7 @@ export class KolDen1 extends KolDataToImport {
     }
 
     const dataNengappi = readInt(buffer, this.at(418), 8);
-    const asIs = await this.kolRaceTool.getRace(buffer);
+    const asIs = await kolRaceTool.getRace(buffer);
     if (asIs?.KolNengappi && dataNengappi <= asIs.KolNengappi) {
       // 既に取り込み済みの場合
       return;
@@ -57,20 +43,20 @@ export class KolDen1 extends KolDataToImport {
   }
 
   protected async saveKaisai(buffer: Buffer) {
-    const toBe = this.kolKaisaiTool.createKaisai(buffer);
+    const toBe = kolKaisaiTool.createKaisai(buffer);
     if (!toBe) {
       return null;
     }
     toBe.Kyuujitsu = $K.kyuujitsu.toCodeFromKol(buffer, 20, 1);
     toBe.Youbi = $K.youbi.toCodeFromKol(buffer, 21, 1);
-    toBe.KaisaiKubun = this.kolKaisaiTool.convertKaisaiKubunFrom(toBe.Basho);
+    toBe.KaisaiKubun = kolKaisaiTool.convertKaisaiKubunFrom(toBe.Basho);
     toBe.ChuuouChihouGaikoku = $K.chuuouChihouGaikoku.toCodeFromKol(buffer, 22, 1);
-    const asIs = await this.kolKaisaiTool.getKaisaiWithId(buffer);
-    return await this.tool.saveOrUpdate(Kaisai, asIs, toBe);
+    const asIs = await kolKaisaiTool.getKaisaiWithId(buffer);
+    return await tool.saveOrUpdate(Kaisai, asIs, toBe);
   }
 
   protected async saveRace(buffer: Buffer, kaisai: Kaisai, asIs: Race, dataNengappi: number) {
-    const toBe = this.kolRaceTool.createRace(buffer, kaisai.Id);
+    const toBe = kolRaceTool.createRace(buffer, kaisai.Id);
     if (!toBe) {
       return asIs;
     }
@@ -137,11 +123,11 @@ export class KolDen1 extends KolDataToImport {
     toBe.UchiSoto = $R.uchiSoto.toCodeFromKol(buffer, this.at(107), 1);
     toBe.Course = $R.course.toCodeFromKol(buffer, this.at(108), 1);
     toBe.Kyori = readPositiveInt(buffer, this.at(109), 4);
-    const courceRecord = await this.kolRaceTool.getRecord(buffer, this.at(114), 0);
+    const courceRecord = await kolRaceTool.getRecord(buffer, this.at(114), 0);
     toBe.CourseRecordId = courceRecord?.Id;
-    const kyoriRecord = await this.kolRaceTool.getRecord(buffer, this.at(167), this.at(220));
+    const kyoriRecord = await kolRaceTool.getRecord(buffer, this.at(167), this.at(220));
     toBe.KyoriRecordId = kyoriRecord?.Id;
-    const raceRecord = await this.kolRaceTool.getRecord(buffer, this.at(222), this.at(275));
+    const raceRecord = await kolRaceTool.getRecord(buffer, this.at(222), this.at(275));
     toBe.RaceRecordId = raceRecord?.Id;
     toBe.Shoukin1Chaku = readPositiveInt(buffer, this.at(277), 9);
     toBe.Shoukin2Chaku = readPositiveInt(buffer, this.at(286), 9);
@@ -160,12 +146,12 @@ export class KolDen1 extends KolDataToImport {
 
     toBe.KolNengappi = dataNengappi;
 
-    return await this.tool.saveOrUpdate(Race, asIs, toBe);
+    return await tool.saveOrUpdate(Race, asIs, toBe);
   }
 
   protected async saveRaceMei(buffer: Buffer, race: Race) {
-    await this.kolRaceTool.saveRaceMei(buffer, 28, 30, race);
-    await this.kolRaceTool.saveRaceMei(buffer, 58, 14, race);
+    await kolRaceTool.saveRaceMei(buffer, 28, 30, race);
+    await kolRaceTool.saveRaceMei(buffer, 58, 14, race);
   }
 
   protected setYosouTenkai(buffer: Buffer, race: Race) {
@@ -174,7 +160,7 @@ export class KolDen1 extends KolDataToImport {
       return;
     }
     [362, 374, 386, 398].forEach((offset, index) => {
-      const kolBridge = <KolBridge>this.bridge;
+      const kolBridge = <KolBridge>bridge;
       for (let i = 0; i < 4; i++) {
         const umaban = readInt(buffer, offset + i * 2, 2);
         if (1 <= umaban && umaban <= 28) {

@@ -1,18 +1,10 @@
-import { Inject, Injectable } from "@nestjs/common";
 import * as $U from "../../converters/Uma";
-import { UmaDao } from "../../daos/UmaDao";
+import { umaDao } from "../../daos/UmaDao";
 import { Uma } from "../../entities/Uma";
 import { readInt, readStr } from "../Reader";
-import { Tool } from "../Tool";
+import { tool } from "../Tool";
 
-@Injectable()
 export class KolUmaTool {
-  @Inject()
-  private tool: Tool;
-
-  @Inject()
-  private umaDao: UmaDao;
-
   public async saveOyaUma(
     buffer: Buffer,
     offset: number,
@@ -26,7 +18,7 @@ export class KolUmaTool {
     }
     const uma = new Uma();
     uma.KolUmaCode = readInt(buffer, offset, 7);
-    if (this.tool.isEnglish(bamei)) {
+    if (tool.isEnglish(bamei)) {
       uma.EigoBamei = bamei;
     } else {
       uma.KanaBamei = bamei;
@@ -41,6 +33,8 @@ export class KolUmaTool {
     }
     uma.Seibetsu = seibetsu;
 
-    return this.umaDao.saveUma(uma);
+    return umaDao.saveUma(uma);
   }
 }
+
+export const kolUmaTool = new KolUmaTool();

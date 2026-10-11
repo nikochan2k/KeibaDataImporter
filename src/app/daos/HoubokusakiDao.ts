@@ -1,9 +1,7 @@
-import { Injectable } from "@nestjs/common";
 import { Repository } from "typeorm";
 import { Houbokusaki } from "../entities/Houbokusaki";
 import { OrmRepository } from "../OrmManager";
 
-@Injectable()
 export class HoubokusakiDao {
   @OrmRepository(Houbokusaki)
   private repository: Repository<Houbokusaki>;
@@ -18,3 +16,5 @@ export class HoubokusakiDao {
     return houbokusaki;
   }
 }
+
+export const houbokusakiDao = new HoubokusakiDao();

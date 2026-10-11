@@ -3,11 +3,13 @@ import * as $R from "../../converters/Race";
 import { Kaisai } from "../../entities/Kaisai";
 import { KaisaiYosou } from "../../entities/KaisaiYosou";
 import { readDouble } from "../Reader";
+import { tool } from "../Tool";
 import { JrdbKaisaiData } from "./JrdbKaisaiData";
+import { jrdbKaisaiKaisaiTool } from "./JrdbKaisaiKaisaiTool";
 
 export abstract class Ka$ extends JrdbKaisaiData {
   protected getKaisaiTool() {
-    return this.jrdbKaisaiKaisaiTool;
+    return jrdbKaisaiKaisaiTool;
   }
 
   protected setKaisai(buffer: Buffer, toBe: Kaisai) {
@@ -25,7 +27,7 @@ export abstract class Ka$ extends JrdbKaisaiData {
     this.setKaisaiYosou(buffer, toBe);
 
     const asIs = await this.entityManager.findOneBy(KaisaiYosou, { Id: toBe.Id });
-    await this.tool.saveOrUpdate(KaisaiYosou, asIs, toBe);
+    await tool.saveOrUpdate(KaisaiYosou, asIs, toBe);
   }
 
   protected setKaisaiYosou(buffer: Buffer, toBe: KaisaiYosou) {

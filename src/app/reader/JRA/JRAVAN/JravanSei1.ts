@@ -1,4 +1,3 @@
-import { Inject, Injectable } from "@nestjs/common";
 import { Baken, Kakutei } from "../../../converters/Common";
 import * as $R from "../../../converters/Race";
 import { Race } from "../../../entities/Race";
@@ -6,32 +5,19 @@ import { RaceSeiseki } from "../../../entities/RaceSeiseki";
 import { DataToImport } from "../../DataToImport";
 import { HaitouInfo } from "../../OddsHaitouTool";
 import { readInt, readJikan, readPositiveInt, readRaw } from "../../Reader";
-import { Tool } from "../../Tool";
-import { JravanOddsHaitouTool } from "./JravanOddsHaitouTool";
-import { JravanRaceTool } from "./JravanRaceTool";
-import { JravanShussoubaTool, jravanSeiUmaLength } from "./JravanShussoubaTool";
+import { tool } from "../../Tool";
+import { jravanOddsHaitouTool } from "./JravanOddsHaitouTool";
+import { jravanRaceTool } from "./JravanRaceTool";
+import { jravanSeiUmaLength, jravanShussoubaTool } from "./JravanShussoubaTool";
 
 /** 成績１ (JracSei1.dat): 成績・着順・払戻金 (馬番 1〜18) */
-@Injectable()
 export class JravanSei1 extends DataToImport {
-  @Inject()
-  private tool: Tool;
-
-  @Inject()
-  private jravanRaceTool: JravanRaceTool;
-
-  @Inject()
-  private jravanShussoubaTool: JravanShussoubaTool;
-
-  @Inject()
-  private jravanOddsHaitouTool: JravanOddsHaitouTool;
-
   protected getBufferLength() {
     return 3048;
   }
 
   public async save(buffer: Buffer) {
-    const kaisai = await this.jravanRaceTool.saveKaisai(buffer);
+    const kaisai = await jravanRaceTool.saveKaisai(buffer);
     if (!kaisai) {
       return;
     }
@@ -41,7 +27,7 @@ export class JravanSei1 extends DataToImport {
     }
     await this.saveRaceSeiseki(buffer, race);
     await this.saveRaceLapTime(buffer, race);
-    await this.jravanOddsHaitouTool.saveRaceHaitou(
+    await jravanOddsHaitouTool.saveRaceHaitou(
       buffer,
       race.Id,
       Kakutei.Kakutei,
@@ -50,19 +36,19 @@ export class JravanSei1 extends DataToImport {
 
     const raceNengappi = readInt(buffer, 0, 8);
     for (let i = 0; i < 18; i++) {
-      const uma = this.jravanShussoubaTool.slice(buffer, 724, i, jravanSeiUmaLength);
-      if (!this.jravanShussoubaTool.hasUma(uma)) {
+      const uma = jravanShussoubaTool.slice(buffer, 724, i, jravanSeiUmaLength);
+      if (!jravanShussoubaTool.hasUma(uma)) {
         continue;
       }
-      const saved = await this.jravanShussoubaTool.saveJravanShussoubaOf(uma, race, kaisai.Nen);
+      const saved = await jravanShussoubaTool.saveJravanShussoubaOf(uma, race, kaisai.Nen);
       if (saved) {
-        await this.jravanShussoubaTool.saveSeisekiOf(uma, race, raceNengappi, saved);
+        await jravanShussoubaTool.saveSeisekiOf(uma, race, raceNengappi, saved);
       }
     }
   }
 
   protected async saveRace(buffer: Buffer, kaisaiId: number) {
-    const toBe = await this.jravanRaceTool.createRaceWith(buffer, kaisaiId);
+    const toBe = await jravanRaceTool.createRaceWith(buffer, kaisaiId);
     if (!toBe) {
       return null;
     }
@@ -76,8 +62,8 @@ export class JravanSei1 extends DataToImport {
     toBe.Shoukin5Chaku = readPositiveInt(buffer, 176, 7, 1000);
     toBe.FukaShou = readPositiveInt(buffer, 197, 7, 1000);
     const asIs = await this.entityManager.findOneBy(Race, { Id: toBe.Id });
-    const race = await this.jravanRaceTool.saveOrUpdateRace(asIs, toBe);
-    await this.jravanRaceTool.saveRaceMeiOf(buffer, 17, 60, race);
+    const race = await jravanRaceTool.saveOrUpdateRace(asIs, toBe);
+    await jravanRaceTool.saveRaceMeiOf(buffer, 17, 60, race);
     return race;
   }
 
@@ -99,16 +85,16 @@ export class JravanSei1 extends DataToImport {
     toBe.Baba = $R.baba.toCodeFromJravan(buffer, 331, 1);
     toBe.Tenki = $R.tenki.toCodeFromJravan(buffer, 332, 1);
     const asIs = await this.entityManager.findOneBy(RaceSeiseki, { Id: race.Id });
-    await this.tool.saveOrUpdate(RaceSeiseki, asIs, toBe);
+    await tool.saveOrUpdate(RaceSeiseki, asIs, toBe);
   }
 
   protected async saveRaceLapTime(buffer: Buffer, race: Race) {
     if (race.HeichiShougai === $R.HeichiShougai.Heichi) {
-      await this.jravanRaceTool.saveRaceLapTime(buffer, 649, race);
+      await jravanRaceTool.saveRaceLapTime(buffer, 649, race);
       return;
     }
     // 障害: 1 マイル通過タイム (分と秒)、後 4 ハロン、後 3 ハロン
-    await this.jravanRaceTool.saveShougaiLapTime(
+    await jravanRaceTool.saveShougaiLapTime(
       race,
       readInt(buffer, 649, 3),
       readPositiveInt(buffer, 652, 3, 0.1),

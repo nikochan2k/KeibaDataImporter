@@ -1,23 +1,21 @@
-import { Inject, Injectable } from "@nestjs/common";
 import { EntityManager } from "typeorm";
 import * as $CH from "../../converters/Choukyou";
-import { ChoukyouDao } from "../../daos/ChoukyouDao";
-import { JinmeiDao } from "../../daos/JinmeiDao";
-import { UmaDao } from "../../daos/UmaDao";
+import { choukyouDao } from "../../daos/ChoukyouDao";
+import { jinmeiDao } from "../../daos/JinmeiDao";
+import { umaDao } from "../../daos/UmaDao";
 import { Choukyou } from "../../entities/Choukyou";
 import { ChoukyouTime } from "../../entities/ChoukyouTime";
 import { ShussoubaChoukyou } from "../../entities/ShussoubaChoukyou";
 import { Uma } from "../../entities/Uma";
 import { OrmManager } from "../../OrmManager";
 import { readInt, readPositiveInt, readStr, readStrWithNoSpace } from "../Reader";
-import { getChoukyouId, Tool } from "../Tool";
+import { getChoukyouId, tool } from "../Tool";
 
 interface FurlongOffset {
   f: number;
   offset: number;
 }
 
-@Injectable()
 export class KolChoukyouTool {
   private static readonly courseFurlongOffsets: FurlongOffset[] = [
     { f: 8, offset: 27 },
@@ -39,18 +37,6 @@ export class KolChoukyouTool {
   @OrmManager()
   private entityManager: EntityManager;
 
-  @Inject()
-  private tool: Tool;
-
-  @Inject()
-  private umaDao: UmaDao;
-
-  @Inject()
-  private jinmeiDao: JinmeiDao;
-
-  @Inject()
-  private choukyouDao: ChoukyouDao;
-
   /**
    * 調教 1 件を保存し、出走馬と結びつけます。
    * 調教フラグ・矢印・例外はレース(出走馬)ごとに変わるので、連関(ShussoubaChoukyou)に持たせます。
@@ -68,7 +54,7 @@ export class KolChoukyouTool {
       return;
     }
 
-    const dateId = this.tool.getDaysFrom1970(buffer, offset + 9);
+    const dateId = tool.getDaysFrom1970(buffer, offset + 9);
     if (dateId === null) {
       return;
     }
@@ -83,7 +69,7 @@ export class KolChoukyouTool {
         choukyou.Noriyaku = $CH.Noriyaku.HonbanKishu; // 本番騎手
       } else {
         choukyou.Noriyaku = $CH.Noriyaku.ChoukyouKishu; // 調教騎手
-        const jinmei = await this.jinmeiDao.save(kijousha);
+        const jinmei = await jinmeiDao.save(kijousha);
         choukyou.TanshukuKishuMeiId = jinmei.Id;
       }
     }
@@ -115,7 +101,7 @@ export class KolChoukyouTool {
         const awaseUma = execed[0];
         let uma = new Uma();
         uma.KanaBamei = awaseUma;
-        uma = await this.umaDao.saveUma(uma);
+        uma = await umaDao.saveUma(uma);
         choukyou.AwaseUmaId = uma.Id;
       } else {
         reigai = true;
@@ -169,7 +155,7 @@ export class KolChoukyouTool {
     sc.ChoukyouFlag = $CH.choukyouFlag.toCodeFromKol(buffer, offset, 1);
     sc.Yajirushi = $CH.yajirushi.toCodeFromKol(buffer, offset + 76, 1);
     sc.Reigai = readStr(buffer, offset + 77, 40);
-    await this.choukyouDao.saveShussoubaChoukyou(sc);
+    await choukyouDao.saveShussoubaChoukyou(sc);
   }
 
   /**
@@ -252,3 +238,5 @@ export class KolChoukyouTool {
     return times;
   }
 }
+
+export const kolChoukyouTool = new KolChoukyouTool();

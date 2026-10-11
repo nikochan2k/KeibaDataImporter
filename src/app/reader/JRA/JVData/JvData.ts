@@ -1,5 +1,3 @@
-import { Inject, Injectable, type OnModuleInit } from "@nestjs/common";
-import { ModuleRef } from "@nestjs/core";
 import { DataToImport } from "../../DataToImport";
 import { readRaw } from "../../Reader";
 import { JvdataCh } from "./JvdataCh";
@@ -18,15 +16,11 @@ import { JvdataYs } from "./JvdataYs";
  * 先頭 2 バイトのレコード種別 ID で、取り込み処理を振り分ける。
  * 取り込み処理のないレコード種別(特別登録馬、票数、坂路調教、マイニング予想など)は読み飛ばす。
  */
-@Injectable()
-export class JvData extends DataToImport implements OnModuleInit {
+export class JvData extends DataToImport {
   private records: Map<string, JvdataRecord>;
 
-  constructor(@Inject(ModuleRef) private moduleRef: ModuleRef) {
+  constructor() {
     super();
-  }
-
-  public onModuleInit() {
     this.records = new Map();
     for (const type of [
       JvdataRa,
@@ -43,7 +37,7 @@ export class JvData extends DataToImport implements OnModuleInit {
       JvdataCh,
       JvdataYs,
     ]) {
-      const record = this.moduleRef.get<JvdataRecord>(type, { strict: false });
+      const record: JvdataRecord = new type();
       this.records.set(record.id, record);
     }
   }

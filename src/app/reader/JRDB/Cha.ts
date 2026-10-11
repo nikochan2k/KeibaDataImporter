@@ -1,21 +1,16 @@
-import { Inject, Injectable } from "@nestjs/common";
 import * as $CH from "../../converters/Choukyou";
 import * as $R from "../../converters/Race";
-import { ChoukyouDao } from "../../daos/ChoukyouDao";
+import { choukyouDao } from "../../daos/ChoukyouDao";
 import { Choukyou } from "../../entities/Choukyou";
 import { Kyousouba } from "../../entities/Kyousouba";
 import { Shussouba } from "../../entities/Shussouba";
 import { ShussoubaChoukyou } from "../../entities/ShussoubaChoukyou";
 import { readInt, readPositiveDouble, readPositiveInt } from "../Reader";
-import { getChoukyouId } from "../Tool";
+import { getChoukyouId, tool } from "../Tool";
 import { JrdbShussoubaData } from "./JrdbShussoubaData";
 
 /** 調教本追切データ。本追切の調教を Choukyou に入れ、出走馬と本追切として結びつける */
-@Injectable()
 export class Cha extends JrdbShussoubaData {
-  @Inject()
-  private choukyouDao: ChoukyouDao;
-
   protected getBufferLength() {
     return 64;
   }
@@ -30,11 +25,11 @@ export class Cha extends JrdbShussoubaData {
     sc.ShussoubaId = shussouba.Id;
     sc.ChoukyouId = choukyou.Id;
     sc.HonOikiri = 1;
-    await this.choukyouDao.saveShussoubaChoukyou(sc);
+    await choukyouDao.saveShussoubaChoukyou(sc);
   }
 
   protected async saveChoukyou(buffer: Buffer, shussouba: Shussouba) {
-    const days = this.tool.getDaysFrom1970(buffer, 12);
+    const days = tool.getDaysFrom1970(buffer, 12);
     if (days === null || shussouba.KyousoubaId == null) {
       return null;
     }
@@ -85,6 +80,6 @@ export class Cha extends JrdbShussoubaData {
     const asIs = candidates.find((c) => c.Oikiri === toBe.Oikiri) ?? candidates[0] ?? null;
     toBe.Renban = asIs?.Renban ?? 1;
     toBe.Id = getChoukyouId(toBe.UmaId, days, toBe.Basho, toBe.Type, toBe.Renban);
-    return await this.tool.saveOrUpdate(Choukyou, asIs, toBe, true);
+    return await tool.saveOrUpdate(Choukyou, asIs, toBe, true);
   }
 }

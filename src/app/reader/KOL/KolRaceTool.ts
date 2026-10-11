@@ -1,8 +1,8 @@
-import { Inject, Injectable } from "@nestjs/common";
 import * as $C from "../../converters/Common";
 import * as $R from "../../converters/Race";
-import { JinmeiDao } from "../../daos/JinmeiDao";
-import { UmaDao } from "../../daos/UmaDao";
+import { jinmeiDao } from "../../daos/JinmeiDao";
+import { raceDao } from "../../daos/RaceDao";
+import { umaDao } from "../../daos/UmaDao";
 import { Race } from "../../entities/Race";
 import { RaceHassouJoukyou } from "../../entities/RaceHassouJoukyou";
 import { Record } from "../../entities/Record";
@@ -17,7 +17,8 @@ import {
   readStrWithNoSpace,
   readTime,
 } from "../Reader";
-import { KolKaisaiTool } from "./KolKaisaiTool";
+import { tool } from "../Tool";
+import { kolKaisaiTool } from "./KolKaisaiTool";
 
 export interface RaceLapTimeInfo {
   Offset: number;
@@ -28,17 +29,7 @@ export interface RaceLapTimeInfo {
   ShuuryouKyori: number;
 }
 
-@Injectable()
 export class KolRaceTool extends RaceTool {
-  @Inject()
-  private kolKaisaiTool: KolKaisaiTool;
-
-  @Inject()
-  private umaDao: UmaDao;
-
-  @Inject()
-  private jinmeiDao: JinmeiDao;
-
   protected getRaceBangou(buffer: Buffer) {
     const raceBangou = readPositiveInt(buffer, 10, 2);
     if (raceBangou === null) {
@@ -49,13 +40,13 @@ export class KolRaceTool extends RaceTool {
 
   public getRace(buffer: Buffer, kaisaiId?: number) {
     if (!kaisaiId) {
-      kaisaiId = this.kolKaisaiTool.getKaisaiId(buffer);
+      kaisaiId = kolKaisaiTool.getKaisaiId(buffer);
     }
     return super.getRace(buffer, kaisaiId);
   }
 
   public getRaceId(buffer: Buffer) {
-    const kaisaiId = this.kolKaisaiTool.getKaisaiId(buffer);
+    const kaisaiId = kolKaisaiTool.getKaisaiId(buffer);
     return super.getRaceId(buffer, kaisaiId);
   }
 
@@ -70,19 +61,19 @@ export class KolRaceTool extends RaceTool {
     record.Nengappi = nengappi;
     record.Time = readTime(buffer, offset + 8, 4);
     let uma = new Uma();
-    if (this.tool.isEnglish(bamei)) {
+    if (tool.isEnglish(bamei)) {
       uma.EigoBamei = bamei;
     } else {
       uma.KanaBamei = bamei;
     }
-    uma = await this.umaDao.saveUma(uma);
+    uma = await umaDao.saveUma(uma);
     record.UmaId = uma.Id;
     record.Kinryou = readPositiveDouble(buffer, offset + 42, 3, 0.1);
     const tanshukuKishuMei = readStrWithNoSpace(buffer, offset + 45, 8);
-    const jinmei = await this.jinmeiDao.save(tanshukuKishuMei);
+    const jinmei = await jinmeiDao.save(tanshukuKishuMei);
     record.TanshukuKishuMeiId = jinmei.Id;
     record.Basho = $C.basho.toCodeFromKol(buffer, bashoOffset, 2);
-    return this.raceDao.saveRecord(record);
+    return raceDao.saveRecord(record);
   }
 
   public async saveRaceHassouJoukyou(buffer: Buffer, offset: number, race: Race) {
@@ -149,3 +140,5 @@ export class KolRaceTool extends RaceTool {
     }
   }
 }
+
+export const kolRaceTool = new KolRaceTool();

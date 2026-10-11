@@ -3,8 +3,8 @@ import { afterAll, beforeAll, describe, expect, test } from "bun:test";
 import * as fs from "node:fs";
 import * as os from "node:os";
 import * as path from "node:path";
-import { BadRequestException, ConflictException, NotFoundException } from "@nestjs/common";
 import { ImportJobService } from "../src/app/api/ImportJobService";
+import { BadRequestError, ConflictError, NotFoundError } from "../src/app/http/errors";
 import { ImportProgress } from "../src/app/ImportProgress";
 
 let root: string;
@@ -36,15 +36,13 @@ afterAll(() => {
 /** traverse の中身を差し替えられる ImportJobService を作る */
 function create(traverse: (entry: string, progress: ImportProgress) => Promise<void>, total = 0) {
   const progress = new ImportProgress();
-  const service = new ImportJobService();
-  Object.assign(service, {
-    progress,
-    traversal: {
+  return new ImportJobService(
+    {
       countFiles: async () => total,
       traverse: (entry: string) => traverse(entry, progress),
     },
-  });
-  return service;
+    progress,
+  );
 }
 
 /** ジョブが走り終わるのを待つ */
@@ -197,7 +195,7 @@ describe("ImportJobService", () => {
     expect(rest.entries).toHaveLength(2);
     expect(rest.entries[0].message).toContain("壊れています");
     expect(service.logsOf(job.id, all.next).entries).toEqual([]);
-    expect(() => service.logsOf("xxx", 0)).toThrow(NotFoundException);
+    expect(() => service.logsOf("xxx", 0)).toThrow(NotFoundError);
   });
 
   test("走っている間は次のジョブを始められない", async () => {
@@ -207,7 +205,7 @@ describe("ImportJobService", () => {
     });
     const service = create(() => gate);
     const job = service.start(data);
-    expect(() => service.start(data)).toThrow(ConflictException);
+    expect(() => service.start(data)).toThrow(ConflictError);
     release();
     await finished(service, job.id);
     const next = service.start(data);
@@ -236,24 +234,24 @@ describe("ImportJobService", () => {
 
   test("IMPORT_ROOT の外と、存在しないパスは受け付けない", () => {
     const service = create(async () => {});
-    expect(() => service.start(path.join(root, "../outside"))).toThrow(BadRequestException);
-    expect(() => service.start(outside)).toThrow(BadRequestException);
-    expect(() => service.start(path.join(root, "nope"))).toThrow(BadRequestException);
-    expect(() => service.start("")).toThrow(BadRequestException);
-    expect(() => service.start(undefined)).toThrow(BadRequestException);
-    expect(() => service.start(123)).toThrow(BadRequestException);
+    expect(() => service.start(path.join(root, "../outside"))).toThrow(BadRequestError);
+    expect(() => service.start(outside)).toThrow(BadRequestError);
+    expect(() => service.start(path.join(root, "nope"))).toThrow(BadRequestError);
+    expect(() => service.start("")).toThrow(BadRequestError);
+    expect(() => service.start(undefined)).toThrow(BadRequestError);
+    expect(() => service.start(123)).toThrow(BadRequestError);
   });
 
   test("シンボリックリンクで IMPORT_ROOT の外へ出られない", () => {
     fs.symlinkSync(outside, path.join(root, "escape"));
     const service = create(async () => {});
-    expect(() => service.start(path.join(root, "escape"))).toThrow(BadRequestException);
+    expect(() => service.start(path.join(root, "escape"))).toThrow(BadRequestError);
   });
 
   test("相対パスは受け付けない", () => {
     const service = create(async () => {});
-    expect(() => service.start("data")).toThrow(BadRequestException);
-    expect(() => service.start("./data")).toThrow(BadRequestException);
+    expect(() => service.start("data")).toThrow(BadRequestError);
+    expect(() => service.start("./data")).toThrow(BadRequestError);
   });
 
   test("IMPORT_ROOT 配下の絶対パスは受け付ける", async () => {
@@ -264,7 +262,7 @@ describe("ImportJobService", () => {
   });
 
   test("存在しないジョブは NotFound", () => {
-    expect(() => create(async () => {}).get("xxx")).toThrow(NotFoundException);
+    expect(() => create(async () => {}).get("xxx")).toThrow(NotFoundError);
   });
 });
 

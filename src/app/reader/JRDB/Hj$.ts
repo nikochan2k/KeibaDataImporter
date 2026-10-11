@@ -1,20 +1,13 @@
-import { Inject } from "@nestjs/common";
 import { Baken, Kakutei } from "../../converters/Common";
 import { OddsHaitou } from "../../entities/OddsHaitou";
 import { readPositiveInt } from "../Reader";
 import { JrdbData } from "./JrdbData";
-import { JrdbOddsHaitouTool } from "./JrdbOddsHaitouTool";
-import { JrdbRaceTool } from "./JrdbRaceTool";
+import { jrdbOddsHaitouTool } from "./JrdbOddsHaitouTool";
+import { jrdbRaceTool } from "./JrdbRaceTool";
 
 export abstract class Hj$ extends JrdbData {
-  @Inject()
-  protected jrdbRaceTool: JrdbRaceTool;
-
-  @Inject()
-  protected jrdbOddsHaitouTool: JrdbOddsHaitouTool;
-
   public async save(buffer: Buffer) {
-    const raceId = this.jrdbRaceTool.getRaceId(buffer);
+    const raceId = jrdbRaceTool.getRaceId(buffer);
     await this.saveTanshou(buffer, raceId);
     await this.saveFukushou(buffer, raceId);
     await this.saveWakuren(buffer, raceId);
@@ -37,7 +30,7 @@ export abstract class Hj$ extends JrdbData {
       oddsHaitou.Kakutei = Kakutei.Kakutei;
       oddsHaitou.Bangou1 = umaban;
       oddsHaitou.Haitoukin = readPositiveInt(buffer, offset + 2, 7);
-      await this.jrdbOddsHaitouTool.saveOddsHaitou(oddsHaitou);
+      await jrdbOddsHaitouTool.saveOddsHaitou(oddsHaitou);
     }
   }
 
@@ -53,7 +46,7 @@ export abstract class Hj$ extends JrdbData {
       oddsHaitou.Kakutei = Kakutei.Kakutei;
       oddsHaitou.Bangou1 = umaban;
       oddsHaitou.Haitoukin = readPositiveInt(buffer, offset + 2, 7);
-      await this.jrdbOddsHaitouTool.saveOddsHaitou(oddsHaitou);
+      await jrdbOddsHaitouTool.saveOddsHaitou(oddsHaitou);
     }
   }
 
@@ -70,7 +63,7 @@ export abstract class Hj$ extends JrdbData {
       oddsHaitou.Bangou1 = wakuban1;
       oddsHaitou.Bangou2 = readPositiveInt(buffer, offset + 1, 1);
       oddsHaitou.Haitoukin = readPositiveInt(buffer, offset + 2, 7);
-      await this.jrdbOddsHaitouTool.saveOddsHaitou(oddsHaitou);
+      await jrdbOddsHaitouTool.saveOddsHaitou(oddsHaitou);
     }
   }
 
@@ -87,7 +80,7 @@ export abstract class Hj$ extends JrdbData {
       oddsHaitou.Bangou1 = umaban1;
       oddsHaitou.Bangou2 = readPositiveInt(buffer, offset + 2, 2);
       oddsHaitou.Haitoukin = readPositiveInt(buffer, offset + 4, 8);
-      await this.jrdbOddsHaitouTool.saveOddsHaitou(oddsHaitou);
+      await jrdbOddsHaitouTool.saveOddsHaitou(oddsHaitou);
     }
   }
 
@@ -104,7 +97,7 @@ export abstract class Hj$ extends JrdbData {
       oddsHaitou.Bangou1 = umaban1;
       oddsHaitou.Bangou2 = readPositiveInt(buffer, offset + 2, 2);
       oddsHaitou.Haitoukin = readPositiveInt(buffer, offset + 4, 8);
-      await this.jrdbOddsHaitouTool.saveOddsHaitou(oddsHaitou);
+      await jrdbOddsHaitouTool.saveOddsHaitou(oddsHaitou);
     }
   }
 

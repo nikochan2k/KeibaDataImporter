@@ -1,4 +1,3 @@
-import { Inject } from "@nestjs/common";
 import * as $K from "../../converters/Kishu";
 import * as $S from "../../converters/Shussouba";
 import { Bagu } from "../../converters/ShussoubaJoutai";
@@ -8,8 +7,8 @@ import { Kubun } from "../../entities/ShussoubaJoutai";
 import { ShussoubaSeiseki } from "../../entities/ShussoubaSeiseki";
 import { readInt, readPositiveDouble, readPositiveInt, readRaw, readTime } from "../Reader";
 import { ShussoubaTool } from "../ShussoubaTool";
-import { Tool } from "../Tool";
-import { JraTool } from "./JraTool";
+import { tool } from "../Tool";
+import { jraTool } from "./JraTool";
 
 /** 異常区分コード → 取消種別 (1:出走取消 2:発走除外→6 3:競走除外 4:競走中止) */
 const torikeshiShubetsuOf: { [code: string]: number } = { "1": 1, "2": 6, "3": 3, "4": 4 };
@@ -51,12 +50,6 @@ export interface JraSeisekiOffsets {
 
 /** JRA-VAN の出馬表・成績と、JV-Data の馬毎レース情報に共通する出走馬の処理 */
 export abstract class JraShussoubaTool extends ShussoubaTool {
-  @Inject()
-  protected jraTool: JraTool;
-
-  @Inject()
-  protected tool: Tool;
-
   /**
    * 出走馬 (と馬、競走馬、騎手、調教師) を保存します。
    * nen はレースの年で、年齢の計算に使います。
@@ -76,12 +69,12 @@ export abstract class JraShussoubaTool extends ShussoubaTool {
     const asIs = await this.entityManager.findOneBy(Shussouba, { Id: toBe.Id });
 
     toBe.Wakuban = readPositiveInt(buffer, o.wakuban, 1);
-    const choukyoushi = await this.jraTool.saveChoukyoushi(
+    const choukyoushi = await jraTool.saveChoukyoushi(
       buffer,
       o.choukyoushiCode,
       o.choukyoushiTanshuku,
     );
-    const umaInfo = await this.jraTool.saveKyousouba(
+    const umaInfo = await jraTool.saveKyousouba(
       buffer,
       o.touroku,
       o.bamei,
@@ -92,21 +85,21 @@ export abstract class JraShussoubaTool extends ShussoubaTool {
     if (umaInfo) {
       toBe.KyousoubaId = umaInfo.Kyousouba.Id;
       if (umaInfo.Seinen) {
-        toBe.Nenrei = this.tool.calculateNenrei(nen, umaInfo.Seinen);
+        toBe.Nenrei = tool.calculateNenrei(nen, umaInfo.Seinen);
       }
     }
     if (toBe.Nenrei == null && o.nenrei != null) {
       const nenrei = readPositiveInt(buffer, o.nenrei, 2);
       if (nenrei) {
-        toBe.Nenrei = this.tool.normalizeNenrei(nenrei, nen);
+        toBe.Nenrei = tool.normalizeNenrei(nenrei, nen);
       }
     }
     toBe.Kinryou = readPositiveDouble(buffer, o.kinryou, 3, 0.1);
-    const kishu = await this.jraTool.saveKishu(buffer, o.kishuCode, o.kishuTanshuku);
+    const kishu = await jraTool.saveKishu(buffer, o.kishuCode, o.kishuTanshuku);
     toBe.KishuId = kishu?.Id;
     toBe.MinaraiKubun = $K.minaraiKubun.toCodeFromJvData(buffer, o.minarai, 1) ?? 0;
 
-    toBe = await this.tool.saveOrUpdate(Shussouba, asIs, toBe);
+    toBe = await tool.saveOrUpdate(Shussouba, asIs, toBe);
     if (readInt(buffer, o.blinker, 1) === 1) {
       await this.saveShussoubaJoutai(toBe.Id, Kubun.Bagu, Bagu.Blinker);
     }
@@ -128,8 +121,8 @@ export abstract class JraShussoubaTool extends ShussoubaTool {
     toBe.Kinryou = readPositiveDouble(buffer, o.kinryou, 3, 0.1);
     toBe.KishuId = saved.kishuId;
     toBe.MinaraiKubun = $K.minaraiKubun.toCodeFromJvData(buffer, o.minarai, 1) ?? 0;
-    toBe.KakuteiChakujun = this.tool.getChakujun(buffer, o.kakutei, 2);
-    toBe.NyuusenChakujun = this.tool.getChakujun(buffer, o.nyuusen, 2);
+    toBe.KakuteiChakujun = tool.getChakujun(buffer, o.kakutei, 2);
+    toBe.NyuusenChakujun = tool.getChakujun(buffer, o.nyuusen, 2);
     toBe.ChakujunFuka = $S.chakujunFuka.toCodeFromJvData(buffer, o.ijou, 1);
     toBe.TorikeshiShubetsu = torikeshiShubetsuOf[readRaw(buffer, o.ijou, 1)];
     toBe.Time = readTime(buffer, o.time, 4);
@@ -147,6 +140,6 @@ export abstract class JraShussoubaTool extends ShussoubaTool {
   /** 成績を保存します。既にあれば差分だけを更新します */
   public async saveSeiseki(toBe: ShussoubaSeiseki) {
     const asIs = await this.entityManager.findOneBy(ShussoubaSeiseki, { Id: toBe.Id });
-    return this.tool.saveOrUpdate(ShussoubaSeiseki, asIs, toBe);
+    return tool.saveOrUpdate(ShussoubaSeiseki, asIs, toBe);
   }
 }

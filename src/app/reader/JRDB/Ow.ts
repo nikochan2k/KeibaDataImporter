@@ -1,30 +1,22 @@
-import { Inject, Injectable } from "@nestjs/common";
 import { EntityManager } from "typeorm";
 import { Baken, Kakutei } from "../../converters/Common";
 import { OddsHaitou } from "../../entities/OddsHaitou";
 import { OrmManager } from "../../OrmManager";
 import { readPositiveDouble } from "../Reader";
 import { JrdbData } from "./JrdbData";
-import { JrdbOddsHaitouTool } from "./JrdbOddsHaitouTool";
-import { JrdbRaceTool } from "./JrdbRaceTool";
+import { jrdbOddsHaitouTool } from "./JrdbOddsHaitouTool";
+import { jrdbRaceTool } from "./JrdbRaceTool";
 
-@Injectable()
 export class Ow extends JrdbData {
   @OrmManager()
   protected entityManager: EntityManager;
-
-  @Inject()
-  protected jrdbRaceTool: JrdbRaceTool;
-
-  @Inject()
-  protected jrdbOddsHaitouTool: JrdbOddsHaitouTool;
 
   protected getBufferLength() {
     return 780;
   }
 
   public async save(buffer: Buffer) {
-    const raceId = this.jrdbRaceTool.getRaceId(buffer);
+    const raceId = jrdbRaceTool.getRaceId(buffer);
     await this.saveWide(buffer, raceId);
   }
 
@@ -44,7 +36,7 @@ export class Ow extends JrdbData {
         oddsHaitou.Bangou1 = bangou1;
         oddsHaitou.Bangou2 = bangou2;
         oddsHaitou.Odds1 = odds1;
-        await this.jrdbOddsHaitouTool.saveOddsHaitou(oddsHaitou);
+        await jrdbOddsHaitouTool.saveOddsHaitou(oddsHaitou);
       }
     }
   }

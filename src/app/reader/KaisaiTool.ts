@@ -1,10 +1,9 @@
-import { Inject } from "@nestjs/common";
 import { Logger } from "log4js";
 import { EntityManager } from "typeorm";
 import { Kaisai } from "../entities/Kaisai";
 import { getLogger } from "../LogUtil";
 import { OrmManager } from "../OrmManager";
-import { Tool } from "./Tool";
+import { tool } from "./Tool";
 
 export interface KaisaiInfo {
   basho: number;
@@ -20,9 +19,6 @@ export abstract class KaisaiTool {
 
   @OrmManager()
   protected entityManager: EntityManager;
-
-  @Inject()
-  private tool: Tool;
 
   constructor() {
     this.logger = getLogger(this);
@@ -56,7 +52,7 @@ export abstract class KaisaiTool {
    * @memberof KaisaiTool
    */
   protected generateKaisaiId(info: KaisaiInfo) {
-    const daysFrom1970 = this.tool.getDaysFrom1970With(info.nen, info.gatsu, info.nichi);
+    const daysFrom1970 = tool.getDaysFrom1970With(info.nen, info.gatsu, info.nichi);
     const id = daysFrom1970 * 2 ** 7 + info.basho;
     return id;
   }

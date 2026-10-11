@@ -1,10 +1,9 @@
-import { Injectable } from "@nestjs/common";
 import { Baken, Kakutei } from "../../converters/Common";
 import { OddsHaitou } from "../../entities/OddsHaitou";
 import { readPositiveInt } from "../Reader";
 import { Hj$ } from "./Hj$";
+import { jrdbOddsHaitouTool } from "./JrdbOddsHaitouTool";
 
-@Injectable()
 export class Hjc extends Hj$ {
   protected getBufferLength() {
     return 444;
@@ -23,7 +22,7 @@ export class Hjc extends Hj$ {
       oddsHaitou.Bangou1 = umaban1;
       oddsHaitou.Bangou2 = readPositiveInt(buffer, offset + 2, 2);
       oddsHaitou.Haitoukin = readPositiveInt(buffer, offset + 4, 8);
-      await this.jrdbOddsHaitouTool.saveOddsHaitou(oddsHaitou);
+      await jrdbOddsHaitouTool.saveOddsHaitou(oddsHaitou);
     }
   }
 
@@ -41,7 +40,7 @@ export class Hjc extends Hj$ {
       oddsHaitou.Bangou2 = readPositiveInt(buffer, offset + 2, 2);
       oddsHaitou.Bangou3 = readPositiveInt(buffer, offset + 4, 2);
       oddsHaitou.Haitoukin = readPositiveInt(buffer, offset + 6, 8);
-      await this.jrdbOddsHaitouTool.saveOddsHaitou(oddsHaitou);
+      await jrdbOddsHaitouTool.saveOddsHaitou(oddsHaitou);
     }
   }
 
@@ -59,7 +58,7 @@ export class Hjc extends Hj$ {
       oddsHaitou.Bangou2 = readPositiveInt(buffer, offset + 2, 2);
       oddsHaitou.Bangou3 = readPositiveInt(buffer, offset + 4, 2);
       oddsHaitou.Haitoukin = readPositiveInt(buffer, offset + 6, 9);
-      await this.jrdbOddsHaitouTool.saveOddsHaitou(oddsHaitou);
+      await jrdbOddsHaitouTool.saveOddsHaitou(oddsHaitou);
     }
   }
 }

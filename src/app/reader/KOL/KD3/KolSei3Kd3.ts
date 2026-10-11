@@ -1,14 +1,9 @@
-import { Inject, Injectable } from "@nestjs/common";
 import { RaceSeiseki } from "../../../entities/RaceSeiseki";
 import { DataToImport } from "../../DataToImport";
 import { readStr } from "../../Reader";
-import { KolRaceTool } from "../KolRaceTool";
+import { kolRaceTool } from "../KolRaceTool";
 
-@Injectable()
 export class KolSei3Kd3 extends DataToImport {
-  @Inject()
-  private kolRaceTool: KolRaceTool;
-
   protected getBufferLength() {
     return 1050;
   }
@@ -18,7 +13,7 @@ export class KolSei3Kd3 extends DataToImport {
     if (!seisaiNaiyou) {
       return;
     }
-    const id = this.kolRaceTool.getRaceId(buffer);
+    const id = kolRaceTool.getRaceId(buffer);
     if (id === null) {
       return;
     }

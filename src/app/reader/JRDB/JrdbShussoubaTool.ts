@@ -1,22 +1,14 @@
-import { Inject, Injectable } from "@nestjs/common";
 import * as $SJ from "../../converters/ShussoubaJoutai";
-import { KishuDao } from "../../daos/KishuDao";
+import { kishuDao } from "../../daos/KishuDao";
 import { Kishu } from "../../entities/Kishu";
 import { Kubun } from "../../entities/ShussoubaJoutai";
 import { readPositiveInt, readStr, readStrWithNoSpace } from "../../reader/Reader";
 import { ShussoubaTool } from "../ShussoubaTool";
-import { JrdbRaceTool } from "./JrdbRaceTool";
+import { jrdbRaceTool } from "./JrdbRaceTool";
 
-@Injectable()
 export class JrdbShussoubaTool extends ShussoubaTool {
-  @Inject()
-  private jrdbRaceTool: JrdbRaceTool;
-
-  @Inject()
-  private kishuDao: KishuDao;
-
   protected getRaceId(buffer: Buffer) {
-    return this.jrdbRaceTool.getRaceId(buffer);
+    return jrdbRaceTool.getRaceId(buffer);
   }
 
   public async saveShussoubaJoutaiWith(
@@ -54,6 +46,8 @@ export class JrdbShussoubaTool extends ShussoubaTool {
       // 地方・外国のレースなど、騎手が不明なとき。中身のない騎手を作らない
       return null;
     }
-    return this.kishuDao.saveKishu(kishu, kishuMei);
+    return kishuDao.saveKishu(kishu, kishuMei);
   }
 }
+
+export const jrdbShussoubaTool = new JrdbShussoubaTool();

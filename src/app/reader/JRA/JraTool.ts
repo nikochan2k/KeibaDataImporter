@@ -1,14 +1,13 @@
-import { Inject, Injectable } from "@nestjs/common";
 import * as $U from "../../converters/Uma";
-import { ChoukyoushiDao } from "../../daos/ChoukyoushiDao";
-import { KishuDao } from "../../daos/KishuDao";
-import { UmaDao } from "../../daos/UmaDao";
+import { choukyoushiDao } from "../../daos/ChoukyoushiDao";
+import { kishuDao } from "../../daos/KishuDao";
+import { umaDao } from "../../daos/UmaDao";
 import { Choukyoushi } from "../../entities/Choukyoushi";
 import { Kishu } from "../../entities/Kishu";
 import { Kyousouba } from "../../entities/Kyousouba";
 import { Uma } from "../../entities/Uma";
 import { readPositiveInt, readStr, readStrWithNoSpace } from "../Reader";
-import { Tool } from "../Tool";
+import { tool } from "../Tool";
 
 /** 血統登録番号: 生年(西暦)4桁 + 品種1桁 + 数字5桁 */
 export interface JraTouroku {
@@ -17,20 +16,7 @@ export interface JraTouroku {
   seinen: number;
 }
 
-@Injectable()
 export class JraTool {
-  @Inject()
-  private tool: Tool;
-
-  @Inject()
-  private umaDao: UmaDao;
-
-  @Inject()
-  private kishuDao: KishuDao;
-
-  @Inject()
-  private choukyoushiDao: ChoukyoushiDao;
-
   /** 血統登録番号を読みます。中央初出走などで「初期値」(全部 0 か空白) のときは null */
   public readTouroku(buffer: Buffer, offset: number): JraTouroku | null {
     const str = readStr(buffer, offset, 10);
@@ -49,7 +35,7 @@ export class JraTool {
     const kishu = new Kishu();
     kishu.JvDataKishuCode = code;
     const tanshuku = readStrWithNoSpace(buffer, tanshukuOffset, 8);
-    return this.kishuDao.saveKishu(kishu, undefined, tanshuku);
+    return kishuDao.saveKishu(kishu, undefined, tanshuku);
   }
 
   /** 調教師コード(5 桁)と略称から調教師を保存します。コードが初期値のときは null */
@@ -61,7 +47,7 @@ export class JraTool {
     const choukyoushi = new Choukyoushi();
     choukyoushi.JvDataChoukyoushiCode = code;
     const tanshuku = readStrWithNoSpace(buffer, tanshukuOffset, 8);
-    return this.choukyoushiDao.saveChoukyoushi(choukyoushi, undefined, tanshuku);
+    return choukyoushiDao.saveChoukyoushi(choukyoushi, undefined, tanshuku);
   }
 
   /** 馬名を、英字ならば英語馬名、そうでなければカナ馬名にする */
@@ -69,7 +55,7 @@ export class JraTool {
     if (!bamei) {
       return;
     }
-    if (this.tool.isEnglish(bamei)) {
+    if (tool.isEnglish(bamei)) {
       uma.EigoBamei = bamei;
     } else {
       uma.KanaBamei = bamei;
@@ -101,13 +87,13 @@ export class JraTool {
     }
     this.setBamei(uma, bamei);
     uma.Seibetsu = seibetsu;
-    uma = await this.umaDao.saveUma(uma);
+    uma = await umaDao.saveUma(uma);
 
     let kyousouba = new Kyousouba();
     kyousouba.UmaId = uma.Id;
     kyousouba.Seibetsu = seibetsu;
     kyousouba.ChoukyoushiId = choukyoushi?.Id;
-    kyousouba = await this.umaDao.saveKyousouba(kyousouba);
+    kyousouba = await umaDao.saveKyousouba(kyousouba);
     return { Kyousouba: kyousouba, Uma: uma, Seinen: touroku?.seinen };
   }
 
@@ -116,3 +102,5 @@ export class JraTool {
     return readPositiveInt(buffer, offset, 8);
   }
 }
+
+export const jraTool = new JraTool();

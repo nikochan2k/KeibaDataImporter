@@ -1,16 +1,13 @@
 import "reflect-metadata";
 import { afterAll, beforeAll, describe, expect, test } from "bun:test";
-import type { INestApplication } from "@nestjs/common";
-import { NestFactory } from "@nestjs/core";
-import { AppModule } from "../src/app/AppModule";
 import { dataSource } from "../src/app/DataSource";
+import { createApp } from "../src/app/http/app";
 import { seedBrowseFixture } from "./fixtures/browse";
 
-let app: INestApplication;
-let base: string;
+const app = createApp();
 
 async function get(path: string) {
-  const response = await fetch(base + path);
+  const response = await app.handle(new Request(`http://localhost${path}`));
   return { status: response.status, body: await response.json() };
 }
 
@@ -19,14 +16,9 @@ beforeAll(async () => {
   await dataSource.initialize();
   await dataSource.synchronize();
   await seedBrowseFixture();
-
-  app = await NestFactory.create(AppModule, { logger: false });
-  await app.listen(0, "127.0.0.1");
-  base = await app.getUrl();
 });
 
 afterAll(async () => {
-  await app.close();
   await dataSource.destroy();
 });
 
@@ -137,5 +129,13 @@ describe("馬", () => {
       kishuMei: "武 豊",
     });
     expect((await get("/api/umas/99999")).status).toBe(404);
+  });
+});
+
+describe("取り込み", () => {
+  test("接続元が分からない (ローカルと確かめられない) ときは拒否する", async () => {
+    const { status, body } = await get("/api/imports");
+    expect(status).toBe(403);
+    expect(body.message).toBe("取り込みはローカルからしか使えません");
   });
 });

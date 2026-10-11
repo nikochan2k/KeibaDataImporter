@@ -1,6 +1,5 @@
-import { Inject, Injectable } from "@nestjs/common";
 import * as $C from "../../../converters/Common";
-import { ChoukyoushiDao } from "../../../daos/ChoukyoushiDao";
+import { choukyoushiDao } from "../../../daos/ChoukyoushiDao";
 import { Choukyoushi } from "../../../entities/Choukyoushi";
 import { readPositiveInt, readRaw, readStr, readStrWithNoSpace } from "../../Reader";
 import { JvdataRecord } from "./JvdataRecord";
@@ -9,13 +8,9 @@ import { JvdataRecord } from "./JvdataRecord";
  * 調教師マスタ (CH)。
  * 最近の重賞勝利の情報と、成績の集計は取り込まない。
  */
-@Injectable()
 export class JvdataCh extends JvdataRecord {
   public readonly id = "CH";
   public readonly length = 3862;
-
-  @Inject()
-  private choukyoushiDao: ChoukyoushiDao;
 
   public async save(buffer: Buffer) {
     if (this.getKubun(buffer) === "0") {
@@ -42,6 +37,6 @@ export class JvdataCh extends JvdataRecord {
     const kanji = readStrWithNoSpace(buffer, 41, 34);
     const tanshuku = readStrWithNoSpace(buffer, 105, 8);
     const furigana = readStr(buffer, 75, 30);
-    await this.choukyoushiDao.saveChoukyoushi(choukyoushi, kanji, tanshuku, furigana);
+    await choukyoushiDao.saveChoukyoushi(choukyoushi, kanji, tanshuku, furigana);
   }
 }

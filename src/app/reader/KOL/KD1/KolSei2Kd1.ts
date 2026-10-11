@@ -1,4 +1,3 @@
-import { Inject, Injectable } from "@nestjs/common";
 import { EntityManager } from "typeorm";
 import * as $C from "../../../converters/Common";
 import { Kaisai } from "../../../entities/Kaisai";
@@ -15,13 +14,11 @@ import { toSei2Record } from "./KolSeiKd1";
  * 出走馬の並びは競走成績と同じ。レースコードはレコードの先頭の 12 バイトにあるが、年月日はない。
  * 年月日は、先に取り込んだ競走成績(または出馬表)の開催から、場所・年・回・日で探す。
  */
-@Injectable()
 export class KolSei2Kd1 extends DataToImport {
   @OrmManager()
   protected entityManager: EntityManager;
 
-  @Inject()
-  private sei2: KolSei2Kd2;
+  private sei2 = new KolSei2Kd2();
 
   protected getBufferLength() {
     return kd1Length.sei2;

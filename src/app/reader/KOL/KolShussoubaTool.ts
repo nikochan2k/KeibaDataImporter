@@ -1,15 +1,10 @@
-import { Inject, Injectable } from "@nestjs/common";
 import { Shussouba } from "../../entities/Shussouba";
 import { ShussoubaTsuukaJuni } from "../../entities/ShussoubaTsuukaJuni";
 import { readPositiveDouble, readPositiveInt } from "../Reader";
 import { ShussoubaTool } from "../ShussoubaTool";
-import { KolRaceTool } from "./KolRaceTool";
+import { kolRaceTool } from "./KolRaceTool";
 
-@Injectable()
 export class KolShussoubaTool extends ShussoubaTool {
-  @Inject()
-  private kolRaceTool: KolRaceTool;
-
   public getTimeSa(buffer: Buffer, offset: number) {
     const timeSa = readPositiveDouble(buffer, offset, 3, 0.1);
     if (99.8 <= timeSa) {
@@ -19,7 +14,7 @@ export class KolShussoubaTool extends ShussoubaTool {
   }
 
   protected getRaceId(buffer: Buffer) {
-    return this.kolRaceTool.getRaceId(buffer);
+    return kolRaceTool.getRaceId(buffer);
   }
 
   public async saveShussoubaTsuukaJuni(buffer: Buffer, offset: number, shussouba: Shussouba) {
@@ -49,3 +44,5 @@ export class KolShussoubaTool extends ShussoubaTool {
     }
   }
 }
+
+export const kolShussoubaTool = new KolShussoubaTool();

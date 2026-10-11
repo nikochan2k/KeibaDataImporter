@@ -1,29 +1,21 @@
-import { Inject, Injectable } from "@nestjs/common";
 import { MasshouFlag } from "../../../converters/Common";
-import { UmaDao } from "../../../daos/UmaDao";
+import { umaDao } from "../../../daos/UmaDao";
 import { Choukyoushi } from "../../../entities/Choukyoushi";
 import { Kishu } from "../../../entities/Kishu";
 import { Uma } from "../../../entities/Uma";
 import { DataToImport } from "../../DataToImport";
 import { readPositiveInt, readStr } from "../../Reader";
-import { Tool } from "../../Tool";
-import { JraTool } from "../JraTool";
+import { tool } from "../../Tool";
+import { jraTool } from "../JraTool";
 
 /** 抹消競走馬 (JracDelu.dat) */
-@Injectable()
 export class JravanDelu extends DataToImport {
-  @Inject()
-  private jraTool: JraTool;
-
-  @Inject()
-  private umaDao: UmaDao;
-
   protected getBufferLength() {
     return 38;
   }
 
   public async save(buffer: Buffer) {
-    const touroku = this.jraTool.readTouroku(buffer, 0);
+    const touroku = jraTool.readTouroku(buffer, 0);
     const bamei = readStr(buffer, 10, 18);
     if (!touroku && !bamei) {
       return;
@@ -33,19 +25,15 @@ export class JravanDelu extends DataToImport {
       uma.KettouTourokuBangou = touroku.bangou;
       uma.Seinen = touroku.seinen;
     }
-    this.jraTool.setBamei(uma, bamei);
+    jraTool.setBamei(uma, bamei);
     uma.MasshouFlag = MasshouFlag.Massou;
     uma.MasshouNengappi = readPositiveInt(buffer, 28, 8);
-    await this.umaDao.saveUma(uma);
+    await umaDao.saveUma(uma);
   }
 }
 
 /** 抹消騎手 (JracDelk.dat) */
-@Injectable()
 export class JravanDelk extends DataToImport {
-  @Inject()
-  private tool: Tool;
-
   protected getBufferLength() {
     return 15;
   }
@@ -59,16 +47,12 @@ export class JravanDelk extends DataToImport {
     kishu.JvDataKishuCode = code;
     kishu.MenkyoMasshouNengappi = readPositiveInt(buffer, 5, 8);
     const asIs = await this.entityManager.findOneBy(Kishu, { JvDataKishuCode: code });
-    await this.tool.saveOrUpdate(Kishu, asIs, kishu);
+    await tool.saveOrUpdate(Kishu, asIs, kishu);
   }
 }
 
 /** 抹消調教師 (JracDelc.dat) */
-@Injectable()
 export class JravanDelc extends DataToImport {
-  @Inject()
-  private tool: Tool;
-
   protected getBufferLength() {
     return 15;
   }
@@ -82,6 +66,6 @@ export class JravanDelc extends DataToImport {
     choukyoushi.JvDataChoukyoushiCode = code;
     choukyoushi.MenkyoMasshouNengappi = readPositiveInt(buffer, 5, 8);
     const asIs = await this.entityManager.findOneBy(Choukyoushi, { JvDataChoukyoushiCode: code });
-    await this.tool.saveOrUpdate(Choukyoushi, asIs, choukyoushi);
+    await tool.saveOrUpdate(Choukyoushi, asIs, choukyoushi);
   }
 }

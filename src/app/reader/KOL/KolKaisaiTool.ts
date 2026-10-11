@@ -1,4 +1,3 @@
-import { Injectable } from "@nestjs/common";
 import { Logger } from "log4js";
 import * as $C from "../../converters/Common";
 import { KaisaiKubun } from "../../converters/Kaisai";
@@ -6,7 +5,6 @@ import { getLogger } from "../../LogUtil";
 import { KaisaiInfo, KaisaiTool } from "../KaisaiTool";
 import { readPositiveInt, readRaw } from "../Reader";
 
-@Injectable()
 export class KolKaisaiTool extends KaisaiTool {
   protected logger: Logger;
 
@@ -56,3 +54,5 @@ export class KolKaisaiTool extends KaisaiTool {
     return null;
   }
 }
+
+export const kolKaisaiTool = new KolKaisaiTool();

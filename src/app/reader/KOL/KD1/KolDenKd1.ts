@@ -1,5 +1,4 @@
-import { Inject, Injectable } from "@nestjs/common";
-import { Bridge } from "../../Bridge";
+import { bridge } from "../../Bridge";
 import { DataToImport } from "../../DataToImport";
 import { KolDen1Kd2 } from "../KD2/KolDen1Kd2";
 import { KolDen2Kd2 } from "../KD2/KolDen2Kd2";
@@ -20,16 +19,10 @@ import {
  * KD1 の出馬表 (KOL_DEN.DAT)。レースと出走馬 18 頭が 1 レコードに入っている。
  * KD2 の出馬表レースデータと出馬表出走馬データに分けて、KolDen1Kd2, KolDen2Kd2 に渡す。
  */
-@Injectable()
 export class KolDenKd1 extends DataToImport {
-  @Inject()
-  private den1: KolDen1Kd2;
+  private den1 = new KolDen1Kd2();
 
-  @Inject()
-  private den2: KolDen2Kd2;
-
-  @Inject()
-  private bridge: Bridge;
+  private den2 = new KolDen2Kd2();
 
   protected getBufferLength() {
     return kd1Length.den;
@@ -37,11 +30,11 @@ export class KolDenKd1 extends DataToImport {
 
   protected async setup() {
     // 出馬表出走馬データが予想展開を引く表。KD1 には予想展開がないので空のまま
-    (<KolBridge>this.bridge).yosouKyakushitsuMap = new Map<number, number>();
+    (<KolBridge>bridge).yosouKyakushitsuMap = new Map<number, number>();
   }
 
   protected async teardown() {
-    delete (<KolBridge>this.bridge).yosouKyakushitsuMap;
+    delete (<KolBridge>bridge).yosouKyakushitsuMap;
   }
 
   public async save(buffer: Buffer) {

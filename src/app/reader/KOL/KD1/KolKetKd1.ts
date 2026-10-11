@@ -1,14 +1,11 @@
-import { Inject, Injectable } from "@nestjs/common";
 import { DataToImport } from "../../DataToImport";
 import { KolKet } from "../KolKet";
 import { copyFields, newRecord } from "./Kd1Convert";
 import { kd1KetMap, kd1Length, kd2Length } from "./Kd1Layout";
 
 /** KD1 3代血統図。KD2/KD3 の並びに組み替えて、KolKet に渡す */
-@Injectable()
 export class KolKetKd1 extends DataToImport {
-  @Inject()
-  private reader: KolKet;
+  private reader = new KolKet();
 
   protected getBufferLength() {
     return kd1Length.ket;
