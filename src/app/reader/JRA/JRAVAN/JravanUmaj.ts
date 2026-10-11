@@ -1,14 +1,14 @@
 import { Inject, Service } from "typedi";
-import * as $C from "../../converters/Common";
-import * as $U from "../../converters/Uma";
-import { SeisanshaDao } from "../../daos/SeisanshaDao";
-import { UmaDao } from "../../daos/UmaDao";
-import { Kyousouba } from "../../entities/Kyousouba";
-import { MeishouKubun } from "../../entities/Shoyuu";
-import { Uma } from "../../entities/Uma";
-import { DataToImport } from "../DataToImport";
-import { readPositiveInt, readStr } from "../Reader";
-import { Tool } from "../Tool";
+import * as $C from "../../../converters/Common";
+import * as $U from "../../../converters/Uma";
+import { SeisanshaDao } from "../../../daos/SeisanshaDao";
+import { UmaDao } from "../../../daos/UmaDao";
+import { Kyousouba } from "../../../entities/Kyousouba";
+import { MeishouKubun } from "../../../entities/Shoyuu";
+import { Uma } from "../../../entities/Uma";
+import { DataToImport } from "../../DataToImport";
+import { readPositiveInt, readStr } from "../../Reader";
+import { Tool } from "../../Tool";
 import { JravanTool } from "./JravanTool";
 
 /**

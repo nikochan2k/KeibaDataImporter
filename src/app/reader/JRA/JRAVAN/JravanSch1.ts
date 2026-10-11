@@ -1,5 +1,5 @@
 import { Inject, Service } from "typedi";
-import { DataToImport } from "../DataToImport";
+import { DataToImport } from "../../DataToImport";
 import { JravanRaceTool } from "./JravanRaceTool";
 
 /** 年間スケジュール (JracSch1.dat): 開催日程。重賞案内は取り込まない。 */

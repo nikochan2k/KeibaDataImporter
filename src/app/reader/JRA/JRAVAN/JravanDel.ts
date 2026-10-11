@@ -1,12 +1,12 @@
 import { Inject, Service } from "typedi";
-import { MasshouFlag } from "../../converters/Common";
-import { UmaDao } from "../../daos/UmaDao";
-import { Choukyoushi } from "../../entities/Choukyoushi";
-import { Kishu } from "../../entities/Kishu";
-import { Uma } from "../../entities/Uma";
-import { DataToImport } from "../DataToImport";
-import { readPositiveInt, readStr } from "../Reader";
-import { Tool } from "../Tool";
+import { MasshouFlag } from "../../../converters/Common";
+import { UmaDao } from "../../../daos/UmaDao";
+import { Choukyoushi } from "../../../entities/Choukyoushi";
+import { Kishu } from "../../../entities/Kishu";
+import { Uma } from "../../../entities/Uma";
+import { DataToImport } from "../../DataToImport";
+import { readPositiveInt, readStr } from "../../Reader";
+import { Tool } from "../../Tool";
 import { JravanTool } from "./JravanTool";
 
 /** 抹消競走馬 (JracDelu.dat) */

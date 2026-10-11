@@ -1,4 +1,4 @@
-import { DirtShiba } from "../../converters/Race";
+import { DirtShiba } from "../../../converters/Race";
 
 export interface JravanTrackInfo {
   dirtShiba: DirtShiba;

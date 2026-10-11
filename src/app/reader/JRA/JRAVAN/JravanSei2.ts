@@ -1,6 +1,6 @@
 import { Inject, Service } from "typedi";
-import { DataToImport } from "../DataToImport";
-import { readInt, readPositiveInt } from "../Reader";
+import { DataToImport } from "../../DataToImport";
+import { readInt, readPositiveInt } from "../../Reader";
 import { JravanRaceTool } from "./JravanRaceTool";
 import { JravanShussoubaTool, jravanSeiUmaLength } from "./JravanShussoubaTool";
 

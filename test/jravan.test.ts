@@ -20,23 +20,23 @@ import { Shussouba } from "../src/app/entities/Shussouba";
 import { ShussoubaSeiseki } from "../src/app/entities/ShussoubaSeiseki";
 import { ShussoubaTsuukaJuni } from "../src/app/entities/ShussoubaTsuukaJuni";
 import { Uma } from "../src/app/entities/Uma";
-import { JravanChok } from "../src/app/reader/JRAVAN/JravanChok";
-import { JravanDelc, JravanDelk, JravanDelu } from "../src/app/reader/JRAVAN/JravanDel";
-import { JravanDen1 } from "../src/app/reader/JRAVAN/JravanDen1";
-import { JravanDen2 } from "../src/app/reader/JRAVAN/JravanDen2";
-import { JravanKisi } from "../src/app/reader/JRAVAN/JravanKisi";
+import { JravanChok } from "../src/app/reader/JRA/JRAVAN/JravanChok";
+import { JravanDelc, JravanDelk, JravanDelu } from "../src/app/reader/JRA/JRAVAN/JravanDel";
+import { JravanDen1 } from "../src/app/reader/JRA/JRAVAN/JravanDen1";
+import { JravanDen2 } from "../src/app/reader/JRA/JRAVAN/JravanDen2";
+import { JravanKisi } from "../src/app/reader/JRA/JRAVAN/JravanKisi";
 import {
   JravanOds1,
   JravanOds3,
   JravanOds4,
   JravanOds5,
   JravanOds6,
-} from "../src/app/reader/JRAVAN/JravanOds";
-import { JravanSch1 } from "../src/app/reader/JRAVAN/JravanSch1";
-import { JravanSei1 } from "../src/app/reader/JRAVAN/JravanSei1";
-import { JravanSei2 } from "../src/app/reader/JRAVAN/JravanSei2";
-import { JravanSeih } from "../src/app/reader/JRAVAN/JravanSeih";
-import { JravanUmaj } from "../src/app/reader/JRAVAN/JravanUmaj";
+} from "../src/app/reader/JRA/JRAVAN/JravanOds";
+import { JravanSch1 } from "../src/app/reader/JRA/JRAVAN/JravanSch1";
+import { JravanSei1 } from "../src/app/reader/JRA/JRAVAN/JravanSei1";
+import { JravanSei2 } from "../src/app/reader/JRA/JRAVAN/JravanSei2";
+import { JravanSeih } from "../src/app/reader/JRA/JRAVAN/JravanSeih";
+import { JravanUmaj } from "../src/app/reader/JRA/JRAVAN/JravanUmaj";
 import { JravanRecord, parseJravanSpec } from "./spec/jravan";
 import { closeKolDb, emptyKolDb, importKolFiles } from "./spec/kol";
 

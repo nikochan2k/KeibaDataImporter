@@ -1,14 +1,14 @@
 import { Inject, Service } from "typedi";
-import * as $U from "../../converters/Uma";
-import { ChoukyoushiDao } from "../../daos/ChoukyoushiDao";
-import { KishuDao } from "../../daos/KishuDao";
-import { UmaDao } from "../../daos/UmaDao";
-import { Choukyoushi } from "../../entities/Choukyoushi";
-import { Kishu } from "../../entities/Kishu";
-import { Kyousouba } from "../../entities/Kyousouba";
-import { Uma } from "../../entities/Uma";
-import { readPositiveInt, readStr, readStrWithNoSpace } from "../Reader";
-import { Tool } from "../Tool";
+import * as $U from "../../../converters/Uma";
+import { ChoukyoushiDao } from "../../../daos/ChoukyoushiDao";
+import { KishuDao } from "../../../daos/KishuDao";
+import { UmaDao } from "../../../daos/UmaDao";
+import { Choukyoushi } from "../../../entities/Choukyoushi";
+import { Kishu } from "../../../entities/Kishu";
+import { Kyousouba } from "../../../entities/Kyousouba";
+import { Uma } from "../../../entities/Uma";
+import { readPositiveInt, readStr, readStrWithNoSpace } from "../../Reader";
+import { Tool } from "../../Tool";
 
 /** 血統登録番号: 生年(西暦)4桁 + 品種1桁 + 数字5桁 */
 export interface JravanTouroku {

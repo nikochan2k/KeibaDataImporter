@@ -1,8 +1,8 @@
 import { Service } from "typedi";
-import { Baken, Kakutei } from "../../converters/Common";
-import { OddsHaitou } from "../../entities/OddsHaitou";
-import { OddsHaitouTool } from "../OddsHaitouTool";
-import { readPositiveDouble, readPositiveInt } from "../Reader";
+import { Baken, Kakutei } from "../../../converters/Common";
+import { OddsHaitou } from "../../../entities/OddsHaitou";
+import { OddsHaitouTool } from "../../OddsHaitouTool";
+import { readPositiveDouble, readPositiveInt } from "../../Reader";
 
 /** 馬番の組み合わせ。馬番は 1〜18 */
 function* combinations(count: number, size: number, ordered: boolean): Generator<number[]> {

@@ -1,10 +1,10 @@
 import { Logger } from "log4js";
 import { Service } from "typedi";
-import * as $C from "../../converters/Common";
-import { KaisaiKubun } from "../../converters/Kaisai";
-import { getLogger } from "../../LogUtil";
-import { KaisaiInfo, KaisaiTool } from "../KaisaiTool";
-import { readPositiveInt, readRaw } from "../Reader";
+import * as $C from "../../../converters/Common";
+import { KaisaiKubun } from "../../../converters/Kaisai";
+import { getLogger } from "../../../LogUtil";
+import { KaisaiInfo, KaisaiTool } from "../../KaisaiTool";
+import { readPositiveInt, readRaw } from "../../Reader";
 
 /**
  * JRA-VAN のレコードの先頭は「年月日場回日R」(16 バイト)。

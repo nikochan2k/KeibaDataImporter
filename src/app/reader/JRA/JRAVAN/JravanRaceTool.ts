@@ -1,14 +1,14 @@
 import { Inject, Service } from "typedi";
-import * as $C from "../../converters/Common";
-import * as $R from "../../converters/Race";
-import { JinmeiDao } from "../../daos/JinmeiDao";
-import { UmaDao } from "../../daos/UmaDao";
-import { JinmeiKubun } from "../../entities/Jinmei";
-import { Kaisai } from "../../entities/Kaisai";
-import { Race } from "../../entities/Race";
-import { Record } from "../../entities/Record";
-import { Uma } from "../../entities/Uma";
-import { RaceTool } from "../RaceTool";
+import * as $C from "../../../converters/Common";
+import * as $R from "../../../converters/Race";
+import { JinmeiDao } from "../../../daos/JinmeiDao";
+import { UmaDao } from "../../../daos/UmaDao";
+import { JinmeiKubun } from "../../../entities/Jinmei";
+import { Kaisai } from "../../../entities/Kaisai";
+import { Race } from "../../../entities/Race";
+import { Record } from "../../../entities/Record";
+import { Uma } from "../../../entities/Uma";
+import { RaceTool } from "../../RaceTool";
 import {
   readPositiveDouble,
   readPositiveInt,
@@ -16,7 +16,7 @@ import {
   readStr,
   readStrWithNoSpace,
   readTime,
-} from "../Reader";
+} from "../../Reader";
 import { JravanKaisaiTool } from "./JravanKaisaiTool";
 import { JravanTool } from "./JravanTool";
 import { getJravanTrack } from "./JravanTrack";

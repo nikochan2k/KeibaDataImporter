@@ -4,23 +4,23 @@ import { Container, Inject, Service } from "typedi";
 import { getLogger } from "./LogUtil";
 import { Bridge } from "./reader/Bridge";
 import { DataToImport } from "./reader/DataToImport";
-import { JravanChok } from "./reader/JRAVAN/JravanChok";
-import { JravanDelc, JravanDelk, JravanDelu } from "./reader/JRAVAN/JravanDel";
-import { JravanDen1 } from "./reader/JRAVAN/JravanDen1";
-import { JravanDen2 } from "./reader/JRAVAN/JravanDen2";
-import { JravanKisi } from "./reader/JRAVAN/JravanKisi";
+import { JravanChok } from "./reader/JRA/JRAVAN/JravanChok";
+import { JravanDelc, JravanDelk, JravanDelu } from "./reader/JRA/JRAVAN/JravanDel";
+import { JravanDen1 } from "./reader/JRA/JRAVAN/JravanDen1";
+import { JravanDen2 } from "./reader/JRA/JRAVAN/JravanDen2";
+import { JravanKisi } from "./reader/JRA/JRAVAN/JravanKisi";
 import {
   JravanOds1,
   JravanOds3,
   JravanOds4,
   JravanOds5,
   JravanOds6,
-} from "./reader/JRAVAN/JravanOds";
-import { JravanSch1 } from "./reader/JRAVAN/JravanSch1";
-import { JravanSei1 } from "./reader/JRAVAN/JravanSei1";
-import { JravanSei2 } from "./reader/JRAVAN/JravanSei2";
-import { JravanSeih } from "./reader/JRAVAN/JravanSeih";
-import { JravanUmaj } from "./reader/JRAVAN/JravanUmaj";
+} from "./reader/JRA/JRAVAN/JravanOds";
+import { JravanSch1 } from "./reader/JRA/JRAVAN/JravanSch1";
+import { JravanSei1 } from "./reader/JRA/JRAVAN/JravanSei1";
+import { JravanSei2 } from "./reader/JRA/JRAVAN/JravanSei2";
+import { JravanSeih } from "./reader/JRA/JRAVAN/JravanSeih";
+import { JravanUmaj } from "./reader/JRA/JRAVAN/JravanUmaj";
 import { Bab } from "./reader/JRDB/Bab";
 import { Bac } from "./reader/JRDB/Bac";
 import { C$a } from "./reader/JRDB/C$a";

@@ -1,7 +1,7 @@
 import { Inject, Service } from "typedi";
-import { Race } from "../../entities/Race";
-import { DataToImport } from "../DataToImport";
-import { readJikan, readPositiveInt, readRaw } from "../Reader";
+import { Race } from "../../../entities/Race";
+import { DataToImport } from "../../DataToImport";
+import { readJikan, readPositiveInt, readRaw } from "../../Reader";
 import { JravanRaceTool } from "./JravanRaceTool";
 import { JravanShussoubaTool, jravanDenUmaLength } from "./JravanShussoubaTool";
 

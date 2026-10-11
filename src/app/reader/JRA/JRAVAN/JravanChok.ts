@@ -1,8 +1,8 @@
 import { Inject, Service } from "typedi";
-import { ChoukyoushiDao } from "../../daos/ChoukyoushiDao";
-import { Choukyoushi } from "../../entities/Choukyoushi";
-import { DataToImport } from "../DataToImport";
-import { readPositiveInt, readStr, readStrWithNoSpace } from "../Reader";
+import { ChoukyoushiDao } from "../../../daos/ChoukyoushiDao";
+import { Choukyoushi } from "../../../entities/Choukyoushi";
+import { DataToImport } from "../../DataToImport";
+import { readPositiveInt, readStr, readStrWithNoSpace } from "../../Reader";
 
 /** 調教師 (JracChok.dat)。近走重賞勝鞍と成績の集計は取り込まない。 */
 @Service()

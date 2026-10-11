@@ -1,13 +1,13 @@
 import { Inject, Service } from "typedi";
-import * as $K from "../../converters/Kishu";
-import { HeichiShougai } from "../../converters/Race";
-import * as $S from "../../converters/Shussouba";
-import { Bagu } from "../../converters/ShussoubaJoutai";
-import { Race } from "../../entities/Race";
-import { Shussouba } from "../../entities/Shussouba";
-import { Kubun } from "../../entities/ShussoubaJoutai";
-import { ShussoubaSeiseki } from "../../entities/ShussoubaSeiseki";
-import { KolShussoubaTool } from "../KOL/KolShussoubaTool";
+import * as $K from "../../../converters/Kishu";
+import { HeichiShougai } from "../../../converters/Race";
+import * as $S from "../../../converters/Shussouba";
+import { Bagu } from "../../../converters/ShussoubaJoutai";
+import { Race } from "../../../entities/Race";
+import { Shussouba } from "../../../entities/Shussouba";
+import { Kubun } from "../../../entities/ShussoubaJoutai";
+import { ShussoubaSeiseki } from "../../../entities/ShussoubaSeiseki";
+import { KolShussoubaTool } from "../../KOL/KolShussoubaTool";
 import {
   readInt,
   readPositiveDouble,
@@ -15,9 +15,9 @@ import {
   readRaw,
   readSignedInt,
   readTime,
-} from "../Reader";
-import { ShussoubaTool } from "../ShussoubaTool";
-import { Tool } from "../Tool";
+} from "../../Reader";
+import { ShussoubaTool } from "../../ShussoubaTool";
+import { Tool } from "../../Tool";
 import { JravanOddsHaitouTool } from "./JravanOddsHaitouTool";
 import { JravanRaceTool } from "./JravanRaceTool";
 import { JravanTool } from "./JravanTool";

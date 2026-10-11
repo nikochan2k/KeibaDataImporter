@@ -1,9 +1,9 @@
 import { Inject, Service } from "typedi";
-import * as $K from "../../converters/Kishu";
-import { KishuDao } from "../../daos/KishuDao";
-import { Kishu } from "../../entities/Kishu";
-import { DataToImport } from "../DataToImport";
-import { readPositiveInt, readStr, readStrWithNoSpace } from "../Reader";
+import * as $K from "../../../converters/Kishu";
+import { KishuDao } from "../../../daos/KishuDao";
+import { Kishu } from "../../../entities/Kishu";
+import { DataToImport } from "../../DataToImport";
+import { readPositiveInt, readStr, readStrWithNoSpace } from "../../Reader";
 import { JravanTool } from "./JravanTool";
 
 /** 騎手 (JracKisi.dat)。近走重賞勝鞍と成績の集計は取り込まない。 */

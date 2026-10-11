@@ -1,6 +1,6 @@
 # JRA-VAN の取り込み処理
 
-`src/app/reader/JRAVAN/` に、第3次 JRA-VAN データ(Ver 3.1.1)の蓄積系データの取り込み処理がある。仕様書は [jra-van-spec/](jra-van-spec/README.md)。
+`src/app/reader/JRA/JRAVAN/` に、第3次 JRA-VAN データ(Ver 3.1.1)の蓄積系データの取り込み処理がある。仕様書は [jra-van-spec/](jra-van-spec/README.md)。
 見本データがないので、実データでの確認はしていない。
 
 ## 取り込むファイル

@@ -1,6 +1,6 @@
 import { Inject, Service } from "typedi";
-import { Baken, Kakutei } from "../../converters/Common";
-import { DataToImport } from "../DataToImport";
+import { Baken, Kakutei } from "../../../converters/Common";
+import { DataToImport } from "../../DataToImport";
 import { JravanOddsHaitouTool } from "./JravanOddsHaitouTool";
 import { JravanRaceTool } from "./JravanRaceTool";
 
