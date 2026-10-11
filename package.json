@@ -20,6 +20,7 @@
   "private": true,
   "devDependencies": {
     "@biomejs/biome": "2.5.15",
+    "@ttsc/graph": "^0.31.3",
     "@types/bun": "latest",
     "@types/encoding-japanese": "^2.4.0",
     "@types/glob": "^9.0.0",
