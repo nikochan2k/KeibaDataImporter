@@ -6,7 +6,6 @@ import { JinmeiDao } from "../../daos/JinmeiDao";
 import { UmaDao } from "../../daos/UmaDao";
 import { Choukyou } from "../../entities/Choukyou";
 import { ChoukyouTime } from "../../entities/ChoukyouTime";
-import { JinmeiKubun } from "../../entities/Jinmei";
 import { ShussoubaChoukyou } from "../../entities/ShussoubaChoukyou";
 import { Uma } from "../../entities/Uma";
 import { OrmManager } from "../../OrmManager";
@@ -84,7 +83,7 @@ export class KolChoukyouTool {
         choukyou.Noriyaku = $CH.Noriyaku.HonbanKishu; // 本番騎手
       } else {
         choukyou.Noriyaku = $CH.Noriyaku.ChoukyouKishu; // 調教騎手
-        const jinmei = await this.jinmeiDao.save(JinmeiKubun.Tanshuku, kijousha);
+        const jinmei = await this.jinmeiDao.save(kijousha);
         choukyou.TanshukuKishuMeiId = jinmei.Id;
       }
     }
@@ -160,10 +159,6 @@ export class KolChoukyouTool {
     await this.entityManager.save(choukyou);
 
     for (const choukyouTime of times) {
-      choukyouTime.Id = choukyou.Id * 2 ** 3 + (choukyouTime.F - 1);
-      if (!Number.isSafeInteger(choukyouTime.Id)) {
-        throw new Error(`調教時計IDが安全な整数の範囲を超えます: umaId=${umaId}`);
-      }
       choukyouTime.ChoukyouId = choukyou.Id;
       await this.entityManager.save(choukyouTime);
     }

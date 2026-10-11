@@ -67,9 +67,9 @@ export class Cha extends JrdbShussoubaData {
       toBe.OikiriShisuu = oikiriShisuu;
     }
     toBe.AwaseKekka = $CH.awaseKekka.toCodeFromJrdb(buffer, 49, 1);
-    toBe.AwaseumaOikiriShurui = $CH.oikiri.toCodeFromJrdb(buffer, 50, 1);
-    toBe.AwaseumaNenrei = readPositiveInt(buffer, 51, 2);
-    toBe.AwaseumaClass = $R.jouken.toCodeFromJrdb(buffer, 53, 2);
+    toBe.AwaseUmaOikiriShurui = $CH.oikiri.toCodeFromJrdb(buffer, 50, 1);
+    toBe.AwaseUmaNenrei = readPositiveInt(buffer, 51, 2);
+    toBe.AwaseUmaClass = $R.jouken.toCodeFromJrdb(buffer, 53, 2);
 
     // KOL から入った同じ馬・同じ日・同じ場所・同じ種別の調教があれば、そこに本追切の項目を足す。
     // 複数あれば追切種類が同じものを選ぶ(JRDB には KOL と突き合わせられる時計がないため)。

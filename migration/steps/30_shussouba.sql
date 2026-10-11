@@ -144,7 +144,7 @@ FROM mig_shoyuu x
 WHERE NOT EXISTS (SELECT 1 FROM Shoyuu s WHERE s.Meishou = x.Meishou)
 GROUP BY x.Meishou;
 
-INSERT INTO Banushi (ShussoubaId, MeishouId)
+INSERT INTO Banushi (ShussoubaId, ShoyuuId)
 SELECT DISTINCT ms.NewId, sh.Id
 FROM old.Shussouba s
 INNER JOIN mig_shussouba ms ON ms.OldId = s.Id

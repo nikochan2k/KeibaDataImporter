@@ -2,7 +2,6 @@ import { Inject, Service } from "typedi";
 import * as $C from "../../../converters/Common";
 import { JinmeiDao } from "../../../daos/JinmeiDao";
 import { UmaDao } from "../../../daos/UmaDao";
-import { JinmeiKubun } from "../../../entities/Jinmei";
 import { Race } from "../../../entities/Race";
 import { Record } from "../../../entities/Record";
 import { Uma } from "../../../entities/Uma";
@@ -97,7 +96,7 @@ export class JravanRaceTool extends JraRaceTool {
     record.UmaId = uma.Id;
     record.Kinryou = readPositiveDouble(buffer, offset + 54, 3, 0.1);
     const tanshuku = readStrWithNoSpace(buffer, offset + 62, 8);
-    const jinmei = await this.jinmeiDao.save(JinmeiKubun.Tanshuku, tanshuku);
+    const jinmei = await this.jinmeiDao.save(tanshuku);
     record.TanshukuKishuMeiId = jinmei.Id;
     record.Basho = $C.basho.toCodeFromJravan(buffer, offset + 13, 2);
     return this.raceDao.saveRecord(record);

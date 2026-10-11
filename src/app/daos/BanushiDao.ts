@@ -22,12 +22,12 @@ export class BanushiDao {
     const shoyuu = await this.meishouDao.save(kubun, meishou, banushiKaiCode);
     let banushi = await this.repository.findOneBy({
       ShussoubaId: shussoubaId,
-      MeishouId: shoyuu.Id,
+      ShoyuuId: shoyuu.Id,
     });
     if (!banushi) {
       banushi = new Banushi();
       banushi.ShussoubaId = shussoubaId;
-      banushi.MeishouId = shoyuu.Id;
+      banushi.ShoyuuId = shoyuu.Id;
       banushi = await this.repository.save(banushi);
     }
     return banushi;

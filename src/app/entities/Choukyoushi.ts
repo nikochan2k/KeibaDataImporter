@@ -3,7 +3,7 @@ import { Column, Entity, Index, PrimaryGeneratedColumn } from "typeorm";
 @Entity("Choukyoushi")
 @Index("IxChoukyoushi1", (c: Choukyoushi) => [c.KolKyuushaCode], { unique: true })
 @Index("IxChoukyoushi2", (c: Choukyoushi) => [c.JrdbChoukyoushiCode], { unique: true })
-@Index("IxChoukyoushi4", (c: Choukyoushi) => [c.JvDataChoukyoushiCode], { unique: true })
+@Index("IxChoukyoushi3", (c: Choukyoushi) => [c.JvDataChoukyoushiCode], { unique: true })
 export class Choukyoushi {
   @PrimaryGeneratedColumn()
   public Id: number;

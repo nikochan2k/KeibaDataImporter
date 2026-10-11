@@ -27,8 +27,8 @@ SQL は `steps/` に分かれている。`dialect/` は DB 固有の部分(日�
 | `steps/40_choukyou.sql` | Choukyou, ChoukyouTime, ShussoubaChoukyou, ShussoubaHyouka(調教短評・調教本数) |
 | `steps/90_verify.sql` | 移行元と移行先の件数の比較 |
 | `steps/99_cleanup.sql` | 作業テーブル(`mig_*`)の削除 |
-| `fill-matching-key.ts` | `Jinmei` / `Shoyuu` の `MatchingKey` を埋める(SQL では計算できないので、SQL の後に実行する。`migrate-sqlite.sh` は自動で実行する。MySQL / PostgreSQL は手動で、SQLite 専用のスクリプトなので同じ計算で更新すること) |
-| `fill-choukyou-id.ts` | `Choukyou` の `Basho` / `Type` / `Course` / `Renban` を埋め、`Choukyou` / `ChoukyouTime` の Id と `ShussoubaChoukyou.ChoukyouId` を Importer と同じ規則で振り直す(場所・種別のコード化を SQL では書けないため。`migrate-sqlite.sh` は自動で実行する。MySQL / PostgreSQL は手動で同じ計算をすること) |
+| `fill-matching-key.ts` | `Jinmei` / `Shoyuu` の `MatchingKey` を埋め、キーが同じになった `Jinmei` を1行にまとめる(SQL では計算できないので、SQL の後に実行する。`migrate-sqlite.sh` は自動で実行する。MySQL / PostgreSQL は手動で、SQLite 専用のスクリプトなので同じ計算で更新すること) |
+| `fill-choukyou-id.ts` | `Choukyou` の `Basho` / `Type` / `Course` / `Renban` を埋め、`Choukyou` の Id と `ChoukyouTime` / `ShussoubaChoukyou` の `ChoukyouId` を Importer と同じ規則で振り直す(場所・種別のコード化を SQL では書けないため。`migrate-sqlite.sh` は自動で実行する。MySQL / PostgreSQL は手動で同じ計算をすること) |
 
 ## 動作確認の状況
 

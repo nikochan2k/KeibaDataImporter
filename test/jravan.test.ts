@@ -7,8 +7,8 @@ import { ChoukyoushiDao } from "../src/app/daos/ChoukyoushiDao";
 import { JinmeiDao } from "../src/app/daos/JinmeiDao";
 import { KishuDao } from "../src/app/daos/KishuDao";
 import { MeishouDao } from "../src/app/daos/MeishouDao";
+import { UmaDao } from "../src/app/daos/UmaDao";
 import { Choukyoushi } from "../src/app/entities/Choukyoushi";
-import { JinmeiKubun } from "../src/app/entities/Jinmei";
 import { Kaisai } from "../src/app/entities/Kaisai";
 import { Kishu } from "../src/app/entities/Kishu";
 import { OddsHaitou } from "../src/app/entities/OddsHaitou";
@@ -571,6 +571,30 @@ describe("他の情報源との突き合わせ", () => {
     expect(list[0].JvDataKishuCode).toBe("02001");
   });
 
+  test("同じ馬名でも、血統登録番号や生年が違えば別の馬", async () => {
+    await emptyKolDb();
+    const dao = Container.get(UmaDao);
+    const uma = (kettou: string | null, seinen: number | null) => {
+      const u = new Uma();
+      u.KanaBamei = "テストホース";
+      if (kettou) {
+        u.KettouTourokuBangou = kettou;
+      }
+      if (seinen) {
+        u.Seinen = seinen;
+      }
+      return u;
+    };
+    const a = await dao.saveUma(uma("90100001", 1990));
+    const b = await dao.saveUma(uma("15100001", 2015));
+    expect(b.Id).not.toBe(a.Id);
+    // 生年だけ分かっていれば、生年が同じ馬
+    expect((await dao.saveUma(uma(null, 1990))).Id).toBe(a.Id);
+    // 馬名しか分からなければ、生年の新しい馬
+    expect((await dao.saveUma(uma(null, null))).Id).toBe(b.Id);
+    expect(await repo(Uma).count()).toBe(2);
+  });
+
   test("馬主・生産者の名前も、空白や異体字が違えば同じ行にまとめる", async () => {
     await emptyKolDb();
     const dao = Container.get(MeishouDao);
@@ -583,13 +607,13 @@ describe("他の情報源との突き合わせ", () => {
     expect(c.Id).not.toBe(a.Id);
   });
 
-  test("異体字を揃えるのは突き合わせ用のキーだけで、名前は変えない", async () => {
+  test("異体字・空白だけが違う名前は1行にまとめ、最初の表記を残す", async () => {
     await emptyKolDb();
     const dao = Container.get(JinmeiDao);
-    const a = await dao.save(JinmeiKubun.Seimei, "髙 橋");
-    const b = await dao.save(JinmeiKubun.Seimei, "高橋");
-    expect(a.Meishou).toBe("髙橋");
-    expect(b.Meishou).toBe("高橋");
-    expect(a.MatchingKey).toBe(b.MatchingKey);
+    const a = await dao.save("髙 橋");
+    const b = await dao.save("高橋");
+    // 突き合わせ用のキーが同じなら同じ行で、名前は最初の表記のまま
+    expect(b.Id).toBe(a.Id);
+    expect(b.Meishou).toBe("髙橋");
   });
 });

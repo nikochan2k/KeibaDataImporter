@@ -1,7 +1,10 @@
 import { Column, Entity, Index, PrimaryGeneratedColumn } from "typeorm";
+import { JinmeiKubun } from "./Jinmei";
 
 @Entity("KishuMei")
-@Index("IxKishuMei1", (k: KishuMei) => [k.KishuId, k.JinmeiId], { unique: true })
+@Index("IxKishuMei1", (k: KishuMei) => [k.KishuId, k.JinmeiId, k.Kubun], {
+  unique: true,
+})
 @Index("IxKishuMei2", (k: KishuMei) => [k.JinmeiId])
 export class KishuMei {
   @PrimaryGeneratedColumn()
@@ -12,4 +15,7 @@ export class KishuMei {
 
   @Column("mediumint")
   public JinmeiId: number;
+
+  @Column("tinyint")
+  public Kubun: JinmeiKubun;
 }

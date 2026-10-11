@@ -92,8 +92,8 @@ FROM mig_choukyou mc
 INNER JOIN old.ChoukyouRireki r ON r.Id = mc.RepId
 LEFT JOIN Jinmei j ON j.Meishou = r.Kijousha;
 
-INSERT INTO ChoukyouTime (Id, ChoukyouId, F, Time, Comment)
-SELECT mc.NewId * 8 + (t.F - 1), mc.NewId, t.F, t.Time, t.Comment
+INSERT INTO ChoukyouTime (ChoukyouId, F, Time, Comment)
+SELECT mc.NewId, t.F, t.Time, t.Comment
 FROM old.ChoukyouTime t
 INNER JOIN mig_choukyou mc ON mc.RepId = t.ChoukyouRirekiId;
 

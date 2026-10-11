@@ -13,10 +13,10 @@ export class Choukyou {
   public Noriyaku?: number;
 
   @Column("int", { nullable: true })
-  public TanshukuKishuMeiId: number;
+  public TanshukuKishuMeiId?: number;
 
-  @Column("int", { nullable: true })
-  public Nengappi?: number;
+  @Column("int")
+  public Nengappi: number;
 
   /** 同じ馬・同じ日・同じ場所・同じ種別の調教が複数あるときの連番(1 始まり) */
   @Column("tinyint")
@@ -98,11 +98,11 @@ export class Choukyou {
   public OikiriShisuu?: number;
 
   @Column("tinyint", { nullable: true })
-  public AwaseumaOikiriShurui?: number;
+  public AwaseUmaOikiriShurui?: number;
 
   @Column("tinyint", { nullable: true })
-  public AwaseumaNenrei?: number;
+  public AwaseUmaNenrei?: number;
 
   @Column("tinyint", { nullable: true })
-  public AwaseumaClass?: number;
+  public AwaseUmaClass?: number;
 }

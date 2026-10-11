@@ -3,6 +3,7 @@ import { describe, expect, test } from "bun:test";
 import { Baken, Kakutei } from "../src/app/converters/Common";
 import { OddsHaitou } from "../src/app/entities/OddsHaitou";
 import { JrdbOddsHaitouTool } from "../src/app/reader/JRDB/JrdbOddsHaitouTool";
+import { getRaceLapTimeId } from "../src/app/reader/RaceTool";
 
 function odds(
   raceId: number,
@@ -41,5 +42,29 @@ describe("オッズ配当ID", () => {
     const a = tool.calculateOddsHaitouId(odds(100, Kakutei.Kakutei, Baken.Sanrentan, 18, 18, 18));
     const b = tool.calculateOddsHaitouId(odds(101, Kakutei.Yosou, Baken.Tanshou, 1));
     expect(a).toBeLessThan(b);
+  });
+});
+
+describe("ラップタイムID", () => {
+  // 2^28 未満の最大のレースID
+  const raceId = 2 ** 28 - 1;
+
+  test("開始距離が同じでも、区間の長さが違えば衝突しない", () => {
+    const ids = [600, 800, 1000].map((s) => getRaceLapTimeId(raceId, 0, s));
+    expect(new Set(ids).size).toBe(3);
+  });
+
+  test("最大の区間でも安全な整数に収まり、次のレースと衝突しない", () => {
+    const a = getRaceLapTimeId(raceId - 1, 2 ** 13 - 1, 2 ** 13 - 1 + 2 ** 11 - 1);
+    const b = getRaceLapTimeId(raceId, 0, 1);
+    expect(Number.isSafeInteger(a)).toBe(true);
+    expect(a).toBeLessThan(b as number);
+  });
+
+  test("範囲外の区間は null", () => {
+    expect(getRaceLapTimeId(raceId, -1600, 0)).toBeNull();
+    expect(getRaceLapTimeId(raceId, 200, 200)).toBeNull();
+    expect(getRaceLapTimeId(raceId, 0, 2048)).toBeNull();
+    expect(getRaceLapTimeId(raceId, Number.NaN, 200)).toBeNull();
   });
 });

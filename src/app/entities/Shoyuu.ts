@@ -6,7 +6,7 @@ export enum MeishouKubun {
 }
 
 @Entity("Shoyuu")
-@Index("IxShoyuu", (m: Shoyuu) => [m.Meishou], { unique: true })
+@Index("IxShoyuu1", (m: Shoyuu) => [m.Meishou], { unique: true })
 @Index("IxShoyuu2", (m: Shoyuu) => [m.MatchingKey])
 export class Shoyuu {
   @PrimaryGeneratedColumn()

@@ -1,7 +1,6 @@
 import * as $R from "../../converters/Race";
 import { Kaisai } from "../../entities/Kaisai";
 import { Race } from "../../entities/Race";
-import { RaceLapTime } from "../../entities/RaceLapTime";
 import { RaceTool } from "../RaceTool";
 import { readRaw } from "../Reader";
 import { JraKaisaiTool } from "./JraKaisaiTool";
@@ -149,14 +148,8 @@ export abstract class JraRaceTool extends RaceTool {
     if (ato3) {
       laps.push({ lapTime: ato3, kaishi: race.Kyori - 600 });
     }
-    for (let i = 0; i < laps.length; i++) {
-      const raceLapTime = new RaceLapTime();
-      raceLapTime.Id = race.Id * 2 ** 5 + i + 1;
-      raceLapTime.RaceId = race.Id;
-      raceLapTime.KaishiKyori = laps[i].kaishi;
-      raceLapTime.ShuuryouKyori = race.Kyori;
-      raceLapTime.LapTime = laps[i].lapTime;
-      await this.entityManager.save(raceLapTime);
+    for (const lap of laps) {
+      await this.saveLap(race, lap.kaishi, race.Kyori, lap.lapTime);
     }
   }
 }

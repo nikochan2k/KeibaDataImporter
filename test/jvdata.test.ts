@@ -273,7 +273,7 @@ describe("レース", () => {
     expect(shussouba?.KishuId).toBe(kishu.Id);
     expect((await repo(Choukyoushi).findBy({ JvDataChoukyoushiCode: "01234" })).length).toBe(1);
     const banushi = await repo(Banushi).findOneByOrFail({ ShussoubaId: shussouba?.Id });
-    const shoyuu = await repo(Shoyuu).findOneByOrFail({ Id: banushi.MeishouId });
+    const shoyuu = await repo(Shoyuu).findOneByOrFail({ Id: banushi.ShoyuuId });
     expect(shoyuu.Meishou).toBe("テスト");
 
     const result = await repo(ShussoubaSeiseki).findOneByOrFail({ Id: shussouba?.Id });

@@ -46,10 +46,12 @@ FROM mig_name
 WHERE Owner IN ('K', 'C') AND Kubun = 1 AND SUBSTR(Meishou, 4, 1) <> '';
 
 -- ---------------------------------------------------------------
--- Jinmei (Meishou は一意。同じ名前が複数の区分にある場合は小さい区分を採用)
+-- Jinmei (区分は KishuMei / ChoukyoushiMei に持つ)
+-- MatchingKey は SQL では計算できないので、仮に Meishou を入れておき、fill-matching-key.ts で
+-- 計算し直す(キーが同じになった行はそこで1行にまとめる)。
 -- ---------------------------------------------------------------
-INSERT INTO Jinmei (Kubun, Meishou)
-SELECT MIN(n.Kubun), n.Meishou
+INSERT INTO Jinmei (Meishou, MatchingKey)
+SELECT n.Meishou, n.Meishou
 FROM mig_name n
 WHERE NOT EXISTS (SELECT 1 FROM Jinmei j WHERE j.Meishou = n.Meishou)
 GROUP BY n.Meishou;
@@ -72,8 +74,8 @@ SELECT s.KishuId, s.KishuId
 FROM (SELECT DISTINCT KishuId FROM old.Shussouba) s
 WHERE NOT EXISTS (SELECT 1 FROM Kishu n WHERE n.KolKishuCode = s.KishuId);
 
-INSERT INTO KishuMei (KishuId, JinmeiId)
-SELECT DISTINCT n.Id, j.Id
+INSERT INTO KishuMei (KishuId, JinmeiId, Kubun)
+SELECT DISTINCT n.Id, j.Id, m.Kubun
 FROM mig_name m
 INNER JOIN Kishu n ON n.KolKishuCode = m.OwnerCode
 INNER JOIN Jinmei j ON j.Meishou = m.Meishou
@@ -99,8 +101,8 @@ FROM (
 WHERE NOT EXISTS (SELECT 1 FROM Choukyoushi n WHERE n.KolKyuushaCode = u.Id)
 GROUP BY u.Id;
 
-INSERT INTO ChoukyoushiMei (ChoukyoushiId, JinmeiId)
-SELECT DISTINCT n.Id, j.Id
+INSERT INTO ChoukyoushiMei (ChoukyoushiId, JinmeiId, Kubun)
+SELECT DISTINCT n.Id, j.Id, m.Kubun
 FROM mig_name m
 INNER JOIN Choukyoushi n ON n.KolKyuushaCode = m.OwnerCode
 INNER JOIN Jinmei j ON j.Meishou = m.Meishou

@@ -112,15 +112,17 @@ export class ChoukyoushiDao {
     kubun: JinmeiKubun,
     meishou: string,
   ) {
-    const jinmei = await this.jinmeiDao.save(kubun, meishou);
+    const jinmei = await this.jinmeiDao.save(meishou);
     let choukyoushiMei = await this.choukyoushiMeiRepository.findOneBy({
       ChoukyoushiId: choukyoushi.Id,
       JinmeiId: jinmei.Id,
+      Kubun: kubun,
     });
     if (!choukyoushiMei) {
       choukyoushiMei = new ChoukyoushiMei();
       choukyoushiMei.ChoukyoushiId = choukyoushi.Id;
       choukyoushiMei.JinmeiId = jinmei.Id;
+      choukyoushiMei.Kubun = kubun;
       await this.choukyoushiMeiRepository.save(choukyoushiMei);
     }
   }

@@ -1,15 +1,12 @@
-import { Column, Entity, Index, PrimaryColumn } from "typeorm";
+import { Column, Entity, PrimaryColumn } from "typeorm";
 
+/** 調教のハロンごとの時計。主キーは (調教ID, ハロン) */
 @Entity("ChoukyouTime")
-@Index("IxChoukyouTime", (c: ChoukyouTime) => [c.ChoukyouId])
 export class ChoukyouTime {
   @PrimaryColumn("bigint")
-  public Id: number;
-
-  @Column("bigint")
   public ChoukyouId: number;
 
-  @Column("tinyint")
+  @PrimaryColumn("tinyint")
   public F: number;
 
   @Column("real", { nullable: true })

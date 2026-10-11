@@ -3,7 +3,7 @@ import { Column, Entity, Index, PrimaryGeneratedColumn } from "typeorm";
 @Entity("Kishu")
 @Index("IxKishu1", (k: Kishu) => [k.KolKishuCode], { unique: true })
 @Index("IxKishu2", (k: Kishu) => [k.JrdbKishuCode], { unique: true })
-@Index("IxKishu4", (k: Kishu) => [k.JvDataKishuCode], { unique: true })
+@Index("IxKishu3", (k: Kishu) => [k.JvDataKishuCode], { unique: true })
 export class Kishu {
   @PrimaryGeneratedColumn()
   public Id: number;

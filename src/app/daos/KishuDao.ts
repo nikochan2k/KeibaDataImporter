@@ -132,15 +132,17 @@ LIMIT
   }
 
   protected async saveKishuMei(kishu: Kishu, kubun: JinmeiKubun, meishou: string) {
-    const jinmei = await this.jinmeiDao.save(kubun, meishou);
+    const jinmei = await this.jinmeiDao.save(meishou);
     let kishuMei = await this.kishuMeiRepository.findOneBy({
       KishuId: kishu.Id,
       JinmeiId: jinmei.Id,
+      Kubun: kubun,
     });
     if (!kishuMei) {
       kishuMei = new KishuMei();
       kishuMei.KishuId = kishu.Id;
       kishuMei.JinmeiId = jinmei.Id;
+      kishuMei.Kubun = kubun;
       await this.kishuMeiRepository.save(kishuMei);
     }
   }

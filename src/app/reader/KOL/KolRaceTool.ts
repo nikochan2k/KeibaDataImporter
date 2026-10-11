@@ -3,10 +3,8 @@ import * as $C from "../../converters/Common";
 import * as $R from "../../converters/Race";
 import { JinmeiDao } from "../../daos/JinmeiDao";
 import { UmaDao } from "../../daos/UmaDao";
-import { JinmeiKubun } from "../../entities/Jinmei";
 import { Race } from "../../entities/Race";
 import { RaceHassouJoukyou } from "../../entities/RaceHassouJoukyou";
-import { RaceLapTime } from "../../entities/RaceLapTime";
 import { Record } from "../../entities/Record";
 import { ShussoubaHassouJoukyou } from "../../entities/ShussoubaHassouJoukyou";
 import { Uma } from "../../entities/Uma";
@@ -81,7 +79,7 @@ export class KolRaceTool extends RaceTool {
     record.UmaId = uma.Id;
     record.Kinryou = readPositiveDouble(buffer, offset + 42, 3, 0.1);
     const tanshukuKishuMei = readStrWithNoSpace(buffer, offset + 45, 8);
-    const jinmei = await this.jinmeiDao.save(JinmeiKubun.Tanshuku, tanshukuKishuMei);
+    const jinmei = await this.jinmeiDao.save(tanshukuKishuMei);
     record.TanshukuKishuMeiId = jinmei.Id;
     record.Basho = $C.basho.toCodeFromKol(buffer, bashoOffset, 2);
     return this.raceDao.saveRecord(record);
@@ -143,16 +141,10 @@ export class KolRaceTool extends RaceTool {
   }
 
   public async saveSpecialRaceLapTime(buffer: Buffer, race: Race, infos: RaceLapTimeInfo[]) {
-    const raceLapTime = new RaceLapTime();
-    raceLapTime.RaceId = race.Id;
-    for (let i = 0; i < infos.length; i++) {
-      const info = infos[i];
-      raceLapTime.LapTime = readPositiveDouble(buffer, info.Offset, info.Length, info.Mul ?? 0.1);
-      if (raceLapTime.LapTime) {
-        raceLapTime.Id = race.Id * 2 ** 5 + i + 1;
-        raceLapTime.KaishiKyori = info.KaishiKyori;
-        raceLapTime.ShuuryouKyori = info.ShuuryouKyori;
-        await this.entityManager.save(raceLapTime);
+    for (const info of infos) {
+      const lapTime = readPositiveDouble(buffer, info.Offset, info.Length, info.Mul ?? 0.1);
+      if (lapTime) {
+        await this.saveLap(race, info.KaishiKyori, info.ShuuryouKyori, lapTime);
       }
     }
   }

@@ -43,7 +43,7 @@ export class Shussouba {
   @Column("tinyint", { nullable: true })
   public MinaraiKubun: number;
 
-  @Column("smallint", { nullable: true })
+  @Column("tinyint", { nullable: true })
   public Norikawari?: number;
 
   /** ブリンカー(1:初装着, 2:再装着, 3:ブリンカー)。装着なしは null */

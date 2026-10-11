@@ -1,8 +1,8 @@
 import { Column, Entity, Index, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity("Banushi")
-@Index("IxBanushi1", (b: Banushi) => [b.ShussoubaId, b.MeishouId], { unique: true })
-@Index("IxBanushi2", (b: Banushi) => [b.MeishouId])
+@Index("IxBanushi1", (b: Banushi) => [b.ShussoubaId, b.ShoyuuId], { unique: true })
+@Index("IxBanushi2", (b: Banushi) => [b.ShoyuuId])
 export class Banushi {
   @PrimaryGeneratedColumn()
   public Id: number;
@@ -11,5 +11,5 @@ export class Banushi {
   public ShussoubaId: number;
 
   @Column("mediumint")
-  public MeishouId: number;
+  public ShoyuuId: number;
 }

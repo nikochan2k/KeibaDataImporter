@@ -214,12 +214,16 @@ UPDATE Race SET RaceRecordId = (
 WHERE Id IN (SELECT RaceId FROM mig_record WHERE Kind = 'R');
 
 -- ---------------------------------------------------------------
--- RaceLapTime (Id = 新レースID * 128 + 旧 Bangou)
+-- RaceLapTime (Id = 新レースID * 2^24 + 開始距離 * 2^11 + 区間の長さ。Importer の getRaceLapTimeId と同じ)
+-- 開始距離が 0〜8191、区間の長さが 1〜2047 に収まらない行は移さない。
 -- ---------------------------------------------------------------
 INSERT INTO RaceLapTime (Id, RaceId, KaishiKyori, ShuuryouKyori, LapTime)
-SELECT m.NewId * 128 + l.Bangou, m.NewId, l.KaishiKyori, l.ShuuryouKyori, l.LapTime
+SELECT m.NewId * 16777216 + l.KaishiKyori * 2048 + (l.ShuuryouKyori - l.KaishiKyori)
+  ,m.NewId, l.KaishiKyori, l.ShuuryouKyori, l.LapTime
 FROM old.RaceLapTime l
-INNER JOIN mig_race m ON m.OldId = l.RaceId;
+INNER JOIN mig_race m ON m.OldId = l.RaceId
+WHERE l.KaishiKyori BETWEEN 0 AND 8191
+  AND l.ShuuryouKyori - l.KaishiKyori BETWEEN 1 AND 2047;
 
 -- ---------------------------------------------------------------
 -- RaceKeika (Id = 新レースID * 16 + 旧 Bangou)
