@@ -8,3 +8,4 @@ npm-debug.log
 .DS_Store
 /web/dist/
 /db/
+bun.lock
