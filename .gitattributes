@@ -4,3 +4,4 @@ docs/kol-spec/KD3/**/*.kd3 -text
 docs/kol-spec/KD3/spec/*.html -text
 docs/kol-spec/KD2/spec/*.html -text
 docs/kol-spec/KD2/spec/*.txt -text
+docs/kol-spec/KD1/spec/*.txt -text

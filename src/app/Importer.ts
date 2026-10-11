@@ -34,6 +34,14 @@ import { Ukc } from "./reader/JRDB/Ukc";
 import { Zec } from "./reader/JRDB/Zec";
 import { Zed } from "./reader/JRDB/Zed";
 import { Zkb } from "./reader/JRDB/Zkb";
+import { KolDenKd1 } from "./reader/KOL/KD1/KolDenKd1";
+import { KolKetKd1 } from "./reader/KOL/KD1/KolKetKd1";
+import { KolKisKd1 } from "./reader/KOL/KD1/KolKisKd1";
+import { KolKyuKd1 } from "./reader/KOL/KD1/KolKyuKd1";
+import { KolSei2Kd1 } from "./reader/KOL/KD1/KolSei2Kd1";
+import { KolSeiKd1 } from "./reader/KOL/KD1/KolSeiKd1";
+import { KolShuKd1 } from "./reader/KOL/KD1/KolShuKd1";
+import { KolUmaKd1 } from "./reader/KOL/KD1/KolUmaKd1";
 import { KolCom1Kd2 } from "./reader/KOL/KD2/KolCom1Kd2";
 import { KolDen1Kd2 } from "./reader/KOL/KD2/KolDen1Kd2";
 import { KolDen2Kd2 } from "./reader/KOL/KD2/KolDen2Kd2";
@@ -87,20 +95,30 @@ export class Importer {
     this.readers = [
       // KD2/KD3 厩舎データ
       { pattern: /kol_kyu\.kd[23]$/i, dataToImport: Container.get(KolKyu) },
+      // KD1 厩舎データ
+      { pattern: /kol_kyu\.dat$/i, dataToImport: Container.get(KolKyuKd1) },
       // JRDB 調教師データ
       { pattern: /c[zs]a\d+\.txt$/i, dataToImport: Container.get(C$a) },
       // KD2/KD3 騎手データ
       { pattern: /kol_kis\.kd[23]$/i, dataToImport: Container.get(KolKis) },
+      // KD1 騎手データ
+      { pattern: /kol_kis\.dat$/i, dataToImport: Container.get(KolKisKd1) },
       // JRDB 騎手データ
       { pattern: /k[zs]a\d+\.txt$/i, dataToImport: Container.get(K$a) },
       // KD2/KD3 種牡馬データ
       { pattern: /kol_syu\.kd[23]$/i, dataToImport: Container.get(KolShu) },
+      // KD1 種牡馬データ
+      { pattern: /kol_syu\.dat$/i, dataToImport: Container.get(KolShuKd1) },
       // KD2/KD3 競走馬データ
       { pattern: /kol_uma\.kd[23]$/i, dataToImport: Container.get(KolUma) },
+      // KD1 競走馬データ
+      { pattern: /kol_uma\.dat$/i, dataToImport: Container.get(KolUmaKd1) },
       // JRDB 馬基本データ
       { pattern: /ukc\d+\.txt$/i, dataToImport: Container.get(Ukc) },
       // KD2/KD3 3代血統図
       { pattern: /kol_ket\.kd[23]$/i, dataToImport: Container.get(KolKet) },
+      // KD1 3代血統図
+      { pattern: /kol_ket\.dat$/i, dataToImport: Container.get(KolKetKd1) },
       // KD3 5代血統図
       { pattern: /kol_ket5\.kd3$/i, dataToImport: Container.get(KolKet5Kd3) },
       // KD3 出走馬レースデータ
@@ -122,6 +140,8 @@ export class Importer {
       { pattern: /kol_den2\.kd3$/i, dataToImport: Container.get(KolDen2) },
       // KD2 出馬表出走馬データ
       { pattern: /kol_den2\.kd2$/i, dataToImport: Container.get(KolDen2Kd2) },
+      // KD1 出馬表(レースと出走馬)
+      { pattern: /kol_den\.dat$/i, dataToImport: Container.get(KolDenKd1) },
       // JRDB 競走馬データ
       { pattern: /kyg\d+\.txt$/i, dataToImport: Container.get(Kyg) },
       { pattern: /kyh\d+\.txt$/i, dataToImport: Container.get(Kyh) },
@@ -161,6 +181,10 @@ export class Importer {
       { pattern: /kol_sei2\.kd3$/i, dataToImport: Container.get(KolSei2) },
       // KD2 競走成績出走馬データ
       { pattern: /kol_sei2\.kd2$/i, dataToImport: Container.get(KolSei2Kd2) },
+      // KD1 競走成績(レースと出走馬)
+      { pattern: /kol_sei\.dat$/i, dataToImport: Container.get(KolSeiKd1) },
+      // KD1 競走成績２(19〜28番の出走馬)
+      { pattern: /kol_sei2\.dat$/i, dataToImport: Container.get(KolSei2Kd1) },
       // JRDB 成績データ
       { pattern: /sec\d+\.txt$/i, dataToImport: Container.get(Sec) },
       { pattern: /sed\d+\.txt$/i, dataToImport: Container.get(Sed) },

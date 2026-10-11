@@ -261,6 +261,38 @@ export async function resetKolDb(kind: string, gen: KolGen = "KD3") {
   }
 }
 
+/** DB を空にする。DB はこの呼び出しのあとも残る */
+export async function emptyKolDb() {
+  await setup();
+  await dataSource.synchronize(true);
+}
+
+/**
+ * 与えたレコードのファイルを実際の取り込み処理に通し、ERROR 以上のログを返します。
+ * entries は「取り込み対象の名前 (kol_xxx.dat など) → ファイルの内容」。
+ * 取り込み後の DB はそのまま残ります。
+ */
+export async function importKolFiles(entries: { [basename: string]: Buffer }) {
+  await setup();
+  log4js.recording().reset();
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), "kol-files-"));
+  try {
+    const files: { [basename: string]: string } = {};
+    for (const [basename, content] of Object.entries(entries)) {
+      files[basename] = path.join(dir, basename);
+      fs.writeFileSync(files[basename], content);
+    }
+    await Container.get(Importer).import(files);
+  } finally {
+    fs.rmSync(dir, { recursive: true, force: true });
+  }
+  return log4js
+    .recording()
+    .replay()
+    .filter((e) => ["ERROR", "FATAL"].includes(e.level.levelStr))
+    .map((e) => e.data.map(String).join(" "));
+}
+
 /**
  * 見本ファイルを実際の取り込み処理に通し、Reader が読んだ (offset, length) を記録します。
  * Reader の読み取りはすべて Buffer.prototype.copy を通るので、そこで捕まえます。
