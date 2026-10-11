@@ -3,13 +3,14 @@ import {
   count as countRows,
   eq,
   getTableColumns,
+  getTableName,
   inArray,
   isNull,
   type SQL,
   sql,
 } from "drizzle-orm";
 import { getTableConfig, type SQLiteColumn, type SQLiteTable } from "drizzle-orm/sqlite-core";
-import { currentDb, currentSqlite } from "./db";
+import { currentDb, currentSqlite, statementCache } from "./db";
 
 /**
  * TypeORM の EntityManager / Repository と同じ使い方ができる、Drizzle の薄い関数。
@@ -33,38 +34,87 @@ function columnOf(table: SQLiteTable, key: string): SQLiteColumn {
   return column;
 }
 
+/**
+ * 同じ形のクエリは、組み立てと準備を 1 回で済ませて使い回す (値は placeholder で渡す)。
+ * 形が同じとは、表・演算・条件や項目の名前と数が同じこと。
+ * 値を変換する列 (mode 付きの列など) は placeholder に変換が効かないので、使う列には使わないこと。
+ */
+function cached<Q>(key: string, build: () => Q): Q {
+  const cache = statementCache();
+  let statement = cache.get(key) as Q | undefined;
+  if (statement === undefined) {
+    statement = build();
+    cache.set(key, statement);
+  }
+  return statement;
+}
+
+/** 条件の形 (cached の key 用) と、placeholder に渡す値 */
+function whereParts<T extends SQLiteTable>(table: T, where: Where<T>) {
+  let signature = "";
+  const params: Record<string, unknown> = {};
+  for (const [key, value] of Object.entries(where)) {
+    if (value === undefined || value === null) {
+      throw new Error(`${getTableName(table)}.${key} の条件が ${value} です`);
+    }
+    if (value === IS_NULL) {
+      signature += `|${key}:null`;
+    } else if (Array.isArray(value)) {
+      signature += `|${key}:in${value.length}`;
+      value.forEach((v, i) => {
+        params[`w_${key}_${i}`] = v;
+      });
+    } else {
+      signature += `|${key}:eq`;
+      params[`w_${key}`] = value;
+    }
+  }
+  return { signature, params };
+}
+
+/** 条件の SQL。値は whereParts の placeholder (w_列名) にする */
 function whereOf<T extends SQLiteTable>(table: T, where: Where<T>): SQL | undefined {
   const conditions = Object.entries(where).map(([key, value]) => {
     const column = columnOf(table, key);
-    if (value === undefined || value === null) {
-      throw new Error(`${getTableConfig(table).name}.${key} の条件が ${value} です`);
-    }
     if (value === IS_NULL) {
       return isNull(column);
     }
     if (Array.isArray(value)) {
-      return inArray(column, value);
+      return inArray(
+        column,
+        value.map((_, i) => sql.placeholder(`w_${key}_${i}`)),
+      );
     }
-    return eq(column, value);
+    return eq(column, sql.placeholder(`w_${key}`));
   });
   return and(...conditions);
 }
 
 /** 条件に合う最初の行。なければ null */
 export function findOneBy<T extends SQLiteTable>(table: T, where: Where<T>): Row<T> | null {
-  return (
-    (currentDb().select().from(table).where(whereOf(table, where)).limit(1).get() as Row<T>) ?? null
+  const { signature, params } = whereParts(table, where);
+  const statement = cached(`findOne:${getTableName(table)}${signature}`, () =>
+    currentDb().select().from(table).where(whereOf(table, where)).limit(1).prepare(),
   );
+  return (statement.get(params) as Row<T>) ?? null;
 }
 
 /** 条件に合う全部の行 */
 export function findBy<T extends SQLiteTable>(table: T, where: Where<T> = {}): Row<T>[] {
-  return currentDb().select().from(table).where(whereOf(table, where)).all() as Row<T>[];
+  const { signature, params } = whereParts(table, where);
+  const statement = cached(`find:${getTableName(table)}${signature}`, () =>
+    currentDb().select().from(table).where(whereOf(table, where)).prepare(),
+  );
+  return statement.all(params) as Row<T>[];
 }
 
 /** 条件に合う行の数 */
 export function countBy<T extends SQLiteTable>(table: T, where: Where<T> = {}): number {
-  return currentDb().select({ n: countRows() }).from(table).where(whereOf(table, where)).get().n;
+  const { signature, params } = whereParts(table, where);
+  const statement = cached(`count:${getTableName(table)}${signature}`, () =>
+    currentDb().select({ n: countRows() }).from(table).where(whereOf(table, where)).prepare(),
+  );
+  return (statement.get(params) as { n: number }).n;
 }
 
 /** undefined の項目を除く (TypeORM と同じく、undefined の項目は保存しない) */
@@ -72,35 +122,65 @@ function definedOf(row: object) {
   return Object.fromEntries(Object.entries(row).filter(([, value]) => value !== undefined));
 }
 
+const primaryKeys = new WeakMap<SQLiteTable, SQLiteColumn[]>();
+
+/** 主キーの列 */
+function keysOf(table: SQLiteTable): SQLiteColumn[] {
+  let keys = primaryKeys.get(table);
+  if (!keys) {
+    const config = getTableConfig(table);
+    keys = config.primaryKeys[0]?.columns ?? config.columns.filter((c) => c.primary);
+    primaryKeys.set(table, keys);
+  }
+  return keys;
+}
+
+/** 項目名から、値を placeholder (v_項目名) にした行を作る */
+function placeholders(names: string[]) {
+  return Object.fromEntries(names.map((name) => [name, sql.placeholder(`v_${name}`)]));
+}
+
+/** 項目の値を、placeholder に渡す形 (v_項目名) にする */
+function paramsOf(values: Record<string, unknown>) {
+  const params: Record<string, unknown> = {};
+  for (const name in values) {
+    params[`v_${name}`] = values[name];
+  }
+  return params;
+}
+
 /**
  * 行を保存する (TypeORM の save)。主キーの行があれば渡した項目だけ更新し、なければ追加する。
  * 自動採番の主キーが空なら追加して、採番された Id を row に入れる。row をそのまま返す。
  */
 export function save<T extends SQLiteTable>(table: T, row: Partial<Row<T>>): Row<T> {
-  const config = getTableConfig(table);
-  const keys = config.primaryKeys[0]?.columns ?? config.columns.filter((c) => c.primary);
+  const keys = keysOf(table);
   const values = definedOf(row);
+  const names = Object.keys(values);
+  const params = paramsOf(values);
   const generated = keys.length === 1 && "autoIncrement" in keys[0] && keys[0].autoIncrement;
   if (generated && values[keys[0].name] == null) {
-    const inserted = currentDb()
-      .insert(table)
-      .values(values as never)
-      .returning({ id: keys[0] })
-      .get() as { id: number };
+    const statement = cached(`insertId:${getTableName(table)}|${names.join(",")}`, () =>
+      currentDb()
+        .insert(table)
+        .values(placeholders(names) as never)
+        .returning({ id: keys[0] })
+        .prepare(),
+    );
+    const inserted = statement.get(params) as { id: number };
     (row as Record<string, unknown>)[keys[0].name] = inserted.id;
     return row as Row<T>;
   }
-  const set = Object.fromEntries(
-    Object.entries(values).filter(([key]) => !keys.some((k) => k.name === key)),
-  );
-  const insert = currentDb()
-    .insert(table)
-    .values(values as never);
-  if (0 < Object.keys(set).length) {
-    insert.onConflictDoUpdate({ target: keys, set: set as never }).run();
-  } else {
-    insert.onConflictDoNothing({ target: keys }).run();
-  }
+  const statement = cached(`save:${getTableName(table)}|${names.join(",")}`, () => {
+    const setNames = names.filter((name) => !keys.some((k) => k.name === name));
+    const insert = currentDb()
+      .insert(table)
+      .values(placeholders(names) as never);
+    return 0 < setNames.length
+      ? insert.onConflictDoUpdate({ target: keys, set: placeholders(setNames) as never }).prepare()
+      : insert.onConflictDoNothing({ target: keys }).prepare();
+  });
+  statement.run(params);
   return row as Row<T>;
 }
 
@@ -115,26 +195,30 @@ export function upsert<T extends SQLiteTable>(
   row: Partial<Row<T>>,
   skipNull = false,
 ): Row<T> {
-  const config = getTableConfig(table);
-  const keys = config.primaryKeys[0]?.columns ?? config.columns.filter((c) => c.primary);
+  const keys = keysOf(table);
   const values = Object.fromEntries(
     Object.entries(definedOf(row)).filter(([, value]) => !(skipNull && value === null)),
   );
-  const set = Object.fromEntries(
-    Object.entries(values).filter(([key]) => !keys.some((k) => k.name === key)),
-  );
-  // 更新する項目がなくても、既存の行を RETURNING で受け取れるよう、主キーを同じ値で更新する
-  const update = 0 < Object.keys(set).length ? set : { [keys[0].name]: values[keys[0].name] };
-  return currentDb()
-    .insert(table)
-    .values(values as never)
-    .onConflictDoUpdate({ target: keys, set: update as never })
-    .returning()
-    .get() as Row<T>;
+  const names = Object.keys(values);
+  const statement = cached(`upsert:${getTableName(table)}|${names.join(",")}`, () => {
+    const setNames = names.filter((name) => !keys.some((k) => k.name === name));
+    // 更新する項目がなくても、既存の行を RETURNING で受け取れるよう、主キーを同じ値で更新する
+    const update = placeholders(0 < setNames.length ? setNames : [keys[0].name]);
+    return currentDb()
+      .insert(table)
+      .values(placeholders(names) as never)
+      .onConflictDoUpdate({ target: keys, set: update as never })
+      .returning()
+      .prepare();
+  });
+  return statement.get(paramsOf(values)) as Row<T>;
 }
 
 /** SQLite の 1 文に渡せる変数の上限 (SQLITE_MAX_VARIABLE_NUMBER) に収まるよう、複数行の追加を分ける大きさ */
 const MAX_VARIABLES = 30000;
+
+/** upsertAll の文を使い回す行数の上限。これより多い行数の文は、形が多様になりすぎるので使い回さない */
+const MAX_CACHED_ROWS = 64;
 
 /**
  * 主キーが決まっている複数の行を、まとめて追加または更新する (複数行の INSERT ... ON CONFLICT DO UPDATE)。
@@ -143,12 +227,11 @@ const MAX_VARIABLES = 30000;
  * 同じ主キーの行が複数あるときは、項目の組が同じ行の中ではあとの行の値が残る (組が違う行どうしの順序は保証しない)。
  */
 export function upsertAll<T extends SQLiteTable>(table: T, rows: readonly Partial<Row<T>>[]): void {
-  const config = getTableConfig(table);
-  const keys = config.primaryKeys[0]?.columns ?? config.columns.filter((c) => c.primary);
+  const keys = keysOf(table);
   const groups = new Map<string, Record<string, unknown>[]>();
   for (const row of rows) {
     const values = definedOf(row);
-    const signature = Object.keys(values).join("\0");
+    const signature = Object.keys(values).join(",");
     const group = groups.get(signature);
     if (group) {
       group.push(values);
@@ -156,23 +239,42 @@ export function upsertAll<T extends SQLiteTable>(table: T, rows: readonly Partia
       groups.set(signature, [values]);
     }
   }
-  for (const group of groups.values()) {
+  for (const [signature, group] of groups) {
     const names = Object.keys(group[0]);
-    const set = Object.fromEntries(
-      names
-        .filter((name) => !keys.some((k) => k.name === name))
-        .map((name) => [name, sql`excluded.${sql.identifier(name)}`]),
-    );
     const size = Math.max(1, Math.floor(MAX_VARIABLES / names.length));
     for (let i = 0; i < group.length; i += size) {
-      const insert = currentDb()
-        .insert(table)
-        .values(group.slice(i, i + size) as never);
-      if (0 < Object.keys(set).length) {
-        insert.onConflictDoUpdate({ target: keys, set: set as never }).run();
-      } else {
-        insert.onConflictDoNothing({ target: keys }).run();
-      }
+      const chunk = group.slice(i, i + size);
+      const params: Record<string, unknown> = {};
+      chunk.forEach((values, n) => {
+        for (const name of names) {
+          params[`v${n}_${name}`] = values[name];
+        }
+      });
+      const build = () => {
+        const setNames = names.filter((name) => !keys.some((k) => k.name === name));
+        const insert = currentDb()
+          .insert(table)
+          .values(
+            chunk.map((_, n) =>
+              Object.fromEntries(names.map((name) => [name, sql.placeholder(`v${n}_${name}`)])),
+            ) as never,
+          );
+        return 0 < setNames.length
+          ? insert
+              .onConflictDoUpdate({
+                target: keys,
+                set: Object.fromEntries(
+                  setNames.map((name) => [name, sql`excluded.${sql.identifier(name)}`]),
+                ) as never,
+              })
+              .prepare()
+          : insert.onConflictDoNothing({ target: keys }).prepare();
+      };
+      const statement =
+        chunk.length <= MAX_CACHED_ROWS
+          ? cached(`upsertAll:${getTableName(table)}|${signature}|${chunk.length}`, build)
+          : build();
+      statement.run(params);
     }
   }
 }
@@ -184,14 +286,19 @@ export function updateBy<T extends SQLiteTable>(
   set: Partial<Row<T>>,
 ): void {
   const values = definedOf(set);
-  if (Object.keys(values).length === 0) {
+  const names = Object.keys(values);
+  if (names.length === 0) {
     return;
   }
-  currentDb()
-    .update(table)
-    .set(values as never)
-    .where(whereOf(table, where))
-    .run();
+  const { signature, params } = whereParts(table, where);
+  const statement = cached(`update:${getTableName(table)}|${names.join(",")}${signature}`, () =>
+    currentDb()
+      .update(table)
+      .set(placeholders(names) as never)
+      .where(whereOf(table, where))
+      .prepare(),
+  );
+  statement.run({ ...paramsOf(values), ...params });
 }
 
 /** 生の SQL で読む (? に params を順に当てる) */

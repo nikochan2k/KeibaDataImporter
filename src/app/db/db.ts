@@ -54,6 +54,22 @@ export function currentDb(): BunSQLiteDatabase {
   return opened(database);
 }
 
+const statements = new WeakMap<object, Map<string, unknown>>();
+
+/**
+ * 今の接続に結びついた、準備済みの文の入れ物。接続を開き直すと別の入れ物になる。
+ * 同じ形のクエリを何度も組み立てて準備し直さないよう、helpers が使う。
+ */
+export function statementCache(): Map<string, unknown> {
+  const db = currentDb();
+  let cache = statements.get(db);
+  if (!cache) {
+    cache = new Map();
+    statements.set(db, cache);
+  }
+  return cache;
+}
+
 /** 書き込み用の接続 (bun:sqlite)。生の SQL を流すとき使う */
 export function currentSqlite(): Database {
   return opened(sqlite);
