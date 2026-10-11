@@ -14,7 +14,7 @@ export class JravanChok extends DataToImport {
     if (!code || !/^\d{5}$/.test(code)) {
       return;
     }
-    const choukyoushi = new Choukyoushi();
+    const choukyoushi = {} as Choukyoushi;
     choukyoushi.JvDataChoukyoushiCode = code;
     choukyoushi.Seinengappi = readPositiveInt(buffer, 80, 8);
     choukyoushi.HatsuMenkyoNen = readPositiveInt(buffer, 114, 4);

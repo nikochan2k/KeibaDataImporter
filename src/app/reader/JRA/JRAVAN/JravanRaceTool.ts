@@ -68,7 +68,7 @@ export class JravanRaceTool extends JraRaceTool {
     if (!nengappi || !time || !bamei) {
       return null;
     }
-    let uma = new Uma();
+    let uma = {} as Uma;
     const touroku = jraTool.readTouroku(buffer, offset + 25);
     if (touroku) {
       uma.KettouTourokuBangou = touroku.bangou;
@@ -77,7 +77,7 @@ export class JravanRaceTool extends JraRaceTool {
     jraTool.setBamei(uma, bamei);
     uma = await umaDao.saveUma(uma);
 
-    const record = new Record();
+    const record = {} as Record;
     record.Nengappi = nengappi;
     record.Time = time;
     record.UmaId = uma.Id;

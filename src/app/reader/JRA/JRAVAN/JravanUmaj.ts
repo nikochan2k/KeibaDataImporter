@@ -33,7 +33,7 @@ export class JravanUmaj extends DataToImport {
     const hahaHaha = await this.saveOyaUma(buffer, 249, $U.Seibetsu.Hinba);
     const haha = await this.saveOyaUma(buffer, 135, $U.Seibetsu.Hinba, hahaChichi, hahaHaha);
 
-    let uma = new Uma();
+    let uma = {} as Uma;
     if (touroku) {
       uma.KettouTourokuBangou = touroku.bangou;
     }
@@ -57,7 +57,7 @@ export class JravanUmaj extends DataToImport {
     }
 
     const choukyoushi = await jraTool.saveChoukyoushi(buffer, 550, 555);
-    let kyousouba = new Kyousouba();
+    let kyousouba = {} as Kyousouba;
     kyousouba.UmaId = uma.Id;
     kyousouba.Seibetsu = seibetsu;
     kyousouba.UmaKigou = $U.umaKigou.toCodeFromJvData(buffer, 76, 2);
@@ -76,7 +76,7 @@ export class JravanUmaj extends DataToImport {
     if (!bamei) {
       return null;
     }
-    const uma = new Uma();
+    const uma = {} as Uma;
     jraTool.setBamei(uma, bamei);
     uma.Seibetsu = seibetsu;
     uma.ChichiUmaId = chichiUma?.Id;

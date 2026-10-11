@@ -1,7 +1,5 @@
-import "reflect-metadata";
 import { afterAll, describe, expect, setDefaultTimeout, test } from "bun:test";
 import { Baken, Kakutei } from "../src/app/converters/Common";
-import { dataSource } from "../src/app/DataSource";
 import { choukyoushiDao } from "../src/app/daos/ChoukyoushiDao";
 import { jinmeiDao } from "../src/app/daos/JinmeiDao";
 import { kishuDao } from "../src/app/daos/KishuDao";
@@ -36,6 +34,7 @@ import { JravanSei1 } from "../src/app/reader/JRA/JRAVAN/JravanSei1";
 import { JravanSei2 } from "../src/app/reader/JRA/JRAVAN/JravanSei2";
 import { JravanSeih } from "../src/app/reader/JRA/JRAVAN/JravanSeih";
 import { JravanUmaj } from "../src/app/reader/JRA/JRAVAN/JravanUmaj";
+import { repo } from "./helpers";
 import { JravanRecord, parseJravanSpec } from "./spec/jravan";
 import { closeKolDb, emptyKolDb, importKolFiles } from "./spec/kol";
 
@@ -71,8 +70,6 @@ describe("JRA-VAN の仕様書", () => {
     });
   }
 });
-
-const repo = <T extends object>(e: new () => T) => dataSource.getRepository(e);
 
 /** 2007-10-06 (土) 東京 4 回 1 日 11R */
 const KEY = "20071006050401";
@@ -498,7 +495,7 @@ describe("他の情報源との突き合わせ", () => {
 
   test("名前と生年月日が同じ騎手は、コードが違っても同じ行にまとめる", async () => {
     await emptyKolDb();
-    const kishu = new Kishu();
+    const kishu = {} as Kishu;
     kishu.KolKishuCode = 1088;
     kishu.Seinengappi = 19690315;
     await kishuDao.saveKishu(kishu, "武豊", "武豊", "タケユタカ");
@@ -524,7 +521,7 @@ describe("他の情報源との突き合わせ", () => {
 
   test("コードが違う同名の騎手は別人", async () => {
     await emptyKolDb();
-    const other = new Kishu();
+    const other = {} as Kishu;
     other.JvDataKishuCode = "09999";
     other.Seinengappi = 19690315;
     await kishuDao.saveKishu(other, "武豊", "武豊", "タケユタカ");
@@ -535,7 +532,7 @@ describe("他の情報源との突き合わせ", () => {
 
   test("調教師も、名前が同じなら同じ行にまとめる", async () => {
     await emptyKolDb();
-    const choukyoushi = new Choukyoushi();
+    const choukyoushi = {} as Choukyoushi;
     choukyoushi.KolKyuushaCode = 10001;
     await choukyoushiDao.saveChoukyoushi(choukyoushi, "藤沢和雄", "藤沢和", "フジサワカズオ");
     const chok = new JravanRecord("調教師")
@@ -552,7 +549,7 @@ describe("他の情報源との突き合わせ", () => {
 
   test("空白や異体字が違う名前も同じ人として扱う", async () => {
     await emptyKolDb();
-    const kishu = new Kishu();
+    const kishu = {} as Kishu;
     kishu.KolKishuCode = 2001;
     await kishuDao.saveKishu(kishu, "髙 橋　一", "髙橋一", "タカハシハジメ");
     const jra = new JravanRecord("騎手")
@@ -569,7 +566,7 @@ describe("他の情報源との突き合わせ", () => {
     await emptyKolDb();
     const dao = umaDao;
     const uma = (kettou: string | null, seinen: number | null) => {
-      const u = new Uma();
+      const u = {} as Uma;
       u.KanaBamei = "テストホース";
       if (kettou) {
         u.KettouTourokuBangou = kettou;

@@ -1,10 +1,9 @@
 import { Logger } from "log4js";
-import { EntityManager } from "typeorm";
 import { raceDao } from "../daos/RaceDao";
+import { findOneBy, save } from "../db/helpers";
 import { Race } from "../entities/Race";
 import { RaceLapTime } from "../entities/RaceLapTime";
 import { getLogger } from "../LogUtil";
-import { OrmManager } from "../OrmManager";
 import { readPositiveDouble } from "./Reader";
 import { tool } from "./Tool";
 
@@ -30,9 +29,6 @@ export function getRaceLapTimeId(raceId: number, kaishiKyori: number, shuuryouKy
 
 export abstract class RaceTool {
   protected logger: Logger;
-
-  @OrmManager()
-  protected entityManager: EntityManager;
 
   constructor() {
     this.logger = getLogger(this);
@@ -78,7 +74,7 @@ export abstract class RaceTool {
     if (!id) {
       return null;
     }
-    return this.entityManager.findOneBy(Race, { Id: id });
+    return findOneBy(Race, { Id: id });
   }
 
   public createRace(buffer: Buffer, kaisaiId: number) {
@@ -86,7 +82,7 @@ export abstract class RaceTool {
     if (raceBangou == null) {
       return null;
     }
-    const race = new Race();
+    const race = {} as Race;
     race.Id = this.getRaceIdFrom(kaisaiId, raceBangou);
     race.KaisaiId = kaisaiId;
     race.RaceBangou = raceBangou;
@@ -129,13 +125,13 @@ export abstract class RaceTool {
       );
       return;
     }
-    const raceLapTime = new RaceLapTime();
+    const raceLapTime = {} as RaceLapTime;
     raceLapTime.Id = id;
     raceLapTime.RaceId = race.Id;
     raceLapTime.KaishiKyori = kaishiKyori;
     raceLapTime.ShuuryouKyori = shuuryouKyori;
     raceLapTime.LapTime = lapTime;
-    await this.entityManager.save(raceLapTime);
+    save(RaceLapTime, raceLapTime);
   }
 
   public async saveRaceMei(buffer: Buffer, offset: number, length: number, race: Race) {

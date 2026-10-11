@@ -1,6 +1,7 @@
 import * as $K from "../../converters/Kishu";
 import * as $S from "../../converters/Shussouba";
 import { Bagu } from "../../converters/ShussoubaJoutai";
+import { findOneBy } from "../../db/helpers";
 import { Race } from "../../entities/Race";
 import { Shussouba } from "../../entities/Shussouba";
 import { Kubun } from "../../entities/ShussoubaJoutai";
@@ -66,7 +67,7 @@ export abstract class JraShussoubaTool extends ShussoubaTool {
     if (!toBe) {
       return null;
     }
-    const asIs = await this.entityManager.findOneBy(Shussouba, { Id: toBe.Id });
+    const asIs = await findOneBy(Shussouba, { Id: toBe.Id });
 
     toBe.Wakuban = readPositiveInt(buffer, o.wakuban, 1);
     const choukyoushi = await jraTool.saveChoukyoushi(
@@ -116,7 +117,7 @@ export abstract class JraShussoubaTool extends ShussoubaTool {
     saved: { shussouba: Shussouba; kishuId?: number },
     o: JraSeisekiOffsets,
   ) {
-    const toBe = new ShussoubaSeiseki();
+    const toBe = {} as ShussoubaSeiseki;
     toBe.Id = saved.shussouba.Id;
     toBe.Kinryou = readPositiveDouble(buffer, o.kinryou, 3, 0.1);
     toBe.KishuId = saved.kishuId;
@@ -139,7 +140,7 @@ export abstract class JraShussoubaTool extends ShussoubaTool {
 
   /** 成績を保存します。既にあれば差分だけを更新します */
   public async saveSeiseki(toBe: ShussoubaSeiseki) {
-    const asIs = await this.entityManager.findOneBy(ShussoubaSeiseki, { Id: toBe.Id });
+    const asIs = await findOneBy(ShussoubaSeiseki, { Id: toBe.Id });
     return tool.saveOrUpdate(ShussoubaSeiseki, asIs, toBe);
   }
 }

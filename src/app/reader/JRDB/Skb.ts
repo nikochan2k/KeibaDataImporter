@@ -1,3 +1,4 @@
+import { findOneBy } from "../../db/helpers";
 import { Shussouba } from "../../entities/Shussouba";
 import { ShussoubaHyouka } from "../../entities/ShussoubaHyouka";
 import { Kubun } from "../../entities/ShussoubaJoutai";
@@ -23,14 +24,14 @@ export class Skb extends JrdbShussoubaData {
   }
 
   protected async saveShussoubaHyouka(buffer: Buffer, shussoubaId: number) {
-    const toBe = new ShussoubaHyouka();
+    const toBe = {} as ShussoubaHyouka;
     toBe.Id = shussoubaId;
     toBe.PaddockComment = readStr(buffer, 113, 40);
     toBe.AshimotoComment = readStr(buffer, 153, 40);
     toBe.BaguSonotaComment = readStr(buffer, 193, 40);
     toBe.RaceComment = readStr(buffer, 233, 40);
 
-    const asIs = await this.entityManager.findOneBy(ShussoubaHyouka, { Id: shussoubaId });
+    const asIs = await findOneBy(ShussoubaHyouka, { Id: shussoubaId });
     await tool.saveOrUpdate(ShussoubaHyouka, asIs, toBe);
   }
 

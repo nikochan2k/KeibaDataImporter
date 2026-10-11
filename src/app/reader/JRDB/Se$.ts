@@ -3,6 +3,7 @@ import * as $R from "../../converters/Race";
 import * as $S from "../../converters/Shussouba";
 import { choukyoushiDao } from "../../daos/ChoukyoushiDao";
 import { umaDao } from "../../daos/UmaDao";
+import { findOneBy, query, save, updateBy } from "../../db/helpers";
 import { Choukyoushi } from "../../entities/Choukyoushi";
 import { Kyousouba } from "../../entities/Kyousouba";
 import { Race } from "../../entities/Race";
@@ -36,11 +37,11 @@ export abstract class Se$ extends JrdbShussoubaData {
   }
 
   protected async saveKyousouba(buffer: Buffer, info: ShussoubaInfo) {
-    let uma = new Uma();
+    let uma = {} as Uma;
     uma.KettouTourokuBangou = readStr(buffer, 10, 8);
     uma = await umaDao.saveUma(uma);
     info.uma = uma;
-    const kyousouba = new Kyousouba();
+    const kyousouba = {} as Kyousouba;
     kyousouba.UmaId = uma.Id;
     const choukyoushi = await this.saveChoukyoushi(buffer);
     kyousouba.ChoukyoushiId = choukyoushi?.Id;
@@ -48,7 +49,7 @@ export abstract class Se$ extends JrdbShussoubaData {
   }
 
   protected saveChoukyoushi(buffer: Buffer) {
-    const choukyoushi = new Choukyoushi();
+    const choukyoushi = {} as Choukyoushi;
     choukyoushi.JrdbChoukyoushiCode = readPositiveInt(buffer, 327, 5);
     const choukyoushiMei = readStrWithNoSpace(buffer, 162, 12);
     return choukyoushiDao.saveChoukyoushi(choukyoushi, choukyoushiMei);
@@ -83,10 +84,10 @@ export abstract class Se$ extends JrdbShussoubaData {
   }
 
   protected async saveShussoubaSeiseki(buffer: Buffer, shussoubaId: number) {
-    const toBe = new ShussoubaSeiseki();
+    const toBe = {} as ShussoubaSeiseki;
     toBe.Id = shussoubaId;
     await this.setShussoubaSeiseki(buffer, toBe);
-    const asIs = await this.entityManager.findOneBy(ShussoubaSeiseki, { Id: toBe.Id });
+    const asIs = await findOneBy(ShussoubaSeiseki, { Id: toBe.Id });
     await tool.saveOrUpdate(ShussoubaSeiseki, asIs, toBe, this.keepExisting);
   }
 
@@ -120,11 +121,11 @@ export abstract class Se$ extends JrdbShussoubaData {
   }
 
   protected async saveShussoubaHyouka(buffer: Buffer, shussoubaId: number) {
-    const toBe = new ShussoubaHyouka();
+    const toBe = {} as ShussoubaHyouka;
     toBe.Id = shussoubaId;
     this.setShussoubaHyouka(buffer, toBe);
 
-    const asIs = await this.entityManager.findOneBy(ShussoubaHyouka, { Id: shussoubaId });
+    const asIs = await findOneBy(ShussoubaHyouka, { Id: shussoubaId });
     await tool.saveOrUpdate(ShussoubaHyouka, asIs, toBe, this.keepExisting);
   }
 
@@ -182,7 +183,7 @@ export abstract class Se$ extends JrdbShussoubaData {
 
   protected async saveShussoubaTsuukaJuni(buffer: Buffer, shussoubaId: number) {
     for (let bangou = 1, offset = 308; bangou <= 4; bangou++, offset += 2) {
-      const shussoubaTsuukaJuni = new ShussoubaTsuukaJuni();
+      const shussoubaTsuukaJuni = {} as ShussoubaTsuukaJuni;
 
       const juni = readPositiveInt(buffer, offset, 2);
       if (juni === null || 28 < juni) {
@@ -192,12 +193,12 @@ export abstract class Se$ extends JrdbShussoubaData {
       shussoubaTsuukaJuni.ShussoubaId = shussoubaId;
       shussoubaTsuukaJuni.Bangou = bangou;
       shussoubaTsuukaJuni.Juni = juni;
-      await this.entityManager.save(shussoubaTsuukaJuni);
+      save(ShussoubaTsuukaJuni, shussoubaTsuukaJuni);
     }
   }
 
   protected async teardown() {
-    const rows: { Id: number; TimeSa: number }[] = await this.entityManager.query(`SELECT
+    const rows = query<{ Id: number; TimeSa: number }>(`SELECT
     SS.Id AS Id, ROUND(SS.Time - T.MinTime, 1) AS TimeSa
   FROM
     Shussouba S
@@ -205,12 +206,7 @@ export abstract class Se$ extends JrdbShussoubaData {
     INNER JOIN (SELECT RaceId, MIN(Time) AS MinTime FROM Shussouba S_ INNER JOIN ShussoubaSeiseki SS_ ON S_.Id = SS_.Id GROUP BY RaceId HAVING COUNT(TimeSa) = 0) T ON S.RaceId = T.RaceId
   `);
     for (const row of rows) {
-      await this.entityManager
-        .createQueryBuilder()
-        .update(ShussoubaSeiseki, { TimeSa: row.TimeSa })
-        .where("Id = :id")
-        .setParameter("id", row.Id)
-        .execute();
+      updateBy(ShussoubaSeiseki, { Id: row.Id }, { TimeSa: row.TimeSa });
     }
     await super.teardown();
   }

@@ -1,24 +1,19 @@
-import { EntityManager } from "typeorm";
 import * as $C from "../../converters/Common";
 import * as $U from "../../converters/Uma";
 import { umaDao } from "../../daos/UmaDao";
 import { Uma } from "../../entities/Uma";
-import { OrmManager } from "../../OrmManager";
 import { DataToImport } from "../DataToImport";
 import { readInt, readPositiveInt, readStr } from "../Reader";
 import { tool } from "../Tool";
 import { kolUmaTool } from "./KolUmaTool";
 
 export class KolShu extends DataToImport {
-  @OrmManager()
-  protected entityManager: EntityManager;
-
   protected getBufferLength() {
     return 2010;
   }
 
   public async save(buffer: Buffer) {
-    const uma = new Uma();
+    const uma = {} as Uma;
     uma.KolUmaCode = readInt(buffer, 0, 7);
     const bamei = readStr(buffer, 7, 34);
     if (tool.isEnglish(bamei)) {

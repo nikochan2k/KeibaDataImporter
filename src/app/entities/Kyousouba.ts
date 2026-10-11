@@ -1,23 +1,16 @@
-import { Column, Entity, Index, PrimaryGeneratedColumn } from "typeorm";
+import { index, integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
 
-@Entity("Kyousouba")
-@Index("IxKyousouba", (k: Kyousouba) => [k.UmaId])
-export class Kyousouba {
-  @PrimaryGeneratedColumn()
-  public Id: number;
+export const Kyousouba = sqliteTable(
+  "Kyousouba",
+  {
+    Id: integer().primaryKey({ autoIncrement: true }),
+    UmaId: integer().notNull(),
+    Seibetsu: integer(),
+    UmaKigou: integer(),
+    ChoukyoushiId: integer(),
+    KoueiGaikokuChoukyoushiMei: text(),
+  },
+  (t) => [index("IxKyousouba").on(t.UmaId)],
+);
 
-  @Column("int")
-  public UmaId: number;
-
-  @Column("smallint", { nullable: true })
-  public Seibetsu: number;
-
-  @Column("smallint", { nullable: true })
-  public UmaKigou: number;
-
-  @Column("mediumint", { nullable: true })
-  public ChoukyoushiId?: number;
-
-  @Column("varchar", { length: 12, nullable: true })
-  public KoueiGaikokuChoukyoushiMei?: string;
-}
+export type Kyousouba = typeof Kyousouba.$inferSelect;

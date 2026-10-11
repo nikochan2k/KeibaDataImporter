@@ -1,4 +1,3 @@
-import "reflect-metadata";
 import { expect, test } from "bun:test";
 import { RaceTool } from "../src/app/reader/RaceTool";
 

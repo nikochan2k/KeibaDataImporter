@@ -1,5 +1,4 @@
-import "reflect-metadata";
-import { dataSource } from "../../src/app/DataSource";
+import { save } from "../../src/app/db/helpers";
 import { Jinmei, JinmeiKubun } from "../../src/app/entities/Jinmei";
 import { Kaisai } from "../../src/app/entities/Kaisai";
 import { KishuMei } from "../../src/app/entities/KishuMei";
@@ -13,7 +12,7 @@ import { Uma } from "../../src/app/entities/Uma";
 
 /** Race の NOT NULL 列を 0 で埋めて作る */
 function race(overrides: Partial<Race>) {
-  const r = new Race();
+  const r = {} as Race;
   for (const key of [
     "IppanTokubetsu",
     "HeichiShougai",
@@ -42,18 +41,19 @@ function race(overrides: Partial<Race>) {
  * 2024-04-07 は東京と阪神の開催で、東京 11R (id=11) に 3 頭が出走する。
  */
 export async function seedBrowseFixture() {
-  const m = dataSource.manager;
-
-  await m.save(
-    Object.assign(new Kaisai(), { Id: 1, Key: 1, Basho: 4, Nen: 2024, Gatsu: 4, Nichi: 7 }),
+  await save(
+    Kaisai,
+    Object.assign({} as Kaisai, { Id: 1, Key: 1, Basho: 4, Nen: 2024, Gatsu: 4, Nichi: 7 }),
   );
-  await m.save(
-    Object.assign(new Kaisai(), { Id: 2, Key: 2, Basho: 1, Nen: 2024, Gatsu: 4, Nichi: 7 }),
+  await save(
+    Kaisai,
+    Object.assign({} as Kaisai, { Id: 2, Key: 2, Basho: 1, Nen: 2024, Gatsu: 4, Nichi: 7 }),
   );
-  await m.save(
-    Object.assign(new Kaisai(), { Id: 3, Key: 3, Basho: 4, Nen: 2024, Gatsu: 4, Nichi: 14 }),
+  await save(
+    Kaisai,
+    Object.assign({} as Kaisai, { Id: 3, Key: 3, Basho: 4, Nen: 2024, Gatsu: 4, Nichi: 14 }),
   );
-  await m.save([
+  for (const r of [
     race({
       Id: 11,
       KaisaiId: 1,
@@ -67,12 +67,20 @@ export async function seedBrowseFixture() {
     race({ Id: 12, KaisaiId: 1, RaceBangou: 1, Kyori: 1200, DirtShiba: 0 }),
     race({ Id: 21, KaisaiId: 2, RaceBangou: 5, Kyori: 1800, DirtShiba: 0, HassouJikan: "12:30" }),
     race({ Id: 31, KaisaiId: 3, RaceBangou: 2, Kyori: 2000, DirtShiba: 1 }),
-  ]);
-  const meishou = await m.save(Object.assign(new TokubetsuMei(), { Meishou: "テストステークス" }));
-  await m.save(Object.assign(new RaceMei(), { RaceId: 11, TokubetsuMeiId: meishou.Id }));
+  ]) {
+    save(Race, r);
+  }
+  const meishou = await save(
+    TokubetsuMei,
+    Object.assign({} as TokubetsuMei, { Meishou: "テストステークス" }),
+  );
+  await save(RaceMei, Object.assign({} as RaceMei, { RaceId: 11, TokubetsuMeiId: meishou.Id }));
 
-  const chichi = await m.save(Object.assign(new Uma(), { KanaBamei: "チチウマ", KyuuBamei: "" }));
-  const haha = await m.save(Object.assign(new Uma(), { KanaBamei: "ハハウマ", KyuuBamei: "" }));
+  const chichi = await save(
+    Uma,
+    Object.assign({} as Uma, { KanaBamei: "チチウマ", KyuuBamei: "" }),
+  );
+  const haha = await save(Uma, Object.assign({} as Uma, { KanaBamei: "ハハウマ", KyuuBamei: "" }));
   const horses: Uma[] = [];
   for (const [kana, extra] of [
     ["アルファ", { Seinen: 2020, Seibetsu: 0, ChichiUmaId: chichi.Id, HahaUmaId: haha.Id }],
@@ -81,27 +89,33 @@ export async function seedBrowseFixture() {
     ["100%ウマ_", { Seinen: 2018 }],
   ] as const) {
     horses.push(
-      await m.save(Object.assign(new Uma(), { KanaBamei: kana, KyuuBamei: "", ...extra })),
+      await save(Uma, Object.assign({} as Uma, { KanaBamei: kana, KyuuBamei: "", ...extra })),
     );
   }
   const kyousouba: Kyousouba[] = [];
   for (const uma of horses) {
-    kyousouba.push(await m.save(Object.assign(new Kyousouba(), { UmaId: uma.Id })));
+    kyousouba.push(await save(Kyousouba, Object.assign({} as Kyousouba, { UmaId: uma.Id })));
   }
 
-  const jinmei = await m.save(
-    Object.assign(new Jinmei(), { Meishou: "武 豊", MatchingKey: "武豊" }),
+  const jinmei = await save(
+    Jinmei,
+    Object.assign({} as Jinmei, { Meishou: "武 豊", MatchingKey: "武豊" }),
   );
-  const tanshuku = await m.save(Object.assign(new Jinmei(), { Meishou: "武豊", MatchingKey: "x" }));
-  await m.save(
-    Object.assign(new KishuMei(), {
+  const tanshuku = await save(
+    Jinmei,
+    Object.assign({} as Jinmei, { Meishou: "武豊", MatchingKey: "x" }),
+  );
+  await save(
+    KishuMei,
+    Object.assign({} as KishuMei, {
       KishuId: 7,
       JinmeiId: tanshuku.Id,
       Kubun: JinmeiKubun.Tanshuku,
     }),
   );
-  await m.save(
-    Object.assign(new KishuMei(), { KishuId: 7, JinmeiId: jinmei.Id, Kubun: JinmeiKubun.Seimei }),
+  await save(
+    KishuMei,
+    Object.assign({} as KishuMei, { KishuId: 7, JinmeiId: jinmei.Id, Kubun: JinmeiKubun.Seimei }),
   );
 
   // 11R: アルファが 2 着、ブラボーが 1 着、チャーリーは取消(着順なし)
@@ -117,8 +131,9 @@ export async function seedBrowseFixture() {
     [103, 3, 3, kyousouba[2], { TorikeshiShubetsu: 1 }],
   ];
   for (const [id, waku, umaban, ky, seiseki] of entries) {
-    await m.save(
-      Object.assign(new Shussouba(), {
+    await save(
+      Shussouba,
+      Object.assign({} as Shussouba, {
         Id: id,
         RaceId: 11,
         Wakuban: waku,
@@ -127,12 +142,13 @@ export async function seedBrowseFixture() {
       }),
     );
     if (seiseki) {
-      await m.save(Object.assign(new ShussoubaSeiseki(), { Id: id, ...seiseki }));
+      await save(ShussoubaSeiseki, Object.assign({} as ShussoubaSeiseki, { Id: id, ...seiseki }));
     }
   }
   // アルファはもう 1 戦(別の日)
-  await m.save(
-    Object.assign(new Shussouba(), {
+  await save(
+    Shussouba,
+    Object.assign({} as Shussouba, {
       Id: 301,
       RaceId: 31,
       Umaban: 5,

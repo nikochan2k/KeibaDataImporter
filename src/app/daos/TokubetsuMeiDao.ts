@@ -1,17 +1,13 @@
-import { Repository } from "typeorm";
+import { findOneBy, save } from "../db/helpers";
 import { TokubetsuMei } from "../entities/TokubetsuMei";
-import { OrmRepository } from "../OrmManager";
 
 export class TokubetsuMeiDao {
-  @OrmRepository(TokubetsuMei)
-  private repository: Repository<TokubetsuMei>;
-
   public async save(meishou: string) {
-    let tokubetsuMei = await this.repository.findOneBy({ Meishou: meishou });
+    let tokubetsuMei = await findOneBy(TokubetsuMei, { Meishou: meishou });
     if (!tokubetsuMei) {
-      tokubetsuMei = new TokubetsuMei();
+      tokubetsuMei = {} as TokubetsuMei;
       tokubetsuMei.Meishou = meishou;
-      tokubetsuMei = await this.repository.save(tokubetsuMei);
+      tokubetsuMei = await save(TokubetsuMei, tokubetsuMei);
     }
     return tokubetsuMei;
   }

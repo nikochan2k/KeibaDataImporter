@@ -17,7 +17,7 @@ export interface OddsHaitouInfo {
 
 export class JrdbOddsHaitouTool extends OddsHaitouTool {
   public async saveOddsNinki(buffer: Buffer, shussouba: Shussouba, info: OddsHaitouInfo) {
-    const oddsHaitou = new OddsHaitou();
+    const oddsHaitou = {} as OddsHaitou;
     oddsHaitou.RaceId = shussouba.RaceId;
     oddsHaitou.Kakutei = info.Kakutei;
     oddsHaitou.Baken = info.Baken;

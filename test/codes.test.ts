@@ -1,4 +1,3 @@
-import "reflect-metadata";
 import { expect, test } from "bun:test";
 import * as $K from "../src/app/converters/Kishu";
 import * as $R from "../src/app/converters/Race";

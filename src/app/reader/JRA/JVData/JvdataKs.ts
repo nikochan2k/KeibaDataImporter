@@ -21,7 +21,7 @@ export class JvdataKs extends JvdataRecord {
     if (!code || !/^\d{5}$/.test(code)) {
       return;
     }
-    const kishu = new Kishu();
+    const kishu = {} as Kishu;
     kishu.JvDataKishuCode = code;
     kishu.Seinengappi = readPositiveInt(buffer, 33, 8);
     kishu.MenkyoKoufuNengappi = readPositiveInt(buffer, 17, 8);

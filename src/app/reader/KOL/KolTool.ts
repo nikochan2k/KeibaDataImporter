@@ -16,7 +16,7 @@ import { tool } from "../Tool";
 
 export class KolTool {
   public async saveKishu(buffer: Buffer, offset: number) {
-    const kishu = new Kishu();
+    const kishu = {} as Kishu;
     kishu.KolKishuCode = readInt(buffer, offset, 5);
     const kishuMei = readStrWithNoSpace(buffer, offset + 5, 32);
     const tanshukuKishuMei = readStrWithNoSpace(buffer, offset + 37, 8);
@@ -36,7 +36,7 @@ export class KolTool {
 
   public async saveKyousouba(buffer: Buffer, offset: number, choukyoushi: Choukyoushi) {
     const seibetsu = $U.seibetsu.toCodeFromKol(buffer, offset + 39, 1);
-    let uma = new Uma();
+    let uma = {} as Uma;
     uma.KolUmaCode = readInt(buffer, offset, 7);
     const bamei = readStr(buffer, offset + 7, 30);
     if (tool.isEnglish(bamei)) {
@@ -47,7 +47,7 @@ export class KolTool {
     uma.Seibetsu = seibetsu;
     uma = await umaDao.saveUma(uma);
 
-    let kyousouba = new Kyousouba();
+    let kyousouba = {} as Kyousouba;
     kyousouba.UmaId = uma.Id;
     kyousouba.Seibetsu = seibetsu;
     kyousouba.UmaKigou = $U.umaKigou.toCodeFromKol(buffer, offset + 37, 2);
@@ -72,7 +72,7 @@ export class KolTool {
     if (!kolKyuushaCode) {
       return null;
     }
-    let choukyoushi = new Choukyoushi();
+    let choukyoushi = {} as Choukyoushi;
     choukyoushi.KolKyuushaCode = kolKyuushaCode;
     choukyoushi = await choukyoushiDao.saveChoukyoushi(choukyoushi);
     return choukyoushi.Id;
@@ -83,7 +83,7 @@ export class KolTool {
     if (!choukyoushiMei) {
       return null;
     }
-    const choukyoushi = new Choukyoushi();
+    const choukyoushi = {} as Choukyoushi;
     const kolKyuushaCode = readPositiveInt(buffer, offset, 5);
     choukyoushi.KolKyuushaCode = kolKyuushaCode;
     const tanshuku = readStrWithNoSpace(buffer, offset + 37, 8);

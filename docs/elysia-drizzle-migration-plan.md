@@ -182,6 +182,29 @@ ORM と同時に変えると原因が追えなくなるので、先に Nest だ�
 11. `tsconfig.json` から `experimentalDecorators` / `emitDecoratorMetadata` / `useDefineForClassFields: false` を外す。
     `useDefineForClassFields` を外すと、宣言だけで初期値のないフィールドの扱いが変わるので、テストで確かめる。
 
+実施結果 (2026-10-12):
+
+- `bun test`: 430 pass / 7 skip / 0 fail。`bun run typecheck` も通る。
+- 新規に migrate した DB と `db/keiba.sqlite` のスキーマ (テーブル・列の名前と NOT NULL・主キー・インデックス・AUTOINCREMENT) は一致した。
+- 見本データの取り込み結果は段階 0 の DB と全テーブルで一致し、エラーも同じ 2 件だった。所要時間も同じくらい (約 2 分 30 秒)。
+- `db/keiba.sqlite` は `db/keiba.sqlite.bak-20261012` にバックアップしてから `scripts/baseline-db.ts` で Drizzle の管理下に置いた。
+  バックアップとデータが一致すること、サーバーを起動して閲覧 API が読めることを確かめた。
+
+計画から変えたこと:
+
+- テーブル定義は `db/schema` に移さず、`entities/*.ts` の同じファイルに同じ名前で置いた。
+  `export const Uma = sqliteTable(...)` と `export type Uma = typeof Uma.$inferSelect` を並べたので、
+  `import { Uma }` で値 (テーブル) と型の両方が使え、import する側はほとんど変えずに済んだ。`new Uma()` は `{} as Uma` にした。
+- 列の型は `integer` / `real` / `text` だけにした (`tinyint` などの名前は SQLite では意味がないため)。enum の列は `.$type<Baken>()` で型を付けた。
+- `db/helpers.ts` の関数は `findOneBy` / `findBy` / `countBy` / `save` / `updateBy` / `query` (生の SQL) と、条件で NULL を表す `IS_NULL`。
+  条件に `null` や `undefined` を渡すと、TypeORM 1.x の既定の動きと同じく例外にする。
+- 名前で騎手・調教師を探す結合のクエリは、生の SQL にして、Id が重複した行を除いた (TypeORM の `getMany` と同じ結果にするため)。
+- WAL は `server.ts` だけでなく、`openDb()` でファイルの DB なら常に有効にする。閲覧用の接続は `readDb()` (メモリー上の DB のときは同じ接続)。
+- `useDefineForClassFields: false` は残した (外すと、親クラスのコンストラクターで設定した `logger` などが、子クラスのフィールド宣言で消えるため)。
+- テストは `test/helpers.ts` に `repo(テーブル)` (TypeORM の Repository と同じ書き方で読む) と `findOneByOrFail` を置いて、書き換えを少なくした。
+- `test/spec.test.ts` の行番号をまた直した (import の行が増減したため)。
+- `scripts/compare-db.ts` は、WAL の DB を ATTACH できるよう読み取り専用で開くのをやめた。
+
 ### 3. 後片付け
 
 1. `migration/README.md` の「TypeORM が作る名前」などの記述を直す。`migration/*.ts` が TypeORM を使っていれば直す。

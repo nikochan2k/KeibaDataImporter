@@ -1,64 +1,26 @@
-import { Column, Entity, PrimaryColumn } from "typeorm";
+import { integer, real, sqliteTable, text } from "drizzle-orm/sqlite-core";
 
-@Entity("RaceSeiseki")
-export class RaceSeiseki {
-  @PrimaryColumn("bigint")
-  public Id: number;
+export const RaceSeiseki = sqliteTable("RaceSeiseki", {
+  Id: integer().primaryKey(),
+  TorikeshiTousuu: integer(),
+  Pace: integer(),
+  PaceShisuu: real(),
+  PaceUpNokoriFalon: integer(),
+  PaceNagare: integer(),
+  Tenki: integer(),
+  Baba: integer(),
+  BabaSokudo: integer(), // 0:普通 1:速い 2:遅い
+  ShougaiHeikin1F: real(),
+  Shoukin1Chaku: integer(),
+  Shoukin2Chaku: integer(),
+  Shoukin3Chaku: integer(),
+  Shoukin4Chaku: integer(),
+  Shoukin5Chaku: integer(),
+  Shoukin5ChakuDouchaku: integer(),
+  Shoukin5ChakuDouchaku2: integer(),
+  SeisaiNaiyou: text(),
+  RaceComment: text(),
+  KolNengappi: integer(),
+});
 
-  @Column("tinyint", { nullable: true })
-  public TorikeshiTousuu?: number;
-
-  @Column("tinyint", { nullable: true })
-  public Pace?: number;
-
-  @Column("real", { nullable: true })
-  public PaceShisuu?: number;
-
-  @Column("tinyint", { nullable: true })
-  public PaceUpNokoriFalon?: number;
-
-  @Column("tinyint", { nullable: true })
-  public PaceNagare?: number;
-
-  @Column("tinyint", { nullable: true })
-  public Tenki?: number;
-
-  @Column("tinyint", { nullable: true })
-  public Baba?: number;
-
-  @Column("tinyint", { nullable: true })
-  public BabaSokudo?: number; // 0:普通 1:速い 2:遅い
-
-  @Column("real", { nullable: true })
-  public ShougaiHeikin1F?: number;
-
-  @Column("int", { nullable: true })
-  public Shoukin1Chaku: number;
-
-  @Column("int", { nullable: true })
-  public Shoukin2Chaku: number;
-
-  @Column("int", { nullable: true })
-  public Shoukin3Chaku: number;
-
-  @Column("int", { nullable: true })
-  public Shoukin4Chaku: number;
-
-  @Column("int", { nullable: true })
-  public Shoukin5Chaku: number;
-
-  @Column("int", { nullable: true })
-  public Shoukin5ChakuDouchaku: number;
-
-  @Column("int", { nullable: true })
-  public Shoukin5ChakuDouchaku2: number;
-
-  @Column("text", { nullable: true })
-  public SeisaiNaiyou?: string;
-
-  @Column("text", { nullable: true })
-  public RaceComment?: string;
-
-  @Column("int", { nullable: true })
-  public KolNengappi: number;
-}
+export type RaceSeiseki = typeof RaceSeiseki.$inferSelect;

@@ -1,7 +1,6 @@
 import { toMatchingKey } from "itaiji-normalize";
-import { Repository } from "typeorm";
+import { findOneBy, save } from "../db/helpers";
 import { Jinmei } from "../entities/Jinmei";
-import { OrmRepository } from "../OrmManager";
 
 /** 空白(半角・全角)をすべて除く */
 export function stripJinmei(meishou: string) {
@@ -17,28 +16,25 @@ export function jinmeiMatchingKey(meishou: string) {
 }
 
 export class JinmeiDao {
-  @OrmRepository(Jinmei)
-  private repository: Repository<Jinmei>;
-
   public findOne(id: number) {
     /* tslint:disable:triple-equals */
     if (id == null) {
       return null;
     }
     /* tslint:enable:triple-equals */
-    return this.repository.findOneBy({ Id: id });
+    return findOneBy(Jinmei, { Id: id });
   }
 
   /** 突き合わせ用のキーが同じ名前があればそれを、なければ新しく作って返します。 */
   public async save(meishou: string) {
     meishou = stripJinmei(meishou);
     const matchingKey = jinmeiMatchingKey(meishou);
-    let jinmei = await this.repository.findOneBy({ MatchingKey: matchingKey });
+    let jinmei = await findOneBy(Jinmei, { MatchingKey: matchingKey });
     if (!jinmei) {
-      jinmei = new Jinmei();
+      jinmei = {} as Jinmei;
       jinmei.Meishou = meishou;
       jinmei.MatchingKey = matchingKey;
-      jinmei = await this.repository.save(jinmei);
+      jinmei = await save(Jinmei, jinmei);
     }
     return jinmei;
   }

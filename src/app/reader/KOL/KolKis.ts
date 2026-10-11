@@ -1,20 +1,15 @@
-import { EntityManager } from "typeorm";
 import { kishuDao } from "../../daos/KishuDao";
 import { Kishu } from "../../entities/Kishu";
-import { OrmManager } from "../../OrmManager";
 import { DataToImport } from "../DataToImport";
 import { readInt, readStr } from "../Reader";
 
 export class KolKis extends DataToImport {
-  @OrmManager()
-  protected entityManager: EntityManager;
-
   protected getBufferLength() {
     return 1729;
   }
 
   public async save(buffer: Buffer) {
-    let kishu = new Kishu();
+    let kishu = {} as Kishu;
     kishu.KolKishuCode = readInt(buffer, 0, 5);
     kishu.Seinengappi = readInt(buffer, 93, 8);
     kishu.MenkyoKoufuNengappi = readInt(buffer, 101, 4);

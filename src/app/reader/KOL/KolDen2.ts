@@ -3,6 +3,7 @@ import * as $K from "../../converters/Kishu";
 import * as $S from "../../converters/Shussouba";
 import { Bagu } from "../../converters/ShussoubaJoutai";
 import * as $SY from "../../converters/ShussoubaYosou";
+import { findOneBy } from "../../db/helpers";
 import { Shussouba } from "../../entities/Shussouba";
 import { ShussoubaHyouka } from "../../entities/ShussoubaHyouka";
 import { Kubun } from "../../entities/ShussoubaJoutai";
@@ -103,7 +104,7 @@ export class KolDen2 extends KolDataToImport {
   }
 
   protected async saveShussoubaYosou(buffer: Buffer, shussouba: Shussouba) {
-    const toBe = new ShussoubaYosou();
+    const toBe = {} as ShussoubaYosou;
     toBe.Id = shussouba.Id;
     toBe.KolYosou1 = $SY.shirushi.toCodeFromKol(buffer, this.at(254), 1);
     if (this.has(255)) {
@@ -113,7 +114,7 @@ export class KolDen2 extends KolDataToImport {
     const kolBridge = <KolBridge>bridge;
     toBe.Kyakushitsu = kolBridge.yosouKyakushitsuMap.get(toBe.Id);
 
-    const asIs = await this.entityManager.findOneBy(ShussoubaYosou, { Id: shussouba.Id });
+    const asIs = await findOneBy(ShussoubaYosou, { Id: shussouba.Id });
 
     return await tool.saveOrUpdate(ShussoubaYosou, asIs, toBe);
   }
@@ -124,13 +125,13 @@ export class KolDen2 extends KolDataToImport {
     tanshukuKishuMei: string,
   ) {
     if (this.has(694)) {
-      const toBe = new ShussoubaHyouka();
+      const toBe = {} as ShussoubaHyouka;
       toBe.Id = info.shussouba.Id;
       toBe.ChoukyouTanpyou = readStr(buffer, this.at(694), 24);
       toBe.ChoukyouHonsuuCourse = readPositiveInt(buffer, this.at(718), 3);
       toBe.ChoukyouHonsuuHanro = readPositiveInt(buffer, this.at(721), 3);
       toBe.ChoukyouHonsuuPool = readPositiveInt(buffer, this.at(724), 3);
-      const asIs = await this.entityManager.findOneBy(ShussoubaHyouka, { Id: toBe.Id });
+      const asIs = await findOneBy(ShussoubaHyouka, { Id: toBe.Id });
       await tool.saveOrUpdate(ShussoubaHyouka, asIs, toBe);
     }
 

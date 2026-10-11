@@ -1,9 +1,8 @@
-import "reflect-metadata";
 import * as fs from "node:fs";
 import * as os from "node:os";
 import * as path from "node:path";
 import * as log4js from "log4js";
-import { dataSource } from "../../src/app/DataSource";
+import { closeDb, openDb } from "../../src/app/db/db";
 import { importer } from "../../src/app/Importer";
 import {
   kd2Den1Layout,
@@ -226,8 +225,7 @@ async function setup() {
     appenders: { memory: { type: "recording" } },
     categories: { default: { appenders: ["memory"], level: "debug" } },
   });
-  dataSource.setOptions({ database: ":memory:" });
-  await dataSource.initialize();
+  openDb(":memory:");
   ready = true;
 }
 
@@ -240,7 +238,7 @@ export async function closeKolDb() {
     categories: { default: { appenders: ["out"], level: "debug" } },
   });
   if (ready) {
-    await dataSource.destroy();
+    closeDb();
     ready = false;
   }
   if (kd2Dir) {
@@ -252,7 +250,7 @@ export async function closeKolDb() {
 /** DB を空にして、前提になる種別だけを取り込む。DB はこの呼び出しのあとも残る */
 export async function resetKolDb(kind: string, gen: KolGen = "KD3") {
   await setup();
-  await dataSource.synchronize(true);
+  openDb(":memory:");
   for (const pre of kolPrerequisites[kind] || []) {
     await importer.import({ [`kol_${pre}.${extOf(gen)}`]: kolSamples(pre, gen)[0] });
   }
@@ -261,7 +259,7 @@ export async function resetKolDb(kind: string, gen: KolGen = "KD3") {
 /** DB を空にする。DB はこの呼び出しのあとも残る */
 export async function emptyKolDb() {
   await setup();
-  await dataSource.synchronize(true);
+  openDb(":memory:");
 }
 
 /**

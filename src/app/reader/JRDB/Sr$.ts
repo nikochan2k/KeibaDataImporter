@@ -1,3 +1,4 @@
+import { findOneBy } from "../../db/helpers";
 import { Race } from "../../entities/Race";
 import { RaceKeika } from "../../entities/RaceKeika";
 import { keikaTool } from "../KeikaTool";
@@ -32,12 +33,12 @@ export abstract class Sr$ extends JrdbRaceData {
       return;
     }
     keika = keika.replace(/\s+/g, "=");
-    const toBe = new RaceKeika();
+    const toBe = {} as RaceKeika;
     toBe.Id = race.Id * 2 ** 7 + midashi2;
     toBe.RaceId = race.Id;
     toBe.Midashi2 = midashi2;
     toBe.Keika = keika;
-    const asIs = await this.entityManager.findOneBy(RaceKeika, { Id: toBe.Id });
+    const asIs = await findOneBy(RaceKeika, { Id: toBe.Id });
     await tool.saveOrUpdate(RaceKeika, asIs, toBe);
 
     await keikaTool.parseRaceKeika(toBe);

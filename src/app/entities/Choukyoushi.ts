@@ -1,50 +1,29 @@
-import { Column, Entity, Index, PrimaryGeneratedColumn } from "typeorm";
+import { integer, sqliteTable, text, uniqueIndex } from "drizzle-orm/sqlite-core";
 
-@Entity("Choukyoushi")
-@Index("IxChoukyoushi1", (c: Choukyoushi) => [c.KolKyuushaCode], { unique: true })
-@Index("IxChoukyoushi2", (c: Choukyoushi) => [c.JrdbChoukyoushiCode], { unique: true })
-@Index("IxChoukyoushi3", (c: Choukyoushi) => [c.JvDataChoukyoushiCode], { unique: true })
-export class Choukyoushi {
-  @PrimaryGeneratedColumn()
-  public Id: number;
+export const Choukyoushi = sqliteTable(
+  "Choukyoushi",
+  {
+    Id: integer().primaryKey({ autoIncrement: true }),
+    KolKyuushaCode: integer(),
+    JrdbChoukyoushiCode: integer(),
+    JvDataChoukyoushiCode: text(),
+    Seinengappi: integer(),
+    Seibetsu: integer(),
+    HatsuMenkyoNen: integer(),
+    TouzaiBetsu: integer(),
+    ShozokuBasho: integer(),
+    ShozokuBashoMei: text(),
+    /** 招待区分 (1:地方 2:外国) */
+    ShoutaiKubun: integer(),
+    RitsuHokuNanBetsu: integer(),
+    MenkyoKoufuNengappi: integer(),
+    MenkyoMasshouNengappi: integer(),
+  },
+  (t) => [
+    uniqueIndex("IxChoukyoushi1").on(t.KolKyuushaCode),
+    uniqueIndex("IxChoukyoushi2").on(t.JrdbChoukyoushiCode),
+    uniqueIndex("IxChoukyoushi3").on(t.JvDataChoukyoushiCode),
+  ],
+);
 
-  @Column("mediumint", { nullable: true })
-  public KolKyuushaCode?: number;
-
-  @Column("mediumint", { nullable: true })
-  public JrdbChoukyoushiCode?: number;
-
-  @Column("varchar", { length: 5, nullable: true })
-  public JvDataChoukyoushiCode?: string;
-
-  @Column("int", { nullable: true })
-  public Seinengappi?: number;
-
-  @Column("tinyint", { nullable: true })
-  public Seibetsu?: number;
-
-  @Column("smallint", { nullable: true })
-  public HatsuMenkyoNen?: number;
-
-  @Column("tinyint", { nullable: true })
-  public TouzaiBetsu?: number;
-
-  @Column("tinyint", { nullable: true })
-  public ShozokuBasho?: number;
-
-  @Column("varchar", { length: 30, nullable: true })
-  public ShozokuBashoMei?: string;
-
-  /** 招待区分 (1:地方 2:外国) */
-  @Column("tinyint", { nullable: true })
-  public ShoutaiKubun?: number;
-
-  @Column("tinyint", { nullable: true })
-  public RitsuHokuNanBetsu?: number;
-
-  @Column("int", { nullable: true })
-  public MenkyoKoufuNengappi?: number;
-
-  @Column("int", { nullable: true })
-  public MenkyoMasshouNengappi?: number;
-}
+export type Choukyoushi = typeof Choukyoushi.$inferSelect;

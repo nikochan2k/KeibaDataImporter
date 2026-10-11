@@ -20,7 +20,7 @@ export class JvdataCh extends JvdataRecord {
     if (!code || !/^\d{5}$/.test(code)) {
       return;
     }
-    const choukyoushi = new Choukyoushi();
+    const choukyoushi = {} as Choukyoushi;
     choukyoushi.JvDataChoukyoushiCode = code;
     choukyoushi.Seinengappi = readPositiveInt(buffer, 33, 8);
     const menkyo = readPositiveInt(buffer, 17, 8);

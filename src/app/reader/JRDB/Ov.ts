@@ -1,16 +1,11 @@
-import { EntityManager } from "typeorm";
 import { Baken, Kakutei } from "../../converters/Common";
 import { OddsHaitou } from "../../entities/OddsHaitou";
-import { OrmManager } from "../../OrmManager";
 import { readPositiveDouble } from "../Reader";
 import { JrdbData } from "./JrdbData";
 import { jrdbOddsHaitouTool } from "./JrdbOddsHaitouTool";
 import { jrdbRaceTool } from "./JrdbRaceTool";
 
 export class Ov extends JrdbData {
-  @OrmManager()
-  protected entityManager: EntityManager;
-
   protected getBufferLength() {
     return 34288;
   }
@@ -34,7 +29,7 @@ export class Ov extends JrdbData {
             // 9999999 は取消
             continue;
           }
-          const oddsHaitou = new OddsHaitou();
+          const oddsHaitou = {} as OddsHaitou;
           oddsHaitou.RaceId = raceId;
           oddsHaitou.Kakutei = Kakutei.Yosou;
           oddsHaitou.Baken = Baken.Sanrentan;

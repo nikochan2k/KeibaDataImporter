@@ -1,14 +1,13 @@
-import "reflect-metadata";
 import { afterAll, beforeAll, describe, expect, setDefaultTimeout, test } from "bun:test";
 import * as fs from "node:fs";
-import { In } from "typeorm";
 import { Baken, Kakutei } from "../src/app/converters/Common";
 import * as $U from "../src/app/converters/Uma";
-import { dataSource } from "../src/app/DataSource";
+import { findOneBy } from "../src/app/db/helpers";
 import { Choukyou } from "../src/app/entities/Choukyou";
 import { ChoukyouTime } from "../src/app/entities/ChoukyouTime";
 import { Kaisai } from "../src/app/entities/Kaisai";
 import { OddsHaitou } from "../src/app/entities/OddsHaitou";
+import { Race } from "../src/app/entities/Race";
 import { RaceHassouJoukyou } from "../src/app/entities/RaceHassouJoukyou";
 import { RaceLapTime } from "../src/app/entities/RaceLapTime";
 import { RaceSeiseki } from "../src/app/entities/RaceSeiseki";
@@ -37,6 +36,7 @@ import { KolSei1 } from "../src/app/reader/KOL/KolSei1";
 import { KolSei2 } from "../src/app/reader/KOL/KolSei2";
 import { KolShu } from "../src/app/reader/KOL/KolShu";
 import { KolUma } from "../src/app/reader/KOL/KolUma";
+import { repo } from "./helpers";
 import {
   closeKolDb,
   field,
@@ -184,7 +184,6 @@ describe("KD3 見本ファイルの取り込み", () => {
 
 describe("取り込み結果が見本ファイルと一致する", () => {
   const raceTool = () => kolRaceTool;
-  const repo = <T extends object>(e: new () => T) => dataSource.getRepository(e);
 
   describe("SEI1 (競走成績レースデータ)", () => {
     let records: Buffer[];
@@ -313,7 +312,7 @@ describe("取り込み結果が見本ファイルと一致する", () => {
       put(record, 351, 9, "999999999");
       put(record, 418, 8, "20991231");
       await saveRecord("den1", record);
-      const race = await dataSource.getRepository("Race").findOneBy({
+      const race = findOneBy(Race, {
         Id: raceTool().getRaceId(record),
       });
       expect((race as { FukaShou?: number }).FukaShou).toBe(378000);
@@ -616,7 +615,7 @@ describe("取り込み結果が見本ファイルと一致する", () => {
       await saveChoukyou(a, 104);
       const rows = await repo(Choukyou).findBy({ UmaId: 104 });
       expect(rows.length).toBe(2);
-      expect(await repo(ChoukyouTime).countBy({ ChoukyouId: In(rows.map((r) => r.Id)) })).toBe(4);
+      expect(await repo(ChoukyouTime).countBy({ ChoukyouId: rows.map((r) => r.Id) })).toBe(4);
     });
 
     test("同じ調教が 2 つのレースに出てくると、調教は 1 件で、出走馬ごとに結びつく", async () => {

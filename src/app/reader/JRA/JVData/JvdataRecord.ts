@@ -1,5 +1,3 @@
-import { EntityManager } from "typeorm";
-import { OrmManager } from "../../../OrmManager";
 import { readRaw } from "../../Reader";
 
 /**
@@ -12,9 +10,6 @@ export abstract class JvdataRecord {
 
   /** 末尾の CR LF を含むレコード長 */
   public abstract readonly length: number;
-
-  @OrmManager()
-  protected entityManager: EntityManager;
 
   public abstract save(buffer: Buffer): Promise<void>;
 

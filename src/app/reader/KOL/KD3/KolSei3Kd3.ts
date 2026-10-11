@@ -1,3 +1,4 @@
+import { findOneBy, updateBy } from "../../../db/helpers";
 import { RaceSeiseki } from "../../../entities/RaceSeiseki";
 import { DataToImport } from "../../DataToImport";
 import { readStr } from "../../Reader";
@@ -17,14 +18,9 @@ export class KolSei3Kd3 extends DataToImport {
     if (id === null) {
       return;
     }
-    const asIs = await this.entityManager.findOneBy(RaceSeiseki, { Id: id });
+    const asIs = await findOneBy(RaceSeiseki, { Id: id });
     if (asIs && !asIs.SeisaiNaiyou) {
-      await this.entityManager
-        .createQueryBuilder()
-        .update(RaceSeiseki, { SeisaiNaiyou: seisaiNaiyou })
-        .where("Id = :id")
-        .setParameter("id", id)
-        .execute();
+      updateBy(RaceSeiseki, { Id: id }, { SeisaiNaiyou: seisaiNaiyou });
     }
   }
 }

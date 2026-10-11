@@ -1,4 +1,5 @@
-import "reflect-metadata";
+import type { SQLiteTable } from "drizzle-orm/sqlite-core";
+import { countBy, findBy, findOneBy, type Where } from "../src/app/db/helpers";
 import { bridge } from "../src/app/reader/Bridge";
 import { JrdbBridge } from "../src/app/reader/JRDB/JrdbBridge";
 import { encodeSjis } from "../src/app/util/Sjis";
@@ -56,4 +57,25 @@ export function setFileDate(nen: number, gatsu: number, nichi: number) {
   jrdbBridge.nen = nen;
   jrdbBridge.gatsu = gatsu;
   jrdbBridge.nichi = nichi;
+}
+
+/** 条件に合う最初の行。なければ例外 */
+export function findOneByOrFail<T extends SQLiteTable>(table: T, where: Where<T>) {
+  const row = findOneBy(table, where);
+  if (!row) {
+    throw new Error(`行が見つかりません: ${JSON.stringify(where)}`);
+  }
+  return row;
+}
+
+/** テーブルを TypeORM の Repository と同じ書き方で読む */
+export function repo<T extends SQLiteTable>(table: T) {
+  return {
+    find: () => findBy(table),
+    findBy: (where: Where<T>) => findBy(table, where),
+    findOneBy: (where: Where<T>) => findOneBy(table, where),
+    findOneByOrFail: (where: Where<T>) => findOneByOrFail(table, where),
+    count: () => countBy(table),
+    countBy: (where: Where<T>) => countBy(table, where),
+  };
 }

@@ -1,10 +1,9 @@
-import "reflect-metadata";
 import { afterAll, beforeAll, describe, expect, test } from "bun:test";
 import * as fs from "node:fs";
 import * as path from "node:path";
-import { IsNull } from "typeorm";
 import { Baken, Kakutei } from "../src/app/converters/Common";
-import { dataSource } from "../src/app/DataSource";
+import { closeDb } from "../src/app/db/db";
+import { countBy, findBy, findOneBy, IS_NULL } from "../src/app/db/helpers";
 import { OddsHaitou } from "../src/app/entities/OddsHaitou";
 import { Race } from "../src/app/entities/Race";
 import { Shussouba } from "../src/app/entities/Shussouba";
@@ -115,7 +114,7 @@ beforeAll(async () => {
 }, 300000);
 
 afterAll(async () => {
-  await dataSource.destroy();
+  closeDb();
 });
 
 describe("仕様書の項目表", () => {
@@ -193,11 +192,11 @@ describe("見本データの取り込み", () => {
         // 調教コース A1(連闘) は調教場所を持たない(種類で持つ)
         !/cha Cha\.ts:17 "A1"/.test(k) &&
         // 地方の調教師の所属(東西の区分がない)
-        !/Ky\$\.ts:69 /.test(k) &&
+        !/Ky\$\.ts:70 /.test(k) &&
         // 産地名の「追分」(コード表にない地名)
         !/ukc Ukc\.ts:36 /.test(k) &&
         // 見本データに現れる、コード表にない印(7, 8)や距離適性(4, 7)
-        !/ky[ghi] Ky\$\.ts:(126|149|212) /.test(k) &&
+        !/ky[ghi] Ky\$\.ts:(127|150|213) /.test(k) &&
         // 見本データ自体の不整合
         !/kyg JrdbShussoubaTool\.ts:22 "2 {2}"/.test(k),
     );
@@ -277,15 +276,15 @@ describe("仕様書の値と取り込み結果の突き合わせ", () => {
     for (const rec of records("sed", "Sed")) {
       const { raceId, shussouba } = await findShussouba(rec);
       expect(shussouba).toBeTruthy();
-      const seiseki = await dataSource.manager.findOneBy(ShussoubaSeiseki, { Id: shussouba.Id });
+      const seiseki = await findOneBy(ShussoubaSeiseki, { Id: shussouba.Id });
       const chaku = parseInt(f(rec, "着順"), 10);
       expect(seiseki.KakuteiChakujun).toBe(1 <= chaku && chaku <= 28 ? chaku : null);
       expect(seiseki.Time).toBe(time(f(rec, "タイム")));
       const bataijuu = parseInt(f(rec, "馬体重"), 10);
       expect(seiseki.Bataijuu).toBe(0 < bataijuu ? bataijuu : null);
-      const hyouka = await dataSource.manager.findOneBy(ShussoubaHyouka, { Id: shussouba.Id });
+      const hyouka = await findOneBy(ShussoubaHyouka, { Id: shussouba.Id });
       expect(hyouka.Idm).toBe(f(rec, "ＩＤＭ") === "" ? null : parseInt(f(rec, "ＩＤＭ"), 10));
-      const race = await dataSource.manager.findOneBy(Race, { Id: raceId });
+      const race = await findOneBy(Race, { Id: raceId });
       expect(race.Kyori).toBe(parseInt(f(rec, "距離"), 10));
       expect(race.Tousuu).toBe(parseInt(f(rec, "頭数"), 10));
       checked++;
@@ -302,10 +301,10 @@ describe("仕様書の値と取り込み結果の突き合わせ", () => {
       const raceId = jrdbRaceTool.getRaceId(rec);
       const info = await jrdbShussoubaTool.getShussoubaInfo(rec, 8, raceId);
       expect(info.shussouba).toBeTruthy();
-      const shussouba = await dataSource.manager.findOneBy(Shussouba, { Id: info.shussouba.Id });
+      const shussouba = await findOneBy(Shussouba, { Id: info.shussouba.Id });
       expect(shussouba.Wakuban).toBe(parseInt(f(rec, "枠番"), 10));
       expect(shussouba.Kinryou).toBe(parseInt(f(rec, "負担重量"), 10) / 10);
-      const yosou = await dataSource.manager.findOneBy(ShussoubaYosou, { Id: shussouba.Id });
+      const yosou = await findOneBy(ShussoubaYosou, { Id: shussouba.Id });
       expect(yosou.Idm).toBe(parseFloat(f(rec, "ＩＤＭ")));
       checked++;
     }
@@ -350,15 +349,13 @@ describe("仕様書の値と取り込み結果の突き合わせ", () => {
             mismatches.push(`${group}[${i}] 組合せが読めません: "${comboRaw}"`);
             continue;
           }
-          const rows = await dataSource.manager.find(OddsHaitou, {
-            where: {
-              RaceId: raceId,
-              Baken: baken,
-              Kakutei: Kakutei.Kakutei,
-              Bangou1: nums[0],
-              Bangou2: nums[1] ?? IsNull(),
-              Bangou3: nums[2] ?? IsNull(),
-            },
+          const rows = findBy(OddsHaitou, {
+            RaceId: raceId,
+            Baken: baken,
+            Kakutei: Kakutei.Kakutei,
+            Bangou1: nums[0],
+            Bangou2: nums[1] ?? IS_NULL,
+            Bangou3: nums[2] ?? IS_NULL,
           });
           if (rows.length !== 1 || rows[0].Haitoukin !== parseInt(kinText, 10)) {
             mismatches.push(
@@ -384,7 +381,7 @@ describe("仕様書の値と取り込み結果の突き合わせ", () => {
       const tousuu = parseInt(f(rec, "登録頭数"), 10);
       const expected = (tousuu * (tousuu - 1)) / 2;
       const count = (baken: Baken) =>
-        dataSource.manager.countBy(OddsHaitou, {
+        countBy(OddsHaitou, {
           RaceId: raceId,
           Kakutei: Kakutei.Yosou,
           Baken: baken,

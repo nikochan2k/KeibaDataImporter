@@ -1,5 +1,4 @@
-import "reflect-metadata";
-import { dataSource } from "./DataSource";
+import { closeDb, openDb } from "./db/db";
 import { createApp } from "./http/app";
 import { getLogger, silenceLoggers } from "./LogUtil";
 
@@ -11,17 +10,14 @@ const host = process.env.HOST || "127.0.0.1";
 
 async function main() {
   silenceLoggers();
-  await dataSource.initialize();
-  // 取り込み(書き込み)中も閲覧(読み込み)が止まらないようにする
-  await dataSource.query("PRAGMA journal_mode = WAL");
-  await dataSource.synchronize(false);
+  openDb();
 
   const app = createApp().listen({ hostname: host, port });
   logger.info(`http://${host}:${port} で待ち受けています`);
 
   const shutdown = async () => {
     await app.stop();
-    await dataSource.destroy();
+    closeDb();
     process.exit(0);
   };
   process.on("SIGINT", shutdown);

@@ -1,13 +1,12 @@
-import { EntityManager } from "typeorm";
 import * as $CH from "../../converters/Choukyou";
 import { choukyouDao } from "../../daos/ChoukyouDao";
 import { jinmeiDao } from "../../daos/JinmeiDao";
 import { umaDao } from "../../daos/UmaDao";
+import { findBy, findOneBy, save } from "../../db/helpers";
 import { Choukyou } from "../../entities/Choukyou";
 import { ChoukyouTime } from "../../entities/ChoukyouTime";
 import { ShussoubaChoukyou } from "../../entities/ShussoubaChoukyou";
 import { Uma } from "../../entities/Uma";
-import { OrmManager } from "../../OrmManager";
 import { readInt, readPositiveInt, readStr, readStrWithNoSpace } from "../Reader";
 import { getChoukyouId, tool } from "../Tool";
 
@@ -34,9 +33,6 @@ export class KolChoukyouTool {
     { f: 1, offset: 63 },
   ];
 
-  @OrmManager()
-  private entityManager: EntityManager;
-
   /**
    * 調教 1 件を保存し、出走馬と結びつけます。
    * 調教フラグ・矢印・例外はレース(出走馬)ごとに変わるので、連関(ShussoubaChoukyou)に持たせます。
@@ -59,7 +55,7 @@ export class KolChoukyouTool {
       return;
     }
 
-    const choukyou = new Choukyou();
+    const choukyou = {} as Choukyou;
     choukyou.UmaId = umaId;
     choukyou.Noriyaku = $CH.noriyaku.toCodeFromKol(kijousha);
     const nengappi = readInt(buffer, offset + 9, 8);
@@ -99,7 +95,7 @@ export class KolChoukyouTool {
       let execed = /^[\u30A1-\u30FC]+/.exec(awase);
       if (execed && 0 < execed.length) {
         const awaseUma = execed[0];
-        let uma = new Uma();
+        let uma = {} as Uma;
         uma.KanaBamei = awaseUma;
         uma = await umaDao.saveUma(uma);
         choukyou.AwaseUmaId = uma.Id;
@@ -142,14 +138,14 @@ export class KolChoukyouTool {
 
     choukyou.Renban = await this.findRenban(choukyou, dateId, times);
     choukyou.Id = getChoukyouId(umaId, dateId, choukyou.Basho, choukyou.Type, choukyou.Renban);
-    await this.entityManager.save(choukyou);
+    save(Choukyou, choukyou);
 
     for (const choukyouTime of times) {
       choukyouTime.ChoukyouId = choukyou.Id;
-      await this.entityManager.save(choukyouTime);
+      save(ChoukyouTime, choukyouTime);
     }
 
-    const sc = new ShussoubaChoukyou();
+    const sc = {} as ShussoubaChoukyou;
     sc.ShussoubaId = shussoubaId;
     sc.ChoukyouId = choukyou.Id;
     sc.ChoukyouFlag = $CH.choukyouFlag.toCodeFromKol(buffer, offset, 1);
@@ -167,11 +163,11 @@ export class KolChoukyouTool {
     const { UmaId, Basho, Type } = choukyou;
     for (let renban = 1; renban <= 4; renban++) {
       const id = getChoukyouId(UmaId, dateId, Basho, Type, renban);
-      const asIs = await this.entityManager.findOneBy(Choukyou, { Id: id });
+      const asIs = await findOneBy(Choukyou, { Id: id });
       if (!asIs) {
         return renban;
       }
-      const asIsTimes = await this.entityManager.findBy(ChoukyouTime, { ChoukyouId: id });
+      const asIsTimes = await findBy(ChoukyouTime, { ChoukyouId: id });
       if (this.isSameChoukyou(asIs, asIsTimes, choukyou, times)) {
         return renban;
       }
@@ -225,7 +221,7 @@ export class KolChoukyouTool {
       if (!comment || comment === "-") {
         continue;
       }
-      const choukyouTime = new ChoukyouTime();
+      const choukyouTime = {} as ChoukyouTime;
       choukyouTime.F = cf.f;
       const time = parseFloat(comment);
       if (Number.isNaN(time)) {

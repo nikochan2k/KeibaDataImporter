@@ -1,46 +1,27 @@
-import { Column, Entity, Index, PrimaryColumn } from "typeorm";
+import { index, integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
 
-@Entity("Kaisai")
-@Index("IxKaisai1", (r: Kaisai) => [r.Key])
-@Index("IxKaisai2", (r: Kaisai) => [r.Basho, r.Kaiji, r.Nichiji])
-@Index("IxKaisai3", (r: Kaisai) => [r.Basho, r.Nen, r.Gatsu, r.Nichi])
-export class Kaisai {
-  @PrimaryColumn("int")
-  public Id: number; // 22ビット
+export const Kaisai = sqliteTable(
+  "Kaisai",
+  {
+    Id: integer().primaryKey(), // 22ビット
+    Key: integer().notNull(),
+    Basho: integer().notNull(),
+    Nen: integer().notNull(),
+    Gatsu: integer().notNull(),
+    Nichi: integer().notNull(),
+    Kaiji: integer(),
+    Nichiji: integer(),
+    Youbi: integer(),
+    Kyuujitsu: integer(),
+    KaisaiKubun: integer(),
+    ChuuouChihouGaikoku: integer(),
+    GaikokuKeibajouMei: text(),
+  },
+  (t) => [
+    index("IxKaisai1").on(t.Key),
+    index("IxKaisai2").on(t.Basho, t.Kaiji, t.Nichiji),
+    index("IxKaisai3").on(t.Basho, t.Nen, t.Gatsu, t.Nichi),
+  ],
+);
 
-  @Column("int")
-  public Key: number;
-
-  @Column("tinyint")
-  public Basho: number;
-
-  @Column("smallint")
-  public Nen: number;
-
-  @Column("tinyint")
-  public Gatsu: number;
-
-  @Column("tinyint")
-  public Nichi: number;
-
-  @Column("tinyint", { nullable: true })
-  public Kaiji?: number;
-
-  @Column("tinyint", { nullable: true })
-  public Nichiji?: number;
-
-  @Column("tinyint", { nullable: true })
-  public Youbi: number;
-
-  @Column("tinyint", { nullable: true })
-  public Kyuujitsu?: number;
-
-  @Column("tinyint", { nullable: true })
-  public KaisaiKubun?: number;
-
-  @Column("tinyint", { nullable: true })
-  public ChuuouChihouGaikoku?: number;
-
-  @Column("varchar", { nullable: true, length: 30 })
-  public GaikokuKeibajouMei: string;
-}
+export type Kaisai = typeof Kaisai.$inferSelect;

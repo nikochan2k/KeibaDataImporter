@@ -1,11 +1,9 @@
-import "reflect-metadata";
 import { afterAll, describe, expect, setDefaultTimeout, test } from "bun:test";
 import { Baken, Kakutei, TouzaiBetsu, touzaiBetsu } from "../src/app/converters/Common";
 import * as $K from "../src/app/converters/Kishu";
 import * as $R from "../src/app/converters/Race";
 import * as $S from "../src/app/converters/Shussouba";
 import * as $U from "../src/app/converters/Uma";
-import { dataSource } from "../src/app/DataSource";
 import { Banushi } from "../src/app/entities/Banushi";
 import { Choukyoushi } from "../src/app/entities/Choukyoushi";
 import { Kaisai } from "../src/app/entities/Kaisai";
@@ -36,14 +34,13 @@ import { JvdataRa } from "../src/app/reader/JRA/JVData/JvdataRa";
 import { JvdataSe } from "../src/app/reader/JRA/JVData/JvdataSe";
 import { JvdataUm } from "../src/app/reader/JRA/JVData/JvdataUm";
 import { JvdataYs } from "../src/app/reader/JRA/JVData/JvdataYs";
+import { repo } from "./helpers";
 import { JvdataRecord, parseJvdataCodes, parseJvdataSpec } from "./spec/jvdata";
 import { closeKolDb, emptyKolDb, importKolFiles } from "./spec/kol";
 
 afterAll(closeKolDb);
 
 setDefaultTimeout(60_000);
-
-const repo = <T extends object>(e: new () => T) => dataSource.getRepository(e);
 
 const handlers = [
   JvdataRa,

@@ -1,4 +1,4 @@
-import { Column, Entity, Index, PrimaryColumn } from "typeorm";
+import { integer, sqliteTable, uniqueIndex } from "drizzle-orm/sqlite-core";
 
 export enum Kubun {
   // KYG, KYH, KYI
@@ -20,20 +20,15 @@ export enum Kubun {
   AshimotoMigiUshiro,
 }
 
-@Entity("ShussoubaJoutai")
-@Index("IxShussoubaJoutai", (stj: ShussoubaJoutai) => [stj.ShussoubaId, stj.Kubun, stj.Code], {
-  unique: true,
-})
-export class ShussoubaJoutai {
-  @PrimaryColumn("bigint")
-  public Id: number;
+export const ShussoubaJoutai = sqliteTable(
+  "ShussoubaJoutai",
+  {
+    Id: integer().primaryKey(),
+    ShussoubaId: integer().notNull(),
+    Kubun: integer().$type<Kubun>().notNull(),
+    Code: integer(),
+  },
+  (t) => [uniqueIndex("IxShussoubaJoutai").on(t.ShussoubaId, t.Kubun, t.Code)],
+);
 
-  @Column("bigint")
-  public ShussoubaId: number;
-
-  @Column("tinyint")
-  public Kubun: Kubun;
-
-  @Column("smallint", { nullable: true })
-  public Code: number;
-}
+export type ShussoubaJoutai = typeof ShussoubaJoutai.$inferSelect;

@@ -1,6 +1,7 @@
 import * as $CH from "../../converters/Choukyou";
 import * as $R from "../../converters/Race";
 import { choukyouDao } from "../../daos/ChoukyouDao";
+import { findOneBy } from "../../db/helpers";
 import { Choukyou } from "../../entities/Choukyou";
 import { Kyousouba } from "../../entities/Kyousouba";
 import { Shussouba } from "../../entities/Shussouba";
@@ -21,7 +22,7 @@ export class Cha extends JrdbShussoubaData {
     if (!choukyou) {
       return;
     }
-    const sc = new ShussoubaChoukyou();
+    const sc = {} as ShussoubaChoukyou;
     sc.ShussoubaId = shussouba.Id;
     sc.ChoukyouId = choukyou.Id;
     sc.HonOikiri = 1;
@@ -33,14 +34,14 @@ export class Cha extends JrdbShussoubaData {
     if (days === null || shussouba.KyousoubaId == null) {
       return null;
     }
-    const kyousouba = await this.entityManager.findOneBy(Kyousouba, {
+    const kyousouba = await findOneBy(Kyousouba, {
       Id: shussouba.KyousoubaId,
     });
     if (!kyousouba) {
       return null;
     }
 
-    const toBe = new Choukyou();
+    const toBe = {} as Choukyou;
     toBe.UmaId = kyousouba.UmaId;
     toBe.Nengappi = readInt(buffer, 12, 8);
     toBe.Kaisuu = readPositiveInt(buffer, 20, 1);
@@ -71,7 +72,7 @@ export class Cha extends JrdbShussoubaData {
     const candidates: Choukyou[] = [];
     for (let renban = 1; renban <= 4; renban++) {
       const id = getChoukyouId(toBe.UmaId, days, toBe.Basho, toBe.Type, renban);
-      const c = await this.entityManager.findOneBy(Choukyou, { Id: id });
+      const c = await findOneBy(Choukyou, { Id: id });
       if (!c) {
         break;
       }

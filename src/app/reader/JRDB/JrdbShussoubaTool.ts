@@ -39,7 +39,7 @@ export class JrdbShussoubaTool extends ShussoubaTool {
   }
 
   public async saveKishu(buffer: Buffer, kishuCodeOffset: number, kishuMeiOffset: number) {
-    const kishu = new Kishu();
+    const kishu = {} as Kishu;
     const kishuMei = readStrWithNoSpace(buffer, kishuMeiOffset, 12);
     kishu.JrdbKishuCode = readPositiveInt(buffer, kishuCodeOffset, 5);
     if (!kishu.JrdbKishuCode) {

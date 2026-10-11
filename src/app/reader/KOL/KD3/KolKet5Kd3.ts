@@ -1,16 +1,11 @@
-import { EntityManager } from "typeorm";
 import * as $U from "../../../converters/Uma";
 import { umaDao } from "../../../daos/UmaDao";
 import { Uma } from "../../../entities/Uma";
-import { OrmManager } from "../../../OrmManager";
 import { DataToImport } from "../../DataToImport";
 import { readInt, readStr } from "../../Reader";
 import { tool } from "../../Tool";
 
 export class KolKet5Kd3 extends DataToImport {
-  @OrmManager()
-  protected entityManager: EntityManager;
-
   protected getBufferLength() {
     return 4002;
   }
@@ -28,7 +23,7 @@ export class KolKet5Kd3 extends DataToImport {
       return null;
     }
 
-    const uma = new Uma();
+    const uma = {} as Uma;
     uma.Seibetsu = seibetsu;
     uma.KolUmaCode = readInt(buffer, offset, 7);
     uma.KanaBamei = kanaBamei;
@@ -55,7 +50,7 @@ export class KolKet5Kd3 extends DataToImport {
       return null;
     }
 
-    const uma = new Uma();
+    const uma = {} as Uma;
     uma.Seibetsu = seibetsu;
     uma.KolUmaCode = readInt(buffer, offset, 7);
     if (tool.isEnglish(bamei)) {
@@ -74,7 +69,7 @@ export class KolKet5Kd3 extends DataToImport {
     const h = await this.saveH(buffer);
     const c = await this.saveC(buffer);
 
-    const uma = new Uma();
+    const uma = {} as Uma;
     uma.KolUmaCode = readInt(buffer, 0, 7);
     uma.KanaBamei = readStr(buffer, 7, 37);
     uma.FamilyNumber = readStr(buffer, 44, 3);

@@ -1,5 +1,6 @@
 import { MasshouFlag } from "../../../converters/Common";
 import { umaDao } from "../../../daos/UmaDao";
+import { findOneBy } from "../../../db/helpers";
 import { Choukyoushi } from "../../../entities/Choukyoushi";
 import { Kishu } from "../../../entities/Kishu";
 import { Uma } from "../../../entities/Uma";
@@ -20,7 +21,7 @@ export class JravanDelu extends DataToImport {
     if (!touroku && !bamei) {
       return;
     }
-    const uma = new Uma();
+    const uma = {} as Uma;
     if (touroku) {
       uma.KettouTourokuBangou = touroku.bangou;
       uma.Seinen = touroku.seinen;
@@ -43,10 +44,10 @@ export class JravanDelk extends DataToImport {
     if (!code || !/^\d{5}$/.test(code)) {
       return;
     }
-    const kishu = new Kishu();
+    const kishu = {} as Kishu;
     kishu.JvDataKishuCode = code;
     kishu.MenkyoMasshouNengappi = readPositiveInt(buffer, 5, 8);
-    const asIs = await this.entityManager.findOneBy(Kishu, { JvDataKishuCode: code });
+    const asIs = await findOneBy(Kishu, { JvDataKishuCode: code });
     await tool.saveOrUpdate(Kishu, asIs, kishu);
   }
 }
@@ -62,10 +63,10 @@ export class JravanDelc extends DataToImport {
     if (!code || !/^\d{5}$/.test(code)) {
       return;
     }
-    const choukyoushi = new Choukyoushi();
+    const choukyoushi = {} as Choukyoushi;
     choukyoushi.JvDataChoukyoushiCode = code;
     choukyoushi.MenkyoMasshouNengappi = readPositiveInt(buffer, 5, 8);
-    const asIs = await this.entityManager.findOneBy(Choukyoushi, { JvDataChoukyoushiCode: code });
+    const asIs = await findOneBy(Choukyoushi, { JvDataChoukyoushiCode: code });
     await tool.saveOrUpdate(Choukyoushi, asIs, choukyoushi);
   }
 }

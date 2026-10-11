@@ -16,7 +16,7 @@ export class JravanKisi extends DataToImport {
     if (!code || !/^\d{5}$/.test(code)) {
       return;
     }
-    const kishu = new Kishu();
+    const kishu = {} as Kishu;
     kishu.JvDataKishuCode = code;
     kishu.Seinengappi = readPositiveInt(buffer, 80, 8);
     // 初免許年 (西暦 4 桁)

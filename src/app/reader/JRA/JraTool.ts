@@ -32,7 +32,7 @@ export class JraTool {
     if (!code || !/^\d{5}$/.test(code) || /^0+$/.test(code)) {
       return null;
     }
-    const kishu = new Kishu();
+    const kishu = {} as Kishu;
     kishu.JvDataKishuCode = code;
     const tanshuku = readStrWithNoSpace(buffer, tanshukuOffset, 8);
     return kishuDao.saveKishu(kishu, undefined, tanshuku);
@@ -44,7 +44,7 @@ export class JraTool {
     if (!code || !/^\d{5}$/.test(code) || /^0+$/.test(code)) {
       return null;
     }
-    const choukyoushi = new Choukyoushi();
+    const choukyoushi = {} as Choukyoushi;
     choukyoushi.JvDataChoukyoushiCode = code;
     const tanshuku = readStrWithNoSpace(buffer, tanshukuOffset, 8);
     return choukyoushiDao.saveChoukyoushi(choukyoushi, undefined, tanshuku);
@@ -80,7 +80,7 @@ export class JraTool {
       return null;
     }
     const seibetsu = $U.seibetsu.toCodeFromJravan(buffer, seibetsuOffset, 1);
-    let uma = new Uma();
+    let uma = {} as Uma;
     if (touroku) {
       uma.KettouTourokuBangou = touroku.bangou;
       uma.Seinen = touroku.seinen;
@@ -89,7 +89,7 @@ export class JraTool {
     uma.Seibetsu = seibetsu;
     uma = await umaDao.saveUma(uma);
 
-    let kyousouba = new Kyousouba();
+    let kyousouba = {} as Kyousouba;
     kyousouba.UmaId = uma.Id;
     kyousouba.Seibetsu = seibetsu;
     kyousouba.ChoukyoushiId = choukyoushi?.Id;

@@ -10,7 +10,7 @@ export abstract class K$$ extends JrdbData {
   }
 
   public async saveKishu(buffer: Buffer) {
-    const kishu = new Kishu();
+    const kishu = {} as Kishu;
     kishu.JrdbKishuCode = readInt(buffer, 0, 5);
     const kishuMei = readStr(buffer, 14, 12);
     const furigana = readStr(buffer, 26, 30);

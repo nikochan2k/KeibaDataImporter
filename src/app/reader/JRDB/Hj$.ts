@@ -24,7 +24,7 @@ export abstract class Hj$ extends JrdbData {
       if (!umaban) {
         continue;
       }
-      const oddsHaitou = new OddsHaitou();
+      const oddsHaitou = {} as OddsHaitou;
       oddsHaitou.RaceId = raceId;
       oddsHaitou.Baken = Baken.Tanshou;
       oddsHaitou.Kakutei = Kakutei.Kakutei;
@@ -40,7 +40,7 @@ export abstract class Hj$ extends JrdbData {
       if (!umaban) {
         continue;
       }
-      const oddsHaitou = new OddsHaitou();
+      const oddsHaitou = {} as OddsHaitou;
       oddsHaitou.RaceId = raceId;
       oddsHaitou.Baken = Baken.Fukushou;
       oddsHaitou.Kakutei = Kakutei.Kakutei;
@@ -56,7 +56,7 @@ export abstract class Hj$ extends JrdbData {
       if (!wakuban1) {
         continue;
       }
-      const oddsHaitou = new OddsHaitou();
+      const oddsHaitou = {} as OddsHaitou;
       oddsHaitou.RaceId = raceId;
       oddsHaitou.Baken = Baken.Wakuren;
       oddsHaitou.Kakutei = Kakutei.Kakutei;
@@ -73,7 +73,7 @@ export abstract class Hj$ extends JrdbData {
       if (!umaban1) {
         continue;
       }
-      const oddsHaitou = new OddsHaitou();
+      const oddsHaitou = {} as OddsHaitou;
       oddsHaitou.RaceId = raceId;
       oddsHaitou.Baken = Baken.Umaren;
       oddsHaitou.Kakutei = Kakutei.Kakutei;
@@ -90,7 +90,7 @@ export abstract class Hj$ extends JrdbData {
       if (!umaban1) {
         continue;
       }
-      const oddsHaitou = new OddsHaitou();
+      const oddsHaitou = {} as OddsHaitou;
       oddsHaitou.RaceId = raceId;
       oddsHaitou.Baken = Baken.Wide;
       oddsHaitou.Kakutei = Kakutei.Kakutei;

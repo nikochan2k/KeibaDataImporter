@@ -1,13 +1,9 @@
-import { Repository } from "typeorm";
+import { findOneBy, save } from "../db/helpers";
 import { Banushi } from "../entities/Banushi";
 import { MeishouKubun } from "../entities/Shoyuu";
-import { OrmRepository } from "../OrmManager";
 import { meishouDao } from "./MeishouDao";
 
 export class BanushiDao {
-  @OrmRepository(Banushi)
-  private repository: Repository<Banushi>;
-
   public async save(
     shussoubaId: number,
     kubun: MeishouKubun,
@@ -15,15 +11,15 @@ export class BanushiDao {
     banushiKaiCode?: number,
   ) {
     const shoyuu = await meishouDao.save(kubun, meishou, banushiKaiCode);
-    let banushi = await this.repository.findOneBy({
+    let banushi = await findOneBy(Banushi, {
       ShussoubaId: shussoubaId,
       ShoyuuId: shoyuu.Id,
     });
     if (!banushi) {
-      banushi = new Banushi();
+      banushi = {} as Banushi;
       banushi.ShussoubaId = shussoubaId;
       banushi.ShoyuuId = shoyuu.Id;
-      banushi = await this.repository.save(banushi);
+      banushi = await save(Banushi, banushi);
     }
     return banushi;
   }

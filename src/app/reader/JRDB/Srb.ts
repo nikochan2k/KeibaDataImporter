@@ -1,5 +1,6 @@
 import * as $R from "../../converters/Race";
 import * as $S from "../../converters/Shussouba";
+import { save } from "../../db/helpers";
 import { Race } from "../../entities/Race";
 import { RaceSeiseki } from "../../entities/RaceSeiseki";
 import { RaceTrackBias } from "../../entities/RaceTrackBias";
@@ -51,12 +52,12 @@ export class Srb extends Sr$ {
     ichi: $S.Ichi,
     trackBias: number,
   ) {
-    const rtb = new RaceTrackBias();
+    const rtb = {} as RaceTrackBias;
     rtb.Id = raceId * 2 ** (3 + 3) + midashi * 2 ** 3 + ichi;
     rtb.RaceId = raceId;
     rtb.Midashi = midashi;
     rtb.Ichi = ichi;
     rtb.TrackBias = trackBias;
-    await this.entityManager.save(rtb);
+    save(RaceTrackBias, rtb);
   }
 }

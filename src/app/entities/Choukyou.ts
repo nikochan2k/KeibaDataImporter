@@ -1,108 +1,46 @@
-import { Column, Entity, Index, PrimaryColumn } from "typeorm";
+import { index, integer, real, sqliteTable, text } from "drizzle-orm/sqlite-core";
 
-@Entity("Choukyou")
-@Index("IxChoukyou", (c: Choukyou) => [c.UmaId])
-export class Choukyou {
-  @PrimaryColumn("bigint")
-  public Id: number;
+export const Choukyou = sqliteTable(
+  "Choukyou",
+  {
+    Id: integer().primaryKey(),
+    UmaId: integer().notNull(),
+    Noriyaku: integer(),
+    TanshukuKishuMeiId: integer(),
+    Nengappi: integer().notNull(),
+    /** 同じ馬・同じ日・同じ場所・同じ種別の調教が複数あるときの連番(1 始まり) */
+    Renban: integer().notNull(),
+    Basho: integer(),
+    Type: integer(),
+    Course: integer(),
+    BashoCourse: text(),
+    Baba: integer(),
+    Kaisuu: integer(),
+    IchiDori: integer(),
+    Oikiri: integer(),
+    Ashiiro: integer(),
+    OikiriSonota: text(),
+    AwaseUmaId: integer(),
+    AwaseKekka: integer(),
+    Chakusa: integer(),
+    TimeSa: real(),
+    AwaseReigai: text(),
+    /* JRDB 調教本追切データ */
+    OiJoutai: integer(),
+    /** 調教ハロンの長さ */
+    ChoukyouF: integer(),
+    TenF: real(),
+    ChuukanF: real(),
+    ShimaiF: real(),
+    TenFShisuu: integer(),
+    ChuukanFShisuu: integer(),
+    ShimaiFShisuu: integer(),
+    OikiriShisuu: integer(),
+    AwaseUmaOikiriShurui: integer(),
+    AwaseUmaNenrei: integer(),
+    AwaseUmaClass: integer(),
+  },
+  (t) => [index("IxChoukyou").on(t.UmaId)],
+);
 
-  @Column("int")
-  public UmaId: number;
-
-  @Column("tinyint", { nullable: true })
-  public Noriyaku?: number;
-
-  @Column("int", { nullable: true })
-  public TanshukuKishuMeiId?: number;
-
-  @Column("int")
-  public Nengappi: number;
-
-  /** 同じ馬・同じ日・同じ場所・同じ種別の調教が複数あるときの連番(1 始まり) */
-  @Column("tinyint")
-  public Renban: number;
-
-  @Column("tinyint", { nullable: true })
-  public Basho?: number;
-
-  @Column("tinyint", { nullable: true })
-  public Type?: number;
-
-  @Column("tinyint", { nullable: true })
-  public Course?: number;
-
-  @Column("varchar", { length: 12, nullable: true })
-  public BashoCourse?: string;
-
-  @Column("tinyint", { nullable: true })
-  public Baba?: number;
-
-  @Column("tinyint", { nullable: true })
-  public Kaisuu?: number;
-
-  @Column("tinyint", { nullable: true })
-  public IchiDori?: number;
-
-  @Column("tinyint", { nullable: true })
-  public Oikiri?: number;
-
-  @Column("tinyint", { nullable: true })
-  public Ashiiro?: number;
-
-  @Column("varchar", { length: 9, nullable: true })
-  public OikiriSonota?: string;
-
-  @Column("int", { nullable: true })
-  public AwaseUmaId?: number;
-
-  @Column("tinyint", { nullable: true })
-  public AwaseKekka?: number;
-
-  @Column("tinyint", { nullable: true })
-  public Chakusa?: number;
-
-  @Column("real", { nullable: true })
-  public TimeSa?: number;
-
-  @Column("varchar", { length: 129, nullable: true })
-  public AwaseReigai?: string;
-
-  /* JRDB 調教本追切データ */
-
-  @Column("tinyint", { nullable: true })
-  public OiJoutai?: number;
-
-  /** 調教ハロンの長さ */
-  @Column("tinyint", { nullable: true })
-  public ChoukyouF?: number;
-
-  @Column("real", { nullable: true })
-  public TenF?: number;
-
-  @Column("real", { nullable: true })
-  public ChuukanF?: number;
-
-  @Column("real", { nullable: true })
-  public ShimaiF?: number;
-
-  @Column("smallint", { nullable: true })
-  public TenFShisuu?: number;
-
-  @Column("smallint", { nullable: true })
-  public ChuukanFShisuu?: number;
-
-  @Column("smallint", { nullable: true })
-  public ShimaiFShisuu?: number;
-
-  @Column("smallint", { nullable: true })
-  public OikiriShisuu?: number;
-
-  @Column("tinyint", { nullable: true })
-  public AwaseUmaOikiriShurui?: number;
-
-  @Column("tinyint", { nullable: true })
-  public AwaseUmaNenrei?: number;
-
-  @Column("tinyint", { nullable: true })
-  public AwaseUmaClass?: number;
-}
+export type Choukyou = typeof Choukyou.$inferSelect;

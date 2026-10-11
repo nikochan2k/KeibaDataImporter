@@ -3,6 +3,7 @@ import * as $K from "../../converters/Kishu";
 import * as $S from "../../converters/Shussouba";
 import { Bagu } from "../../converters/ShussoubaJoutai";
 import * as $SY from "../../converters/ShussoubaYosou";
+import { findOneBy } from "../../db/helpers";
 import { Kyousouba } from "../../entities/Kyousouba";
 import { Shussouba } from "../../entities/Shussouba";
 import { ShussoubaHyouka } from "../../entities/ShussoubaHyouka";
@@ -37,7 +38,7 @@ export class KolSei2 extends DataToImport {
     }
     const dataNenggapi = readInt(buffer, 424, 8);
 
-    const shussoubaSeiseki = await this.entityManager.findOneBy(ShussoubaSeiseki, {
+    const shussoubaSeiseki = await findOneBy(ShussoubaSeiseki, {
       Id: rsId.shussoubaId,
     });
     if (shussoubaSeiseki?.KolNengappi && dataNenggapi <= shussoubaSeiseki.KolNengappi) {
@@ -55,10 +56,10 @@ export class KolSei2 extends DataToImport {
         return;
       }
     } else {
-      const kyousouba = await this.entityManager.findOneBy(Kyousouba, {
+      const kyousouba = await findOneBy(Kyousouba, {
         Id: info.shussouba.KyousoubaId,
       });
-      info.uma = new Uma();
+      info.uma = {} as Uma;
       info.uma.Id = kyousouba.UmaId;
     }
 
@@ -103,7 +104,7 @@ export class KolSei2 extends DataToImport {
     asIs: ShussoubaSeiseki,
     dataNengappi: number,
   ) {
-    const toBe = new ShussoubaSeiseki();
+    const toBe = {} as ShussoubaSeiseki;
     toBe.Id = info.shussouba.Id;
     toBe.Gate = readPositiveInt(buffer, 25, 2);
     toBe.Kinryou = readPositiveDouble(buffer, 150, 3, 0.1);
@@ -145,22 +146,22 @@ export class KolSei2 extends DataToImport {
   }
 
   protected async saveShussoubaYosou(buffer: Buffer, shussouba: Shussouba) {
-    const toBe = new ShussoubaYosou();
+    const toBe = {} as ShussoubaYosou;
     toBe.Id = shussouba.Id;
     toBe.KolYosou1 = $SY.shirushi.toCodeFromKol(buffer, 265, 1);
     toBe.KolYosou2 = $SY.shirushi.toCodeFromKol(buffer, 266, 1);
 
-    const asIs = await this.entityManager.findOneBy(ShussoubaYosou, { Id: shussouba.Id });
+    const asIs = await findOneBy(ShussoubaYosou, { Id: shussouba.Id });
 
     return await tool.saveOrUpdate(ShussoubaYosou, asIs, toBe);
   }
 
   protected async saveShussoubaHyouka(buffer: Buffer, shussouba: Shussouba) {
-    const toBe = new ShussoubaHyouka();
+    const toBe = {} as ShussoubaHyouka;
     toBe.Id = shussouba.Id;
     toBe.KolRecordShisuu = readInt(buffer, 159, 3);
 
-    const asIs = await this.entityManager.findOneBy(ShussoubaHyouka, { Id: shussouba.Id });
+    const asIs = await findOneBy(ShussoubaHyouka, { Id: shussouba.Id });
 
     return await tool.saveOrUpdate(ShussoubaHyouka, asIs, toBe);
   }

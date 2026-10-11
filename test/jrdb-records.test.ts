@@ -1,8 +1,8 @@
-import type { EntityTarget, ObjectLiteral } from "typeorm";
-import "reflect-metadata";
 import { afterAll, beforeAll, describe, expect, test } from "bun:test";
+import type { SQLiteTable } from "drizzle-orm/sqlite-core";
 import { Baken, Kakutei } from "../src/app/converters/Common";
-import { dataSource } from "../src/app/DataSource";
+import { closeDb, openDb } from "../src/app/db/db";
+import { countBy, findBy, findOneBy, save, updateBy, type Where } from "../src/app/db/helpers";
 import { Choukyou } from "../src/app/entities/Choukyou";
 import { Kishu } from "../src/app/entities/Kishu";
 import { Kyousouba } from "../src/app/entities/Kyousouba";
@@ -34,20 +34,17 @@ const raceKey: Field[] = [
 ];
 
 beforeAll(async () => {
-  dataSource.setOptions({ database: ":memory:" });
-  await dataSource.initialize();
-  await dataSource.synchronize();
+  openDb(":memory:");
   setFileDate(2024, 4, 7);
   // 出走馬を用意する(レースキーに年月日がない TYB や CYB は、出走馬が先にいる前提)
   await new Sed().save(record(base, 376));
 });
 
 afterAll(async () => {
-  await dataSource.destroy();
+  closeDb();
 });
 
-const find = async <T>(entity: new () => T, where: object) =>
-  (await dataSource.manager.findOneBy(entity as EntityTarget<ObjectLiteral>, where)) as T;
+const find = <T extends SQLiteTable>(entity: T, where: Where<T>) => findOneBy(entity, where);
 
 describe("TYB 直前情報", () => {
   const tyb = [
@@ -117,10 +114,10 @@ describe("TYB 直前情報", () => {
   });
 
   test("出走馬がいないレコードは読み飛ばす", async () => {
-    const before = await dataSource.manager.count(OddsHaitou);
+    const before = await countBy(OddsHaitou);
     const unknown = tyb.map(([p, v]) => (p === 9 ? [9, "12"] : [p, v])) as Field[];
     await new Tyb().save(record(unknown, 128));
-    expect(await dataSource.manager.count(OddsHaitou)).toBe(before);
+    expect(await countBy(OddsHaitou)).toBe(before);
   });
 });
 
@@ -239,10 +236,8 @@ describe("CHA 調教本追切", () => {
     const race = await find(Race, {});
     const shussouba = await find(Shussouba, { RaceId: race.Id });
     // 出走馬に競走馬を結びつける(本来は KYI などで入る)
-    const kyousouba = await dataSource.manager.save(
-      Object.assign(new Kyousouba(), { UmaId: 9001 }),
-    );
-    await dataSource.manager.update(Shussouba, { Id: shussouba.Id }, { KyousoubaId: kyousouba.Id });
+    const kyousouba = await save(Kyousouba, Object.assign({} as Kyousouba, { UmaId: 9001 }));
+    await updateBy(Shussouba, { Id: shussouba.Id }, { KyousoubaId: kyousouba.Id });
     shussouba.KyousoubaId = kyousouba.Id;
     // 先に KOL の出馬表から同じ調教(同じ馬・同じ日・栗東坂路)が入っている
     const kol = record(
@@ -263,13 +258,13 @@ describe("CHA 調教本追切", () => {
     await kolChoukyouTool.saveChoukyou(kol, 0, shussouba.Id, kyousouba.UmaId, "テスト");
     await new Cha().save(record(cha, 64));
 
-    const choukyou = await dataSource.manager.findBy(Choukyou, { UmaId: kyousouba.UmaId });
+    const choukyou = await findBy(Choukyou, { UmaId: kyousouba.UmaId });
     expect(choukyou.length).toBe(1);
     expect(choukyou[0].Baba).toBe(0); // KOL の項目は残る
     expect(choukyou[0].TenF).toBeCloseTo(52.3);
     expect(choukyou[0].OikiriShisuu).toBe(98);
 
-    const links = await dataSource.manager.findBy(ShussoubaChoukyou, { ShussoubaId: shussouba.Id });
+    const links = await findBy(ShussoubaChoukyou, { ShussoubaId: shussouba.Id });
     expect(links.length).toBe(1);
     expect(links[0].ChoukyouId).toBe(choukyou[0].Id);
     expect(links[0].ChoukyouFlag).toBe(1);
@@ -307,6 +302,6 @@ describe("KSA 騎手マスタ", () => {
     await new K$a().save(ksa("10500", "2", " "));
     const kishu = await find(Kishu, { JrdbKishuCode: 10500 });
     expect(kishu.MinaraiKubun).toBe(0);
-    expect(await dataSource.manager.countBy(Kishu, { JrdbKishuCode: 10500 })).toBe(1);
+    expect(await countBy(Kishu, { JrdbKishuCode: 10500 })).toBe(1);
   });
 });

@@ -2,6 +2,7 @@ import { Baken, Kakutei } from "../../converters/Common";
 import * as $K from "../../converters/Kaisai";
 import * as $R from "../../converters/Race";
 import * as $RK from "../../converters/RaceKeika";
+import { findOneBy } from "../../db/helpers";
 import { Kaisai } from "../../entities/Kaisai";
 import { Race } from "../../entities/Race";
 import { RaceKeika } from "../../entities/RaceKeika";
@@ -31,12 +32,12 @@ export class KolSei1 extends KolDataToImport {
     const id = kolRaceTool.getRaceId(buffer);
     const dataNengappi = readInt(buffer, this.at(2910), 8);
 
-    const raceSeiseki = await this.entityManager.findOneBy(RaceSeiseki, { Id: id });
+    const raceSeiseki = await findOneBy(RaceSeiseki, { Id: id });
     if (raceSeiseki?.KolNengappi && dataNengappi <= raceSeiseki.KolNengappi) {
       return;
     }
 
-    let race = await this.entityManager.findOneBy(Race, { Id: id });
+    let race = await findOneBy(Race, { Id: id });
     if (!race) {
       const kaisai = await this.saveKaisai(buffer);
       if (!kaisai) {
@@ -170,7 +171,7 @@ export class KolSei1 extends KolDataToImport {
     asIs: RaceSeiseki,
     dataNengappi: number,
   ) {
-    const toBe = new RaceSeiseki();
+    const toBe = {} as RaceSeiseki;
     toBe.Id = race.Id;
     toBe.Shoukin1Chaku = readPositiveInt(buffer, this.at(288), 9);
     toBe.Shoukin2Chaku = readPositiveInt(buffer, this.at(297), 9);
@@ -251,7 +252,7 @@ export class KolSei1 extends KolDataToImport {
       if (!keika) {
         continue;
       }
-      const toBe = new RaceKeika();
+      const toBe = {} as RaceKeika;
       const midashi1 = $RK.midashi1.toCodeFromKol(buffer, offset, 1);
       const midashi2 = $RK.midashi2.toCodeFromKol(buffer, offset + 1, 2);
       toBe.Id = race.Id * 2 ** 7 + (midashi1 || 0) * 2 ** 4 + (midashi2 || 0);
@@ -259,7 +260,7 @@ export class KolSei1 extends KolDataToImport {
       toBe.Midashi1 = midashi1;
       toBe.Midashi2 = midashi2;
       toBe.Keika = keika;
-      const asIs = await this.entityManager.findOneBy(RaceKeika, { Id: toBe.Id });
+      const asIs = await findOneBy(RaceKeika, { Id: toBe.Id });
       await tool.saveOrUpdate(RaceKeika, asIs, toBe);
 
       await keikaTool.parseRaceKeika(toBe);

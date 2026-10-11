@@ -1,3 +1,4 @@
+import { findOneBy } from "../../../db/helpers";
 import { Race } from "../../../entities/Race";
 import { DataToImport } from "../../DataToImport";
 import { readJikan, readPositiveInt, readRaw } from "../../Reader";
@@ -30,7 +31,7 @@ export class JravanDen1 extends DataToImport {
     toBe.Shoukin5Chaku = readPositiveInt(buffer, 176, 7, 1000);
     toBe.FukaShou = readPositiveInt(buffer, 197, 7, 1000);
 
-    const asIs = await this.entityManager.findOneBy(Race, { Id: toBe.Id });
+    const asIs = await findOneBy(Race, { Id: toBe.Id });
     const race = await jravanRaceTool.saveOrUpdateRace(asIs, toBe);
     await jravanRaceTool.saveRaceMeiOf(buffer, 17, 60, race);
 

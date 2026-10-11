@@ -11,7 +11,7 @@ export class KolOddsHaitouTool extends OddsHaitouTool {
     ninkiOffset: number,
     oddsOffset: number,
   ) {
-    const oddsHaitou = new OddsHaitou();
+    const oddsHaitou = {} as OddsHaitou;
     oddsHaitou.RaceId = shussouba.RaceId;
     oddsHaitou.Kakutei = Kakutei.Kakutei;
     oddsHaitou.Baken = Baken.Tanshou;
@@ -38,7 +38,7 @@ export class KolOddsHaitouTool extends OddsHaitouTool {
       if (!odds1) {
         continue;
       }
-      const oddsHaitou = new OddsHaitou();
+      const oddsHaitou = {} as OddsHaitou;
       oddsHaitou.RaceId = raceId;
       oddsHaitou.Kakutei = kakutei;
       oddsHaitou.Baken = Baken.Tanshou;
@@ -57,7 +57,7 @@ export class KolOddsHaitouTool extends OddsHaitouTool {
         if (!odds1) {
           continue;
         }
-        const oddsHaitou = new OddsHaitou();
+        const oddsHaitou = {} as OddsHaitou;
         oddsHaitou.RaceId = raceId;
         oddsHaitou.Kakutei = kakutei;
         oddsHaitou.Baken = Baken.Wakuren;
@@ -77,7 +77,7 @@ export class KolOddsHaitouTool extends OddsHaitouTool {
         if (!odds1) {
           continue;
         }
-        const oddsHaitou = new OddsHaitou();
+        const oddsHaitou = {} as OddsHaitou;
         oddsHaitou.RaceId = raceId;
         oddsHaitou.Kakutei = kakutei;
         oddsHaitou.Baken = Baken.Umaren;
@@ -98,7 +98,7 @@ export class KolOddsHaitouTool extends OddsHaitouTool {
       if (!odds1 || !odds2) {
         continue;
       }
-      const oddsHaitou = new OddsHaitou();
+      const oddsHaitou = {} as OddsHaitou;
       oddsHaitou.RaceId = raceId;
       oddsHaitou.Kakutei = kakutei;
       oddsHaitou.Baken = Baken.Fukushou;
@@ -119,7 +119,7 @@ export class KolOddsHaitouTool extends OddsHaitouTool {
         if (!odds1 || !odds2) {
           continue;
         }
-        const oddsHaitou = new OddsHaitou();
+        const oddsHaitou = {} as OddsHaitou;
         oddsHaitou.RaceId = raceId;
         oddsHaitou.Kakutei = kakutei;
         oddsHaitou.Baken = Baken.Wide;
@@ -143,7 +143,7 @@ export class KolOddsHaitouTool extends OddsHaitouTool {
         if (!odds1) {
           continue;
         }
-        const oddsHaitou = new OddsHaitou();
+        const oddsHaitou = {} as OddsHaitou;
         oddsHaitou.RaceId = raceId;
         oddsHaitou.Kakutei = kakutei;
         oddsHaitou.Baken = Baken.Umatan;
@@ -169,7 +169,7 @@ export class KolOddsHaitouTool extends OddsHaitouTool {
           if (!odds1) {
             continue;
           }
-          const oddsHaitou = new OddsHaitou();
+          const oddsHaitou = {} as OddsHaitou;
           oddsHaitou.RaceId = raceId;
           oddsHaitou.Kakutei = kakutei;
           oddsHaitou.Baken = Baken.Sanrenpuku;
@@ -195,7 +195,7 @@ export class KolOddsHaitouTool extends OddsHaitouTool {
           if (!odds1) {
             continue;
           }
-          const oddsHaitou = new OddsHaitou();
+          const oddsHaitou = {} as OddsHaitou;
           oddsHaitou.RaceId = raceId;
           oddsHaitou.Kakutei = kakutei;
           oddsHaitou.Baken = Baken.Sanrentan;

@@ -1,21 +1,17 @@
-import { Repository } from "typeorm";
+import { findOneBy, save } from "../db/helpers";
 import { Seisansha } from "../entities/Seisansha";
 import { MeishouKubun } from "../entities/Shoyuu";
-import { OrmRepository } from "../OrmManager";
 import { meishouDao } from "./MeishouDao";
 
 export class SeisanshaDao {
-  @OrmRepository(Seisansha)
-  private repository: Repository<Seisansha>;
-
   public async save(umaId: number, kubun: MeishouKubun, meishou: string) {
     const shoyuu = await meishouDao.save(kubun, meishou);
-    let seisansha = await this.repository.findOneBy({ UmaId: umaId, ShoyuuId: shoyuu.Id });
+    let seisansha = await findOneBy(Seisansha, { UmaId: umaId, ShoyuuId: shoyuu.Id });
     if (!seisansha) {
-      seisansha = new Seisansha();
+      seisansha = {} as Seisansha;
       seisansha.UmaId = umaId;
       seisansha.ShoyuuId = shoyuu.Id;
-      seisansha = await this.repository.save(seisansha);
+      seisansha = await save(Seisansha, seisansha);
     }
     return seisansha;
   }

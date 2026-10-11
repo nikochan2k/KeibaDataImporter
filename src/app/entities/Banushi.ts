@@ -1,15 +1,16 @@
-import { Column, Entity, Index, PrimaryGeneratedColumn } from "typeorm";
+import { index, integer, sqliteTable, uniqueIndex } from "drizzle-orm/sqlite-core";
 
-@Entity("Banushi")
-@Index("IxBanushi1", (b: Banushi) => [b.ShussoubaId, b.ShoyuuId], { unique: true })
-@Index("IxBanushi2", (b: Banushi) => [b.ShoyuuId])
-export class Banushi {
-  @PrimaryGeneratedColumn()
-  public Id: number;
+export const Banushi = sqliteTable(
+  "Banushi",
+  {
+    Id: integer().primaryKey({ autoIncrement: true }),
+    ShussoubaId: integer().notNull(),
+    ShoyuuId: integer().notNull(),
+  },
+  (t) => [
+    uniqueIndex("IxBanushi1").on(t.ShussoubaId, t.ShoyuuId),
+    index("IxBanushi2").on(t.ShoyuuId),
+  ],
+);
 
-  @Column("bigint")
-  public ShussoubaId: number;
-
-  @Column("mediumint")
-  public ShoyuuId: number;
-}
+export type Banushi = typeof Banushi.$inferSelect;

@@ -1,8 +1,7 @@
 import { Logger } from "log4js";
-import { EntityManager } from "typeorm";
 import { Baken, Kakutei } from "../converters/Common";
+import { findOneBy, save } from "../db/helpers";
 import { OddsHaitou } from "../entities/OddsHaitou";
-import { OrmManager } from "../OrmManager";
 import { readPositiveInt } from "./Reader";
 import { tool } from "./Tool";
 
@@ -23,9 +22,6 @@ export interface HaitouInfo {
 
 export abstract class OddsHaitouTool {
   protected logger: Logger;
-
-  @OrmManager()
-  protected entityManager: EntityManager;
 
   /**
    * オッズ配当IDを取得します。
@@ -53,11 +49,11 @@ export abstract class OddsHaitouTool {
 
   public async saveOddsHaitou(toBe: OddsHaitou) {
     toBe.Id = this.calculateOddsHaitouId(toBe);
-    const asIs = await this.entityManager.findOneBy(OddsHaitou, { Id: toBe.Id });
+    const asIs = await findOneBy(OddsHaitou, { Id: toBe.Id });
     if (asIs) {
       toBe = await tool.saveOrUpdate(OddsHaitou, asIs, toBe);
     } else {
-      toBe = await this.entityManager.save(toBe);
+      toBe = save(OddsHaitou, toBe);
     }
     return toBe;
   }
@@ -88,7 +84,7 @@ export abstract class OddsHaitouTool {
           continue;
         }
       }
-      const oddsHaitou = new OddsHaitou();
+      const oddsHaitou = {} as OddsHaitou;
       oddsHaitou.RaceId = raceId;
       oddsHaitou.Kakutei = kakutei;
       oddsHaitou.Baken = info.baken;

@@ -3,7 +3,6 @@ import * as path from "node:path";
 import * as process from "node:process";
 import * as glob from "glob";
 import { Logger } from "log4js";
-import "reflect-metadata";
 import * as tmp from "tmp";
 import * as unzipper from "unzipper";
 import { Entries, importer } from "./Importer";

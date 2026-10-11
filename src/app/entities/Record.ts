@@ -1,26 +1,17 @@
-import { Column, Entity, Index, PrimaryGeneratedColumn } from "typeorm";
+import { integer, real, sqliteTable, uniqueIndex } from "drizzle-orm/sqlite-core";
 
-@Entity("Record")
-@Index("IxRecord", (r: Record) => [r.Nengappi, r.UmaId], { unique: true })
-export class Record {
-  @PrimaryGeneratedColumn()
-  public Id: number;
+export const Record = sqliteTable(
+  "Record",
+  {
+    Id: integer().primaryKey({ autoIncrement: true }),
+    Nengappi: integer().notNull(),
+    Time: real().notNull(),
+    UmaId: integer().notNull(),
+    Kinryou: real().notNull(),
+    TanshukuKishuMeiId: integer().notNull(),
+    Basho: integer().notNull(),
+  },
+  (t) => [uniqueIndex("IxRecord").on(t.Nengappi, t.UmaId)],
+);
 
-  @Column("int")
-  public Nengappi: number;
-
-  @Column("real")
-  public Time: number;
-
-  @Column("int")
-  public UmaId: number;
-
-  @Column("real")
-  public Kinryou: number;
-
-  @Column("mediumint")
-  public TanshukuKishuMeiId: number;
-
-  @Column("tinyint")
-  public Basho: number;
-}
+export type Record = typeof Record.$inferSelect;

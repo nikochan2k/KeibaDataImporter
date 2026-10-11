@@ -1,7 +1,7 @@
+import type { SQLiteTable } from "drizzle-orm/sqlite-core";
 import { Logger } from "log4js";
-import { EntityManager, EntityTarget, ObjectLiteral, QueryDeepPartialEntity } from "typeorm";
+import { save, updateBy, type Where } from "../db/helpers";
 import { getLogger } from "../LogUtil";
-import { OrmManager } from "../OrmManager";
 import { readInt, readPositiveInt, readStrWithNoSpace } from "./Reader";
 
 /**
@@ -41,9 +41,6 @@ export function getChoukyouId(
 export class Tool {
   protected logger: Logger;
 
-  @OrmManager()
-  protected entityManager: EntityManager;
-
   constructor() {
     this.logger = getLogger(this);
   }
@@ -52,25 +49,18 @@ export class Tool {
    * 既存の行があれば差分だけを更新し、なければ保存します。
    * @param skipNull true のとき、toBe の null で既存の値を消しません(速報版など、項目が空白で提供されるデータ用)
    */
-  public async saveOrUpdate<T>(entity: EntityTarget<T>, asIs: T, toBe: T, skipNull = false) {
+  public async saveOrUpdate<E extends SQLiteTable, T extends E["$inferSelect"]>(
+    entity: E,
+    asIs: T,
+    toBe: T,
+    skipNull = false,
+  ): Promise<T> {
     if (asIs) {
       const updateSet = this.createUpdateSet(asIs, toBe, skipNull);
-      if (0 < Object.keys(updateSet).length) {
-        await this.entityManager
-          .createQueryBuilder()
-          .update(
-            entity as EntityTarget<ObjectLiteral>,
-            updateSet as QueryDeepPartialEntity<ObjectLiteral>,
-          )
-          .where("Id = :id")
-          .setParameter("id", (asIs as { Id: number }).Id)
-          .execute();
-      }
-      toBe = asIs;
-    } else {
-      toBe = await this.entityManager.save(toBe);
+      updateBy(entity, { Id: (asIs as unknown as { Id: number }).Id } as Where<E>, updateSet);
+      return asIs;
     }
-    return toBe;
+    return save(entity, toBe) as T;
   }
 
   protected createUpdateSet<T>(asIs: T, toBe: T, skipNull = false) {

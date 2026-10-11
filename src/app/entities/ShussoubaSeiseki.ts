@@ -1,123 +1,57 @@
-import { Column, Entity, Index, PrimaryColumn } from "typeorm";
+import { index, integer, real, sqliteTable, text } from "drizzle-orm/sqlite-core";
 
-@Entity("ShussoubaSeiseki")
-@Index("IxShussoubaSeiseki1", (s: ShussoubaSeiseki) => [s.Time])
-@Index("IxShussoubaSeiseki2", (s: ShussoubaSeiseki) => [s.Ten3F])
-@Index("IxShussoubaSeiseki3", (s: ShussoubaSeiseki) => [s.Agari3F])
-@Index("IxShussoubaSeiseki4", (s: ShussoubaSeiseki) => [s.KishuId])
-export class ShussoubaSeiseki {
-  @PrimaryColumn("bigint")
-  public Id: number;
+export const ShussoubaSeiseki = sqliteTable(
+  "ShussoubaSeiseki",
+  {
+    Id: integer().primaryKey(),
+    /* KOL 競走成績出走馬データ */
+    Gate: integer(),
+    Kinryou: real(),
+    Bataijuu: integer(),
+    Zougen: integer(),
+    KishuId: integer(),
+    KishuTouzaiBetsu: integer(),
+    KishuShozokuBasho: integer(),
+    KishuShozokuChoukyoushiId: integer(),
+    MinaraiKubun: integer(),
+    Norikawari: integer(),
+    KakuteiChakujun: integer(),
+    ChakujunFuka: integer(),
+    NyuusenChakujun: integer(),
+    TorikeshiShubetsu: integer(),
+    RecordNinshiki: integer(),
+    Time: real(),
+    Chakusa1: integer(),
+    Chakusa2: integer(),
+    TimeSa: real(),
+    Ten3F: real(),
+    Ten3FIkou: real(),
+    Douchuu: real(),
+    Agari3FIzen: real(),
+    Agari3F: real(),
+    YonCornerIchiDori: integer(),
+    /** 前3F地点での先頭とのタイム差(秒) */
+    Ten3FSentouSa: real(),
+    /** 後3F地点での先頭とのタイム差(秒) */
+    Agari3FSentouSa: real(),
+    /** 1着馬は2着馬との、それ以外は1着馬とのタイム差(秒) */
+    Chaku12TimeSa: real(),
+    /** 備考(地方競馬場名など) */
+    Bikou: text(),
+    /* KOL 騎手厩舎コメント／次走へのメモ */
+    KishuKyuushaComment: text(),
+    JisouhenoMemo: text(),
+    /* JRDB 成績データ */
+    HonShoukin: integer(),
+    ShuutokuShoukin: integer(),
+    KolNengappi: integer(),
+  },
+  (t) => [
+    index("IxShussoubaSeiseki1").on(t.Time),
+    index("IxShussoubaSeiseki2").on(t.Ten3F),
+    index("IxShussoubaSeiseki3").on(t.Agari3F),
+    index("IxShussoubaSeiseki4").on(t.KishuId),
+  ],
+);
 
-  /* KOL 競走成績出走馬データ */
-
-  @Column("smallint", { nullable: true })
-  public Gate?: number;
-
-  @Column("real", { nullable: true })
-  public Kinryou?: number;
-
-  @Column("smallint", { nullable: true })
-  public Bataijuu?: number;
-
-  @Column("smallint", { nullable: true })
-  public Zougen?: number;
-
-  @Column("mediumint", { nullable: true })
-  public KishuId?: number;
-
-  @Column("tinyint", { nullable: true })
-  public KishuTouzaiBetsu: number;
-
-  @Column("tinyint", { nullable: true })
-  public KishuShozokuBasho?: number;
-
-  @Column("mediumint", { nullable: true })
-  public KishuShozokuChoukyoushiId: number;
-
-  @Column("tinyint", { nullable: true })
-  public MinaraiKubun: number;
-
-  @Column("tinyint", { nullable: true })
-  public Norikawari?: number;
-
-  @Column("tinyint", { nullable: true })
-  public KakuteiChakujun?: number;
-
-  @Column("tinyint", { nullable: true })
-  public ChakujunFuka?: number;
-
-  @Column("tinyint", { nullable: true })
-  public NyuusenChakujun?: number;
-
-  @Column("tinyint", { nullable: true })
-  public TorikeshiShubetsu?: number;
-
-  @Column("tinyint", { nullable: true })
-  public RecordNinshiki?: number;
-
-  @Column("real", { nullable: true })
-  public Time?: number;
-
-  @Column("tinyint", { nullable: true })
-  public Chakusa1?: number;
-
-  @Column("tinyint", { nullable: true })
-  public Chakusa2?: number;
-
-  @Column("real", { nullable: true })
-  public TimeSa?: number;
-
-  @Column("real", { nullable: true })
-  public Ten3F?: number;
-
-  @Column("real", { nullable: true })
-  public Ten3FIkou?: number;
-
-  @Column("real", { nullable: true })
-  public Douchuu?: number;
-
-  @Column("real", { nullable: true })
-  public Agari3FIzen?: number;
-
-  @Column("real", { nullable: true })
-  public Agari3F?: number;
-
-  @Column("tinyint", { nullable: true })
-  public YonCornerIchiDori?: number;
-
-  /** 前3F地点での先頭とのタイム差(秒) */
-  @Column("real", { nullable: true })
-  public Ten3FSentouSa?: number;
-
-  /** 後3F地点での先頭とのタイム差(秒) */
-  @Column("real", { nullable: true })
-  public Agari3FSentouSa?: number;
-
-  /** 1着馬は2着馬との、それ以外は1着馬とのタイム差(秒) */
-  @Column("real", { nullable: true })
-  public Chaku12TimeSa?: number;
-
-  /** 備考(地方競馬場名など) */
-  @Column("varchar", { nullable: true, length: 24 })
-  public Bikou?: string;
-
-  /* KOL 騎手厩舎コメント／次走へのメモ */
-
-  @Column("text", { nullable: true })
-  public KishuKyuushaComment: string;
-
-  @Column("text", { nullable: true })
-  public JisouhenoMemo: string;
-
-  /* JRDB 成績データ */
-
-  @Column("int", { nullable: true })
-  public HonShoukin?: number;
-
-  @Column("int", { nullable: true })
-  public ShuutokuShoukin?: number;
-
-  @Column("int", { nullable: true })
-  public KolNengappi: number;
-}
+export type ShussoubaSeiseki = typeof ShussoubaSeiseki.$inferSelect;

@@ -1,21 +1,11 @@
-import { EntityManager, Repository } from "typeorm";
-import { Jinmei, JinmeiKubun } from "../entities/Jinmei";
+import { findOneBy, query, save } from "../db/helpers";
+import { JinmeiKubun } from "../entities/Jinmei";
 import { Kishu } from "../entities/Kishu";
 import { KishuMei } from "../entities/KishuMei";
-import { OrmManager, OrmRepository } from "../OrmManager";
 import { tool } from "../reader/Tool";
 import { jinmeiDao, jinmeiMatchingKey } from "./JinmeiDao";
 
 export class KishuDao {
-  @OrmManager()
-  protected entityManager: EntityManager;
-
-  @OrmRepository(Kishu)
-  private kishuRepository: Repository<Kishu>;
-
-  @OrmRepository(KishuMei)
-  private kishuMeiRepository: Repository<KishuMei>;
-
   private static readonly codeKeys = ["KolKishuCode", "JrdbKishuCode", "JvDataKishuCode"] as const;
 
   /** 同じ種類のコードを両方持っていて、値が違うなら別人 */
@@ -25,12 +15,15 @@ export class KishuDao {
 
   /** 名前(姓名か略称)が一致する騎手のうち、別人でないもの */
   private async findByMeishou(toBe: Kishu, meishou: string) {
-    const candidates = await this.kishuRepository
-      .createQueryBuilder("k")
-      .innerJoin(KishuMei, "km", "km.KishuId = k.Id")
-      .innerJoin(Jinmei, "j", "j.Id = km.JinmeiId")
-      .where("j.MatchingKey = :key", { key: jinmeiMatchingKey(meishou) })
-      .getMany();
+    const rows = query<Kishu>(
+      `SELECT k.* FROM Kishu k
+        INNER JOIN KishuMei km ON km.KishuId = k.Id
+        INNER JOIN Jinmei j ON j.Id = km.JinmeiId
+        WHERE j.MatchingKey = ?`,
+      jinmeiMatchingKey(meishou),
+    );
+    // 名前が複数一致しても 1 人 1 行にする
+    const candidates = [...new Map(rows.map((row) => [row.Id, row])).values()];
     return candidates.filter(
       (c) =>
         !this.conflicts(c, toBe) &&
@@ -46,7 +39,7 @@ export class KishuDao {
   protected async getKishu(kishu: Kishu, seimei?: string, tanshuku?: string) {
     for (const key of KishuDao.codeKeys) {
       if (kishu[key]) {
-        const found = await this.kishuRepository.findOneBy({ [key]: kishu[key] });
+        const found = await findOneBy(Kishu, { [key]: kishu[key] });
         if (found) {
           return found;
         }
@@ -67,7 +60,7 @@ export class KishuDao {
   }
 
   public async getKishuWith(jinmeiId: number, umaId: number) {
-    const kishuList = <Kishu[]>await this.entityManager.query(
+    const kishuList = query<Kishu>(
       `SELECT
   k.*
 FROM
@@ -89,7 +82,8 @@ ORDER BY
   ) DESC
 LIMIT
   1`,
-      [jinmeiId, umaId],
+      jinmeiId,
+      umaId,
     );
 
     if (kishuList.length === 0) {
@@ -125,17 +119,17 @@ LIMIT
 
   protected async saveKishuMei(kishu: Kishu, kubun: JinmeiKubun, meishou: string) {
     const jinmei = await jinmeiDao.save(meishou);
-    let kishuMei = await this.kishuMeiRepository.findOneBy({
+    let kishuMei = await findOneBy(KishuMei, {
       KishuId: kishu.Id,
       JinmeiId: jinmei.Id,
       Kubun: kubun,
     });
     if (!kishuMei) {
-      kishuMei = new KishuMei();
+      kishuMei = {} as KishuMei;
       kishuMei.KishuId = kishu.Id;
       kishuMei.JinmeiId = jinmei.Id;
       kishuMei.Kubun = kubun;
-      await this.kishuMeiRepository.save(kishuMei);
+      await save(KishuMei, kishuMei);
     }
   }
 }

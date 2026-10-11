@@ -14,7 +14,8 @@ if (!before || !after) {
   process.exit(2);
 }
 
-const db = new Database(before, { readonly: true });
+// WAL のデータベースを ATTACH するため、読み取り専用にはしない (書き込みはしない)
+const db = new Database(before);
 db.exec(`ATTACH DATABASE '${after.replaceAll("'", "''")}' AS other`);
 
 const tablesOf = (schema: string) =>

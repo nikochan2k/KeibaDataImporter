@@ -1,22 +1,17 @@
-import { EntityManager } from "typeorm";
 import * as $CK from "../../converters/Choukyoushi";
 import * as $C from "../../converters/Common";
 import { choukyoushiDao } from "../../daos/ChoukyoushiDao";
 import { Choukyoushi } from "../../entities/Choukyoushi";
-import { OrmManager } from "../../OrmManager";
 import { DataToImport } from "../DataToImport";
 import { readInt, readStr } from "../Reader";
 
 export class KolKyu extends DataToImport {
-  @OrmManager()
-  protected entityManager: EntityManager;
-
   protected getBufferLength() {
     return 1248;
   }
 
   public async save(buffer: Buffer) {
-    const choukyoushi = new Choukyoushi();
+    const choukyoushi = {} as Choukyoushi;
     choukyoushi.KolKyuushaCode = readInt(buffer, 0, 5);
     choukyoushi.Seinengappi = readInt(buffer, 93, 8);
     choukyoushi.HatsuMenkyoNen = readInt(buffer, 101, 4);

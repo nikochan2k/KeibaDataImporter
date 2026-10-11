@@ -1,6 +1,5 @@
-import "reflect-metadata";
 import { afterAll, beforeAll, describe, expect, test } from "bun:test";
-import { dataSource } from "../src/app/DataSource";
+import { closeDb, openDb } from "../src/app/db/db";
 import { createApp } from "../src/app/http/app";
 import { seedBrowseFixture } from "./fixtures/browse";
 
@@ -12,14 +11,12 @@ async function get(path: string) {
 }
 
 beforeAll(async () => {
-  dataSource.setOptions({ database: ":memory:" });
-  await dataSource.initialize();
-  await dataSource.synchronize();
+  openDb(":memory:");
   await seedBrowseFixture();
 });
 
 afterAll(async () => {
-  await dataSource.destroy();
+  closeDb();
 });
 
 describe("レース", () => {

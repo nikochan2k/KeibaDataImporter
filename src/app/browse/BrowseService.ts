@@ -1,7 +1,7 @@
 import { basho } from "../converters/Common";
 import * as $R from "../converters/Race";
 import { seibetsu } from "../converters/Uma";
-import { dataSource } from "../DataSource";
+import { readDb } from "../db/db";
 import { BadRequestError, NotFoundError } from "../http/errors";
 import type { RaceDay, RaceEntry, RaceMonth, RaceSummary, UmaStart, UmaSummary } from "./types";
 
@@ -67,11 +67,18 @@ function escapeLike(text: string) {
   return text.replace(/[\\%_]/g, (c) => `\\${c}`);
 }
 
+/** 閲覧用の接続で読む。? に params を順に当てる */
+function select<T>(sql: string, params: (string | number | null)[] = []): T[] {
+  return readDb()
+    .query(sql)
+    .all(...params) as T[];
+}
+
 /** 取り込み済みのデータを読む。書き込みはしない */
 export class BrowseService {
   /** レースのある年月。新しい月が先 */
   public async raceMonths(): Promise<RaceMonth[]> {
-    const rows: { Nen: number; Gatsu: number }[] = await dataSource.query(
+    const rows: { Nen: number; Gatsu: number }[] = select(
       `SELECT DISTINCT K.Nen, K.Gatsu FROM Kaisai K
         WHERE EXISTS (SELECT 1 FROM Race R WHERE R.KaisaiId = K.Id) ORDER BY K.Nen DESC, K.Gatsu DESC`,
     );
@@ -80,7 +87,7 @@ export class BrowseService {
 
   /** 指定した月の、開催のある日と、その日に開催のある競馬場 */
   public async raceDays(year: number, month: number): Promise<RaceDay[]> {
-    const rows: { Nichi: number; Basho: number }[] = await dataSource.query(
+    const rows: { Nichi: number; Basho: number }[] = select(
       `SELECT DISTINCT K.Nichi, K.Basho FROM Kaisai K
         WHERE K.Nen = ? AND K.Gatsu = ? AND EXISTS (SELECT 1 FROM Race R WHERE R.KaisaiId = K.Id)
         ORDER BY K.Nichi, K.Basho`,
@@ -104,7 +111,7 @@ export class BrowseService {
     day: number,
     bashoCode?: number,
   ): Promise<RaceSummary[]> {
-    const rows: RaceRow[] = await dataSource.query(
+    const rows: RaceRow[] = select(
       `SELECT ${RACE_COLUMNS} FROM Race R
         INNER JOIN Kaisai K ON K.Id = R.KaisaiId
         WHERE K.Nen = ? AND K.Gatsu = ? AND K.Nichi = ? AND (? IS NULL OR K.Basho = ?)
@@ -116,7 +123,7 @@ export class BrowseService {
 
   /** レースと、その出走馬(着順の順。着順のない馬は馬番順で最後) */
   public async race(id: number): Promise<RaceSummary & { entries: RaceEntry[] }> {
-    const races: RaceRow[] = await dataSource.query(
+    const races: RaceRow[] = select(
       `SELECT ${RACE_COLUMNS} FROM Race R INNER JOIN Kaisai K ON K.Id = R.KaisaiId WHERE R.Id = ?`,
       [id],
     );
@@ -139,7 +146,7 @@ export class BrowseService {
       Agari3F: number | null;
       Bataijuu: number | null;
       Zougen: number | null;
-    }[] = await dataSource.query(
+    }[] = select(
       `SELECT S.Id, S.Wakuban, S.Umaban, U.Id AS UmaId, U.KanaBamei, KY.Seibetsu, S.Nenrei,
           COALESCE(SS.Kinryou, S.Kinryou) AS Kinryou,
           ${JINMEI_SUBQUERY("COALESCE(SS.KishuId, S.KishuId)")} AS KishuMei,
@@ -182,7 +189,7 @@ export class BrowseService {
       EigoBamei: string | null;
       Seinen: number | null;
       Seibetsu: number | null;
-    }[] = await dataSource.query(
+    }[] = select(
       `SELECT Id, KanaBamei, EigoBamei, COALESCE(Seinen, Seinengappi / 10000) AS Seinen, Seibetsu FROM Uma
         WHERE KanaBamei LIKE ? ESCAPE '\\' OR EigoBamei LIKE ? ESCAPE '\\'
         ORDER BY KanaBamei LIMIT ?`,
@@ -215,7 +222,7 @@ export class BrowseService {
       ChichiBamei: string | null;
       HahaId: number | null;
       HahaBamei: string | null;
-    }[] = await dataSource.query(
+    }[] = select(
       `SELECT U.Id, U.KanaBamei, U.EigoBamei, COALESCE(U.Seinen, U.Seinengappi / 10000) AS Seinen, U.Seibetsu,
           C.Id AS ChichiId, C.KanaBamei AS ChichiBamei, H.Id AS HahaId, H.KanaBamei AS HahaBamei
         FROM Uma U
@@ -235,7 +242,7 @@ export class BrowseService {
       Time: number | null;
       Agari3F: number | null;
       KishuMei: string | null;
-    })[] = await dataSource.query(
+    })[] = select(
       `SELECT ${RACE_COLUMNS}, S.Umaban, SS.KakuteiChakujun, SS.Time, SS.Agari3F,
           ${JINMEI_SUBQUERY("COALESCE(SS.KishuId, S.KishuId)")} AS KishuMei
         FROM Kyousouba KY

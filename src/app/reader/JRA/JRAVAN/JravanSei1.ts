@@ -1,5 +1,6 @@
 import { Baken, Kakutei } from "../../../converters/Common";
 import * as $R from "../../../converters/Race";
+import { findOneBy } from "../../../db/helpers";
 import { Race } from "../../../entities/Race";
 import { RaceSeiseki } from "../../../entities/RaceSeiseki";
 import { DataToImport } from "../../DataToImport";
@@ -61,14 +62,14 @@ export class JravanSei1 extends DataToImport {
     toBe.Shoukin4Chaku = readPositiveInt(buffer, 169, 7, 1000);
     toBe.Shoukin5Chaku = readPositiveInt(buffer, 176, 7, 1000);
     toBe.FukaShou = readPositiveInt(buffer, 197, 7, 1000);
-    const asIs = await this.entityManager.findOneBy(Race, { Id: toBe.Id });
+    const asIs = await findOneBy(Race, { Id: toBe.Id });
     const race = await jravanRaceTool.saveOrUpdateRace(asIs, toBe);
     await jravanRaceTool.saveRaceMeiOf(buffer, 17, 60, race);
     return race;
   }
 
   protected async saveRaceSeiseki(buffer: Buffer, race: Race) {
-    const toBe = new RaceSeiseki();
+    const toBe = {} as RaceSeiseki;
     toBe.Id = race.Id;
     toBe.Shoukin1Chaku = readPositiveInt(buffer, 148, 7, 1000);
     toBe.Shoukin2Chaku = readPositiveInt(buffer, 155, 7, 1000);
@@ -84,7 +85,7 @@ export class JravanSei1 extends DataToImport {
     }
     toBe.Baba = $R.baba.toCodeFromJravan(buffer, 331, 1);
     toBe.Tenki = $R.tenki.toCodeFromJravan(buffer, 332, 1);
-    const asIs = await this.entityManager.findOneBy(RaceSeiseki, { Id: race.Id });
+    const asIs = await findOneBy(RaceSeiseki, { Id: race.Id });
     await tool.saveOrUpdate(RaceSeiseki, asIs, toBe);
   }
 

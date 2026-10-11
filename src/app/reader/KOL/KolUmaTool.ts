@@ -16,7 +16,7 @@ export class KolUmaTool {
     if (!bamei) {
       return null;
     }
-    const uma = new Uma();
+    const uma = {} as Uma;
     uma.KolUmaCode = readInt(buffer, offset, 7);
     if (tool.isEnglish(bamei)) {
       uma.EigoBamei = bamei;

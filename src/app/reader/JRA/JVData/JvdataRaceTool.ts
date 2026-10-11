@@ -1,3 +1,4 @@
+import { save } from "../../../db/helpers";
 import { Race } from "../../../entities/Race";
 import { readJikan, readPositiveInt, readRaw } from "../../Reader";
 import { JraRaceTool } from "../JraRaceTool";
@@ -35,7 +36,7 @@ export class JvdataRaceTool extends JraRaceTool {
       if (!toBe) {
         return null;
       }
-      race = await this.entityManager.save(toBe);
+      race = save(Race, toBe);
     }
     return { kaisai, race };
   }

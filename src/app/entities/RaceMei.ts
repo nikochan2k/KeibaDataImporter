@@ -1,14 +1,13 @@
-import { Column, Entity, Index, PrimaryGeneratedColumn } from "typeorm";
+import { integer, sqliteTable, uniqueIndex } from "drizzle-orm/sqlite-core";
 
-@Entity("RaceMei")
-@Index("IxRaceMei", (k: RaceMei) => [k.RaceId, k.TokubetsuMeiId], { unique: true })
-export class RaceMei {
-  @PrimaryGeneratedColumn()
-  public Id: number;
+export const RaceMei = sqliteTable(
+  "RaceMei",
+  {
+    Id: integer().primaryKey({ autoIncrement: true }),
+    RaceId: integer().notNull(),
+    TokubetsuMeiId: integer().notNull(),
+  },
+  (t) => [uniqueIndex("IxRaceMei").on(t.RaceId, t.TokubetsuMeiId)],
+);
 
-  @Column("int")
-  public RaceId: number;
-
-  @Column("mediumint")
-  public TokubetsuMeiId: number;
-}
+export type RaceMei = typeof RaceMei.$inferSelect;

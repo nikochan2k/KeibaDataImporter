@@ -1,5 +1,4 @@
-import "reflect-metadata";
-import { dataSource } from "./DataSource";
+import { closeDb, openDb } from "./db/db";
 import { getLogger } from "./LogUtil";
 import { traversal } from "./Traversal";
 
@@ -10,13 +9,10 @@ if (3 <= process.argv.length) {
   dirName = process.argv[2];
 }
 
-dataSource
-  .initialize()
-  .then(async (con) => {
-    await con.synchronize(false);
-    await traversal.traverse(dirName);
-    await con.destroy();
-  })
-  .catch((reason) => {
-    logger.fatal(reason);
-  });
+try {
+  openDb();
+  await traversal.traverse(dirName);
+  closeDb();
+} catch (reason) {
+  logger.fatal(reason);
+}

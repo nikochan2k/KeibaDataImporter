@@ -1,22 +1,17 @@
-import { Column, Entity, Index, PrimaryColumn } from "typeorm";
+import { index, integer, sqliteTable } from "drizzle-orm/sqlite-core";
 import { Midashi } from "../converters/Race";
 import { Ichi } from "../converters/Shussouba";
 
-@Entity("RaceTrackBias")
-@Index("IxRaceTrackBias", (rk: RaceTrackBias) => [rk.RaceId])
-export class RaceTrackBias {
-  @PrimaryColumn("bigint")
-  public Id: number;
+export const RaceTrackBias = sqliteTable(
+  "RaceTrackBias",
+  {
+    Id: integer().primaryKey(),
+    RaceId: integer().notNull(),
+    Midashi: integer().$type<Midashi>().notNull(),
+    Ichi: integer().$type<Ichi>().notNull(),
+    TrackBias: integer().notNull(),
+  },
+  (t) => [index("IxRaceTrackBias").on(t.RaceId)],
+);
 
-  @Column("int")
-  public RaceId: number;
-
-  @Column("tinyint")
-  public Midashi: Midashi;
-
-  @Column("tinyint")
-  public Ichi: Ichi;
-
-  @Column("tinyint")
-  public TrackBias: number;
-}
+export type RaceTrackBias = typeof RaceTrackBias.$inferSelect;

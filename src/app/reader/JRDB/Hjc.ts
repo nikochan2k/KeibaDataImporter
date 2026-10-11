@@ -15,7 +15,7 @@ export class Hjc extends Hj$ {
       if (!umaban1) {
         continue;
       }
-      const oddsHaitou = new OddsHaitou();
+      const oddsHaitou = {} as OddsHaitou;
       oddsHaitou.RaceId = raceId;
       oddsHaitou.Baken = Baken.Umatan;
       oddsHaitou.Kakutei = Kakutei.Kakutei;
@@ -32,7 +32,7 @@ export class Hjc extends Hj$ {
       if (!umaban1) {
         continue;
       }
-      const oddsHaitou = new OddsHaitou();
+      const oddsHaitou = {} as OddsHaitou;
       oddsHaitou.RaceId = raceId;
       oddsHaitou.Baken = Baken.Sanrenpuku;
       oddsHaitou.Kakutei = Kakutei.Kakutei;
@@ -50,7 +50,7 @@ export class Hjc extends Hj$ {
       if (!umaban1) {
         continue;
       }
-      const oddsHaitou = new OddsHaitou();
+      const oddsHaitou = {} as OddsHaitou;
       oddsHaitou.RaceId = raceId;
       oddsHaitou.Baken = Baken.Sanrentan;
       oddsHaitou.Kakutei = Kakutei.Kakutei;

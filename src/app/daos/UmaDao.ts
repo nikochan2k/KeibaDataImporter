@@ -1,20 +1,10 @@
-import { EntityManager, Repository } from "typeorm";
 import * as $U from "../converters/Uma";
+import { findBy, findOneBy, IS_NULL, save, type Where } from "../db/helpers";
 import { Kyousouba } from "../entities/Kyousouba";
 import { Uma } from "../entities/Uma";
-import { OrmManager, OrmRepository } from "../OrmManager";
 import { tool } from "../reader/Tool";
 
 export class UmaDao {
-  @OrmManager()
-  protected entityManager: EntityManager;
-
-  @OrmRepository(Kyousouba)
-  private kyousoubaRepository: Repository<Kyousouba>;
-
-  @OrmRepository(Uma)
-  private umaRepository: Repository<Uma>;
-
   private static readonly codeKeys = ["KolUmaCode", "KettouTourokuBangou"] as const;
 
   private static readonly nameKeys = ["KanaBamei", "EigoBamei"] as const;
@@ -35,7 +25,7 @@ export class UmaDao {
   protected async getUma(uma: Uma) {
     for (const key of UmaDao.codeKeys) {
       if (uma[key]) {
-        const found = await this.umaRepository.findOneBy({ [key]: uma[key] });
+        const found = await findOneBy(Uma, { [key]: uma[key] });
         if (found) {
           return found;
         }
@@ -43,7 +33,7 @@ export class UmaDao {
     }
     for (const key of UmaDao.nameKeys) {
       if (uma[key]) {
-        const candidates = (await this.umaRepository.findBy({ [key]: uma[key] })).filter(
+        const candidates = (await findBy(Uma, { [key]: uma[key] })).filter(
           (c) => !this.conflicts(c, uma),
         );
         if (0 < candidates.length) {
@@ -56,33 +46,18 @@ export class UmaDao {
   }
 
   public getKyousouba(kyousouba: Kyousouba) {
-    const qb = this.kyousoubaRepository
-      .createQueryBuilder("k")
-      .where("k.UmaId = :umaId")
-      .setParameter("umaId", kyousouba.UmaId);
+    const where: Where<typeof Kyousouba> = {
+      UmaId: kyousouba.UmaId,
+      ChoukyoushiId: kyousouba.ChoukyoushiId || IS_NULL,
+      KoueiGaikokuChoukyoushiMei: kyousouba.KoueiGaikokuChoukyoushiMei || IS_NULL,
+    };
     if (kyousouba.Seibetsu) {
-      qb.andWhere("k.Seibetsu = :seibetsu").setParameter("seibetsu", kyousouba.Seibetsu);
+      where.Seibetsu = kyousouba.Seibetsu;
     }
     if (kyousouba.UmaKigou) {
-      qb.andWhere("k.UmaKigou = :umaKigou").setParameter("umaKigou", kyousouba.UmaKigou);
+      where.UmaKigou = kyousouba.UmaKigou;
     }
-    if (kyousouba.ChoukyoushiId) {
-      qb.andWhere("k.ChoukyoushiId = :choukyoushiId").setParameter(
-        "choukyoushiId",
-        kyousouba.ChoukyoushiId,
-      );
-    } else {
-      qb.andWhere("k.ChoukyoushiId IS NULL");
-    }
-    if (kyousouba.KoueiGaikokuChoukyoushiMei) {
-      qb.andWhere("k.KoueiGaikokuChoukyoushiMei = :koueiGaikokuChoukyoushiMei").setParameter(
-        "koueiGaikokuChoukyoushiMei",
-        kyousouba.KoueiGaikokuChoukyoushiMei,
-      );
-    } else {
-      qb.andWhere("k.KoueiGaikokuChoukyoushiMei IS NULL");
-    }
-    return qb.getOne();
+    return findOneBy(Kyousouba, where);
   }
 
   public async saveUma(toBe: Uma) {
@@ -98,7 +73,7 @@ export class UmaDao {
     if (asIs) {
       return asIs;
     } else {
-      return await this.kyousoubaRepository.save(toBe);
+      return await save(Kyousouba, toBe);
     }
   }
 }

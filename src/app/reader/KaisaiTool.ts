@@ -1,8 +1,9 @@
+import { desc, eq } from "drizzle-orm";
 import { Logger } from "log4js";
-import { EntityManager } from "typeorm";
+import { currentDb } from "../db/db";
+import { findOneBy } from "../db/helpers";
 import { Kaisai } from "../entities/Kaisai";
 import { getLogger } from "../LogUtil";
-import { OrmManager } from "../OrmManager";
 import { tool } from "./Tool";
 
 export interface KaisaiInfo {
@@ -16,9 +17,6 @@ export interface KaisaiInfo {
 
 export abstract class KaisaiTool {
   protected logger: Logger;
-
-  @OrmManager()
-  protected entityManager: EntityManager;
 
   constructor() {
     this.logger = getLogger(this);
@@ -91,7 +89,7 @@ export abstract class KaisaiTool {
     if (id == null) {
       return null;
     }
-    return this.entityManager.findOneBy(Kaisai, { Id: id });
+    return findOneBy(Kaisai, { Id: id });
   }
 
   public getKaisaiWithKey(buffer: Buffer) {
@@ -100,12 +98,15 @@ export abstract class KaisaiTool {
       return null;
     }
     // 開催は悪天により日付がずれる可能性があるので、最新のものを取得する。
-    return this.entityManager
-      .createQueryBuilder(Kaisai, "k")
-      .where("Key = :key")
-      .setParameter("key", key)
-      .orderBy("Id", "DESC")
-      .getOne();
+    return (
+      currentDb()
+        .select()
+        .from(Kaisai)
+        .where(eq(Kaisai.Key, key))
+        .orderBy(desc(Kaisai.Id))
+        .limit(1)
+        .get() ?? null
+    );
   }
 
   public setYoubi(kaisai: Kaisai) {
@@ -120,7 +121,7 @@ export abstract class KaisaiTool {
     if (!info) {
       return null;
     }
-    const kaisai = new Kaisai();
+    const kaisai = {} as Kaisai;
     kaisai.Id = this.generateKaisaiId(info);
     kaisai.Key = this.generateKaisaiKey(info);
     kaisai.Basho = info.basho;

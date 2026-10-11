@@ -1,11 +1,10 @@
 import { Logger } from "log4js";
-import { EntityManager } from "typeorm";
+import { findOneBy, save } from "../db/helpers";
 import { Race } from "../entities/Race";
 import { Shussouba } from "../entities/Shussouba";
 import { Kubun, ShussoubaJoutai } from "../entities/ShussoubaJoutai";
 import { Uma } from "../entities/Uma";
 import { getLogger } from "../LogUtil";
-import { OrmManager } from "../OrmManager";
 import { readPositiveInt, readRaw } from "./Reader";
 
 export interface ShussoubaInfo {
@@ -22,9 +21,6 @@ export interface RaceShussoubaId {
 
 export abstract class ShussoubaTool {
   protected logger: Logger;
-
-  @OrmManager()
-  protected entityManager: EntityManager;
 
   constructor() {
     this.logger = getLogger(this);
@@ -84,7 +80,7 @@ export abstract class ShussoubaTool {
     if (!rsId) {
       return null;
     }
-    return this.entityManager.findOneBy(Shussouba, { Id: rsId.shussoubaId });
+    return findOneBy(Shussouba, { Id: rsId.shussoubaId });
   }
 
   public createShussouba(buffer: Buffer, umabanOffset: number, raceId?: number) {
@@ -92,7 +88,7 @@ export abstract class ShussoubaTool {
     if (!rsId) {
       return null;
     }
-    const shussouba = new Shussouba();
+    const shussouba = {} as Shussouba;
     shussouba.Id = rsId.shussoubaId;
     shussouba.RaceId = rsId.raceId;
     shussouba.Umaban = rsId.umaban;
@@ -109,28 +105,28 @@ export abstract class ShussoubaTool {
       return null;
     }
 
-    const race = await this.entityManager.findOneBy(Race, { Id: rsId.raceId });
+    const race = await findOneBy(Race, { Id: rsId.raceId });
     if (!race) {
       return null;
     }
 
     const id = rsId.raceId * 2 ** 6 + rsId.umaban;
-    const shussouba = await this.entityManager.findOneBy(Shussouba, { Id: id });
+    const shussouba = await findOneBy(Shussouba, { Id: id });
     return { race: race, shussouba: shussouba };
   }
 
   public async saveShussoubaJoutai(shussoubaId: number, kubun: Kubun, code: number) {
     const id = shussoubaId * 2 ** (4 + 10) + kubun * 2 ** 10 + code;
-    const toBe = new ShussoubaJoutai();
+    const toBe = {} as ShussoubaJoutai;
     toBe.Id = id;
     toBe.ShussoubaId = shussoubaId;
     toBe.Kubun = kubun;
     toBe.Code = code;
 
-    const asIs = await this.entityManager.findOneBy(ShussoubaJoutai, { Id: id });
+    const asIs = await findOneBy(ShussoubaJoutai, { Id: id });
     if (asIs) {
       return;
     }
-    await this.entityManager.save(toBe);
+    save(ShussoubaJoutai, toBe);
   }
 }

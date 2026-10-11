@@ -1,16 +1,11 @@
-import { EntityManager } from "typeorm";
 import * as $U from "../../converters/Uma";
 import { umaDao } from "../../daos/UmaDao";
 import { Uma } from "../../entities/Uma";
-import { OrmManager } from "../../OrmManager";
 import { DataToImport } from "../DataToImport";
 import { readInt, readStr } from "../Reader";
 import { tool } from "../Tool";
 
 export class KolKet extends DataToImport {
-  @OrmManager()
-  protected entityManager: EntityManager;
-
   protected getBufferLength() {
     return 839;
   }
@@ -27,7 +22,7 @@ export class KolKet extends DataToImport {
       return null;
     }
 
-    const uma = new Uma();
+    const uma = {} as Uma;
     uma.Seibetsu = seibetsu;
     uma.YunyuubaFlag = $U.yunyuubaFlag.toCodeFromKol(buffer, offset, 1);
     uma.KolUmaCode = readInt(buffer, offset + 1, 7);
@@ -61,7 +56,7 @@ export class KolKet extends DataToImport {
       return null;
     }
 
-    const uma = new Uma();
+    const uma = {} as Uma;
     uma.Seibetsu = seibetsu;
     uma.YunyuubaFlag = $U.yunyuubaFlag.toCodeFromKol(buffer, offset, 1);
     uma.KolUmaCode = readInt(buffer, offset + 1, 7);
@@ -96,7 +91,7 @@ export class KolKet extends DataToImport {
     const h = await this.saveSosenba1(buffer, 121, $U.Seibetsu.Hinba, hc?.Id, hh?.Id);
     const c = await this.saveSosenba1(buffer, 37, $U.Seibetsu.Boba, cc?.Id, ch?.Id);
 
-    const uma = new Uma();
+    const uma = {} as Uma;
     uma.KolUmaCode = readInt(buffer, 0, 7);
     const bamei = readStr(buffer, 7, 30);
     if (tool.isEnglish(bamei)) {

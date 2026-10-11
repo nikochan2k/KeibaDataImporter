@@ -1,23 +1,19 @@
 import { Logger } from "log4js";
-import { EntityManager } from "typeorm";
+import { findOneBy } from "../db/helpers";
 import { RaceKeika } from "../entities/RaceKeika";
 import { ShussoubaKeika } from "../entities/ShussoubaKeika";
 import { getLogger } from "../LogUtil";
-import { OrmManager } from "../OrmManager";
 import { tool } from "./Tool";
 
 export class KeikaTool {
   protected logger: Logger;
-
-  @OrmManager()
-  protected entityManager: EntityManager;
 
   constructor() {
     this.logger = getLogger(this);
   }
 
   protected createShussoubaKeika(old?: ShussoubaKeika) {
-    const shussoubaKeika = new ShussoubaKeika();
+    const shussoubaKeika = {} as ShussoubaKeika;
     if (old) {
       shussoubaKeika.TateCount = old.TateCount;
       shussoubaKeika.TateHanareteCount = old.TateHanareteCount;
@@ -44,7 +40,7 @@ export class KeikaTool {
     toBe.Id = raceKeika.Id * 2 ** 6 + umaban;
     toBe.RaceKeikaId = raceKeika.Id;
     toBe.ShussoubaId = shussoubaId;
-    const asIs = await this.entityManager.findOneBy(ShussoubaKeika, { Id: toBe.Id });
+    const asIs = await findOneBy(ShussoubaKeika, { Id: toBe.Id });
     await tool.saveOrUpdate(ShussoubaKeika, asIs, toBe);
   }
 

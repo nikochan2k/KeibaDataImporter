@@ -1,10 +1,9 @@
-import "reflect-metadata";
 import * as fs from "node:fs";
 import * as os from "node:os";
 import * as path from "node:path";
 import * as log4js from "log4js";
 import { Codes } from "../../src/app/converters/Codes";
-import { dataSource } from "../../src/app/DataSource";
+import { openDb } from "../../src/app/db/db";
 import { importer } from "../../src/app/Importer";
 import { Sed } from "../../src/app/reader/JRDB/Sed";
 import { base, record, setFileDate } from "../helpers";
@@ -100,9 +99,7 @@ export async function importSamples(onlyPrefixes?: string[], excludePrefixes: st
     categories: { default: { appenders: ["memory"], level: "debug" } },
   });
   const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "jrdb-spec-"));
-  dataSource.setOptions({ database: ":memory:" });
-  await dataSource.initialize();
-  await dataSource.synchronize();
+  openDb(":memory:");
 
   const reads: Reads = new Map();
   let current: string | null = null;

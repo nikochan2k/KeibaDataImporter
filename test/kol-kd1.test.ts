@@ -1,7 +1,5 @@
-import "reflect-metadata";
 import { afterAll, describe, expect, setDefaultTimeout, test } from "bun:test";
 import { Baken, Kakutei } from "../src/app/converters/Common";
-import { dataSource } from "../src/app/DataSource";
 import { Choukyoushi } from "../src/app/entities/Choukyoushi";
 import { Kaisai } from "../src/app/entities/Kaisai";
 import { Kishu } from "../src/app/entities/Kishu";
@@ -33,6 +31,7 @@ import {
 } from "../src/app/reader/KOL/KD1/Kd1Layout";
 import { kolRaceTool } from "../src/app/reader/KOL/KolRaceTool";
 import { encodeSjis } from "../src/app/util/Sjis";
+import { repo } from "./helpers";
 import { type Kd1Kind, kd1Sections, parseKd1Spec } from "./spec/kd1";
 import { closeKolDb, emptyKolDb, importKolFiles, type KolField, parseKolSpec } from "./spec/kol";
 
@@ -355,8 +354,6 @@ const name = (text: string, bytes: number) =>
 
 /** 2007-10-09 (火) の東京 4 回 2 日 11R */
 const RACE = "042007040211";
-
-const repo = <T extends object>(e: new () => T) => dataSource.getRepository(e);
 
 const raceId = () => kolRaceTool.getRaceId(Buffer.from(`${RACE}20071009`));
 

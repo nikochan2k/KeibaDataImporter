@@ -9,6 +9,7 @@ import * as $U from "../../converters/Uma";
 import { banushiDao } from "../../daos/BanushiDao";
 import { choukyoushiDao } from "../../daos/ChoukyoushiDao";
 import { umaDao } from "../../daos/UmaDao";
+import { findOneBy } from "../../db/helpers";
 import { Choukyoushi } from "../../entities/Choukyoushi";
 import { Kyousouba } from "../../entities/Kyousouba";
 import { MeishouKubun } from "../../entities/Shoyuu";
@@ -63,7 +64,7 @@ export abstract class Ky$ extends JrdbShussoubaData {
   }
 
   protected saveChoukyoushi(buffer: Buffer) {
-    const choukyoushi = new Choukyoushi();
+    const choukyoushi = {} as Choukyoushi;
     choukyoushi.JrdbChoukyoushiCode = readPositiveInt(buffer, 340, 5);
     const choukyoushiMei = readStrWithNoSpace(buffer, 187, 12);
     choukyoushi.TouzaiBetsu = $CK.touzaiBetsu.toCodeFromJrdb(buffer, 199, 4);
@@ -81,7 +82,7 @@ export abstract class Ky$ extends JrdbShussoubaData {
 
   protected async saveKyousouba(buffer: Buffer, info: ShussoubaInfo) {
     const seibetsu = $U.seibetsu.toCodeFromJrdb(buffer, 403, 1);
-    let uma = new Uma();
+    let uma = {} as Uma;
     uma.KettouTourokuBangou = readStr(buffer, 10, 8);
     const bamei = readStr(buffer, 18, 36);
     if (tool.isEnglish(bamei)) {
@@ -91,7 +92,7 @@ export abstract class Ky$ extends JrdbShussoubaData {
     }
     uma = await umaDao.saveUma(uma);
     info.uma = uma;
-    let kyousouba = new Kyousouba();
+    let kyousouba = {} as Kyousouba;
     kyousouba.UmaId = uma.Id;
     kyousouba.Seibetsu = seibetsu;
     kyousouba.UmaKigou = $U.umaKigou.toCodeFromJrdb(buffer, 446, 2);
@@ -109,11 +110,11 @@ export abstract class Ky$ extends JrdbShussoubaData {
   }
 
   protected async saveShussoubaYosou(buffer: Buffer, shussouba: Shussouba) {
-    const toBe = new ShussoubaYosou();
+    const toBe = {} as ShussoubaYosou;
     toBe.Id = shussouba.Id;
     await this.setShussoubaYosou(buffer, toBe);
 
-    const asIs = await this.entityManager.findOneBy(ShussoubaYosou, { Id: shussouba.Id });
+    const asIs = await findOneBy(ShussoubaYosou, { Id: shussouba.Id });
     await tool.saveOrUpdate(ShussoubaYosou, asIs, toBe);
   }
 

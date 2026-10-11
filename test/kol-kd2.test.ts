@@ -1,7 +1,6 @@
-import "reflect-metadata";
 import { afterAll, describe, expect, setDefaultTimeout, test } from "bun:test";
 import * as fs from "node:fs";
-import { dataSource } from "../src/app/DataSource";
+import { readDb } from "../src/app/db/db";
 import { kd2Den1Layout, kd2Den2Layout, kd2Sei1Layout } from "../src/app/reader/KOL/KD2/Kd2Layout";
 import { KolCom1Kd2 } from "../src/app/reader/KOL/KD2/KolCom1Kd2";
 import { KolDen1Kd2 } from "../src/app/reader/KOL/KD2/KolDen1Kd2";
@@ -204,8 +203,13 @@ type Dump = { [entity: string]: { [column: string]: unknown }[] };
 /** 全テーブルの内容 */
 async function dump(): Promise<Dump> {
   const out: Dump = {};
-  for (const meta of dataSource.entityMetadatas) {
-    out[meta.name] = (await dataSource.getRepository(meta.target).find()) as never;
+  const tables = readDb()
+    .query(
+      "SELECT name FROM sqlite_master WHERE type = 'table' AND name NOT LIKE 'sqlite_%' AND name NOT LIKE '__drizzle%'",
+    )
+    .all() as { name: string }[];
+  for (const { name } of tables) {
+    out[name] = readDb().query(`SELECT * FROM "${name}"`).all() as never;
   }
   return out;
 }

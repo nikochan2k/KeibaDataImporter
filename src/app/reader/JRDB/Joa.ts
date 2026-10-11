@@ -1,4 +1,5 @@
 import * as $SY from "../../converters/ShussoubaYosou";
+import { findOneBy } from "../../db/helpers";
 import { Shussouba } from "../../entities/Shussouba";
 import { ShussoubaYosou } from "../../entities/ShussoubaYosou";
 import { readDouble, readInt } from "../Reader";
@@ -16,8 +17,8 @@ export class Joa extends JrdbShussoubaData {
   }
 
   public async saveShussoubaYosou(buffer: Buffer, shussouba: Shussouba) {
-    const asIs = await this.entityManager.findOneBy(ShussoubaYosou, { Id: shussouba.Id });
-    const toBe = new ShussoubaYosou();
+    const asIs = await findOneBy(ShussoubaYosou, { Id: shussouba.Id });
+    const toBe = {} as ShussoubaYosou;
     toBe.Id = shussouba.Id;
     toBe.CidChoukyouSoten = readDouble(buffer, 64, 5);
     toBe.CidKyuushaSoten = readDouble(buffer, 69, 5);

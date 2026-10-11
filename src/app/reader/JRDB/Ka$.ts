@@ -1,5 +1,6 @@
 import * as $K from "../../converters/Kaisai";
 import * as $R from "../../converters/Race";
+import { findOneBy } from "../../db/helpers";
 import { Kaisai } from "../../entities/Kaisai";
 import { KaisaiYosou } from "../../entities/KaisaiYosou";
 import { readDouble } from "../Reader";
@@ -22,11 +23,11 @@ export abstract class Ka$ extends JrdbKaisaiData {
   }
 
   protected async saveKaisaiYosou(buffer: Buffer, kaisai: Kaisai) {
-    const toBe = new KaisaiYosou();
+    const toBe = {} as KaisaiYosou;
     toBe.Id = kaisai.Id;
     this.setKaisaiYosou(buffer, toBe);
 
-    const asIs = await this.entityManager.findOneBy(KaisaiYosou, { Id: toBe.Id });
+    const asIs = await findOneBy(KaisaiYosou, { Id: toBe.Id });
     await tool.saveOrUpdate(KaisaiYosou, asIs, toBe);
   }
 

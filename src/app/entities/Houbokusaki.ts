@@ -1,11 +1,12 @@
-import { Column, Entity, Index, PrimaryGeneratedColumn } from "typeorm";
+import { integer, sqliteTable, text, uniqueIndex } from "drizzle-orm/sqlite-core";
 
-@Entity("Houbokusaki")
-@Index("IxHoubokusaki", (h: Houbokusaki) => [h.Meishou], { unique: true })
-export class Houbokusaki {
-  @PrimaryGeneratedColumn()
-  public Id: number;
+export const Houbokusaki = sqliteTable(
+  "Houbokusaki",
+  {
+    Id: integer().primaryKey({ autoIncrement: true }),
+    Meishou: text().notNull(),
+  },
+  (t) => [uniqueIndex("IxHoubokusaki").on(t.Meishou)],
+);
 
-  @Column("varchar", { length: 75 })
-  public Meishou: string;
-}
+export type Houbokusaki = typeof Houbokusaki.$inferSelect;

@@ -1,4 +1,5 @@
 import * as $CH from "../../converters/Choukyou";
+import { findOneBy } from "../../db/helpers";
 import { Shussouba } from "../../entities/Shussouba";
 import { ShussoubaHyouka } from "../../entities/ShussoubaHyouka";
 import { tool } from "../Tool";
@@ -12,11 +13,11 @@ export abstract class Cy$ extends JrdbShussoubaData {
   }
 
   protected async saveShussoubaHyouka(buffer: Buffer, shussouba: Shussouba) {
-    const toBe = new ShussoubaHyouka();
+    const toBe = {} as ShussoubaHyouka;
     toBe.Id = shussouba.Id;
     this.setChoukyou(buffer, toBe);
 
-    const asIs = await this.entityManager.findOneBy(ShussoubaHyouka, { Id: toBe.Id });
+    const asIs = await findOneBy(ShussoubaHyouka, { Id: toBe.Id });
     await tool.saveOrUpdate(ShussoubaHyouka, asIs, toBe);
   }
 

@@ -1,20 +1,15 @@
-import { Column, Entity, Index, PrimaryColumn } from "typeorm";
+import { index, integer, real, sqliteTable } from "drizzle-orm/sqlite-core";
 
-@Entity("RaceLapTime")
-@Index("IxRaceLapTime", (rlt: RaceLapTime) => [rlt.RaceId])
-export class RaceLapTime {
-  @PrimaryColumn("bigint")
-  public Id: number;
+export const RaceLapTime = sqliteTable(
+  "RaceLapTime",
+  {
+    Id: integer().primaryKey(),
+    RaceId: integer().notNull(),
+    KaishiKyori: integer().notNull(),
+    ShuuryouKyori: integer().notNull(),
+    LapTime: real().notNull(),
+  },
+  (t) => [index("IxRaceLapTime").on(t.RaceId)],
+);
 
-  @Column("int")
-  public RaceId: number;
-
-  @Column("smallint")
-  public KaishiKyori: number;
-
-  @Column("smallint")
-  public ShuuryouKyori: number;
-
-  @Column("real")
-  public LapTime: number;
-}
+export type RaceLapTime = typeof RaceLapTime.$inferSelect;

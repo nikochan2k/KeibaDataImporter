@@ -1,4 +1,3 @@
-import "reflect-metadata";
 import * as $C from "../../converters/Common";
 import * as $K from "../../converters/Kaisai";
 import * as $KI from "../../converters/Kishu";
@@ -8,6 +7,7 @@ import { Bagu } from "../../converters/ShussoubaJoutai";
 import * as $SY from "../../converters/ShussoubaYosou";
 import * as $U from "../../converters/Uma";
 import { umaDao } from "../../daos/UmaDao";
+import { findOneBy } from "../../db/helpers";
 import { Choukyoushi } from "../../entities/Choukyoushi";
 import { Kaisai } from "../../entities/Kaisai";
 import { Kyousouba } from "../../entities/Kyousouba";
@@ -58,13 +58,13 @@ export class KolUma extends DataToImport {
         // 過去走が 5 走に満たない
         continue;
       }
-      const raceSeiseki = await this.entityManager.findOneBy(RaceSeiseki, { Id: raceId });
+      const raceSeiseki = await findOneBy(RaceSeiseki, { Id: raceId });
       if (raceSeiseki?.KolNengappi) {
         // 既に競走成績レースデータが取り込まれている場合
         continue;
       }
 
-      let race = await this.entityManager.findOneBy(Race, { Id: raceId });
+      let race = await findOneBy(Race, { Id: raceId });
       /* tslint:disable:triple-equals */
       if (!race || race.KolNengappi == null) {
         const kaisai = await this.saveKaisai(raceBuffer);
@@ -101,7 +101,7 @@ export class KolUma extends DataToImport {
 
   protected async saveKyousouba(buffer: Buffer) {
     const seibetsu = $U.seibetsu.toCodeFromKol(buffer, 94, 1);
-    let uma = new Uma();
+    let uma = {} as Uma;
     uma.KolUmaCode = readInt(buffer, 0, 7);
     const bamei = readStr(buffer, 7, 30);
     if (tool.isEnglish(bamei)) {
@@ -127,7 +127,7 @@ export class KolUma extends DataToImport {
     uma = await umaDao.saveUma(uma);
     await kolTool.saveSeisansha(buffer, 423, uma.Id);
 
-    let kyousouba = new Kyousouba();
+    let kyousouba = {} as Kyousouba;
     kyousouba.UmaId = uma.Id;
     kyousouba.Seibetsu = seibetsu;
     kyousouba.UmaKigou = $U.umaKigou.toCodeFromKol(buffer, 92, 2);
@@ -240,14 +240,14 @@ export class KolUma extends DataToImport {
   }
 
   protected async saveRaceSeiseki(buffer: Buffer, race: Race) {
-    const toBe = new RaceSeiseki();
+    const toBe = {} as RaceSeiseki;
     toBe.Id = race.Id;
     toBe.Pace = $R.pace.toCodeFromKol(buffer, 127, 1);
     toBe.Tenki = $R.tenki.toCodeFromKol(buffer, 128, 1);
     toBe.Baba = $R.baba.toCodeFromKol(buffer, 129, 1);
     toBe.KolNengappi = 0;
 
-    const asIs = await this.entityManager.findOneBy(RaceSeiseki, { Id: toBe.Id });
+    const asIs = await findOneBy(RaceSeiseki, { Id: toBe.Id });
 
     await tool.saveOrUpdate(RaceSeiseki, asIs, toBe);
   }
@@ -261,12 +261,12 @@ export class KolUma extends DataToImport {
   ) {
     const umaban = readPositiveInt(buffer, 1, 2) || 0;
     const id = race.Id * 2 ** 6 + umaban;
-    const asIs = await this.entityManager.findOneBy(Shussouba, { Id: id });
+    const asIs = await findOneBy(Shussouba, { Id: id });
     if (asIs) {
       return null;
     }
 
-    const toBe = new Shussouba();
+    const toBe = {} as Shussouba;
     toBe.Id = id;
     toBe.RaceId = race.Id;
     toBe.Wakuban = readPositiveInt(buffer, 0, 1);
@@ -291,7 +291,7 @@ export class KolUma extends DataToImport {
   }
 
   protected async saveShussoubaSeiseki(buffer: Buffer, race: Race, shussouba: Shussouba) {
-    const toBe = new ShussoubaSeiseki();
+    const toBe = {} as ShussoubaSeiseki;
     toBe.Id = shussouba.Id;
     toBe.Gate = readPositiveInt(buffer, 3, 2);
     toBe.Bataijuu = readPositiveInt(buffer, 94, 3);
@@ -329,28 +329,28 @@ export class KolUma extends DataToImport {
     }
     toBe.YonCornerIchiDori = $S.ichi.toCodeFromKol(buffer, 247, 1);
 
-    const asIs = await this.entityManager.findOneBy(ShussoubaSeiseki, { Id: toBe.Id });
+    const asIs = await findOneBy(ShussoubaSeiseki, { Id: toBe.Id });
 
     return await tool.saveOrUpdate(ShussoubaSeiseki, asIs, toBe);
   }
 
   protected async saveShussoubaYosou(buffer: Buffer, shussouba: Shussouba) {
-    const toBe = new ShussoubaYosou();
+    const toBe = {} as ShussoubaYosou;
     toBe.Id = shussouba.Id;
     toBe.KolYosou1 = $SY.shirushi.toCodeFromKol(buffer, 206, 1);
     toBe.KolYosou2 = $SY.shirushi.toCodeFromKol(buffer, 207, 1);
 
-    const asIs = await this.entityManager.findOneBy(ShussoubaYosou, { Id: shussouba.Id });
+    const asIs = await findOneBy(ShussoubaYosou, { Id: shussouba.Id });
 
     return await tool.saveOrUpdate(ShussoubaYosou, asIs, toBe);
   }
 
   protected async saveShussoubaHyouka(buffer: Buffer, shussouba: Shussouba) {
-    const toBe = new ShussoubaHyouka();
+    const toBe = {} as ShussoubaHyouka;
     toBe.Id = shussouba.Id;
     toBe.KolRecordShisuu = readInt(buffer, 100, 3);
 
-    const asIs = await this.entityManager.findOneBy(ShussoubaHyouka, { Id: shussouba.Id });
+    const asIs = await findOneBy(ShussoubaHyouka, { Id: shussouba.Id });
 
     return await tool.saveOrUpdate(ShussoubaHyouka, asIs, toBe);
   }
@@ -362,7 +362,7 @@ export class KolUma extends DataToImport {
 
   public async saveKyousoubaOfRace(buffer: Buffer, k: Kyousouba, choukyoushi: Choukyoushi) {
     const seibetsu = $U.seibetsu.toCodeFromKol(buffer, 7, 1);
-    let kyousouba = new Kyousouba();
+    let kyousouba = {} as Kyousouba;
     kyousouba.UmaId = k.UmaId;
     kyousouba.Seibetsu = seibetsu || k.Seibetsu;
     kyousouba.UmaKigou = $U.umaKigou.toCodeFromKol(buffer, 5, 2) || k.UmaKigou;

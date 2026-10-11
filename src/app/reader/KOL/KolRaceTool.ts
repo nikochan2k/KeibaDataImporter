@@ -3,6 +3,7 @@ import * as $R from "../../converters/Race";
 import { jinmeiDao } from "../../daos/JinmeiDao";
 import { raceDao } from "../../daos/RaceDao";
 import { umaDao } from "../../daos/UmaDao";
+import { save } from "../../db/helpers";
 import { Race } from "../../entities/Race";
 import { RaceHassouJoukyou } from "../../entities/RaceHassouJoukyou";
 import { Record } from "../../entities/Record";
@@ -56,11 +57,11 @@ export class KolRaceTool extends RaceTool {
       return null;
     }
 
-    const record = new Record();
+    const record = {} as Record;
     const nengappi = readInt(buffer, offset, 8);
     record.Nengappi = nengappi;
     record.Time = readTime(buffer, offset + 8, 4);
-    let uma = new Uma();
+    let uma = {} as Uma;
     if (tool.isEnglish(bamei)) {
       uma.EigoBamei = bamei;
     } else {
@@ -83,7 +84,7 @@ export class KolRaceTool extends RaceTool {
         continue;
       }
 
-      const rhj = new RaceHassouJoukyou();
+      const rhj = {} as RaceHassouJoukyou;
       rhj.Id = race.Id * 2 ** 3 + bangou;
       rhj.RaceId = race.Id;
       rhj.HassouJoukyou = hassouJoukyou;
@@ -116,16 +117,16 @@ export class KolRaceTool extends RaceTool {
           }
         }
       }
-      await this.entityManager.getRepository(RaceHassouJoukyou).save(rhj);
+      save(RaceHassouJoukyou, rhj);
 
       for (const m of hassouJoukyou.matchAll(/\((\d+)\)/g)) {
         const umaban = Number.parseInt(m[1], 10);
         if (0 < umaban) {
-          const shj = new ShussoubaHassouJoukyou();
+          const shj = {} as ShussoubaHassouJoukyou;
           shj.Id = rhj.Id * 2 ** 6 + umaban;
           shj.RaceHassouJoukyouId = rhj.Id;
           shj.ShussoubaId = race.Id * 2 ** 6 + umaban;
-          await this.entityManager.getRepository(ShussoubaHassouJoukyou).save(shj);
+          save(ShussoubaHassouJoukyou, shj);
         }
       }
     }

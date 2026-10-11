@@ -1,4 +1,3 @@
-import "reflect-metadata";
 import { describe, expect, test } from "bun:test";
 import { Baken, Kakutei } from "../src/app/converters/Common";
 import { OddsHaitou } from "../src/app/entities/OddsHaitou";
@@ -13,7 +12,7 @@ function odds(
   b2?: number,
   b3?: number,
 ) {
-  const o = new OddsHaitou();
+  const o = {} as OddsHaitou;
   o.RaceId = raceId;
   o.Kakutei = kakutei;
   o.Baken = baken;

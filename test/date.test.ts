@@ -1,4 +1,3 @@
-import "reflect-metadata";
 import { expect, test } from "bun:test";
 import { Tool } from "../src/app/reader/Tool";
 

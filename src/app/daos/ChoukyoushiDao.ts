@@ -1,21 +1,11 @@
-import { EntityManager, Repository } from "typeorm";
+import { findOneBy, query, save } from "../db/helpers";
 import { Choukyoushi } from "../entities/Choukyoushi";
 import { ChoukyoushiMei } from "../entities/ChoukyoushiMei";
-import { Jinmei, JinmeiKubun } from "../entities/Jinmei";
-import { OrmManager, OrmRepository } from "../OrmManager";
+import { JinmeiKubun } from "../entities/Jinmei";
 import { tool } from "../reader/Tool";
 import { jinmeiDao, jinmeiMatchingKey } from "./JinmeiDao";
 
 export class ChoukyoushiDao {
-  @OrmManager()
-  protected entityManager: EntityManager;
-
-  @OrmRepository(Choukyoushi)
-  private choukyoushiRepository: Repository<Choukyoushi>;
-
-  @OrmRepository(ChoukyoushiMei)
-  private choukyoushiMeiRepository: Repository<ChoukyoushiMei>;
-
   private static readonly codeKeys = [
     "KolKyuushaCode",
     "JrdbChoukyoushiCode",
@@ -29,12 +19,15 @@ export class ChoukyoushiDao {
 
   /** 名前(姓名か略称)が一致する調教師のうち、別人でないもの */
   private async findByMeishou(toBe: Choukyoushi, meishou: string) {
-    const candidates = await this.choukyoushiRepository
-      .createQueryBuilder("c")
-      .innerJoin(ChoukyoushiMei, "cm", "cm.ChoukyoushiId = c.Id")
-      .innerJoin(Jinmei, "j", "j.Id = cm.JinmeiId")
-      .where("j.MatchingKey = :key", { key: jinmeiMatchingKey(meishou) })
-      .getMany();
+    const rows = query<Choukyoushi>(
+      `SELECT c.* FROM Choukyoushi c
+        INNER JOIN ChoukyoushiMei cm ON cm.ChoukyoushiId = c.Id
+        INNER JOIN Jinmei j ON j.Id = cm.JinmeiId
+        WHERE j.MatchingKey = ?`,
+      jinmeiMatchingKey(meishou),
+    );
+    // 名前が複数一致しても 1 人 1 行にする
+    const candidates = [...new Map(rows.map((row) => [row.Id, row])).values()];
     return candidates.filter(
       (c) =>
         !this.conflicts(c, toBe) &&
@@ -49,7 +42,7 @@ export class ChoukyoushiDao {
   protected async getChoukyoushi(choukyoushi: Choukyoushi, seimei?: string, tanshuku?: string) {
     for (const key of ChoukyoushiDao.codeKeys) {
       if (choukyoushi[key]) {
-        const found = await this.choukyoushiRepository.findOneBy({ [key]: choukyoushi[key] });
+        const found = await findOneBy(Choukyoushi, { [key]: choukyoushi[key] });
         if (found) {
           return found;
         }
@@ -105,17 +98,17 @@ export class ChoukyoushiDao {
     meishou: string,
   ) {
     const jinmei = await jinmeiDao.save(meishou);
-    let choukyoushiMei = await this.choukyoushiMeiRepository.findOneBy({
+    let choukyoushiMei = await findOneBy(ChoukyoushiMei, {
       ChoukyoushiId: choukyoushi.Id,
       JinmeiId: jinmei.Id,
       Kubun: kubun,
     });
     if (!choukyoushiMei) {
-      choukyoushiMei = new ChoukyoushiMei();
+      choukyoushiMei = {} as ChoukyoushiMei;
       choukyoushiMei.ChoukyoushiId = choukyoushi.Id;
       choukyoushiMei.JinmeiId = jinmei.Id;
       choukyoushiMei.Kubun = kubun;
-      await this.choukyoushiMeiRepository.save(choukyoushiMei);
+      await save(ChoukyoushiMei, choukyoushiMei);
     }
   }
 }

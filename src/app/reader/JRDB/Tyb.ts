@@ -1,16 +1,15 @@
-import { EntityManager } from "typeorm";
 import * as $C from "../../converters/Common";
 import * as $K from "../../converters/Kishu";
 import * as $R from "../../converters/Race";
 import * as $S from "../../converters/Shussouba";
 import * as $SY from "../../converters/ShussoubaYosou";
+import { findOneBy } from "../../db/helpers";
 import { Race } from "../../entities/Race";
 import { RaceSeiseki } from "../../entities/RaceSeiseki";
 import { Shussouba } from "../../entities/Shussouba";
 import { ShussoubaHyouka } from "../../entities/ShussoubaHyouka";
 import { ShussoubaSeiseki } from "../../entities/ShussoubaSeiseki";
 import { ShussoubaYosou } from "../../entities/ShussoubaYosou";
-import { OrmManager } from "../../OrmManager";
 import {
   readDouble,
   readJikan,
@@ -24,9 +23,6 @@ import { jrdbOddsHaitouTool } from "./JrdbOddsHaitouTool";
 import { jrdbShussoubaTool } from "./JrdbShussoubaTool";
 
 export class Tyb extends JrdbData {
-  @OrmManager()
-  protected entityManager: EntityManager;
-
   protected getBufferLength() {
     return 128;
   }
@@ -49,15 +45,15 @@ export class Tyb extends JrdbData {
    * 直前情報は出走馬ごとの行に同じ値が入っているので、何度書いても同じになります。
    */
   protected async saveRaceInfo(buffer: Buffer, raceId: number) {
-    const race = await this.entityManager.findOneBy(Race, { Id: raceId });
+    const race = await findOneBy(Race, { Id: raceId });
     if (race) {
-      const toBe = new Race();
+      const toBe = {} as Race;
       toBe.HassouJikan = readJikan(buffer, 99);
       await tool.saveOrUpdate(Race, race, toBe, true);
     }
 
-    const asIs = await this.entityManager.findOneBy(RaceSeiseki, { Id: raceId });
-    const seiseki = new RaceSeiseki();
+    const asIs = await findOneBy(RaceSeiseki, { Id: raceId });
+    const seiseki = {} as RaceSeiseki;
     seiseki.Id = raceId;
     seiseki.Baba = $R.baba.toCodeFromJrdb(buffer, 69, 1);
     seiseki.BabaSokudo = $R.babaSokudo.toCodeFromJrdb(buffer, 70, 1);
@@ -66,8 +62,8 @@ export class Tyb extends JrdbData {
   }
 
   protected async saveShussoubaHyouka(buffer: Buffer, shussoubaId: number) {
-    const asIs = await this.entityManager.findOneBy(ShussoubaHyouka, { Id: shussoubaId });
-    const toBe = new ShussoubaHyouka();
+    const asIs = await findOneBy(ShussoubaHyouka, { Id: shussoubaId });
+    const toBe = {} as ShussoubaHyouka;
     toBe.Id = shussoubaId;
     toBe.BataiCode = $S.bataiCode.toCodeFromJrdb(buffer, 97, 1);
     toBe.KehaiCode = $S.kehaiCode.toCodeFromJrdb(buffer, 98, 1);
@@ -75,9 +71,9 @@ export class Tyb extends JrdbData {
   }
 
   protected async saveShussoubaYosou(buffer: Buffer, shussoubaId: number) {
-    const asIs = await this.entityManager.findOneBy(ShussoubaYosou, { Id: shussoubaId });
+    const asIs = await findOneBy(ShussoubaYosou, { Id: shussoubaId });
 
-    const toBe = new ShussoubaYosou();
+    const toBe = {} as ShussoubaYosou;
     toBe.Id = shussoubaId;
     toBe.Idm = readDouble(buffer, 10, 5);
     toBe.KishuShisuu = readDouble(buffer, 15, 5);
@@ -112,9 +108,9 @@ export class Tyb extends JrdbData {
   }
 
   protected async saveShussoubaSeiseki(buffer: Buffer, shussoubaId: number) {
-    const asIs = await this.entityManager.findOneBy(ShussoubaSeiseki, { Id: shussoubaId });
+    const asIs = await findOneBy(ShussoubaSeiseki, { Id: shussoubaId });
 
-    const toBe = new ShussoubaSeiseki();
+    const toBe = {} as ShussoubaSeiseki;
     toBe.Id = shussoubaId;
     toBe.TorikeshiShubetsu = $S.torikeshiShubetsu.toCodeFromJrdb(buffer, 47, 1);
     toBe.Kinryou = readPositiveDouble(buffer, 65, 3, 0.1);

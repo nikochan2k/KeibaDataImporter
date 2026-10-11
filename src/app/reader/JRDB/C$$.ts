@@ -6,7 +6,7 @@ import { JrdbData } from "./JrdbData";
 
 export abstract class C$$ extends JrdbData {
   public async save(buffer: Buffer) {
-    const toBe = new Choukyoushi();
+    const toBe = {} as Choukyoushi;
     toBe.JrdbChoukyoushiCode = readInt(buffer, 0, 5);
     toBe.MenkyoMasshouNengappi = readInt(buffer, 6, 8);
     const choukyoushiMei = readStr(buffer, 14, 12);

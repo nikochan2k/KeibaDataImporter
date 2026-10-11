@@ -53,7 +53,7 @@ export class JvdataUm extends JvdataRecord {
       );
     }
 
-    let uma = new Uma();
+    let uma = {} as Uma;
     if (touroku) {
       uma.KettouTourokuBangou = touroku.bangou;
     }
@@ -78,7 +78,7 @@ export class JvdataUm extends JvdataRecord {
     }
 
     const choukyoushi = await jraTool.saveChoukyoushi(buffer, 849, 854);
-    let kyousouba = new Kyousouba();
+    let kyousouba = {} as Kyousouba;
     kyousouba.UmaId = uma.Id;
     kyousouba.Seibetsu = seibetsu;
     kyousouba.UmaKigou = $U.umaKigou.toCodeFromJvData(buffer, 198, 2);
@@ -95,7 +95,7 @@ export class JvdataUm extends JvdataRecord {
     if (!bamei) {
       return undefined;
     }
-    const uma = new Uma();
+    const uma = {} as Uma;
     jraTool.setBamei(uma, bamei);
     uma.Seibetsu = seibetsu;
     uma.ChichiUmaId = chichiUma?.Id;

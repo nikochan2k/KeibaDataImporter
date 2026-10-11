@@ -1,8 +1,7 @@
 import * as fs from "node:fs";
 import * as log4js from "log4js";
-import { EntityManager } from "typeorm";
+import { runInTransaction } from "../db/db";
 import { getLogger } from "../LogUtil";
-import { OrmManager, runInTransaction } from "../OrmManager";
 import { createYielder } from "../util/Yield";
 
 export abstract class DataToImport {
@@ -17,9 +16,6 @@ export abstract class DataToImport {
   constructor() {
     this.logger = getLogger(this);
   }
-
-  @OrmManager()
-  protected entityManager: EntityManager;
 
   protected abstract getBufferLength(): number;
 

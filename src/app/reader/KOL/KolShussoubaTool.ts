@@ -1,3 +1,4 @@
+import { save } from "../../db/helpers";
 import { Shussouba } from "../../entities/Shussouba";
 import { ShussoubaTsuukaJuni } from "../../entities/ShussoubaTsuukaJuni";
 import { readPositiveDouble, readPositiveInt } from "../Reader";
@@ -19,7 +20,7 @@ export class KolShussoubaTool extends ShussoubaTool {
 
   public async saveShussoubaTsuukaJuni(buffer: Buffer, offset: number, shussouba: Shussouba) {
     for (let bangou = 1; bangou <= 4; bangou++, offset += 2) {
-      const shussoubaTsuukaJuni = new ShussoubaTsuukaJuni();
+      const shussoubaTsuukaJuni = {} as ShussoubaTsuukaJuni;
 
       const juni = readPositiveInt(buffer, offset, 2);
       if (juni === null) {
@@ -40,7 +41,7 @@ export class KolShussoubaTool extends ShussoubaTool {
       shussoubaTsuukaJuni.Id = shussouba.Id * 2 ** 3 + bangou;
       shussoubaTsuukaJuni.ShussoubaId = shussouba.Id;
       shussoubaTsuukaJuni.Bangou = bangou;
-      await this.entityManager.save(shussoubaTsuukaJuni);
+      save(ShussoubaTsuukaJuni, shussoubaTsuukaJuni);
     }
   }
 }

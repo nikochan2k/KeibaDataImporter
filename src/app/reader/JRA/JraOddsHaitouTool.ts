@@ -22,7 +22,7 @@ export abstract class JraOddsHaitouTool extends OddsHaitouTool {
     odds2?: number,
     ninki?: number,
   ) {
-    const oddsHaitou = new OddsHaitou();
+    const oddsHaitou = {} as OddsHaitou;
     oddsHaitou.RaceId = raceId;
     oddsHaitou.Kakutei = kakutei;
     oddsHaitou.Baken = baken;
@@ -49,7 +49,7 @@ export abstract class JraOddsHaitouTool extends OddsHaitouTool {
     if (!ninki && !odds1) {
       return;
     }
-    const oddsHaitou = new OddsHaitou();
+    const oddsHaitou = {} as OddsHaitou;
     oddsHaitou.RaceId = raceId;
     oddsHaitou.Kakutei = Kakutei.Kakutei;
     oddsHaitou.Baken = Baken.Tanshou;

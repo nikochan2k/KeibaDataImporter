@@ -1,18 +1,14 @@
-import { EntityManager } from "typeorm";
+import { findBy } from "../db/helpers";
 import { ShussoubaChoukyou } from "../entities/ShussoubaChoukyou";
-import { OrmManager } from "../OrmManager";
 import { tool } from "../reader/Tool";
 
 export class ChoukyouDao {
-  @OrmManager()
-  private entityManager: EntityManager;
-
   /**
    * 出走馬と調教を結びつけます。同じ出走馬・同じ調教の行があれば更新し(null では消さない)、
    * なければ出走馬ごとの空いている連番で作ります。
    */
   public async saveShussoubaChoukyou(toBe: ShussoubaChoukyou) {
-    const list = await this.entityManager.findBy(ShussoubaChoukyou, {
+    const list = await findBy(ShussoubaChoukyou, {
       ShussoubaId: toBe.ShussoubaId,
     });
     const asIs = list.find((sc) => sc.ChoukyouId === toBe.ChoukyouId);

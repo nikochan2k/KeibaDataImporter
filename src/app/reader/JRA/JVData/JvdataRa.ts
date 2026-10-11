@@ -1,4 +1,5 @@
 import * as $R from "../../../converters/Race";
+import { findOneBy } from "../../../db/helpers";
 import { Race } from "../../../entities/Race";
 import { RaceSeiseki } from "../../../entities/RaceSeiseki";
 import { readInt, readPositiveDouble, readPositiveInt, readRaw } from "../../Reader";
@@ -33,7 +34,7 @@ export class JvdataRa extends JvdataRecord {
     if (!toBe) {
       return;
     }
-    const asIs = await this.entityManager.findOneBy(Race, { Id: toBe.Id });
+    const asIs = await findOneBy(Race, { Id: toBe.Id });
     // 出走馬名表のレース詳細は項目が空白なので、既存の値を消さないようにする
     const race = await jvdataRaceTool.saveOrUpdateRace(asIs, toBe, true);
     await jvdataRaceTool.saveRaceMeiOf(buffer, race);
@@ -45,7 +46,7 @@ export class JvdataRa extends JvdataRecord {
   }
 
   private async saveRaceSeiseki(buffer: Buffer, race: Race) {
-    const toBe = new RaceSeiseki();
+    const toBe = {} as RaceSeiseki;
     toBe.Id = race.Id;
     const shoukin = (i: number) => readPositiveInt(buffer, jvdataHonShoukinOffset + i * 8, 8, 100);
     toBe.Shoukin1Chaku = shoukin(0);
@@ -67,7 +68,7 @@ export class JvdataRa extends JvdataRecord {
     const shiba = $R.baba.toCodeFromJvData(buffer, 888, 1);
     const dart = $R.baba.toCodeFromJvData(buffer, 889, 1);
     toBe.Baba = (dirt ? (dart ?? shiba) : (shiba ?? dart)) ?? undefined;
-    const asIs = await this.entityManager.findOneBy(RaceSeiseki, { Id: race.Id });
+    const asIs = await findOneBy(RaceSeiseki, { Id: race.Id });
     await tool.saveOrUpdate(RaceSeiseki, asIs, toBe, true);
   }
 

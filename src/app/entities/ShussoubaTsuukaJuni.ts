@@ -1,20 +1,15 @@
-import { Column, Entity, Index, PrimaryColumn } from "typeorm";
+import { index, integer, sqliteTable } from "drizzle-orm/sqlite-core";
 
-@Entity("ShussoubaTsuukaJuni")
-@Index("IxShussoubaTsuukaJuni", (stj: ShussoubaTsuukaJuni) => [stj.ShussoubaId])
-export class ShussoubaTsuukaJuni {
-  @PrimaryColumn("bigint")
-  public Id: number;
+export const ShussoubaTsuukaJuni = sqliteTable(
+  "ShussoubaTsuukaJuni",
+  {
+    Id: integer().primaryKey(),
+    ShussoubaId: integer().notNull(),
+    Bangou: integer().notNull(),
+    Juni: integer(),
+    Joukyou: integer(),
+  },
+  (t) => [index("IxShussoubaTsuukaJuni").on(t.ShussoubaId)],
+);
 
-  @Column("bigint")
-  public ShussoubaId: number;
-
-  @Column("smallint")
-  public Bangou: number;
-
-  @Column("smallint", { nullable: true })
-  public Juni?: number;
-
-  @Column("smallint", { nullable: true })
-  public Joukyou?: number;
-}
+export type ShussoubaTsuukaJuni = typeof ShussoubaTsuukaJuni.$inferSelect;

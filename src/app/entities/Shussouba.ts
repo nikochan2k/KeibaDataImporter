@@ -1,74 +1,38 @@
-import { Column, Entity, Index, PrimaryColumn } from "typeorm";
+import { index, integer, real, sqliteTable, text } from "drizzle-orm/sqlite-core";
 
-@Entity("Shussouba")
-@Index("IxShussouba1", (s: Shussouba) => [s.RaceId, s.Umaban])
-@Index("IxShussouba2", (s: Shussouba) => [s.KyousoubaId])
-@Index("IxShussouba3", (s: Shussouba) => [s.KishuId])
-export class Shussouba {
-  @PrimaryColumn("bigint")
-  public Id: number;
+export const Shussouba = sqliteTable(
+  "Shussouba",
+  {
+    Id: integer().primaryKey(),
+    RaceId: integer().notNull(),
+    /* KOL 出馬表出走馬データ／競走成績出走馬データ */
+    Wakuban: integer(),
+    Umaban: integer().notNull(),
+    KyousoubaId: integer(),
+    Nenrei: integer(),
+    Kinryou: real(),
+    KishuId: integer(),
+    KishuTouzaiBetsu: integer(),
+    KishuShozokuBasho: integer(),
+    KishuShozokuChoukyoushiId: integer(),
+    MinaraiKubun: integer(),
+    Norikawari: integer(),
+    /** ブリンカー(1:初装着, 2:再装着, 3:ブリンカー)。装着なしは null */
+    Blinker: integer(),
+    /* JRDB 競走馬データ */
+    WakuKakuteiBataijuu: integer(),
+    WakuKakuteiZougen: integer(),
+    TorikeshiShubetsu: integer(),
+    /* KOL 競走成績出走馬データ */
+    KyuuyouRiyuuCode: integer(),
+    KyuuyouRiyuu: text(),
+    KolNengappi: integer(),
+  },
+  (t) => [
+    index("IxShussouba1").on(t.RaceId, t.Umaban),
+    index("IxShussouba2").on(t.KyousoubaId),
+    index("IxShussouba3").on(t.KishuId),
+  ],
+);
 
-  @Column("int")
-  public RaceId: number;
-
-  /* KOL 出馬表出走馬データ／競走成績出走馬データ */
-
-  @Column("tinyint", { nullable: true })
-  public Wakuban?: number;
-
-  @Column("tinyint")
-  public Umaban: number;
-
-  @Column("int", { nullable: true })
-  public KyousoubaId: number;
-
-  @Column("tinyint", { nullable: true })
-  public Nenrei: number;
-
-  @Column("real", { nullable: true })
-  public Kinryou?: number;
-
-  @Column("mediumint", { nullable: true })
-  public KishuId: number;
-
-  @Column("tinyint", { nullable: true })
-  public KishuTouzaiBetsu: number;
-
-  @Column("tinyint", { nullable: true })
-  public KishuShozokuBasho?: number;
-
-  @Column("mediumint", { nullable: true })
-  public KishuShozokuChoukyoushiId: number;
-
-  @Column("tinyint", { nullable: true })
-  public MinaraiKubun: number;
-
-  @Column("tinyint", { nullable: true })
-  public Norikawari?: number;
-
-  /** ブリンカー(1:初装着, 2:再装着, 3:ブリンカー)。装着なしは null */
-  @Column("tinyint", { nullable: true })
-  public Blinker?: number;
-
-  /* JRDB 競走馬データ */
-
-  @Column("smallint", { nullable: true })
-  public WakuKakuteiBataijuu?: number;
-
-  @Column("tinyint", { nullable: true })
-  public WakuKakuteiZougen?: number;
-
-  @Column("tinyint", { nullable: true })
-  public TorikeshiShubetsu?: number;
-
-  /* KOL 競走成績出走馬データ */
-
-  @Column("tinyint", { nullable: true })
-  public KyuuyouRiyuuCode?: number;
-
-  @Column("varchar", { length: 90, nullable: true })
-  public KyuuyouRiyuu?: string;
-
-  @Column("int", { nullable: true })
-  public KolNengappi: number;
-}
+export type Shussouba = typeof Shussouba.$inferSelect;

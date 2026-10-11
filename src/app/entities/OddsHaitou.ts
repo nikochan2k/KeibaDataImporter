@@ -1,43 +1,24 @@
-import { Column, Entity, Index, PrimaryColumn } from "typeorm";
+import { index, integer, real, sqliteTable, text } from "drizzle-orm/sqlite-core";
 import { Baken, Kakutei } from "../converters/Common";
 
-@Entity("OddsHaitou")
-@Index("IxOddsHaitou", (o: OddsHaitou) => [o.RaceId, o.Baken])
-export class OddsHaitou {
-  @PrimaryColumn("bigint")
-  public Id: number;
+export const OddsHaitou = sqliteTable(
+  "OddsHaitou",
+  {
+    Id: integer().primaryKey(),
+    RaceId: integer().notNull(),
+    Baken: integer().$type<Baken>().notNull(),
+    Kakutei: integer().$type<Kakutei>(),
+    Bangou1: integer().notNull(),
+    Bangou2: integer(),
+    Bangou3: integer(),
+    Odds1: real(),
+    Odds2: real(),
+    Haitoukin: integer(),
+    Ninki: integer(),
+    /** オッズを取得した時刻(HH:MM)。直前オッズ(TYB)で分かる。 */
+    ShutokuJikan: text(),
+  },
+  (t) => [index("IxOddsHaitou").on(t.RaceId, t.Baken)],
+);
 
-  @Column("int")
-  public RaceId: number;
-
-  @Column("tinyint")
-  public Baken: Baken;
-
-  @Column("tinyint", { nullable: true })
-  public Kakutei: Kakutei;
-
-  @Column("tinyint")
-  public Bangou1: number;
-
-  @Column("tinyint", { nullable: true })
-  public Bangou2?: number;
-
-  @Column("tinyint", { nullable: true })
-  public Bangou3?: number;
-
-  @Column("real", { nullable: true })
-  public Odds1: number;
-
-  @Column("real", { nullable: true })
-  public Odds2?: number;
-
-  @Column("int", { nullable: true })
-  public Haitoukin?: number;
-
-  @Column("tinyint", { nullable: true })
-  public Ninki?: number;
-
-  /** オッズを取得した時刻(HH:MM)。直前オッズ(TYB)で分かる。 */
-  @Column("varchar", { nullable: true, length: 5 })
-  public ShutokuJikan?: string;
-}
+export type OddsHaitou = typeof OddsHaitou.$inferSelect;
