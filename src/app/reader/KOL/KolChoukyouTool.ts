@@ -71,9 +71,11 @@ export class KolChoukyouTool {
 
     const choukyou = new Choukyou();
     const dateId = this.tool.getDaysFrom1970(buffer, offset + 9);
+    // ID のハッシュ用に、調教1件のうち日付(offset+9〜16)より後ろ〜例外(offset+77〜)より前の60バイトを切り出す。
+    // 場所/コース・馬場・回数・各ハロンのタイム・位置取り・追い切り・矢印を含み、同じ馬・同じ日の別調教を区別するために使う。
     const buf = buffer.subarray(offset + 17, offset + 77);
     const hash = crc16(buf);
-    choukyou.Id = umaId * 2 ** (15 + 16) + dateId * 2 ** 16 + hash;
+    choukyou.Id = umaId * 2 ** (16 + 16) + dateId * 2 ** 16 + hash;
     choukyou.UmaId = umaId;
     choukyou.ChoukyouFlag = $CH.choukyouFlag.toCodeFromKol(buffer, offset, 1);
     choukyou.Noriyaku = $CH.noriyaku.toCodeFromKol(kijousha);
