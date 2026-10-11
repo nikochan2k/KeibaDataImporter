@@ -9,6 +9,7 @@
     "serve": "bun src/app/server.ts",
     "typecheck": "tsc --noEmit && tsc --noEmit -p web",
     "web:build": "bun build web/index.html --outdir web/dist --minify --public-path /",
+    "web:watch": "bun build web/index.html --outdir web/dist --public-path / --watch",
     "test": "bun test",
     "format": "biome format --write .",
     "lint": "biome lint .",
