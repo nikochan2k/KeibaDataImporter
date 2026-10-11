@@ -7,7 +7,7 @@ import { Bagu } from "../../converters/ShussoubaJoutai";
 import * as $SY from "../../converters/ShussoubaYosou";
 import * as $U from "../../converters/Uma";
 import { umaDao } from "../../daos/UmaDao";
-import { findOneBy } from "../../db/helpers";
+import { findOneBy, upsert } from "../../db/helpers";
 import { Choukyoushi } from "../../entities/Choukyoushi";
 import { Kaisai } from "../../entities/Kaisai";
 import { Kyousouba } from "../../entities/Kyousouba";
@@ -247,9 +247,7 @@ export class KolUma extends DataToImport {
     toBe.Baba = $R.baba.toCodeFromKol(buffer, 129, 1);
     toBe.KolNengappi = 0;
 
-    const asIs = await findOneBy(RaceSeiseki, { Id: toBe.Id });
-
-    await tool.saveOrUpdate(RaceSeiseki, asIs, toBe);
+    upsert(RaceSeiseki, toBe);
   }
 
   protected async saveShussouba(
@@ -329,9 +327,7 @@ export class KolUma extends DataToImport {
     }
     toBe.YonCornerIchiDori = $S.ichi.toCodeFromKol(buffer, 247, 1);
 
-    const asIs = await findOneBy(ShussoubaSeiseki, { Id: toBe.Id });
-
-    return await tool.saveOrUpdate(ShussoubaSeiseki, asIs, toBe);
+    return upsert(ShussoubaSeiseki, toBe);
   }
 
   protected async saveShussoubaYosou(buffer: Buffer, shussouba: Shussouba) {
@@ -340,9 +336,7 @@ export class KolUma extends DataToImport {
     toBe.KolYosou1 = $SY.shirushi.toCodeFromKol(buffer, 206, 1);
     toBe.KolYosou2 = $SY.shirushi.toCodeFromKol(buffer, 207, 1);
 
-    const asIs = await findOneBy(ShussoubaYosou, { Id: shussouba.Id });
-
-    return await tool.saveOrUpdate(ShussoubaYosou, asIs, toBe);
+    return upsert(ShussoubaYosou, toBe);
   }
 
   protected async saveShussoubaHyouka(buffer: Buffer, shussouba: Shussouba) {
@@ -350,9 +344,7 @@ export class KolUma extends DataToImport {
     toBe.Id = shussouba.Id;
     toBe.KolRecordShisuu = readInt(buffer, 100, 3);
 
-    const asIs = await findOneBy(ShussoubaHyouka, { Id: shussouba.Id });
-
-    return await tool.saveOrUpdate(ShussoubaHyouka, asIs, toBe);
+    return upsert(ShussoubaHyouka, toBe);
   }
 
   protected async saveChoukyou(buffer: Buffer, shussouba: Shussouba, uma: Uma) {

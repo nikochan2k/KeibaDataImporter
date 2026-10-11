@@ -1,7 +1,7 @@
 import * as $K from "../../converters/Kishu";
 import * as $S from "../../converters/Shussouba";
 import { Bagu } from "../../converters/ShussoubaJoutai";
-import { findOneBy } from "../../db/helpers";
+import { findOneBy, upsert } from "../../db/helpers";
 import { Race } from "../../entities/Race";
 import { Shussouba } from "../../entities/Shussouba";
 import { Kubun } from "../../entities/ShussoubaJoutai";
@@ -140,7 +140,6 @@ export abstract class JraShussoubaTool extends ShussoubaTool {
 
   /** 成績を保存します。既にあれば差分だけを更新します */
   public async saveSeiseki(toBe: ShussoubaSeiseki) {
-    const asIs = await findOneBy(ShussoubaSeiseki, { Id: toBe.Id });
-    return tool.saveOrUpdate(ShussoubaSeiseki, asIs, toBe);
+    return upsert(ShussoubaSeiseki, toBe);
   }
 }

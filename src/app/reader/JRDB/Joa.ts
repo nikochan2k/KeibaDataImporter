@@ -1,9 +1,8 @@
 import * as $SY from "../../converters/ShussoubaYosou";
-import { findOneBy } from "../../db/helpers";
+import { upsert } from "../../db/helpers";
 import { Shussouba } from "../../entities/Shussouba";
 import { ShussoubaYosou } from "../../entities/ShussoubaYosou";
 import { readDouble, readInt } from "../Reader";
-import { tool } from "../Tool";
 import { JrdbShussoubaData } from "./JrdbShussoubaData";
 
 export class Joa extends JrdbShussoubaData {
@@ -17,7 +16,6 @@ export class Joa extends JrdbShussoubaData {
   }
 
   public async saveShussoubaYosou(buffer: Buffer, shussouba: Shussouba) {
-    const asIs = await findOneBy(ShussoubaYosou, { Id: shussouba.Id });
     const toBe = {} as ShussoubaYosou;
     toBe.Id = shussouba.Id;
     toBe.CidChoukyouSoten = readDouble(buffer, 64, 5);
@@ -29,6 +27,6 @@ export class Joa extends JrdbShussoubaData {
     toBe.Em = $SY.em.toCodeFromJrdb(buffer, 88, 1);
     toBe.KyuushaBbShirushi = $SY.shirushi.toCodeFromJrdb(buffer, 89, 1);
     toBe.KishuBbShirushi = $SY.shirushi.toCodeFromJrdb(buffer, 100, 1);
-    return await tool.saveOrUpdate(ShussoubaYosou, asIs, toBe);
+    return upsert(ShussoubaYosou, toBe);
   }
 }

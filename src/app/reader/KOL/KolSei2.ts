@@ -3,7 +3,7 @@ import * as $K from "../../converters/Kishu";
 import * as $S from "../../converters/Shussouba";
 import { Bagu } from "../../converters/ShussoubaJoutai";
 import * as $SY from "../../converters/ShussoubaYosou";
-import { findOneBy } from "../../db/helpers";
+import { findOneBy, upsert } from "../../db/helpers";
 import { Kyousouba } from "../../entities/Kyousouba";
 import { Shussouba } from "../../entities/Shussouba";
 import { ShussoubaHyouka } from "../../entities/ShussoubaHyouka";
@@ -151,9 +151,7 @@ export class KolSei2 extends DataToImport {
     toBe.KolYosou1 = $SY.shirushi.toCodeFromKol(buffer, 265, 1);
     toBe.KolYosou2 = $SY.shirushi.toCodeFromKol(buffer, 266, 1);
 
-    const asIs = await findOneBy(ShussoubaYosou, { Id: shussouba.Id });
-
-    return await tool.saveOrUpdate(ShussoubaYosou, asIs, toBe);
+    return upsert(ShussoubaYosou, toBe);
   }
 
   protected async saveShussoubaHyouka(buffer: Buffer, shussouba: Shussouba) {
@@ -161,9 +159,7 @@ export class KolSei2 extends DataToImport {
     toBe.Id = shussouba.Id;
     toBe.KolRecordShisuu = readInt(buffer, 159, 3);
 
-    const asIs = await findOneBy(ShussoubaHyouka, { Id: shussouba.Id });
-
-    return await tool.saveOrUpdate(ShussoubaHyouka, asIs, toBe);
+    return upsert(ShussoubaHyouka, toBe);
   }
 
   protected async saveChoukyou(buffer: Buffer, info: ShussoubaInfo) {

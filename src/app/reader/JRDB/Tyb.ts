@@ -3,7 +3,7 @@ import * as $K from "../../converters/Kishu";
 import * as $R from "../../converters/Race";
 import * as $S from "../../converters/Shussouba";
 import * as $SY from "../../converters/ShussoubaYosou";
-import { findOneBy } from "../../db/helpers";
+import { findOneBy, upsert } from "../../db/helpers";
 import { Race } from "../../entities/Race";
 import { RaceSeiseki } from "../../entities/RaceSeiseki";
 import { Shussouba } from "../../entities/Shussouba";
@@ -52,27 +52,23 @@ export class Tyb extends JrdbData {
       await tool.saveOrUpdate(Race, race, toBe, true);
     }
 
-    const asIs = await findOneBy(RaceSeiseki, { Id: raceId });
     const seiseki = {} as RaceSeiseki;
     seiseki.Id = raceId;
     seiseki.Baba = $R.baba.toCodeFromJrdb(buffer, 69, 1);
     seiseki.BabaSokudo = $R.babaSokudo.toCodeFromJrdb(buffer, 70, 1);
     seiseki.Tenki = $R.tenki.toCodeFromJrdb(buffer, 71, 1);
-    await tool.saveOrUpdate(RaceSeiseki, asIs, seiseki, true);
+    upsert(RaceSeiseki, seiseki, true);
   }
 
   protected async saveShussoubaHyouka(buffer: Buffer, shussoubaId: number) {
-    const asIs = await findOneBy(ShussoubaHyouka, { Id: shussoubaId });
     const toBe = {} as ShussoubaHyouka;
     toBe.Id = shussoubaId;
     toBe.BataiCode = $S.bataiCode.toCodeFromJrdb(buffer, 97, 1);
     toBe.KehaiCode = $S.kehaiCode.toCodeFromJrdb(buffer, 98, 1);
-    await tool.saveOrUpdate(ShussoubaHyouka, asIs, toBe, true);
+    upsert(ShussoubaHyouka, toBe, true);
   }
 
   protected async saveShussoubaYosou(buffer: Buffer, shussoubaId: number) {
-    const asIs = await findOneBy(ShussoubaYosou, { Id: shussoubaId });
-
     const toBe = {} as ShussoubaYosou;
     toBe.Id = shussoubaId;
     toBe.Idm = readDouble(buffer, 10, 5);
@@ -87,7 +83,7 @@ export class Tyb extends JrdbData {
     toBe.PaddockShirushi = $SY.shirushi.toCodeFromJrdb(buffer, 95, 1);
     toBe.ChokuzenSougouShirushi = $SY.shirushi.toCodeFromJrdb(buffer, 96, 1);
 
-    await tool.saveOrUpdate(ShussoubaYosou, asIs, toBe);
+    upsert(ShussoubaYosou, toBe);
   }
 
   protected async saveOddsHaitou(buffer: Buffer, shussouba: Shussouba) {
@@ -108,8 +104,6 @@ export class Tyb extends JrdbData {
   }
 
   protected async saveShussoubaSeiseki(buffer: Buffer, shussoubaId: number) {
-    const asIs = await findOneBy(ShussoubaSeiseki, { Id: shussoubaId });
-
     const toBe = {} as ShussoubaSeiseki;
     toBe.Id = shussoubaId;
     toBe.TorikeshiShubetsu = $S.torikeshiShubetsu.toCodeFromJrdb(buffer, 47, 1);
@@ -120,6 +114,6 @@ export class Tyb extends JrdbData {
     toBe.Bataijuu = readPositiveInt(buffer, 88, 3);
     toBe.Zougen = readSignedInt(buffer, 91, 3);
 
-    await tool.saveOrUpdate(ShussoubaSeiseki, asIs, toBe);
+    upsert(ShussoubaSeiseki, toBe);
   }
 }

@@ -1,12 +1,11 @@
 import { Baken, Kakutei } from "../../../converters/Common";
 import * as $R from "../../../converters/Race";
-import { findOneBy } from "../../../db/helpers";
+import { findOneBy, upsert } from "../../../db/helpers";
 import { Race } from "../../../entities/Race";
 import { RaceSeiseki } from "../../../entities/RaceSeiseki";
 import { DataToImport } from "../../DataToImport";
 import { HaitouInfo } from "../../OddsHaitouTool";
 import { readInt, readJikan, readPositiveInt, readRaw } from "../../Reader";
-import { tool } from "../../Tool";
 import { jravanOddsHaitouTool } from "./JravanOddsHaitouTool";
 import { jravanRaceTool } from "./JravanRaceTool";
 import { jravanSeiUmaLength, jravanShussoubaTool } from "./JravanShussoubaTool";
@@ -85,8 +84,7 @@ export class JravanSei1 extends DataToImport {
     }
     toBe.Baba = $R.baba.toCodeFromJravan(buffer, 331, 1);
     toBe.Tenki = $R.tenki.toCodeFromJravan(buffer, 332, 1);
-    const asIs = await findOneBy(RaceSeiseki, { Id: race.Id });
-    await tool.saveOrUpdate(RaceSeiseki, asIs, toBe);
+    upsert(RaceSeiseki, toBe);
   }
 
   protected async saveRaceLapTime(buffer: Buffer, race: Race) {

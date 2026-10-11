@@ -1,9 +1,8 @@
 import * as $R from "../../../converters/Race";
-import { findOneBy } from "../../../db/helpers";
+import { findOneBy, upsert } from "../../../db/helpers";
 import { Race } from "../../../entities/Race";
 import { RaceSeiseki } from "../../../entities/RaceSeiseki";
 import { readInt, readPositiveDouble, readPositiveInt, readRaw } from "../../Reader";
-import { tool } from "../../Tool";
 import { getJraTrack } from "../JraTrack";
 import {
   hasSeiseki,
@@ -68,8 +67,7 @@ export class JvdataRa extends JvdataRecord {
     const shiba = $R.baba.toCodeFromJvData(buffer, 888, 1);
     const dart = $R.baba.toCodeFromJvData(buffer, 889, 1);
     toBe.Baba = (dirt ? (dart ?? shiba) : (shiba ?? dart)) ?? undefined;
-    const asIs = await findOneBy(RaceSeiseki, { Id: race.Id });
-    await tool.saveOrUpdate(RaceSeiseki, asIs, toBe, true);
+    upsert(RaceSeiseki, toBe, true);
   }
 
   private async saveRaceLapTime(buffer: Buffer, race: Race) {

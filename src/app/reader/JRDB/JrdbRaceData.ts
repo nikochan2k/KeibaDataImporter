@@ -1,4 +1,4 @@
-import { findOneBy } from "../../db/helpers";
+import { upsert } from "../../db/helpers";
 import { Kaisai } from "../../entities/Kaisai";
 import { Race } from "../../entities/Race";
 import { RaceSeiseki } from "../../entities/RaceSeiseki";
@@ -39,8 +39,7 @@ export abstract class JrdbRaceData extends JrdbKaisaiData {
     const toBe = {} as RaceSeiseki;
     toBe.Id = raceId;
     this.setRaceSeiseki(buffer, toBe);
-    const asIs = await findOneBy(RaceSeiseki, { Id: raceId });
-    await tool.saveOrUpdate(RaceSeiseki, asIs, toBe, this.keepExisting);
+    upsert(RaceSeiseki, toBe, this.keepExisting);
   }
 
   protected setRaceSeiseki(_buffer: Buffer, _toBe: RaceSeiseki) {}
