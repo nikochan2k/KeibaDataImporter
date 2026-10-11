@@ -21,11 +21,15 @@ export function Importing() {
           </p>
         </>
       )}
-      {running?.current && (
+      {running?.currentEntry && (
         <p>
-          <strong>{running.current.source}</strong> {running.current.kind}
-          <br />
-          <span className="muted">を取り込んでいます</span>
+          {running.current && (
+            <>
+              <strong>{running.current.source}</strong> {running.current.kind}
+              <br />
+            </>
+          )}
+          <span className="muted">{running.currentEntry} を取り込んでいます</span>
         </p>
       )}
       {errors.length > 0 && (
@@ -35,6 +39,7 @@ export function Importing() {
             {[...errors].reverse().map((error) => (
               <li key={`${error.file}:${error.message}`}>
                 <strong>{error.source ? `${error.source} ${error.kind}` : error.file}</strong>
+                {error.entry && <span className="muted"> {error.entry}</span>}
                 <br />
                 <span className="error">{error.message}</span>
               </li>

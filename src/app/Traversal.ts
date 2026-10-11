@@ -236,6 +236,7 @@ export class Traversal {
     }
     const filepath = importFile.path;
     const basename = importFile.basename;
+    this.progress.entryStarted(basename);
     try {
       await yieldToEventLoop();
       await this.importEntry(filepath, basename);

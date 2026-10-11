@@ -58,6 +58,7 @@ async function finished(service: ImportJobService, id: string) {
 describe("ImportJobService", () => {
   test("取り込みの進捗がジョブに反映される", async () => {
     const service = create(async (_entry, progress) => {
+      progress.entryStarted("pack.zip");
       progress.fileStarted("a.txt", umaKol);
       progress.fileFinished("a.txt", umaKol);
       progress.fileStarted("b.txt", seisekiJrdb);
@@ -68,8 +69,10 @@ describe("ImportJobService", () => {
     expect(done.status).toBe("completed");
     expect(done.path).toBe(data);
     expect(done.filesDone).toBe(2);
-    expect(done.errors).toEqual([{ file: "b.txt", message: "壊れています", ...seisekiJrdb }]);
-    expect(done.currentFile).toBeUndefined();
+    expect(done.errors).toEqual([
+      { file: "b.txt", entry: "pack.zip", message: "壊れています", ...seisekiJrdb },
+    ]);
+    expect(done.currentEntry).toBeUndefined();
     expect(done.current).toBeUndefined();
     expect(done.finishedAt).toBeDefined();
   });
@@ -103,6 +106,7 @@ describe("ImportJobService", () => {
       release = resolve;
     });
     const service = create(async (_entry, progress) => {
+      progress.entryStarted("sed260101.zip");
       progress.fileStarted("sed260101.txt", seisekiJrdb);
       await gate;
     });
@@ -111,6 +115,7 @@ describe("ImportJobService", () => {
       await new Promise((resolve) => setTimeout(resolve, 5));
     }
     expect(service.get(job.id).current).toEqual(seisekiJrdb);
+    expect(service.get(job.id).currentEntry).toBe("sed260101.zip");
     release();
     expect((await finished(service, job.id)).current).toBeUndefined();
   });
@@ -143,13 +148,16 @@ describe("ImportJobService", () => {
 
   test("zip / lzh を開けない失敗は、データ区分なしのエラーとして残る", async () => {
     const service = create(async (_entry, progress) => {
+      progress.entryStarted("broken.lzh");
       progress.fileFailed("broken.lzh", "壊れています");
     });
     const job = service.start(data);
     const done = await finished(service, job.id);
     expect(done.status).toBe("completed");
     expect(done.filesDone).toBe(0);
-    expect(done.errors).toEqual([{ file: "broken.lzh", message: "壊れています" }]);
+    expect(done.errors).toEqual([
+      { file: "broken.lzh", entry: "broken.lzh", message: "壊れています" },
+    ]);
   });
 
   test("読み飛ばしたファイルがジョブに残る", async () => {

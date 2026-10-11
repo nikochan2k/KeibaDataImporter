@@ -17,7 +17,8 @@ export interface ImportJob {
   status: ImportJobStatus;
   startedAt: string;
   finishedAt?: string;
-  currentFile?: string;
+  /** いま取り込んでいる zip / lzh / 単独のデータファイルのファイル名 (パスは含めない) */
+  currentEntry?: string;
   /** いま取り込んでいるデータ */
   current?: ImportTarget;
   /** 取り込むファイルの総数 (zip / lzh / 単独のデータファイル)。数え終わるまでは未定 */
@@ -36,6 +37,8 @@ export interface ImportJob {
 
 export interface ImportError extends Partial<ImportTarget> {
   file: string;
+  /** そのファイルが入っていた zip / lzh のファイル名 */
+  entry?: string;
   message: string;
 }
 

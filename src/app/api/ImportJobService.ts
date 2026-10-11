@@ -159,7 +159,6 @@ export class ImportJobService {
     const limit = maxErrors();
     const sink: ImportProgressSink = {
       fileStarted: (basename, current) => {
-        job.currentFile = basename;
         job.current = current;
         this.log(job, "info", `${describe(current)} を取り込んでいます (${basename})`);
       },
@@ -171,7 +170,7 @@ export class ImportJobService {
         if (current) {
           job.filesDone++;
         }
-        job.errors.push({ file, message, ...current });
+        job.errors.push({ file, entry: job.currentEntry, message, ...current });
         this.log(
           job,
           "error",
@@ -187,6 +186,9 @@ export class ImportJobService {
           job.skipped.push({ file, reason });
           this.log(job, "warn", `${file} を読み飛ばしました: ${reason}`);
         }
+      },
+      entryStarted: (basename) => {
+        job.currentEntry = basename;
       },
       entryProcessed: () => {
         job.processedFiles++;
@@ -216,7 +218,7 @@ export class ImportJobService {
       this.log(job, "error", `取り込みに失敗しました: ${job.error}`);
     } finally {
       this.progress.detach();
-      delete job.currentFile;
+      delete job.currentEntry;
       delete job.current;
       job.finishedAt = new Date().toISOString();
       this.running = undefined;
