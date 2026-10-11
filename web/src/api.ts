@@ -19,7 +19,7 @@ export type UmaDetail = UmaSummary & {
   starts: UmaStart[];
 };
 
-/** サーバーが返したエラー (Nest の { message } 形式) */
+/** サーバーが返したエラー ({ message } 形式) */
 export class ApiError extends Error {
   constructor(
     public status: number,

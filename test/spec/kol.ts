@@ -229,7 +229,7 @@ async function setup() {
   ready = true;
 }
 
-/** メモリ上の DB を閉じる。ほかのテストファイルが同じ DataSource を初期化できるようにする */
+/** メモリ上の DB を閉じる。ほかのテストファイルが DB を開き直せるようにする */
 export async function closeKolDb() {
   // ほかのテストファイルのログが、このファイルの記録用の appender に溜まらないように、標準出力に戻す
   log4js.recording().reset();

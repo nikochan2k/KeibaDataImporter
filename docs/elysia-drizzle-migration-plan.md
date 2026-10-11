@@ -211,6 +211,13 @@ ORM と同時に変えると原因が追えなくなるので、先に Nest だ�
 2. `src/tslint.json` など使っていない設定を消す。
 3. `README.md` に起動方法 (`bun run serve`、`bun start <dir>`、`drizzle-kit generate` の使い方) を書く。
 
+実施結果 (2026-10-12):
+
+- `migration/` の説明とコメントから TypeORM の記述を直した (`migration/*.ts` は TypeORM を使っていなかった)。
+- `src/tslint.json` を消した。コード中の `tslint:disable` のコメントは残した (動きに関係しないため)。
+- `README.md` に使い方、環境変数、マイグレーションの作り方、以前のデータベースの扱い、比べ方を書いた。
+- 画面のコードは、エラーの形式についてのコメント (Nest の形式) だけ直した。
+
 ## 気をつけること
 
 - **TypeORM の `save` の動き**: 主キーがある行は「SELECT して、あれば UPDATE、なければ INSERT」になる。
