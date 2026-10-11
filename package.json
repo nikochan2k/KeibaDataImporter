@@ -6,7 +6,9 @@
   "main": "src/app/main.ts",
   "scripts": {
     "start": "bun src/app/main.ts",
-    "serve": "bun build web/index.html --outdir web/dist --minify --public-path / && bun src/app/server.ts",
+    "dev": "bun src/app/dev.ts",
+    "build": "bun build web/index.html --outdir web/dist --minify --public-path /",
+    "serve": "bun run build && bun src/app/server.ts",
     "typecheck": "tsc --noEmit && tsc --noEmit -p web",
     "test": "bun test",
     "check": "biome check ."

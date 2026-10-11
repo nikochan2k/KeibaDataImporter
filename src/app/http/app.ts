@@ -8,7 +8,7 @@ import { importRoutes } from "./importRoutes";
 
 const logger = getLogger("http");
 
-/** ビルド済みフロントエンド (bun run serve が出力する web/dist)。環境変数 WEB_DIR で変える */
+/** ビルド済みフロントエンド (bun run build の出力先)。環境変数 WEB_DIR で変える */
 const DEFAULT_WEB_DIR = path.resolve(import.meta.dirname, "../../../web/dist");
 
 /**
@@ -19,7 +19,7 @@ const DEFAULT_WEB_DIR = path.resolve(import.meta.dirname, "../../../web/dist");
 function webRoutes(dir: string) {
   const index = path.join(dir, "index.html");
   if (!fs.existsSync(index)) {
-    logger.warn(`${dir} がありません。bun run serve でフロントエンドをビルドしてください`);
+    logger.warn(`${dir} がありません。bun run build でフロントエンドをビルドしてください`);
     return new Elysia();
   }
   return new Elysia().get("/*", ({ path: requested }) => {
