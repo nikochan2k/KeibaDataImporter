@@ -6,6 +6,7 @@
   "main": "src/app/main.ts",
   "scripts": {
     "start": "bun src/app/main.ts",
+    "serve": "bun src/app/server.ts",
     "typecheck": "tsc --noEmit",
     "test": "bun test",
     "format": "biome format --write .",
@@ -31,6 +32,7 @@
   "dependencies": {
     "@nestjs/common": "^12.1.2",
     "@nestjs/core": "^12.1.2",
+    "@nestjs/platform-express": "^12.1.2",
     "encoding-japanese": "^2.4.0",
     "glob": "^13.0.6",
     "itaiji-normalize": "^0.2.0",

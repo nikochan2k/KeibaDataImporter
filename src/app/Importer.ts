@@ -2,6 +2,7 @@ import * as fs from "node:fs";
 import { Inject, Injectable, type OnModuleInit, type Type } from "@nestjs/common";
 import { ModuleRef } from "@nestjs/core";
 import { Logger } from "log4js";
+import { ImportProgress } from "./ImportProgress";
 import { getLogger } from "./LogUtil";
 import { Bridge } from "./reader/Bridge";
 import { DataToImport } from "./reader/DataToImport";
@@ -109,6 +110,9 @@ export class Importer implements OnModuleInit {
 
   @Inject()
   private bridge: Bridge;
+
+  @Inject()
+  private progress: ImportProgress;
 
   constructor(@Inject(ModuleRef) private moduleRef: ModuleRef) {
     this.logger = getLogger(this);
@@ -310,9 +314,12 @@ export class Importer implements OnModuleInit {
         if (this.logger.isLevelEnabled("info")) {
           this.logger.info(`"${item.basename}"を取り込んでいます`);
         }
+        this.progress.fileStarted(item.basename);
         await dataToImport.readAll(fd);
+        this.progress.fileFinished(item.basename);
       } catch (e) {
         this.logger.error(e.stack || e);
+        this.progress.fileFailed(item.basename, e?.message ?? String(e));
       } finally {
         delete this.bridge.basename;
         fs.closeSync(fd);

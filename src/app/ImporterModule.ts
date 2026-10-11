@@ -11,6 +11,7 @@ import { SeisanshaDao } from "./daos/SeisanshaDao";
 import { TokubetsuMeiDao } from "./daos/TokubetsuMeiDao";
 import { UmaDao } from "./daos/UmaDao";
 import { Importer } from "./Importer";
+import { ImportProgress } from "./ImportProgress";
 import { Bridge } from "./reader/Bridge";
 import { JravanChok } from "./reader/JRA/JRAVAN/JravanChok";
 import { JravanDelc, JravanDelk, JravanDelu } from "./reader/JRA/JRAVAN/JravanDel";
@@ -137,6 +138,7 @@ import { Traversal } from "./Traversal";
 @Module({
   providers: [
     Importer,
+    ImportProgress,
     Traversal,
     BanushiDao,
     ChoukyouDao,
@@ -268,6 +270,6 @@ import { Traversal } from "./Traversal";
     KeikaTool,
     Tool,
   ],
-  exports: [Importer, Traversal],
+  exports: [Importer, ImportProgress, Traversal],
 })
 export class ImporterModule {}
