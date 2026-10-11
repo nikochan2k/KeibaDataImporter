@@ -1,9 +1,9 @@
-import { findOneBy } from "../../db/helpers";
+import { upsert } from "../../db/helpers";
 import { Race } from "../../entities/Race";
 import { RaceKeika } from "../../entities/RaceKeika";
 import { keikaTool } from "../KeikaTool";
 import { readStr } from "../Reader";
-import { tool } from "../Tool";
+
 import { JrdbRaceData } from "./JrdbRaceData";
 import { jrdbRaceTool } from "./JrdbRaceTool";
 
@@ -38,8 +38,7 @@ export abstract class Sr$ extends JrdbRaceData {
     toBe.RaceId = race.Id;
     toBe.Midashi2 = midashi2;
     toBe.Keika = keika;
-    const asIs = await findOneBy(RaceKeika, { Id: toBe.Id });
-    await tool.saveOrUpdate(RaceKeika, asIs, toBe);
+    upsert(RaceKeika, toBe);
 
     await keikaTool.parseRaceKeika(toBe);
   }

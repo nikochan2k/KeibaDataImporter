@@ -2,7 +2,7 @@ import { Baken, Kakutei } from "../../converters/Common";
 import * as $K from "../../converters/Kaisai";
 import * as $R from "../../converters/Race";
 import * as $RK from "../../converters/RaceKeika";
-import { findOneBy } from "../../db/helpers";
+import { findOneBy, upsert } from "../../db/helpers";
 import { Kaisai } from "../../entities/Kaisai";
 import { Race } from "../../entities/Race";
 import { RaceKeika } from "../../entities/RaceKeika";
@@ -43,7 +43,7 @@ export class KolSei1 extends KolDataToImport {
       if (!kaisai) {
         return;
       }
-      race = await this.saveRace(buffer, kaisai, race);
+      race = await this.saveRace(buffer, kaisai);
       await this.saveRaceMei(buffer, race);
     }
 
@@ -63,11 +63,10 @@ export class KolSei1 extends KolDataToImport {
     toBe.Youbi = $K.youbi.toCodeFromKol(buffer, 21, 1);
     toBe.KaisaiKubun = kolKaisaiTool.convertKaisaiKubunFrom(toBe.Basho);
     toBe.ChuuouChihouGaikoku = $K.chuuouChihouGaikoku.toCodeFromKol(buffer, 23, 1);
-    const asIs = await kolKaisaiTool.getKaisaiWithId(buffer);
-    return await tool.saveOrUpdate(Kaisai, asIs, toBe);
+    return upsert(Kaisai, toBe);
   }
 
-  protected async saveRace(buffer: Buffer, kaisai: Kaisai, asIs: Race) {
+  protected async saveRace(buffer: Buffer, kaisai: Kaisai) {
     const toBe = kolRaceTool.createRace(buffer, kaisai.Id);
     if (!toBe) {
       return null;
@@ -157,7 +156,7 @@ export class KolSei1 extends KolDataToImport {
     toBe.SuiteiTimeRyou = readTime(buffer, this.at(370), 4);
     toBe.SuiteiTimeOmoFuryou = readTime(buffer, this.at(374), 4);
 
-    return await tool.saveOrUpdate(Race, asIs, toBe);
+    return upsert(Race, toBe);
   }
 
   protected async saveRaceMei(buffer: Buffer, race: Race) {
@@ -260,8 +259,7 @@ export class KolSei1 extends KolDataToImport {
       toBe.Midashi1 = midashi1;
       toBe.Midashi2 = midashi2;
       toBe.Keika = keika;
-      const asIs = await findOneBy(RaceKeika, { Id: toBe.Id });
-      await tool.saveOrUpdate(RaceKeika, asIs, toBe);
+      upsert(RaceKeika, toBe);
 
       await keikaTool.parseRaceKeika(toBe);
     }

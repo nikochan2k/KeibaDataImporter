@@ -107,7 +107,7 @@ export function save<T extends SQLiteTable>(table: T, row: Partial<Row<T>>): Row
  * 主キーが決まっている行を、読み戻さずに 1 文で追加または更新する (INSERT ... ON CONFLICT DO UPDATE)。
  * undefined の項目は書かない。skipNull のときは null の項目も書かず、既存の値を消さない。
  * 保存後の行 (既存の値と合わせたもの) を返す。
- * 追加の時点で NOT NULL 列が空だと、既存の行があっても失敗するので、NOT NULL 列のある表には使わない。
+ * 追加の時点で NOT NULL 列が空だと、既存の行があっても失敗するので、NOT NULL 列のある表では、row にそれらを必ず入れる。
  */
 export function upsert<T extends SQLiteTable>(
   table: T,

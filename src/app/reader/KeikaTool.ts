@@ -1,9 +1,8 @@
 import { Logger } from "log4js";
-import { findOneBy } from "../db/helpers";
+import { upsert } from "../db/helpers";
 import { RaceKeika } from "../entities/RaceKeika";
 import { ShussoubaKeika } from "../entities/ShussoubaKeika";
 import { getLogger } from "../LogUtil";
-import { tool } from "./Tool";
 
 export class KeikaTool {
   protected logger: Logger;
@@ -40,8 +39,7 @@ export class KeikaTool {
     toBe.Id = raceKeika.Id * 2 ** 6 + umaban;
     toBe.RaceKeikaId = raceKeika.Id;
     toBe.ShussoubaId = shussoubaId;
-    const asIs = await findOneBy(ShussoubaKeika, { Id: toBe.Id });
-    await tool.saveOrUpdate(ShussoubaKeika, asIs, toBe);
+    upsert(ShussoubaKeika, toBe);
   }
 
   public async parseRaceKeika(raceKeika: RaceKeika) {

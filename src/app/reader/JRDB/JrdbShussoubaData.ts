@@ -1,6 +1,7 @@
+import { upsert } from "../../db/helpers";
 import { Shussouba } from "../../entities/Shussouba";
 import { ShussoubaInfo } from "../ShussoubaTool";
-import { tool } from "../Tool";
+
 import { JrdbRaceData } from "./JrdbRaceData";
 import { jrdbRaceTool } from "./JrdbRaceTool";
 import { jrdbShussoubaTool } from "./JrdbShussoubaTool";
@@ -27,9 +28,7 @@ export abstract class JrdbShussoubaData extends JrdbRaceData {
       return info.shussouba;
     }
     await this.setShussouba(buffer, toBe, info);
-    const asIs = info.shussouba;
-    const shussouba = await tool.saveOrUpdate(Shussouba, asIs, toBe, this.keepExisting);
-    return shussouba;
+    return upsert(Shussouba, toBe, this.keepExisting);
   }
 
   protected async setShussouba(_buffer: Buffer, _toBe: Shussouba, _info: ShussoubaInfo) {}

@@ -86,7 +86,7 @@ export class KolSei2 extends DataToImport {
     const nen = readInt(buffer, 2, 4);
     toBe.Nenrei = tool.normalizeNenrei(nenrei, nen);
 
-    toBe = await tool.saveOrUpdate(Shussouba, info.shussouba, toBe);
+    toBe = upsert(Shussouba, toBe);
     await kolTool.saveBanushi(buffer, 69, toBe.Id);
     return toBe;
   }

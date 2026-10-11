@@ -1,5 +1,5 @@
 import * as $R from "../../../converters/Race";
-import { findOneBy, upsert } from "../../../db/helpers";
+import { upsert } from "../../../db/helpers";
 import { Race } from "../../../entities/Race";
 import { RaceSeiseki } from "../../../entities/RaceSeiseki";
 import { readInt, readPositiveDouble, readPositiveInt, readRaw } from "../../Reader";
@@ -33,9 +33,8 @@ export class JvdataRa extends JvdataRecord {
     if (!toBe) {
       return;
     }
-    const asIs = await findOneBy(Race, { Id: toBe.Id });
     // 出走馬名表のレース詳細は項目が空白なので、既存の値を消さないようにする
-    const race = await jvdataRaceTool.saveOrUpdateRace(asIs, toBe, true);
+    const race = jvdataRaceTool.upsertRace(toBe, true);
     await jvdataRaceTool.saveRaceMeiOf(buffer, race);
 
     if (hasSeiseki(this.getKubun(buffer))) {

@@ -1,10 +1,10 @@
 import * as $K from "../../converters/Kaisai";
 import * as $R from "../../converters/Race";
-import { findOneBy } from "../../db/helpers";
+import { upsert } from "../../db/helpers";
 import { Kaisai } from "../../entities/Kaisai";
 import { KaisaiYosou } from "../../entities/KaisaiYosou";
 import { readDouble } from "../Reader";
-import { tool } from "../Tool";
+
 import { JrdbKaisaiData } from "./JrdbKaisaiData";
 import { jrdbKaisaiKaisaiTool } from "./JrdbKaisaiKaisaiTool";
 
@@ -27,8 +27,7 @@ export abstract class Ka$ extends JrdbKaisaiData {
     toBe.Id = kaisai.Id;
     this.setKaisaiYosou(buffer, toBe);
 
-    const asIs = await findOneBy(KaisaiYosou, { Id: toBe.Id });
-    await tool.saveOrUpdate(KaisaiYosou, asIs, toBe);
+    upsert(KaisaiYosou, toBe);
   }
 
   protected setKaisaiYosou(buffer: Buffer, toBe: KaisaiYosou) {

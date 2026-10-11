@@ -91,7 +91,7 @@ export class KolDen2 extends KolDataToImport {
 
     toBe.KolNengappi = dataNengappi;
 
-    toBe = await tool.saveOrUpdate(Shussouba, info.shussouba, toBe);
+    toBe = upsert(Shussouba, toBe);
     await kolTool.saveBanushi(buffer, 67, toBe.Id);
     return toBe;
   }

@@ -2,7 +2,7 @@ import { upsert } from "../../db/helpers";
 import { Kaisai } from "../../entities/Kaisai";
 import { Race } from "../../entities/Race";
 import { RaceSeiseki } from "../../entities/RaceSeiseki";
-import { tool } from "../Tool";
+
 import { JrdbKaisaiData } from "./JrdbKaisaiData";
 import { jrdbRaceTool } from "./JrdbRaceTool";
 
@@ -25,8 +25,7 @@ export abstract class JrdbRaceData extends JrdbKaisaiData {
       return null;
     }
     this.setRace(buffer, toBe);
-    const asIs = await jrdbRaceTool.getRace(buffer, kaisai.Id);
-    return await tool.saveOrUpdate(Race, asIs, toBe, this.keepExisting);
+    return upsert(Race, toBe, this.keepExisting);
   }
 
   protected setRace(_buffer: Buffer, _toBe: Race) {}

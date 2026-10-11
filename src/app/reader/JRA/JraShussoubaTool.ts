@@ -1,7 +1,7 @@
 import * as $K from "../../converters/Kishu";
 import * as $S from "../../converters/Shussouba";
 import { Bagu } from "../../converters/ShussoubaJoutai";
-import { findOneBy, upsert } from "../../db/helpers";
+import { upsert } from "../../db/helpers";
 import { Race } from "../../entities/Race";
 import { Shussouba } from "../../entities/Shussouba";
 import { Kubun } from "../../entities/ShussoubaJoutai";
@@ -67,7 +67,6 @@ export abstract class JraShussoubaTool extends ShussoubaTool {
     if (!toBe) {
       return null;
     }
-    const asIs = await findOneBy(Shussouba, { Id: toBe.Id });
 
     toBe.Wakuban = readPositiveInt(buffer, o.wakuban, 1);
     const choukyoushi = await jraTool.saveChoukyoushi(
@@ -100,7 +99,7 @@ export abstract class JraShussoubaTool extends ShussoubaTool {
     toBe.KishuId = kishu?.Id;
     toBe.MinaraiKubun = $K.minaraiKubun.toCodeFromJvData(buffer, o.minarai, 1) ?? 0;
 
-    toBe = await tool.saveOrUpdate(Shussouba, asIs, toBe);
+    toBe = upsert(Shussouba, toBe);
     if (readInt(buffer, o.blinker, 1) === 1) {
       await this.saveShussoubaJoutai(toBe.Id, Kubun.Bagu, Bagu.Blinker);
     }

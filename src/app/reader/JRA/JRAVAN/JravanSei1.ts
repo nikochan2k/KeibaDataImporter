@@ -1,6 +1,6 @@
 import { Baken, Kakutei } from "../../../converters/Common";
 import * as $R from "../../../converters/Race";
-import { findOneBy, upsert } from "../../../db/helpers";
+import { upsert } from "../../../db/helpers";
 import { Race } from "../../../entities/Race";
 import { RaceSeiseki } from "../../../entities/RaceSeiseki";
 import { DataToImport } from "../../DataToImport";
@@ -61,8 +61,7 @@ export class JravanSei1 extends DataToImport {
     toBe.Shoukin4Chaku = readPositiveInt(buffer, 169, 7, 1000);
     toBe.Shoukin5Chaku = readPositiveInt(buffer, 176, 7, 1000);
     toBe.FukaShou = readPositiveInt(buffer, 197, 7, 1000);
-    const asIs = await findOneBy(Race, { Id: toBe.Id });
-    const race = await jravanRaceTool.saveOrUpdateRace(asIs, toBe);
+    const race = jravanRaceTool.upsertRace(toBe);
     await jravanRaceTool.saveRaceMeiOf(buffer, 17, 60, race);
     return race;
   }

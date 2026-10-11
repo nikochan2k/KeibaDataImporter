@@ -1,9 +1,10 @@
 import * as $R from "../../converters/Race";
+import { upsert } from "../../db/helpers";
 import { Kaisai } from "../../entities/Kaisai";
 import { Race } from "../../entities/Race";
 import { RaceTool } from "../RaceTool";
 import { readRaw } from "../Reader";
-import { tool } from "../Tool";
+
 import { JraKaisaiTool } from "./JraKaisaiTool";
 import { getJraTrack } from "./JraTrack";
 
@@ -70,8 +71,7 @@ export abstract class JraRaceTool extends RaceTool {
     kaisaiTool.setYoubi(toBe);
     toBe.KaisaiKubun = kaisaiTool.convertKaisaiKubunFrom(toBe.Basho);
     toBe.ChuuouChihouGaikoku = kaisaiTool.convertChuuouChihouGaikoku(toBe.Basho);
-    const asIs = await kaisaiTool.getKaisaiWithId(buffer);
-    return await tool.saveOrUpdate(Kaisai, asIs, toBe);
+    return upsert(Kaisai, toBe);
   }
 
   /** コード類から、レースの種別、条件、コースなどを設定します */
@@ -116,11 +116,11 @@ export abstract class JraRaceTool extends RaceTool {
   }
 
   /**
-   * 既存のレースがあれば差分だけを更新して、保存したレースを返します。
+   * レースを追加または更新して、保存したレースを返します。
    * @param skipNull true のとき、項目が空白のレコードで既存の値を消しません
    */
-  public saveOrUpdateRace(asIs: Race, toBe: Race, skipNull = false) {
-    return tool.saveOrUpdate(Race, asIs, toBe, skipNull);
+  public upsertRace(toBe: Race, skipNull = false) {
+    return upsert(Race, toBe, skipNull);
   }
 
   /**

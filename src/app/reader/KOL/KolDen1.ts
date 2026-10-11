@@ -1,10 +1,11 @@
 import * as $K from "../../converters/Kaisai";
 import * as $R from "../../converters/Race";
+import { upsert } from "../../db/helpers";
 import { Kaisai } from "../../entities/Kaisai";
 import { Race } from "../../entities/Race";
 import { bridge } from "../Bridge";
 import { readInt, readPositiveInt, readRaw, readStr, readTime } from "../Reader";
-import { tool } from "../Tool";
+
 import { KolBridge } from "./KolBridge";
 import { KolDataToImport } from "./KolDataToImport";
 import { kolKaisaiTool } from "./KolKaisaiTool";
@@ -51,8 +52,7 @@ export class KolDen1 extends KolDataToImport {
     toBe.Youbi = $K.youbi.toCodeFromKol(buffer, 21, 1);
     toBe.KaisaiKubun = kolKaisaiTool.convertKaisaiKubunFrom(toBe.Basho);
     toBe.ChuuouChihouGaikoku = $K.chuuouChihouGaikoku.toCodeFromKol(buffer, 22, 1);
-    const asIs = await kolKaisaiTool.getKaisaiWithId(buffer);
-    return await tool.saveOrUpdate(Kaisai, asIs, toBe);
+    return upsert(Kaisai, toBe);
   }
 
   protected async saveRace(buffer: Buffer, kaisai: Kaisai, asIs: Race, dataNengappi: number) {
@@ -146,7 +146,7 @@ export class KolDen1 extends KolDataToImport {
 
     toBe.KolNengappi = dataNengappi;
 
-    return await tool.saveOrUpdate(Race, asIs, toBe);
+    return upsert(Race, toBe);
   }
 
   protected async saveRaceMei(buffer: Buffer, race: Race) {

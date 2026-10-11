@@ -71,7 +71,7 @@ export class KolUma extends DataToImport {
         if (!kaisai) {
           continue;
         }
-        race = await this.saveRace(raceBuffer, kaisai, race);
+        race = await this.saveRace(raceBuffer, kaisai);
         if (!race) {
           continue;
         }
@@ -153,11 +153,10 @@ export class KolUma extends DataToImport {
     toBe.KaisaiKubun = kolKaisaiTool.convertKaisaiKubunFrom(toBe.Basho);
     toBe.ChuuouChihouGaikoku = $K.chuuouChihouGaikoku.toCodeFromKol(buffer, 23, 1);
     toBe.GaikokuKeibajouMei = readStr(buffer, 131, 20);
-    const asIs = await kolKaisaiTool.getKaisaiWithId(buffer);
-    return await tool.saveOrUpdate(Kaisai, asIs, toBe);
+    return upsert(Kaisai, toBe);
   }
 
-  protected async saveRace(buffer: Buffer, kaisai: Kaisai, asIs: Race) {
+  protected async saveRace(buffer: Buffer, kaisai: Kaisai) {
     const toBe = kolRaceTool.createRace(buffer, kaisai.Id);
     if (!toBe) {
       return null;
@@ -231,7 +230,7 @@ export class KolUma extends DataToImport {
     toBe.TorikeshiTousuu = readInt(buffer, 125, 2);
     toBe.KolNengappi = 0;
 
-    return await tool.saveOrUpdate(Race, asIs, toBe);
+    return upsert(Race, toBe);
   }
 
   protected async saveRaceMei(buffer: Buffer, race: Race) {
