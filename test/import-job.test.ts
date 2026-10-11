@@ -8,6 +8,7 @@ import { ImportJobService } from "../src/app/api/ImportJobService";
 import { ImportProgress } from "../src/app/ImportProgress";
 
 let root: string;
+let data: string;
 let outside: string;
 const saved = process.env.IMPORT_ROOT;
 
@@ -18,6 +19,7 @@ beforeAll(() => {
   fs.mkdirSync(path.join(root, "data"), { recursive: true });
   fs.mkdirSync(outside);
   process.env.IMPORT_ROOT = root;
+  data = path.join(fs.realpathSync(root), "data");
 });
 
 afterAll(() => {
@@ -56,14 +58,54 @@ describe("ImportJobService", () => {
       progress.fileStarted("b.txt");
       progress.fileFailed("b.txt", "壊れています");
     });
-    const job = service.start("data");
+    const job = service.start(data);
     const done = await finished(service, job.id);
     expect(done.status).toBe("completed");
-    expect(done.path).toBe("data");
+    expect(done.path).toBe(data);
     expect(done.filesDone).toBe(2);
     expect(done.errors).toEqual([{ file: "b.txt", message: "壊れています" }]);
     expect(done.currentFile).toBeUndefined();
     expect(done.finishedAt).toBeDefined();
+  });
+
+  test("読み飛ばしたファイルがジョブに残る", async () => {
+    const service = create(async (_entry, progress) => {
+      for (let i = 0; i < 150; i++) {
+        progress.fileSkipped(`x${i}.txt`, "対象外");
+      }
+    });
+    const job = service.start(data);
+    const done = await finished(service, job.id);
+    expect(done.status).toBe("completed");
+    expect(done.filesDone).toBe(0);
+    expect(done.skippedCount).toBe(150);
+    expect(done.skipped).toHaveLength(100);
+    expect(done.skipped[0]).toEqual({ file: "x0.txt", reason: "対象外" });
+  });
+
+  test("存在しない対象は失敗として残る", async () => {
+    const service = create(async () => {
+      throw new Error('"x"は見つかりません');
+    });
+    const job = service.start(data);
+    expect((await finished(service, job.id)).error).toBe('"x"は見つかりません');
+  });
+
+  test("取り込みログを続きから取れる", async () => {
+    const service = create(async (_entry, progress) => {
+      progress.fileStarted("a.txt");
+      progress.fileFailed("a.txt", "壊れています");
+    });
+    const job = service.start(data);
+    await finished(service, job.id);
+    const all = service.logsOf(job.id, 0);
+    expect(all.entries.map((e) => e.level)).toEqual(["info", "info", "error", "info"]);
+    expect(all.next).toBe(4);
+    const rest = service.logsOf(job.id, 2);
+    expect(rest.entries).toHaveLength(2);
+    expect(rest.entries[0].message).toContain("壊れています");
+    expect(service.logsOf(job.id, all.next).entries).toEqual([]);
+    expect(() => service.logsOf("xxx", 0)).toThrow(NotFoundException);
   });
 
   test("走っている間は次のジョブを始められない", async () => {
@@ -72,11 +114,11 @@ describe("ImportJobService", () => {
       release = resolve;
     });
     const service = create(() => gate);
-    const job = service.start("data");
-    expect(() => service.start("data")).toThrow(ConflictException);
+    const job = service.start(data);
+    expect(() => service.start(data)).toThrow(ConflictException);
     release();
     await finished(service, job.id);
-    const next = service.start("data");
+    const next = service.start(data);
     expect((await finished(service, next.id)).status).toBe("completed");
   });
 
@@ -84,16 +126,16 @@ describe("ImportJobService", () => {
     const service = create(async () => {
       throw new Error("読めません");
     });
-    const job = service.start("data");
+    const job = service.start(data);
     const done = await finished(service, job.id);
     expect(done.status).toBe("failed");
     expect(done.error).toBe("読めません");
-    expect(() => service.start("data")).not.toThrow();
+    expect(() => service.start(data)).not.toThrow();
   });
 
   test("進捗の受け取り先は、ジョブが終わると外れる", async () => {
     const service = create(async () => {});
-    const job = service.start("data");
+    const job = service.start(data);
     await finished(service, job.id);
     const progress: ImportProgress = Reflect.get(service, "progress");
     progress.fileFinished("late.txt");
@@ -102,9 +144,9 @@ describe("ImportJobService", () => {
 
   test("IMPORT_ROOT の外と、存在しないパスは受け付けない", () => {
     const service = create(async () => {});
-    expect(() => service.start("../outside")).toThrow(BadRequestException);
+    expect(() => service.start(path.join(root, "../outside"))).toThrow(BadRequestException);
     expect(() => service.start(outside)).toThrow(BadRequestException);
-    expect(() => service.start("nope")).toThrow(BadRequestException);
+    expect(() => service.start(path.join(root, "nope"))).toThrow(BadRequestException);
     expect(() => service.start("")).toThrow(BadRequestException);
     expect(() => service.start(undefined)).toThrow(BadRequestException);
     expect(() => service.start(123)).toThrow(BadRequestException);
@@ -113,17 +155,37 @@ describe("ImportJobService", () => {
   test("シンボリックリンクで IMPORT_ROOT の外へ出られない", () => {
     fs.symlinkSync(outside, path.join(root, "escape"));
     const service = create(async () => {});
-    expect(() => service.start("escape")).toThrow(BadRequestException);
+    expect(() => service.start(path.join(root, "escape"))).toThrow(BadRequestException);
+  });
+
+  test("相対パスは受け付けない", () => {
+    const service = create(async () => {});
+    expect(() => service.start("data")).toThrow(BadRequestException);
+    expect(() => service.start("./data")).toThrow(BadRequestException);
   });
 
   test("IMPORT_ROOT 配下の絶対パスは受け付ける", async () => {
     const service = create(async () => {});
     const job = service.start(path.join(root, "data"));
-    expect(job.path).toBe("data");
+    expect(job.path).toBe(data);
     await finished(service, job.id);
   });
 
   test("存在しないジョブは NotFound", () => {
     expect(() => create(async () => {}).get("xxx")).toThrow(NotFoundException);
+  });
+});
+
+describe("IMPORT_ROOT 未設定", () => {
+  test("どこの絶対パスでも受け付ける", async () => {
+    delete process.env.IMPORT_ROOT;
+    try {
+      const service = create(async () => {});
+      const job = service.start(outside);
+      expect(job.path).toBe(fs.realpathSync(outside));
+      await finished(service, job.id);
+    } finally {
+      process.env.IMPORT_ROOT = root;
+    }
   });
 });

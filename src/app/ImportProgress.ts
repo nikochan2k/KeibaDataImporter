@@ -5,6 +5,8 @@ export interface ImportProgressSink {
   fileStarted(basename: string): void;
   fileFinished(basename: string): void;
   fileFailed(basename: string, message: string): void;
+  /** 取り込み対象と判断できず、読まなかったファイル */
+  fileSkipped(basename: string, reason: string): void;
 }
 
 /**
@@ -33,5 +35,9 @@ export class ImportProgress implements ImportProgressSink {
 
   public fileFailed(basename: string, message: string) {
     this.sink?.fileFailed(basename, message);
+  }
+
+  public fileSkipped(basename: string, reason: string) {
+    this.sink?.fileSkipped(basename, reason);
   }
 }

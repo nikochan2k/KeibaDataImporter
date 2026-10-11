@@ -277,6 +277,7 @@ export class Importer implements OnModuleInit {
   public async import(entries: Entries) {
     const items: Item[] = [];
     for (const [basename, dataFile] of Object.entries(entries)) {
+      const before = items.length;
       for (let i = 0; i < this.readers.length; i++) {
         const reader = this.readers[i];
         if (!reader.pattern.test(basename)) {
@@ -288,6 +289,9 @@ export class Importer implements OnModuleInit {
           dataFile: dataFile,
           dataToImport: reader.dataToImport,
         });
+      }
+      if (items.length === before) {
+        this.progress.fileSkipped(basename, "ファイル名に対応する読み取り処理がありません");
       }
     }
 

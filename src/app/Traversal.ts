@@ -8,6 +8,7 @@ import { Inject, Injectable } from "@nestjs/common";
 import * as tmp from "tmp";
 import * as unzipper from "unzipper";
 import { Entries, Importer } from "./Importer";
+import { ImportProgress } from "./ImportProgress";
 import { getLogger } from "./LogUtil";
 import * as ioutil from "./util/IOUtil";
 import { LhaReader } from "./util/LHA";
@@ -132,6 +133,9 @@ export class Traversal {
   @Inject()
   private importer: Importer;
 
+  @Inject()
+  private progress: ImportProgress;
+
   constructor() {
     this.logger = getLogger(this);
   }
@@ -139,14 +143,14 @@ export class Traversal {
   public async traverse(entry: string) {
     const checked = this.checkPath(path.join(process.cwd(), entry)) || this.checkPath(entry);
     if (!checked) {
-      this.logger.error(`"${entry}"は対象外です`);
+      throw new Error(`"${entry}"は見つかりません`);
     } else if (checked.stat.isDirectory()) {
       await this.traverseDir(checked.entry);
     } else if (checked.stat.isFile()) {
       const importFile = this.createImportFile(checked.entry);
       await this.importFile(importFile);
     } else {
-      this.logger.error(`"${entry}"は対象外です`);
+      throw new Error(`"${entry}"はファイルでもディレクトリでもありません`);
     }
   }
 
@@ -207,6 +211,7 @@ export class Traversal {
 
   protected async importFile(importFile: ImportFile) {
     if (importFile.priority < 0) {
+      this.progress.fileSkipped(importFile.basename, "取り込み対象のファイル名ではありません");
       return;
     }
     const filepath = importFile.path;
@@ -223,6 +228,7 @@ export class Traversal {
       entries[basename] = filepath;
       await this.importer.import(entries);
     } else {
+      this.progress.fileSkipped(basename, "取り込み対象のファイル形式ではありません");
       if (this.logger.isLevelEnabled("info")) {
         this.logger.info(`"${basename}"は取り込み対象ファイルではありません。`);
       }

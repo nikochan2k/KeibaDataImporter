@@ -170,3 +170,12 @@ button:disabled {
   text-align: left;
   white-space: normal;
 }
+
+.topbar nav a.busy {
+  opacity: 0.5;
+}
+
+.importing {
+  text-align: center;
+  margin-top: 3rem;
+}

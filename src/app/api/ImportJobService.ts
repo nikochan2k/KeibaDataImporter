@@ -11,7 +11,13 @@ import {
 import { ImportProgress, type ImportProgressSink } from "../ImportProgress";
 import { getLogger } from "../LogUtil";
 import { Traversal } from "../Traversal";
-import type { ImportJob } from "./types";
+import type { ImportJob, ImportLogEntry, ImportLogLevel, ImportLogPage } from "./types";
+
+/** 読み飛ばしたファイルは、ジョブごとにこれだけ覚えておく */
+const MAX_SKIPPED = 100;
+
+/** ジョブごとに覚えておくログの行数。あふれたら古い行から捨てる */
+const MAX_LOGS = 1000;
 
 /** 古いジョブは捨てる。直近これだけを覚えておく */
 const MAX_JOBS = 50;
@@ -28,15 +34,19 @@ export class ImportJobService {
 
   private running?: ImportJob;
 
+  /** ジョブごとのログ。dropped は捨てた行数で、行の通し番号はその続きから数える */
+  private logs = new Map<string, { dropped: number; entries: ImportLogEntry[] }>();
+
   @Inject()
   private traversal: Traversal;
 
   @Inject()
   private progress: ImportProgress;
 
-  /** 取り込みを許す最上位のディレクトリ。環境変数 IMPORT_ROOT で変える */
+  /** 取り込みを許す最上位のディレクトリ。環境変数 IMPORT_ROOT で決める。未設定なら制限しない */
   public get root() {
-    return fs.realpathSync(process.env.IMPORT_ROOT || process.cwd());
+    const root = process.env.IMPORT_ROOT;
+    return root ? fs.realpathSync(root) : undefined;
   }
 
   /** ジョブを開始して、すぐ返す。取り込みはバックグラウンドで進む */
@@ -51,14 +61,18 @@ export class ImportJobService {
 
     const job: ImportJob = {
       id: randomUUID(),
-      path: path.relative(this.root, target) || ".",
+      path: target,
       status: "running",
       startedAt: new Date().toISOString(),
       filesDone: 0,
       errors: [],
+      skipped: [],
+      skippedCount: 0,
     };
     this.running = job;
     this.jobs.set(job.id, job);
+    this.logs.set(job.id, { dropped: 0, entries: [] });
+    this.log(job, "info", `取り込みを開始します: ${target}`);
     this.trim();
     void this.run(job, target);
     return job;
@@ -76,18 +90,48 @@ export class ImportJobService {
     return job;
   }
 
-  /** IMPORT_ROOT の外や、存在しないパスは受け付けない */
+  /** from 番目以降のログを返す。捨てられた行は飛ばす */
+  public logsOf(id: string, from: number): ImportLogPage {
+    this.get(id);
+    const buffer = this.logs.get(id) ?? { dropped: 0, entries: [] };
+    const start = Math.max(from, buffer.dropped);
+    return {
+      entries: buffer.entries.slice(start - buffer.dropped),
+      next: buffer.dropped + buffer.entries.length,
+    };
+  }
+
+  private log(job: ImportJob, level: ImportLogLevel, message: string) {
+    const buffer = this.logs.get(job.id);
+    if (!buffer) {
+      return;
+    }
+    buffer.entries.push({ at: new Date().toISOString(), level, message });
+    if (buffer.entries.length > MAX_LOGS) {
+      buffer.entries.shift();
+      buffer.dropped++;
+    }
+  }
+
+  /** 絶対パスだけを受け付ける。存在しないパスや、IMPORT_ROOT が設定されていればその外も受け付けない */
   private resolve(requested: string) {
-    const root = this.root;
+    if (!path.isAbsolute(requested)) {
+      throw new BadRequestException(`"${requested}" は絶対パスで指定してください`);
+    }
     let target: string;
     try {
-      target = fs.realpathSync(path.resolve(root, requested));
+      target = fs.realpathSync(requested);
     } catch {
       throw new BadRequestException(`"${requested}" が見つかりません`);
     }
-    const relative = path.relative(root, target);
-    if (relative.startsWith("..") || path.isAbsolute(relative)) {
-      throw new BadRequestException(`"${requested}" は取り込み対象の範囲外です`);
+    const root = this.root;
+    if (root) {
+      const relative = path.relative(root, target);
+      if (relative.startsWith("..") || path.isAbsolute(relative)) {
+        throw new BadRequestException(
+          `"${requested}" は取り込み対象の範囲外です (${root} の配下のみ)`,
+        );
+      }
     }
     return target;
   }
@@ -96,23 +140,39 @@ export class ImportJobService {
     const sink: ImportProgressSink = {
       fileStarted: (basename) => {
         job.currentFile = basename;
+        this.log(job, "info", `${basename} を取り込んでいます`);
       },
-      fileFinished: () => {
+      fileFinished: (basename) => {
         job.filesDone++;
+        this.log(job, "info", `${basename} を取り込みました`);
       },
       fileFailed: (file, message) => {
         job.filesDone++;
         job.errors.push({ file, message });
+        this.log(job, "error", `${file} の取り込みに失敗しました: ${message}`);
+      },
+      fileSkipped: (file, reason) => {
+        job.skippedCount++;
+        if (job.skipped.length < MAX_SKIPPED) {
+          job.skipped.push({ file, reason });
+          this.log(job, "warn", `${file} を読み飛ばしました: ${reason}`);
+        }
       },
     };
     this.progress.attach(sink);
     try {
       await this.traversal.traverse(target);
       job.status = "completed";
+      this.log(
+        job,
+        "info",
+        `取り込みが終わりました (${job.filesDone} ファイル、エラー ${job.errors.length}、読み飛ばし ${job.skippedCount})`,
+      );
     } catch (e) {
       this.logger.error(e.stack || e);
       job.status = "failed";
       job.error = e?.message ?? String(e);
+      this.log(job, "error", `取り込みに失敗しました: ${job.error}`);
     } finally {
       this.progress.detach();
       delete job.currentFile;
@@ -128,6 +188,7 @@ export class ImportJobService {
       }
       if (this.jobs.get(id) !== this.running) {
         this.jobs.delete(id);
+        this.logs.delete(id);
       }
     }
   }

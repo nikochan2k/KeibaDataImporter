@@ -1,10 +1,12 @@
 import { type FormEvent, useEffect, useState } from "react";
 import { type ImportJob, request, useApi } from "../api";
 import { formatDateTime } from "../format";
+import { useImportStatus } from "../ImportStatus";
 
 const STATUS_LABEL = { running: "取り込み中", completed: "完了", failed: "失敗" } as const;
 
 export function ImportsPage() {
+  const { refresh } = useImportStatus();
   const [path, setPath] = useState("");
   const [message, setMessage] = useState<string>();
   const [tick, setTick] = useState(0);
@@ -30,6 +32,7 @@ export function ImportsPage() {
         body: JSON.stringify({ path }),
       });
       setTick((t) => t + 1);
+      refresh();
     } catch (error) {
       setMessage((error as Error).message);
     }
@@ -42,7 +45,7 @@ export function ImportsPage() {
         <input
           type="text"
           className="wide"
-          placeholder="取り込むファイル/ディレクトリ (サーバーの IMPORT_ROOT からの相対パス)"
+          placeholder="取り込むファイル/ディレクトリの絶対パス"
           value={path}
           onChange={(e) => setPath(e.target.value)}
         />{" "}
@@ -63,6 +66,7 @@ export function ImportsPage() {
               <th>終了</th>
               <th className="num">完了ファイル</th>
               <th>現在のファイル</th>
+              <th className="num">読み飛ばし</th>
               <th className="num">エラー</th>
             </tr>
           </thead>
@@ -74,7 +78,29 @@ export function ImportsPage() {
                 <td>{formatDateTime(job.startedAt)}</td>
                 <td>{formatDateTime(job.finishedAt)}</td>
                 <td className="num">{job.filesDone}</td>
-                <td>{job.currentFile}</td>
+                <td>
+                  {job.currentFile}
+                  {job.status === "completed" && job.filesDone === 0 && (
+                    <span className="error">取り込めたファイルがありませんでした</span>
+                  )}
+                </td>
+                <td className="num">
+                  {job.skippedCount > 0 && (
+                    <details>
+                      <summary>{job.skippedCount}</summary>
+                      <ul className="errors">
+                        {job.skipped.map((skipped) => (
+                          <li key={`${skipped.file}:${skipped.reason}`}>
+                            {skipped.file}: {skipped.reason}
+                          </li>
+                        ))}
+                        {job.skippedCount > job.skipped.length && (
+                          <li>ほか {job.skippedCount - job.skipped.length} 件</li>
+                        )}
+                      </ul>
+                    </details>
+                  )}
+                </td>
                 <td className="num">
                   {job.errors.length > 0 && (
                     <details>

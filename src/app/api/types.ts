@@ -4,7 +4,7 @@ export type ImportJobStatus = "running" | "completed" | "failed";
 
 export interface ImportJob {
   id: string;
-  /** 取り込み対象(IMPORT_ROOT からの相対パス) */
+  /** 取り込み対象(絶対パス) */
   path: string;
   status: ImportJobStatus;
   startedAt: string;
@@ -12,6 +12,23 @@ export interface ImportJob {
   currentFile?: string;
   filesDone: number;
   errors: { file: string; message: string }[];
+  /** 取り込み対象と判断できず、読まなかったファイル(先頭の一部だけ)。総数は skippedCount */
+  skipped: { file: string; reason: string }[];
+  skippedCount: number;
   /** ジョブ自体が失敗したときの理由 */
   error?: string;
+}
+
+export type ImportLogLevel = "info" | "warn" | "error";
+
+export interface ImportLogEntry {
+  at: string;
+  level: ImportLogLevel;
+  message: string;
+}
+
+/** 取り込みログの続き。次に読むときは from に next を渡す */
+export interface ImportLogPage {
+  entries: ImportLogEntry[];
+  next: number;
 }
