@@ -52,13 +52,14 @@ export class KolChoukyouTool {
   @Inject()
   private choukyouDao: ChoukyouDao;
 
-  public async saveShussoubaChoukyou(sc: ShussoubaChoukyou) {
-    return await this.choukyouDao.save(sc);
-  }
-
+  /**
+   * 調教 1 件を保存し、出走馬と結びつけます。
+   * 調教フラグ・矢印・例外はレース(出走馬)ごとに変わるので、連関(ShussoubaChoukyou)に持たせます。
+   */
   public async saveChoukyou(
     buffer: Buffer,
     offset: number,
+    shussoubaId: number,
     umaId: number,
     tanshukuKishuMei: string,
     awase?: string,
@@ -75,7 +76,6 @@ export class KolChoukyouTool {
 
     const choukyou = new Choukyou();
     choukyou.UmaId = umaId;
-    choukyou.ChoukyouFlag = $CH.choukyouFlag.toCodeFromKol(buffer, offset, 1);
     choukyou.Noriyaku = $CH.noriyaku.toCodeFromKol(kijousha);
     const nengappi = readInt(buffer, offset + 9, 8);
     choukyou.Nengappi = nengappi;
@@ -109,8 +109,6 @@ export class KolChoukyouTool {
     if (!choukyou.Oikiri && !choukyou.Ashiiro) {
       choukyou.OikiriSonota = oikiri;
     }
-    choukyou.Yajirushi = $CH.yajirushi.toCodeFromKol(buffer, offset + 76, 1);
-    choukyou.Reigai = readStr(buffer, offset + 77, 40);
     if (awase) {
       let reigai = false;
       let execed = /^[\u30A1-\u30FC]+/.exec(awase);
@@ -169,6 +167,14 @@ export class KolChoukyouTool {
       choukyouTime.ChoukyouId = choukyou.Id;
       await this.entityManager.save(choukyouTime);
     }
+
+    const sc = new ShussoubaChoukyou();
+    sc.ShussoubaId = shussoubaId;
+    sc.ChoukyouId = choukyou.Id;
+    sc.ChoukyouFlag = $CH.choukyouFlag.toCodeFromKol(buffer, offset, 1);
+    sc.Yajirushi = $CH.yajirushi.toCodeFromKol(buffer, offset + 76, 1);
+    sc.Reigai = readStr(buffer, offset + 77, 40);
+    await this.choukyouDao.saveShussoubaChoukyou(sc);
   }
 
   /**
@@ -196,7 +202,8 @@ export class KolChoukyouTool {
 
   /**
    * 調教の中身で同じ調教かを判定します。
-   * 調教フラグ・乗り役・矢印・例外・併せはレース(出走馬)ごとに変わりうるので比べません。
+   * 片方にしかない項目は比べません(JRDB の本追切から作った調教には馬場や時計がないため)。
+   * 乗り役・併せはレース(出走馬)ごとに変わりうるので比べません。
    */
   protected isSameChoukyou(
     asIs: Choukyou,
@@ -214,8 +221,11 @@ export class KolChoukyouTool {
       "Ashiiro",
       "OikiriSonota",
     ];
-    if (keys.some((key) => (asIs[key] ?? null) !== (toBe[key] ?? null))) {
+    if (keys.some((key) => asIs[key] != null && toBe[key] != null && asIs[key] !== toBe[key])) {
       return false;
+    }
+    if (asIsTimes.length === 0 || toBeTimes.length === 0) {
+      return true;
     }
     // Time は real 型で精度が落ちるため 0.1 秒単位に丸めて比べる
     const toKey = (list: ChoukyouTime[]) =>

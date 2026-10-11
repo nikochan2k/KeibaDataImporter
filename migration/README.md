@@ -24,11 +24,11 @@ SQL は `steps/` に分かれている。`dialect/` は DB 固有の部分(日�
 | `steps/10_master.sql` | Jinmei, Kishu, KishuMei, Choukyoushi, ChoukyoushiMei, Uma |
 | `steps/20_race.sql` | Kaisai, Race, RaceSeiseki, TokubetsuMei, RaceMei, Record, RaceLapTime, RaceKeika, RaceHassouJoukyou, OddsHaitou |
 | `steps/30_shussouba.sql` | Kyousouba, Shussouba, ShussoubaSeiseki, ShussoubaTsuukaJuni, ShussoubaHassouJoukyou, Shoyuu, Banushi, Seisansha |
-| `steps/40_choukyou.sql` | Choukyou, ChoukyouTime |
+| `steps/40_choukyou.sql` | Choukyou, ChoukyouTime, ShussoubaChoukyou, ShussoubaHyouka(調教短評・調教本数) |
 | `steps/90_verify.sql` | 移行元と移行先の件数の比較 |
 | `steps/99_cleanup.sql` | 作業テーブル(`mig_*`)の削除 |
 | `fill-matching-key.ts` | `Jinmei` / `Shoyuu` の `MatchingKey` を埋める(SQL では計算できないので、SQL の後に実行する。`migrate-sqlite.sh` は自動で実行する。MySQL / PostgreSQL は手動で、SQLite 専用のスクリプトなので同じ計算で更新すること) |
-| `fill-choukyou-id.ts` | `Choukyou` の `Basho` / `Type` / `Course` / `Renban` を埋め、`Choukyou` / `ChoukyouTime` の Id を Importer と同じ規則で振り直す(場所・種別のコード化を SQL では書けないため。`migrate-sqlite.sh` は自動で実行する。MySQL / PostgreSQL は手動で同じ計算をすること) |
+| `fill-choukyou-id.ts` | `Choukyou` の `Basho` / `Type` / `Course` / `Renban` を埋め、`Choukyou` / `ChoukyouTime` の Id と `ShussoubaChoukyou.ChoukyouId` を Importer と同じ規則で振り直す(場所・種別のコード化を SQL では書けないため。`migrate-sqlite.sh` は自動で実行する。MySQL / PostgreSQL は手動で同じ計算をすること) |
 
 ## 動作確認の状況
 
@@ -48,10 +48,10 @@ SQL は `steps/` に分かれている。`dialect/` は DB 固有の部分(日�
   `KoueiGaikokuKyuushaMei` / `HirabaOmoKousetsu` ほか、旧 `Kishu` の資格区分・所属場所: 新スキーマに列が無い。
   (旧 `Blinker` は `Shussouba.Blinker` と `ShussoubaJoutai` に、旧 `Kishu` の東西別・所属厩舎・見習い区分は
   `Kishu.Shozoku` / `ShozokuChoukyoushiId` / `MinaraiKubun` に移す。)
-* 旧 `Choukyou` の `Tanpyou` / `HonsuuCourse` / `HonsuuHanro` / `HonsuuPool` / `Rating`、
+* 旧 `Choukyou` の `Rating` / `KyuuyouRiyuu`、
   旧 `ChoukyouRireki.ChoukyouBaba`、旧 `RaceHassouJoukyou.UmabanGun`: 新スキーマに列が無い。
 * `ImportFile` / `ImportLog` / `UserSQL` / `Code` / `Japanize`: 新スキーマに対応するテーブルが無い。
-* `ShussoubaYosou` / `ShussoubaHyouka` / `ShussoubaJoutai` / `ShussoubaChoukyou` / `RaceTrackBias` /
+* `ShussoubaYosou` / `ShussoubaHyouka`(調教短評・調教本数以外) / `ShussoubaJoutai` / `RaceTrackBias` /
   `KaisaiYosou` / `Houbokusaki`: 旧スキーマに元データが無い。
 
 ## 前提と、実データで確認すべき点
@@ -78,6 +78,7 @@ SQL は `steps/` に分かれている。`dialect/` は DB 固有の部分(日�
   (英字名の `EigoBamei` への振り分けはしない)。
 * **Choukyou**: 場所・コース・脚色・併せ馬は `BashoCourse` / `OikiriSonota` / `AwaseReigai` に原文を入れる。
   `Basho` / `Type` / `Course` だけは Id に必要なため、`BashoCourse` を Importer の変換表でコード化して入れる。
-  `Noriyaku` は NULL。
+  `Noriyaku` は NULL。同じ調教は1件にまとめ、どの出走馬に出てきたか(と矢印・例外)は `ShussoubaChoukyou` に入れる。
+  `ShussoubaChoukyou.ChoukyouFlag` は旧テーブルに無いので NULL。
 * 日付のない旧レース(`Nengappi` が不正)は移行されない。件数は `90_verify.sql` の
   「Race(日付なしで除外)」で確認できる。

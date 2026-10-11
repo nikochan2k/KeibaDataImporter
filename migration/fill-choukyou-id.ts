@@ -2,7 +2,8 @@
 //
 // Importer は Choukyou.Id を (馬, 日付, 場所, 種別, 連番) から作るが、場所・種別は KOL の文字列を
 // 変換表(src/app/converters/Choukyou)でコード化した値で、SQL では同じ変換を書けないので、
-// 40_choukyou.sql が仮の Id で入れた後にこのスクリプトで振り直す。ChoukyouTime の Id と ChoukyouId も合わせて直す。
+// 40_choukyou.sql が仮の Id で入れた後にこのスクリプトで振り直す。ChoukyouTime の Id と ChoukyouId、
+// ShussoubaChoukyou の ChoukyouId も合わせて直す。
 //
 //   bun migration/fill-choukyou-id.ts <移行先 keiba.sqlite>
 //
@@ -30,6 +31,7 @@ db.transaction(() => {
   // 新しい Id が仮の Id とぶつからないよう、いったん負の値に退避する
   db.run("UPDATE Choukyou SET Id = -Id");
   db.run("UPDATE ChoukyouTime SET Id = -Id, ChoukyouId = -ChoukyouId");
+  db.run("UPDATE ShussoubaChoukyou SET ChoukyouId = -ChoukyouId");
 
   const updateChoukyou = db.prepare(
     "UPDATE Choukyou SET Id = ?, Basho = ?, Type = ?, Course = ?, Renban = ? WHERE Id = ?",
@@ -37,6 +39,7 @@ db.transaction(() => {
   const updateTime = db.prepare(
     "UPDATE ChoukyouTime SET Id = ? * 8 + (F - 1), ChoukyouId = ? WHERE ChoukyouId = ?",
   );
+  const updateLink = db.prepare("UPDATE ShussoubaChoukyou SET ChoukyouId = ? WHERE ChoukyouId = ?");
   const renbans = new Map<string, number>();
   for (const row of rows) {
     const bashoCourse = row.BashoCourse ? normalize(row.BashoCourse)?.replace(/\s+/g, "") : null;
@@ -51,6 +54,7 @@ db.transaction(() => {
     const id = getChoukyouId(row.UmaId, days, basho, type, renban);
     updateChoukyou.run(id, basho, type, course, renban, -row.Id);
     updateTime.run(id, id, -row.Id);
+    updateLink.run(id, -row.Id);
   }
   console.log(`Choukyou: ${rows.length} 件の Id を振り直した`);
 })();

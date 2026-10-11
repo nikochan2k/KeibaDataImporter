@@ -15,7 +15,6 @@ import { Kyousouba } from "../../entities/Kyousouba";
 import { Race } from "../../entities/Race";
 import { RaceSeiseki } from "../../entities/RaceSeiseki";
 import { Shussouba } from "../../entities/Shussouba";
-import { ShussoubaChoukyou } from "../../entities/ShussoubaChoukyou";
 import { ShussoubaHyouka } from "../../entities/ShussoubaHyouka";
 import { Kubun } from "../../entities/ShussoubaJoutai";
 import { ShussoubaSeiseki } from "../../entities/ShussoubaSeiseki";
@@ -387,10 +386,7 @@ export class KolUma extends DataToImport {
 
   protected async saveChoukyou(buffer: Buffer, shussouba: Shussouba, uma: Uma) {
     const tanshukuKishuMei = readStrWithNoSpace(buffer, 140, 8);
-    const sc = new ShussoubaChoukyou();
-    sc.Id = shussouba.Id;
-    await this.kolChoukyouTool.saveShussoubaChoukyou(sc);
-    await this.kolChoukyouTool.saveChoukyou(buffer, 248, uma.Id, tanshukuKishuMei);
+    await this.kolChoukyouTool.saveChoukyou(buffer, 248, shussouba.Id, uma.Id, tanshukuKishuMei);
   }
 
   public async saveKyousoubaOfRace(buffer: Buffer, k: Kyousouba, choukyoushi: Choukyoushi) {

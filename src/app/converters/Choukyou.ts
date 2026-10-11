@@ -142,7 +142,7 @@ export const type = new Codes([
   { code: ChoukyouType.ShougaiShiken, kol: /試/, jrdb: "61", naiyou: "障害試験", tanshuku: "障試" },
   {
     code: ChoukyouType.Shougai,
-    kol: /障|[美北栗].*A/,
+    kol: /障|北.*A|栗.*A/,
     jrdb: /08|18|62|68|42|43|44|45|46|47|48|49|70/,
     naiyou: "障害",
     tanshuku: "障",
@@ -185,7 +185,7 @@ export const type = new Codes([
 export const course = new Codes([
   { code: 1, kol: /A|[美北栗].*障/, jrdb: /05|08|70/, naiyou: "A" },
   { code: 2, kol: /B|[美南].*W/, jrdb: /02|06|14/, naiyou: "B" },
-  { code: 3, kol: /C|[美南].*[芝ポP]|栗.*W/, jrdb: /04|07|10|12/, naiyou: "C" },
+  { code: 3, kol: /C|[美南].*[芝ポP]|栗[^D]*W/, jrdb: /04|07|10|12/, naiyou: "C" },
   { code: 4, kol: /D|栗.*[芝WポP]/, jrdb: /03|13|16|17/, naiyou: "D" },
   { code: 5, kol: /E/, jrdb: /15/, naiyou: "E" },
 ]);

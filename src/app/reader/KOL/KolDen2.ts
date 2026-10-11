@@ -5,7 +5,7 @@ import * as $S from "../../converters/Shussouba";
 import { Bagu } from "../../converters/ShussoubaJoutai";
 import * as $SY from "../../converters/ShussoubaYosou";
 import { Shussouba } from "../../entities/Shussouba";
-import { ShussoubaChoukyou } from "../../entities/ShussoubaChoukyou";
+import { ShussoubaHyouka } from "../../entities/ShussoubaHyouka";
 import { Kubun } from "../../entities/ShussoubaJoutai";
 import { ShussoubaYosou } from "../../entities/ShussoubaYosou";
 import { Bridge } from "../Bridge";
@@ -140,21 +140,23 @@ export class KolDen2 extends KolDataToImport {
     info: ShussoubaInfo,
     tanshukuKishuMei: string,
   ) {
-    const sc = new ShussoubaChoukyou();
-    sc.Id = info.shussouba.Id;
     if (this.has(694)) {
-      sc.ChoukyouTanpyou = readStr(buffer, this.at(694), 24);
-      sc.ChoukyouHonsuuCourse = readPositiveInt(buffer, this.at(718), 3);
-      sc.ChoukyouHonsuuHanro = readPositiveInt(buffer, this.at(721), 3);
-      sc.ChoukyouHonsuuPool = readPositiveInt(buffer, this.at(724), 3);
+      const toBe = new ShussoubaHyouka();
+      toBe.Id = info.shussouba.Id;
+      toBe.ChoukyouTanpyou = readStr(buffer, this.at(694), 24);
+      toBe.ChoukyouHonsuuCourse = readPositiveInt(buffer, this.at(718), 3);
+      toBe.ChoukyouHonsuuHanro = readPositiveInt(buffer, this.at(721), 3);
+      toBe.ChoukyouHonsuuPool = readPositiveInt(buffer, this.at(724), 3);
+      const asIs = await this.entityManager.findOneBy(ShussoubaHyouka, { Id: toBe.Id });
+      await this.tool.saveOrUpdate(ShussoubaHyouka, asIs, toBe);
     }
-    await this.choukyouTool.saveShussoubaChoukyou(sc);
 
     const choukyouAwaseFlag = readPositiveInt(buffer, this.at(607), 1);
     const choukyouAwase = readStr(buffer, this.at(608), 86);
     await this.choukyouTool.saveChoukyou(
       buffer,
       this.at(256),
+      info.shussouba.Id,
       info.uma.Id,
       tanshukuKishuMei,
       choukyouAwaseFlag === 1 ? choukyouAwase : null,
@@ -162,6 +164,7 @@ export class KolDen2 extends KolDataToImport {
     await this.choukyouTool.saveChoukyou(
       buffer,
       this.at(373),
+      info.shussouba.Id,
       info.uma.Id,
       tanshukuKishuMei,
       choukyouAwaseFlag === 2 ? choukyouAwase : null,
@@ -169,6 +172,7 @@ export class KolDen2 extends KolDataToImport {
     await this.choukyouTool.saveChoukyou(
       buffer,
       this.at(490),
+      info.shussouba.Id,
       info.uma.Id,
       tanshukuKishuMei,
       choukyouAwaseFlag === 3 ? choukyouAwase : null,

@@ -1,29 +1,25 @@
-import { Inject } from "typedi";
 import * as $CH from "../../converters/Choukyou";
-import { ChoukyouDao } from "../../daos/ChoukyouDao";
 import { Shussouba } from "../../entities/Shussouba";
-import { ShussoubaChoukyou } from "../../entities/ShussoubaChoukyou";
+import { ShussoubaHyouka } from "../../entities/ShussoubaHyouka";
 import { JrdbShussoubaData } from "./JrdbShussoubaData";
 
+/** 調教分析データ(CYA / CYB)。レースに向けた調教の評価なので、出走馬の評価(ShussoubaHyouka)に入れる */
 export abstract class Cy$ extends JrdbShussoubaData {
-  @Inject()
-  protected choukyouDao: ChoukyouDao;
-
   protected async saveShussoubaRelated(buffer: Buffer, shussouba: Shussouba) {
     await super.saveShussoubaRelated(buffer, shussouba);
-    await this.saveShussoubaChoukyou(buffer, shussouba);
+    await this.saveShussoubaHyouka(buffer, shussouba);
   }
 
-  protected async saveShussoubaChoukyou(buffer: Buffer, shussouba: Shussouba) {
-    const toBe = new ShussoubaChoukyou();
+  protected async saveShussoubaHyouka(buffer: Buffer, shussouba: Shussouba) {
+    const toBe = new ShussoubaHyouka();
     toBe.Id = shussouba.Id;
-    await this.setChoukyou(buffer, toBe);
+    this.setChoukyou(buffer, toBe);
 
-    const asIs = await this.entityManager.findOneBy(ShussoubaChoukyou, { Id: toBe.Id });
-    await this.tool.saveOrUpdate(ShussoubaChoukyou, asIs, toBe);
+    const asIs = await this.entityManager.findOneBy(ShussoubaHyouka, { Id: toBe.Id });
+    await this.tool.saveOrUpdate(ShussoubaHyouka, asIs, toBe);
   }
 
-  protected async setChoukyou(buffer: Buffer, sc: ShussoubaChoukyou) {
+  protected setChoukyou(buffer: Buffer, sc: ShussoubaHyouka) {
     sc.ChoukyouType = $CH.choukyouType.toCodeFromJrdb(buffer, 10, 2);
     sc.Choukyouryou = $CH.choukyouryou.toCodeFromJrdb(buffer, 10, 2);
     sc.ChoukyouTsuyosa = $CH.choukyouTsuyosa.toCodeFromJrdb(buffer, 10, 2);

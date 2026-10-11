@@ -6,7 +6,6 @@ import { Bagu } from "../../converters/ShussoubaJoutai";
 import * as $SY from "../../converters/ShussoubaYosou";
 import { Kyousouba } from "../../entities/Kyousouba";
 import { Shussouba } from "../../entities/Shussouba";
-import { ShussoubaChoukyou } from "../../entities/ShussoubaChoukyou";
 import { ShussoubaHyouka } from "../../entities/ShussoubaHyouka";
 import { Kubun } from "../../entities/ShussoubaJoutai";
 import { ShussoubaSeiseki } from "../../entities/ShussoubaSeiseki";
@@ -185,9 +184,12 @@ export class KolSei2 extends DataToImport {
 
   protected async saveChoukyou(buffer: Buffer, info: ShussoubaInfo) {
     const tanshukuKishuMei = readStrWithNoSpace(buffer, 199, 8);
-    const sc = new ShussoubaChoukyou();
-    sc.Id = info.shussouba.Id;
-    await this.choukyouTool.saveShussoubaChoukyou(sc);
-    await this.choukyouTool.saveChoukyou(buffer, 307, info.uma.Id, tanshukuKishuMei);
+    await this.choukyouTool.saveChoukyou(
+      buffer,
+      307,
+      info.shussouba.Id,
+      info.uma.Id,
+      tanshukuKishuMei,
+    );
   }
 }

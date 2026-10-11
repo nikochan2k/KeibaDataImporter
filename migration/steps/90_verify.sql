@@ -18,5 +18,6 @@ UNION ALL SELECT 'Choukyoushi', (SELECT COUNT(*) FROM old.Kyuusha), (SELECT COUN
 UNION ALL SELECT 'Uma', (SELECT COUNT(*) FROM old.Kyousouba), (SELECT COUNT(*) FROM Uma)
 UNION ALL SELECT 'Choukyou(重複統合あり)', (SELECT COUNT(*) FROM old.ChoukyouRireki), (SELECT COUNT(*) FROM Choukyou)
 UNION ALL SELECT 'ChoukyouTime(重複統合あり)', (SELECT COUNT(*) FROM old.ChoukyouTime), (SELECT COUNT(*) FROM ChoukyouTime)
+UNION ALL SELECT 'ShussoubaChoukyou', (SELECT COUNT(*) FROM old.ChoukyouRireki), (SELECT COUNT(*) FROM ShussoubaChoukyou)
 UNION ALL SELECT 'Kaisai', 0, (SELECT COUNT(*) FROM Kaisai)
 UNION ALL SELECT 'OddsHaitou', 0, (SELECT COUNT(*) FROM OddsHaitou);

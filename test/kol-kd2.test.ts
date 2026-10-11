@@ -236,10 +236,7 @@ const kd3OnlyColumns: { [kind: string]: string[] } = {
     "Shussouba.KyuuyouRiyuu", // 休養理由
     "Shussouba.KyuuyouRiyuuCode",
     "Shussouba.TorikeshiShubetsu", // 予想２
-    "ShussoubaChoukyou.ChoukyouHonsuuCourse", // 調教本数
-    "ShussoubaChoukyou.ChoukyouHonsuuHanro",
-    "ShussoubaChoukyou.ChoukyouHonsuuPool",
-    "ShussoubaChoukyou.ChoukyouTanpyou", // 調教短評
+    "ShussoubaHyouka(0/329)", // 調教短評・調教本数(KD2 にはないので行ができない)
     "ShussoubaYosou.KolYosou2", // 予想２
     "ShussoubaYosou.Kyakushitsu", // 出馬表レースデータの予想展開
   ],

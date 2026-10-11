@@ -85,4 +85,88 @@ export class ShussoubaHyouka {
 
   @Column("varchar", { length: 60, nullable: true })
   public RaceComment?: string;
+
+  /* KD3 出馬表出走馬データ(調教) */
+
+  @Column("varchar", { length: 12, nullable: true })
+  public ChoukyouTanpyou?: string;
+
+  @Column("smallint", { nullable: true })
+  public ChoukyouHonsuuCourse?: number;
+
+  @Column("smallint", { nullable: true })
+  public ChoukyouHonsuuHanro?: number;
+
+  @Column("smallint", { nullable: true })
+  public ChoukyouHonsuuPool?: number;
+
+  /* JRDB 調教分析データ */
+
+  @Column("tinyint", { nullable: true })
+  public ChoukyouType?: number;
+
+  @Column("tinyint", { nullable: true })
+  public Choukyouryou?: number;
+
+  @Column("tinyint", { nullable: true })
+  public ChoukyouTsuyosa?: number;
+
+  @Column("tinyint", { nullable: true })
+  public ChoukyouCourseMain?: number;
+
+  @Column("tinyint", { nullable: true })
+  public ChoukyouCourseHanro?: number;
+
+  @Column("tinyint", { nullable: true })
+  public ChoukyouCourseWood?: number;
+
+  @Column("tinyint", { nullable: true })
+  public ChoukyouCourseDirt?: number;
+
+  @Column("tinyint", { nullable: true })
+  public ChoukyouCourseShiba?: number;
+
+  @Column("tinyint", { nullable: true })
+  public ChoukyouCoursePool?: number;
+
+  @Column("tinyint", { nullable: true })
+  public ChoukyouCourseShougai?: number;
+
+  @Column("tinyint", { nullable: true })
+  public ChoukyouCoursePoly?: number;
+
+  @Column("tinyint", { nullable: true })
+  public ChoukyouKyori?: number;
+
+  @Column("tinyint", { nullable: true })
+  public ChoukyouJuuten?: number;
+
+  /** 一週前追切の指数 */
+  @Column("smallint", { nullable: true })
+  public IsshuumaeOikiriShisuu?: number;
+
+  /** 一週前追切の調教場所・コース(CHA の追切と同じコード表) */
+  @Column("tinyint", { nullable: true })
+  public IsshuumaeOikiriBasho?: number;
+
+  @Column("smallint", { nullable: true })
+  public OikiriShisuu?: number;
+
+  @Column("smallint", { nullable: true })
+  public ShiageShisuu?: number;
+
+  @Column("tinyint", { nullable: true })
+  public ChoukyouryouHyouka?: number;
+
+  @Column("tinyint", { nullable: true })
+  public ShiageShisuuHenka?: number;
+
+  @Column("varchar", { length: 60, nullable: true })
+  public ChoukyouComment?: string;
+
+  @Column("int", { nullable: true })
+  public ChoukyouCommentNengappi?: number;
+
+  @Column("tinyint", { nullable: true })
+  public ChoukyouHyouka?: number;
 }

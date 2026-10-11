@@ -14,6 +14,7 @@ import { RaceHassouJoukyou } from "../src/app/entities/RaceHassouJoukyou";
 import { RaceLapTime } from "../src/app/entities/RaceLapTime";
 import { RaceSeiseki } from "../src/app/entities/RaceSeiseki";
 import { Shussouba } from "../src/app/entities/Shussouba";
+import { ShussoubaChoukyou } from "../src/app/entities/ShussoubaChoukyou";
 import { ShussoubaHassouJoukyou } from "../src/app/entities/ShussoubaHassouJoukyou";
 import { ShussoubaHyouka } from "../src/app/entities/ShussoubaHyouka";
 import { ShussoubaSeiseki } from "../src/app/entities/ShussoubaSeiseki";
@@ -588,8 +589,9 @@ describe("取り込み結果が見本ファイルと一致する", () => {
       }
       return b;
     };
-    const saveChoukyou = (b: Buffer, umaId: number) =>
-      Container.get(KolChoukyouTool).saveChoukyou(b, 0, umaId, "テスト");
+    /** 出走馬Id は馬Id * 10 + n とする(n で別のレースを表す) */
+    const saveChoukyou = (b: Buffer, umaId: number, n = 0) =>
+      Container.get(KolChoukyouTool).saveChoukyou(b, 0, umaId * 10 + n, umaId, "テスト");
 
     beforeAll(async () => {
       await resetKolDb("kyu");
@@ -616,6 +618,20 @@ describe("取り込み結果が見本ファイルと一致する", () => {
       const rows = await repo(Choukyou).findBy({ UmaId: 104 });
       expect(rows.length).toBe(2);
       expect(await repo(ChoukyouTime).countBy({ ChoukyouId: In(rows.map((r) => r.Id)) })).toBe(4);
+    });
+
+    test("同じ調教が 2 つのレースに出てくると、調教は 1 件で、出走馬ごとに結びつく", async () => {
+      const a = slot({ date: "20071005", course: "栗東  CW", times: [" 13.5", " 12.8"] });
+      await saveChoukyou(a, 107, 1);
+      put(a, 76, 1, "4"); // 矢印はレースごとに違う
+      await saveChoukyou(a, 107, 2);
+      const rows = await repo(Choukyou).findBy({ UmaId: 107 });
+      expect(rows.length).toBe(1);
+      const links = await repo(ShussoubaChoukyou).findBy({ ChoukyouId: rows[0].Id });
+      expect(links.map((l) => [l.ShussoubaId, l.Yajirushi]).sort()).toEqual([
+        [1071, null],
+        [1072, 4],
+      ]);
     });
 
     test("ID は馬・日付・場所・種別・連番から決まる", async () => {

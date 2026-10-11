@@ -4,7 +4,9 @@ import { afterAll, beforeAll, describe, expect, test } from "bun:test";
 import { Container } from "typedi";
 import { Baken, Kakutei } from "../src/app/converters/Common";
 import { dataSource } from "../src/app/DataSource";
+import { Choukyou } from "../src/app/entities/Choukyou";
 import { Kishu } from "../src/app/entities/Kishu";
+import { Kyousouba } from "../src/app/entities/Kyousouba";
 import { OddsHaitou } from "../src/app/entities/OddsHaitou";
 import { Race } from "../src/app/entities/Race";
 import { RaceSeiseki } from "../src/app/entities/RaceSeiseki";
@@ -13,11 +15,13 @@ import { ShussoubaChoukyou } from "../src/app/entities/ShussoubaChoukyou";
 import { ShussoubaHyouka } from "../src/app/entities/ShussoubaHyouka";
 import { ShussoubaSeiseki } from "../src/app/entities/ShussoubaSeiseki";
 import { ShussoubaYosou } from "../src/app/entities/ShussoubaYosou";
+import { Cha } from "../src/app/reader/JRDB/Cha";
 import { Cyb } from "../src/app/reader/JRDB/Cyb";
 import { Hjc } from "../src/app/reader/JRDB/Hjc";
 import { K$a } from "../src/app/reader/JRDB/K$a";
 import { Sed } from "../src/app/reader/JRDB/Sed";
 import { Tyb } from "../src/app/reader/JRDB/Tyb";
+import { KolChoukyouTool } from "../src/app/reader/KOL/KolChoukyouTool";
 import { base, Field, record, setFileDate } from "./helpers";
 
 /** レースキー(中山 2024年 3回4日 11R)と馬番5 */
@@ -206,11 +210,78 @@ describe("CYB 調教分析", () => {
 
     const race = await find(Race, {});
     const shussouba = await find(Shussouba, { RaceId: race.Id });
-    const sc = await find(ShussoubaChoukyou, { Id: shussouba.Id });
+    const sc = await find(ShussoubaHyouka, { Id: shussouba.Id });
     expect(sc.OikiriShisuu).toBe(95);
     expect(sc.ShiageShisuu).toBe(88);
     expect(sc.IsshuumaeOikiriShisuu).toBe(100);
     expect(sc.IsshuumaeOikiriBasho).toBe(0);
+  });
+});
+
+describe("CHA 調教本追切", () => {
+  const cha = [
+    ...raceKey,
+    [11, "水"],
+    [13, "20240403"],
+    [21, "2"], // 回数
+    [22, "11"], // 栗東坂路
+    [24, "1"], // 一杯
+    [25, "01"],
+    [27, "1"], // 助手
+    [28, "4"],
+    [29, "523"],
+    [32, "381"],
+    [35, "124"],
+    [47, " 98"],
+    [50, "1"], // 先着
+  ] as Field[];
+
+  test("KOL の調教に本追切の項目を足し、出走馬と本追切として結びつける", async () => {
+    const race = await find(Race, {});
+    const shussouba = await find(Shussouba, { RaceId: race.Id });
+    // 出走馬に競走馬を結びつける(本来は KYI などで入る)
+    const kyousouba = await dataSource.manager.save(
+      Object.assign(new Kyousouba(), { UmaId: 9001 }),
+    );
+    await dataSource.manager.update(Shussouba, { Id: shussouba.Id }, { KyousoubaId: kyousouba.Id });
+    shussouba.KyousoubaId = kyousouba.Id;
+    // 先に KOL の出馬表から同じ調教(同じ馬・同じ日・栗東坂路)が入っている
+    const kol = record(
+      [
+        [1, "1"],
+        [2, "助手"],
+        [10, "20240403"],
+        [18, "栗東  坂"],
+        [26, "良"],
+        [40, "  2回"],
+        [46, "  52.3"],
+        [64, "  12.4"],
+        [71, "一　杯"],
+        [77, "2"],
+      ],
+      120,
+    );
+    await Container.get(KolChoukyouTool).saveChoukyou(
+      kol,
+      0,
+      shussouba.Id,
+      kyousouba.UmaId,
+      "テスト",
+    );
+    await Container.get(Cha).save(record(cha, 64));
+
+    const choukyou = await dataSource.manager.findBy(Choukyou, { UmaId: kyousouba.UmaId });
+    expect(choukyou.length).toBe(1);
+    expect(choukyou[0].Baba).toBe(0); // KOL の項目は残る
+    expect(choukyou[0].TenF).toBeCloseTo(52.3);
+    expect(choukyou[0].OikiriShisuu).toBe(98);
+
+    const links = await dataSource.manager.findBy(ShussoubaChoukyou, { ShussoubaId: shussouba.Id });
+    expect(links.length).toBe(1);
+    expect(links[0].ChoukyouId).toBe(choukyou[0].Id);
+    expect(links[0].ChoukyouFlag).toBe(1);
+    expect(links[0].Yajirushi).toBe(2);
+    expect(links[0].HonOikiri).toBe(1);
   });
 });
 

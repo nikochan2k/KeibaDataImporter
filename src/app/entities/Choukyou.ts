@@ -10,9 +10,6 @@ export class Choukyou {
   public UmaId: number;
 
   @Column("tinyint", { nullable: true })
-  public ChoukyouFlag?: number;
-
-  @Column("tinyint", { nullable: true })
   public Noriyaku?: number;
 
   @Column("int", { nullable: true })
@@ -55,12 +52,6 @@ export class Choukyou {
   @Column("varchar", { length: 9, nullable: true })
   public OikiriSonota?: string;
 
-  @Column("tinyint", { nullable: true })
-  public Yajirushi?: number; // 1:一変　2:平行 3:下降　4:良化　5:下降気味
-
-  @Column("varchar", { length: 60, nullable: true })
-  public Reigai?: string;
-
   @Column("int", { nullable: true })
   public AwaseUmaId?: number;
 
@@ -75,4 +66,43 @@ export class Choukyou {
 
   @Column("varchar", { length: 129, nullable: true })
   public AwaseReigai?: string;
+
+  /* JRDB 調教本追切データ */
+
+  @Column("tinyint", { nullable: true })
+  public OiJoutai?: number;
+
+  /** 調教ハロンの長さ */
+  @Column("tinyint", { nullable: true })
+  public ChoukyouF?: number;
+
+  @Column("real", { nullable: true })
+  public TenF?: number;
+
+  @Column("real", { nullable: true })
+  public ChuukanF?: number;
+
+  @Column("real", { nullable: true })
+  public ShimaiF?: number;
+
+  @Column("smallint", { nullable: true })
+  public TenFShisuu?: number;
+
+  @Column("smallint", { nullable: true })
+  public ChuukanFShisuu?: number;
+
+  @Column("smallint", { nullable: true })
+  public ShimaiFShisuu?: number;
+
+  @Column("smallint", { nullable: true })
+  public OikiriShisuu?: number;
+
+  @Column("tinyint", { nullable: true })
+  public AwaseumaOikiriShurui?: number;
+
+  @Column("tinyint", { nullable: true })
+  public AwaseumaNenrei?: number;
+
+  @Column("tinyint", { nullable: true })
+  public AwaseumaClass?: number;
 }
