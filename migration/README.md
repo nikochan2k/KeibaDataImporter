@@ -27,6 +27,7 @@ SQL は `steps/` に分かれている。`dialect/` は DB 固有の部分(日�
 | `steps/40_choukyou.sql` | Choukyou, ChoukyouTime |
 | `steps/90_verify.sql` | 移行元と移行先の件数の比較 |
 | `steps/99_cleanup.sql` | 作業テーブル(`mig_*`)の削除 |
+| `fill-matching-key.ts` | `Jinmei` / `Shoyuu` の `MatchingKey` を埋める(SQL では計算できないので、SQL の後に実行する。`migrate-sqlite.sh` は自動で実行する。MySQL / PostgreSQL は手動で、SQLite 専用のスクリプトなので同じ計算で更新すること) |
 
 ## 動作確認の状況
 
@@ -42,8 +43,10 @@ SQL は `steps/` に分かれている。`dialect/` は DB 固有の部分(日�
 
 * 旧 `ShussoubaKeika`: 新しい `ShussoubaKeika` は `RaceKeika.Keika` を Importer が解析した値で、形式が違う。
 * 旧 `Race` の `JoukenKei` / `JoukenFuka1` / `JoukenFuka2`: 新 `Race` の条件フラグと一対一で対応しない。
-* 旧 `Shussouba` の `Blinker` / `YosouShirushi*` / `Ninki` / `Odds`、旧 `Kyousouba` の
-  `KoueiGaikokuKyuushaMei` / `HirabaOmoKousetsu` ほか、旧 `Kishu` の所属・資格区分: 新スキーマに列が無い。
+* 旧 `Shussouba` の `YosouShirushi*` / `Ninki` / `Odds`、旧 `Kyousouba` の
+  `KoueiGaikokuKyuushaMei` / `HirabaOmoKousetsu` ほか、旧 `Kishu` の資格区分・所属場所: 新スキーマに列が無い。
+  (旧 `Blinker` は `Shussouba.Blinker` と `ShussoubaJoutai` に、旧 `Kishu` の東西別・所属厩舎・見習い区分は
+  `Kishu.Shozoku` / `ShozokuChoukyoushiId` / `MinaraiKubun` に移す。)
 * 旧 `Choukyou` の `Tanpyou` / `HonsuuCourse` / `HonsuuHanro` / `HonsuuPool` / `Rating`、
   旧 `ChoukyouRireki.ChoukyouBaba`、旧 `RaceHassouJoukyou.UmabanGun`: 新スキーマに列が無い。
 * `ImportFile` / `ImportLog` / `UserSQL` / `Code` / `Japanize`: 新スキーマに対応するテーブルが無い。

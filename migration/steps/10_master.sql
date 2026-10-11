@@ -57,8 +57,12 @@ GROUP BY n.Meishou;
 -- ---------------------------------------------------------------
 -- Kishu / KishuMei
 -- ---------------------------------------------------------------
-INSERT INTO Kishu (Id, KolKishuCode, Seinengappi, MenkyoKoufuNengappi)
+-- Shozoku は 1:関東 2:関西 3:他。旧 KishuTouzaiBetsu は 1:西 2:東 3:招待 なので入れ替える。
+INSERT INTO Kishu (Id, KolKishuCode, Seinengappi, MenkyoKoufuNengappi, Shozoku, ShozokuChoukyoushiId, MinaraiKubun)
 SELECT k.Id, k.Id, c.Ymd, k.HatsuMenkyoNen
+  ,CASE k.KishuTouzaiBetsu WHEN 1 THEN 2 WHEN 2 THEN 1 WHEN 3 THEN 3 END
+  ,k.KishuShozokuKyuushaId
+  ,k.MinaraiKubun
 FROM old.Kishu k
 LEFT JOIN mig_calendar c ON c.D = k.Seinengappi;
 

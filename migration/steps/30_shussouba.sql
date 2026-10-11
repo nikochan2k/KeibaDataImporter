@@ -56,21 +56,29 @@ WHERE UmaId IS NOT NULL;
 
 -- ---------------------------------------------------------------
 -- Shussouba (出馬表の内容)
---   旧 Shussouba の Gate / Blinker / Bataijuu / Zougen / YosouShirushi / Ninki / Odds などは
+--   旧 Blinker (1:ブリンカー) は 新 Blinker の 3 にする。ShussoubaJoutai(Kubun=Bagu, Code=Blinker) は
+--   Importer と同じ Id (出走馬Id * 2^14 + Kubun * 2^10 + Code) で作る。
+--   旧 Shussouba の Gate / Bataijuu / Zougen / YosouShirushi / Ninki / Odds などは
 --   新 Shussouba に列が無い。成績に関わるものは ShussoubaSeiseki に入れる。
 -- ---------------------------------------------------------------
 INSERT INTO Shussouba (
   Id, RaceId, Wakuban, Umaban, KyousoubaId, Nenrei, Kinryou
   ,KishuId, KishuTouzaiBetsu, KishuShozokuBasho, KishuShozokuChoukyoushiId, MinaraiKubun, Norikawari
-  ,TorikeshiShubetsu, KolNengappi
+  ,Blinker, TorikeshiShubetsu, KolNengappi
 )
 SELECT
   ms.NewId, ms.RaceId, s.Wakuban, s.Umaban, ms.KyousoubaId, s.Nenrei, s.Kinryou
   ,s.KishuId, s.KishuTouzaiBetsu, s.KishuShozokuBasho, s.KishuShozokuKyuushaId, s.MinaraiKubun, s.Norikawari
-  ,s.TorikeshiShubetsu, cs.Ymd
+  ,CASE WHEN s.Blinker = 1 THEN 3 END, s.TorikeshiShubetsu, cs.Ymd
 FROM old.Shussouba s
 INNER JOIN mig_shussouba ms ON ms.OldId = s.Id
 LEFT JOIN mig_calendar cs ON cs.D = s.ShutsubahyouSakuseiNengappi;
+
+INSERT INTO ShussoubaJoutai (Id, ShussoubaId, Kubun, Code)
+SELECT ms.NewId * 16384 + 3 * 1024 + 1, ms.NewId, 3, 1
+FROM old.Shussouba s
+INNER JOIN mig_shussouba ms ON ms.OldId = s.Id
+WHERE s.Blinker = 1;
 
 -- ---------------------------------------------------------------
 -- ShussoubaSeiseki (成績が入っている出走馬だけ。Id は Shussouba.Id と同じ)

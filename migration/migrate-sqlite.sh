@@ -27,6 +27,7 @@ DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 [ -f "$OLD_DB" ] || { echo "移行元が見つかりません: $OLD_DB" >&2; exit 1; }
 [ -f "$NEW_DB" ] || { echo "移行先が見つかりません: $NEW_DB (先に Importer を起動してテーブルを作成してください)" >&2; exit 1; }
+command -v bun >/dev/null || { echo "bun が見つかりません" >&2; exit 1; }
 command -v sqlite3 >/dev/null || { echo "sqlite3 が見つかりません" >&2; exit 1; }
 
 # SQLite の ATTACH はトランザクションの外で行う
@@ -44,3 +45,6 @@ BEGIN;
 .read $DIR/steps/99_cleanup.sql
 COMMIT;
 SQL
+
+# MatchingKey は SQL では計算できないので、Importer と同じ計算で埋める
+bun "$DIR/fill-matching-key.ts" "$NEW_DB"
