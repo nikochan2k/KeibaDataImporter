@@ -15,10 +15,22 @@ export interface RaceSummary {
   hassouJikan: string | null;
 }
 
-/** レース一覧の絞り込みに使う競馬場 */
+/** 開催のある競馬場 */
 export interface BashoOption {
   basho: number;
   bashoMei: string | null;
+}
+
+/** レースのある年月 */
+export interface RaceMonth {
+  year: number;
+  month: number;
+}
+
+/** 開催のある日と、その日に開催のある競馬場 */
+export interface RaceDay {
+  date: string;
+  bashos: BashoOption[];
 }
 
 export interface RaceEntry {

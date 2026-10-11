@@ -3,7 +3,7 @@ import { basho } from "../converters/Common";
 import * as $R from "../converters/Race";
 import { seibetsu } from "../converters/Uma";
 import { dataSource } from "../DataSource";
-import type { BashoOption, RaceEntry, RaceSummary, UmaStart, UmaSummary } from "./types";
+import type { RaceDay, RaceEntry, RaceMonth, RaceSummary, UmaStart, UmaSummary } from "./types";
 
 /** 数値コードを表示用の名前にする。値がなければ null */
 function label(codes: { toNaiyou(code: number): string }, code: number | null) {
@@ -70,56 +70,47 @@ function escapeLike(text: string) {
 /** 取り込み済みのデータを読む。書き込みはしない */
 @Injectable()
 export class BrowseService {
-  /** レースのある年。新しい年が先 */
-  public async raceYears(): Promise<number[]> {
-    const rows: { Nen: number }[] = await dataSource.query(
-      `SELECT DISTINCT K.Nen FROM Kaisai K
-        WHERE EXISTS (SELECT 1 FROM Race R WHERE R.KaisaiId = K.Id) ORDER BY K.Nen DESC`,
+  /** レースのある年月。新しい月が先 */
+  public async raceMonths(): Promise<RaceMonth[]> {
+    const rows: { Nen: number; Gatsu: number }[] = await dataSource.query(
+      `SELECT DISTINCT K.Nen, K.Gatsu FROM Kaisai K
+        WHERE EXISTS (SELECT 1 FROM Race R WHERE R.KaisaiId = K.Id) ORDER BY K.Nen DESC, K.Gatsu DESC`,
     );
-    return rows.map((row) => row.Nen);
+    return rows.map((row) => ({ year: row.Nen, month: row.Gatsu }));
   }
 
-  /** 指定した年に、レースのある競馬場 */
-  public async raceBashos(year: number): Promise<BashoOption[]> {
-    const rows: { Basho: number }[] = await dataSource.query(
-      `SELECT DISTINCT K.Basho FROM Kaisai K
-        WHERE K.Nen = ? AND EXISTS (SELECT 1 FROM Race R WHERE R.KaisaiId = K.Id) ORDER BY K.Basho`,
-      [year],
-    );
-    return rows.map((row) => ({ basho: row.Basho, bashoMei: label(basho, row.Basho) }));
-  }
-
-  /** 指定した年・競馬場のレース一覧 (日付順) */
-  public async racesAt(year: number, bashoCode: number): Promise<RaceSummary[]> {
-    const rows: RaceRow[] = await dataSource.query(
-      `SELECT ${RACE_COLUMNS} FROM Race R
-        INNER JOIN Kaisai K ON K.Id = R.KaisaiId
-        WHERE K.Nen = ? AND K.Basho = ?
-        ORDER BY K.Gatsu, K.Nichi, R.RaceBangou`,
-      [year, bashoCode],
-    );
-    return rows.map(toRaceSummary);
-  }
-
-  /** 指定した月に、開催のある日 (YYYY-MM-DD) */
-  public async raceDates(year: number, month: number): Promise<string[]> {
-    const rows: { Nichi: number }[] = await dataSource.query(
-      `SELECT DISTINCT K.Nichi FROM Kaisai K
-        INNER JOIN Race R ON R.KaisaiId = K.Id
-        WHERE K.Nen = ? AND K.Gatsu = ? ORDER BY K.Nichi`,
+  /** 指定した月の、開催のある日と、その日に開催のある競馬場 */
+  public async raceDays(year: number, month: number): Promise<RaceDay[]> {
+    const rows: { Nichi: number; Basho: number }[] = await dataSource.query(
+      `SELECT DISTINCT K.Nichi, K.Basho FROM Kaisai K
+        WHERE K.Nen = ? AND K.Gatsu = ? AND EXISTS (SELECT 1 FROM Race R WHERE R.KaisaiId = K.Id)
+        ORDER BY K.Nichi, K.Basho`,
       [year, month],
     );
-    return rows.map((row) => toDate(year, month, row.Nichi));
+    const days: RaceDay[] = [];
+    for (const row of rows) {
+      const date = toDate(year, month, row.Nichi);
+      if (days.at(-1)?.date !== date) {
+        days.push({ date, bashos: [] });
+      }
+      days.at(-1)?.bashos.push({ basho: row.Basho, bashoMei: label(basho, row.Basho) });
+    }
+    return days;
   }
 
-  /** 指定した日のレース一覧 */
-  public async racesOn(year: number, month: number, day: number): Promise<RaceSummary[]> {
+  /** 指定した日のレース一覧。競馬場を指定すればその競馬場だけ */
+  public async racesOn(
+    year: number,
+    month: number,
+    day: number,
+    bashoCode?: number,
+  ): Promise<RaceSummary[]> {
     const rows: RaceRow[] = await dataSource.query(
       `SELECT ${RACE_COLUMNS} FROM Race R
         INNER JOIN Kaisai K ON K.Id = R.KaisaiId
-        WHERE K.Nen = ? AND K.Gatsu = ? AND K.Nichi = ?
+        WHERE K.Nen = ? AND K.Gatsu = ? AND K.Nichi = ? AND (? IS NULL OR K.Basho = ?)
         ORDER BY K.Basho, R.RaceBangou`,
-      [year, month, day],
+      [year, month, day, bashoCode ?? null, bashoCode ?? null],
     );
     return rows.map(toRaceSummary);
   }

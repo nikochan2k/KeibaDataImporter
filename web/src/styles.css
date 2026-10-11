@@ -257,3 +257,55 @@ button:disabled {
     transition: none !important;
   }
 }
+
+.calendar {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 1px;
+  margin: 0 0 8px;
+  background: var(--line);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.calendar .weekday {
+  padding: 4px 8px;
+  background: color-mix(in srgb, var(--accent) 6%, var(--surface));
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.calendar .day {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-height: 72px;
+  padding: 4px 8px;
+  background: var(--surface);
+}
+
+.calendar .day:not(.race-day) {
+  color: var(--muted);
+}
+
+.calendar .day-number {
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+}
+
+.calendar .race-day {
+  background: color-mix(in srgb, var(--accent) 8%, var(--surface));
+}
+
+.calendar .day a {
+  padding: 0 6px;
+  border-radius: 4px;
+  font-size: 13px;
+}
+
+.calendar .day a.active {
+  background: var(--accent);
+  color: var(--accent-fg);
+}

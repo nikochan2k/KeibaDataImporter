@@ -15,36 +15,28 @@ export class BrowseController {
   @Inject()
   private browse: BrowseService;
 
-  /** 指定した月の、開催のある日 */
-  @Get("race-dates")
-  public raceDates(@Query("year") year: string, @Query("month") month: string) {
-    return this.browse.raceDates(toInt(year, "year", 1900, 2999), toInt(month, "month", 1, 12));
+  /** レースのある年月 */
+  @Get("race-months")
+  public raceMonths() {
+    return this.browse.raceMonths();
   }
 
-  /** レースのある年 */
-  @Get("race-years")
-  public raceYears() {
-    return this.browse.raceYears();
+  /** 指定した月の、開催のある日と競馬場 */
+  @Get("race-days")
+  public raceDays(@Query("year") year: string, @Query("month") month: string) {
+    return this.browse.raceDays(toInt(year, "year", 1900, 2999), toInt(month, "month", 1, 12));
   }
 
-  /** 指定した年に、レースのある競馬場 */
-  @Get("race-bashos")
-  public raceBashos(@Query("year") year: string) {
-    return this.browse.raceBashos(toInt(year, "year", 1900, 2999));
-  }
-
-  /** レース一覧。date (YYYY-MM-DD) か、year と basho のどちらかで絞る */
+  /** 指定した日 (YYYY-MM-DD) のレース一覧。basho があればその競馬場だけ */
   @Get("races")
-  public races(
-    @Query("date") date?: string,
-    @Query("year") year?: string,
-    @Query("basho") basho?: string,
-  ) {
-    if (date !== undefined) {
-      const [y, month, day] = BrowseService.parseDate(date);
-      return this.browse.racesOn(y, month, day);
-    }
-    return this.browse.racesAt(toInt(year, "year", 1900, 2999), toInt(basho, "basho"));
+  public races(@Query("date") date?: string, @Query("basho") basho?: string) {
+    const [year, month, day] = BrowseService.parseDate(date);
+    return this.browse.racesOn(
+      year,
+      month,
+      day,
+      basho === undefined ? undefined : toInt(basho, "basho"),
+    );
   }
 
   @Get("races/:id")

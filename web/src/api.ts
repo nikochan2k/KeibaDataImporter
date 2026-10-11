@@ -2,13 +2,15 @@ import { useEffect, useState } from "react";
 import type { ImportJob } from "../../src/app/api/types";
 import type {
   BashoOption,
+  RaceDay,
+  RaceMonth,
   RaceEntry,
   RaceSummary,
   UmaStart,
   UmaSummary,
 } from "../../src/app/browse/types";
 
-export type { BashoOption, ImportJob, RaceEntry, RaceSummary, UmaStart, UmaSummary };
+export type { BashoOption, ImportJob, RaceDay, RaceMonth, RaceEntry, RaceSummary, UmaStart, UmaSummary };
 
 export type RaceDetail = RaceSummary & { entries: RaceEntry[] };
 export type UmaDetail = UmaSummary & {
