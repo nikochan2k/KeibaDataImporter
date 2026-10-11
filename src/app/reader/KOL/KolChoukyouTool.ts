@@ -1,4 +1,3 @@
-import { crc16 } from "crc";
 import { Inject, Service } from "typedi";
 import { EntityManager } from "typeorm";
 import * as $CH from "../../converters/Choukyou";
@@ -12,7 +11,7 @@ import { ShussoubaChoukyou } from "../../entities/ShussoubaChoukyou";
 import { Uma } from "../../entities/Uma";
 import { OrmManager } from "../../OrmManager";
 import { readInt, readPositiveInt, readStr, readStrWithNoSpace } from "../Reader";
-import { Tool } from "../Tool";
+import { getChoukyouId, Tool } from "../Tool";
 
 interface FurlongOffset {
   f: number;
@@ -69,13 +68,12 @@ export class KolChoukyouTool {
       return;
     }
 
-    const choukyou = new Choukyou();
     const dateId = this.tool.getDaysFrom1970(buffer, offset + 9);
-    // ID のハッシュ用に、調教1件のうち日付(offset+9〜16)より後ろ〜例外(offset+77〜)より前の60バイトを切り出す。
-    // 場所/コース・馬場・回数・各ハロンのタイム・位置取り・追い切り・矢印を含み、同じ馬・同じ日の別調教を区別するために使う。
-    const buf = buffer.subarray(offset + 17, offset + 77);
-    const hash = crc16(buf);
-    choukyou.Id = umaId * 2 ** (16 + 16) + dateId * 2 ** 16 + hash;
+    if (dateId === null) {
+      return;
+    }
+
+    const choukyou = new Choukyou();
     choukyou.UmaId = umaId;
     choukyou.ChoukyouFlag = $CH.choukyouFlag.toCodeFromKol(buffer, offset, 1);
     choukyou.Noriyaku = $CH.noriyaku.toCodeFromKol(kijousha);
@@ -148,24 +146,88 @@ export class KolChoukyouTool {
         choukyou.AwaseReigai = awase;
       }
     }
-    await this.entityManager.save(choukyou);
 
+    let times: ChoukyouTime[] = [];
     if (choukyou.Type === $CH.ChoukyouType.Hanro) {
-      await this.saveChoukyouTime(buffer, choukyou, offset, KolChoukyouTool.hanroFurlongOffsets);
+      times = this.readChoukyouTimes(buffer, offset, KolChoukyouTool.hanroFurlongOffsets);
     } else if (
       $CH.ChoukyouType.Shiba <= choukyou.Type &&
       choukyou.Type <= $CH.ChoukyouType.Shougai
     ) {
-      await this.saveChoukyouTime(buffer, choukyou, offset, KolChoukyouTool.courseFurlongOffsets);
+      times = this.readChoukyouTimes(buffer, offset, KolChoukyouTool.courseFurlongOffsets);
+    }
+
+    choukyou.Renban = await this.findRenban(choukyou, dateId, times);
+    choukyou.Id = getChoukyouId(umaId, dateId, choukyou.Basho, choukyou.Type, choukyou.Renban);
+    await this.entityManager.save(choukyou);
+
+    for (const choukyouTime of times) {
+      choukyouTime.Id = choukyou.Id * 2 ** 3 + (choukyouTime.F - 1);
+      if (!Number.isSafeInteger(choukyouTime.Id)) {
+        throw new Error(`調教時計IDが安全な整数の範囲を超えます: umaId=${umaId}`);
+      }
+      choukyouTime.ChoukyouId = choukyou.Id;
+      await this.entityManager.save(choukyouTime);
     }
   }
 
-  protected async saveChoukyouTime(
-    buffer: Buffer,
-    choukyou: Choukyou,
-    offset: number,
-    cfList: FurlongOffset[],
+  /**
+   * 同じ馬・同じ日・同じ場所・同じ種別の調教が既にあれば、同じ調教かどうかを比べて連番を決めます。
+   * 同じ調教はレースごとのファイル(DEN2/SEI2/UMA)に何度も出てくるため、同じ内容ならその連番を使い、
+   * 違う内容なら空いている次の連番を使います。
+   */
+  protected async findRenban(choukyou: Choukyou, dateId: number, times: ChoukyouTime[]) {
+    const { UmaId, Basho, Type } = choukyou;
+    for (let renban = 1; renban <= 4; renban++) {
+      const id = getChoukyouId(UmaId, dateId, Basho, Type, renban);
+      const asIs = await this.entityManager.findOneBy(Choukyou, { Id: id });
+      if (!asIs) {
+        return renban;
+      }
+      const asIsTimes = await this.entityManager.findBy(ChoukyouTime, { ChoukyouId: id });
+      if (this.isSameChoukyou(asIs, asIsTimes, choukyou, times)) {
+        return renban;
+      }
+    }
+    throw new Error(
+      `同じ馬・同じ日・同じ場所・同じ種別の調教が多すぎます: ${JSON.stringify({ UmaId, dateId, Basho, Type })}`,
+    );
+  }
+
+  /**
+   * 調教の中身で同じ調教かを判定します。
+   * 調教フラグ・乗り役・矢印・例外・併せはレース(出走馬)ごとに変わりうるので比べません。
+   */
+  protected isSameChoukyou(
+    asIs: Choukyou,
+    asIsTimes: ChoukyouTime[],
+    toBe: Choukyou,
+    toBeTimes: ChoukyouTime[],
   ) {
+    const keys: (keyof Choukyou)[] = [
+      "Course",
+      "BashoCourse",
+      "Baba",
+      "Kaisuu",
+      "IchiDori",
+      "Oikiri",
+      "Ashiiro",
+      "OikiriSonota",
+    ];
+    if (keys.some((key) => (asIs[key] ?? null) !== (toBe[key] ?? null))) {
+      return false;
+    }
+    // Time は real 型で精度が落ちるため 0.1 秒単位に丸めて比べる
+    const toKey = (list: ChoukyouTime[]) =>
+      list
+        .map((t) => `${t.F}:${t.Time == null ? "" : Math.round(t.Time * 10)}:${t.Comment ?? ""}`)
+        .sort()
+        .join(",");
+    return toKey(asIsTimes) === toKey(toBeTimes);
+  }
+
+  protected readChoukyouTimes(buffer: Buffer, offset: number, cfList: FurlongOffset[]) {
+    const times: ChoukyouTime[] = [];
     for (let i = 0; i < cfList.length; i++) {
       const cf = cfList[i];
       const comment = readStr(buffer, offset + cf.offset, 6);
@@ -173,8 +235,6 @@ export class KolChoukyouTool {
         continue;
       }
       const choukyouTime = new ChoukyouTime();
-      choukyouTime.Id = choukyou.Id * 2 ** 3 + (cf.f - 1);
-      choukyouTime.ChoukyouId = choukyou.Id;
       choukyouTime.F = cf.f;
       const time = parseFloat(comment);
       if (Number.isNaN(time)) {
@@ -182,7 +242,8 @@ export class KolChoukyouTool {
       } else {
         choukyouTime.Time = time;
       }
-      await this.entityManager.save(choukyouTime);
+      times.push(choukyouTime);
     }
+    return times;
   }
 }

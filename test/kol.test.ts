@@ -2,6 +2,7 @@ import "reflect-metadata";
 import { afterAll, beforeAll, describe, expect, setDefaultTimeout, test } from "bun:test";
 import * as fs from "node:fs";
 import { Container } from "typedi";
+import { In } from "typeorm";
 import { Baken, Kakutei } from "../src/app/converters/Common";
 import * as $U from "../src/app/converters/Uma";
 import { dataSource } from "../src/app/DataSource";
@@ -602,6 +603,33 @@ describe("取り込み結果が見本ファイルと一致する", () => {
       const rows = await repo(Choukyou).findBy({ UmaId: 101 });
       expect(rows.length).toBe(2);
       expect(new Set(rows.map((r) => r.Id)).size).toBe(2);
+      expect(rows.map((r) => r.Renban).sort()).toEqual([1, 2]);
+    });
+
+    test("同じ調教を別のファイルから読み直しても、同じ ID で 1 件のまま", async () => {
+      const a = slot({ date: "20071005", course: "栗東  CW", times: [" 13.5", " 12.8"] });
+      const b = slot({ date: "20071005", course: "栗東  CW", times: [" 14.1", " 12.0"] });
+      await saveChoukyou(a, 104);
+      await saveChoukyou(b, 104);
+      await saveChoukyou(b, 104);
+      await saveChoukyou(a, 104);
+      const rows = await repo(Choukyou).findBy({ UmaId: 104 });
+      expect(rows.length).toBe(2);
+      expect(await repo(ChoukyouTime).countBy({ ChoukyouId: In(rows.map((r) => r.Id)) })).toBe(4);
+    });
+
+    test("ID は馬・日付・場所・種別・連番から決まる", async () => {
+      await saveChoukyou(slot({ date: "20071005", course: "栗東  坂", kaisuu: "  2回" }), 105);
+      const row = await repo(Choukyou).findOneBy({ UmaId: 105 });
+      const days = Date.UTC(2007, 9, 5) / 86400000;
+      // 栗東 = 50, 坂路 = 1, 連番 1
+      expect(row?.Id).toBe(105 * 2 ** 30 + days * 2 ** 14 + 50 * 2 ** 6 + 1 * 2 ** 2 + 0);
+      expect(row?.Renban).toBe(1);
+    });
+
+    test("日付のない調教は保存しない", async () => {
+      await saveChoukyou(slot({ date: "", course: "栗東  CW" }), 106);
+      expect(await repo(Choukyou).countBy({ UmaId: 106 })).toBe(0);
     });
 
     test("プールの調教には時計を保存しない", async () => {

@@ -21,6 +21,10 @@ export class Choukyou {
   @Column("int", { nullable: true })
   public Nengappi?: number;
 
+  /** 同じ馬・同じ日・同じ場所・同じ種別の調教が複数あるときの連番(1 始まり) */
+  @Column("tinyint")
+  public Renban: number;
+
   @Column("tinyint", { nullable: true })
   public Basho?: number;
 

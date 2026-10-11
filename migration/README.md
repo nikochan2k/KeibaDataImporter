@@ -28,6 +28,7 @@ SQL は `steps/` に分かれている。`dialect/` は DB 固有の部分(日�
 | `steps/90_verify.sql` | 移行元と移行先の件数の比較 |
 | `steps/99_cleanup.sql` | 作業テーブル(`mig_*`)の削除 |
 | `fill-matching-key.ts` | `Jinmei` / `Shoyuu` の `MatchingKey` を埋める(SQL では計算できないので、SQL の後に実行する。`migrate-sqlite.sh` は自動で実行する。MySQL / PostgreSQL は手動で、SQLite 専用のスクリプトなので同じ計算で更新すること) |
+| `fill-choukyou-id.ts` | `Choukyou` の `Basho` / `Type` / `Course` / `Renban` を埋め、`Choukyou` / `ChoukyouTime` の Id を Importer と同じ規則で振り直す(場所・種別のコード化を SQL では書けないため。`migrate-sqlite.sh` は自動で実行する。MySQL / PostgreSQL は手動で同じ計算をすること) |
 
 ## 動作確認の状況
 
@@ -66,7 +67,8 @@ SQL は `steps/` に分かれている。`dialect/` は DB 固有の部分(日�
     `Date` を使うので、`TZ=UTC` 以外で動かした Importer の Id とは一致しない。
   * `OddsHaitou.Id` は Importer と規則が違う。Importer は「確定」に 2bit しか割り当てておらず、
     確定(=4)が次のレースの予想(=0)と同じ Id になり得るため、3bit にしている。
-  * `Choukyou.Id` は CRC16 の代わりに同じ馬・同じ日の連番を使う。
+  * `Choukyou.Id` は Importer と同じ規則(馬・日付・場所・種別・連番)。`40_choukyou.sql` は仮の Id で入れ、
+    `fill-choukyou-id.ts` で振り直す。同じ馬・同じ日・同じ場所・同じ種別の調教が 5 件以上あると Id に収まらず、エラーで止まる。
   * `RaceLapTime` / `RaceKeika` / `RaceHassouJoukyou` / `ShussoubaTsuukaJuni` / `ShussoubaHassouJoukyou` の
     Id は、このスクリプト独自の規則(一意であることのみ保証)。
 * **日付**: 旧 DB の DATE 列は `YYYY-MM-DD` か `YYYY-MM-DD 00:00:00` の文字列である前提。
@@ -74,7 +76,8 @@ SQL は `steps/` に分かれている。`dialect/` は DB 固有の部分(日�
 * **Kishu / Choukyoushi / Uma**: 旧マスタに無く、出走馬・調教などにだけ出てくるものは、
   取れる範囲の項目(名前、所属場所など)だけで作る。祖先馬の馬名は `KanaBamei` に入れる
   (英字名の `EigoBamei` への振り分けはしない)。
-* **Choukyou**: 場所・コース・脚色・併せ馬はコード化せず、`BashoCourse` / `OikiriSonota` /
-  `AwaseReigai` に原文を入れる。`Noriyaku` は NULL。
+* **Choukyou**: 場所・コース・脚色・併せ馬は `BashoCourse` / `OikiriSonota` / `AwaseReigai` に原文を入れる。
+  `Basho` / `Type` / `Course` だけは Id に必要なため、`BashoCourse` を Importer の変換表でコード化して入れる。
+  `Noriyaku` は NULL。
 * 日付のない旧レース(`Nengappi` が不正)は移行されない。件数は `90_verify.sql` の
   「Race(日付なしで除外)」で確認できる。

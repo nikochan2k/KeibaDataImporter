@@ -5,7 +5,8 @@
 --   ChoukyouTime                  -> ChoukyouTime
 --
 -- 旧 Choukyou は出走馬ごとに調教履歴を持つため、同じ調教が複数のレースに重複して入っている。
--- (馬, 調教日, 騎乗者, 場所, コース, 位置取り, 追い切り, 脚色, 矢印) が同じものを1件にまとめる。
+-- (馬, 調教日, 騎乗者, 場所, コース, 位置取り, 追い切り, 脚色) が同じものを1件にまとめる。
+-- 矢印はレース(出走馬)ごとに付く評価なので、まとめる条件に入れない(Importer の同一判定と同じ)。
 --
 -- 新 Choukyou は、場所・コース・馬場・追い切りなどをコード化して持つが、旧テーブルは
 -- 文字列で持っているため、コード化せず原文を残す。
@@ -16,8 +17,10 @@
 --   旧 Choukyou.Tanpyou / HonsuuCourse / HonsuuHanro / HonsuuPool / Rating / KyuuyouRiyuu -> 移行しない
 -- 乗り役(Noriyaku)は判定できないため NULL。騎乗者の短縮名は TanshukuKishuMeiId に入れる。
 --
--- Id = 馬Id * 2^31 + 1970-01-01からの経過日数 * 2^16 + 同じ馬・同じ日の連番
--- (Importer は連番の代わりに CRC16 を使うので、Id は一致しない)
+-- ここで振る Id は仮の値(馬Id * 2^31 + 経過日数 * 2^16 + 同じ馬・同じ日の連番)で、Renban も仮に 1 とする。
+-- Importer と同じ Id(馬・日付・場所・種別・連番)にするには、場所・種別を Importer の変換表で
+-- コード化する必要があり SQL では書けないため、この後 fill-choukyou-id.ts で Basho / Type / Course /
+-- Renban を埋めて Id を振り直す。
 
 CREATE TABLE mig_choukyou (
   RepId BIGINT NOT NULL PRIMARY KEY
@@ -45,17 +48,18 @@ FROM (
   INNER JOIN old.Choukyou c ON c.Id = r.ChoukyouId
   INNER JOIN mig_calendar cal ON cal.D = r.Nengappi
   GROUP BY
-    c.KyousoubaId, cal.Ymd, cal.Days, r.Kijousha, r.Basho, r.ChoukyouCourse, r.IchiDori, r.Oikiri, r.Ashiiro, r.Yajirushi
+    c.KyousoubaId, cal.Ymd, cal.Days, r.Kijousha, r.Basho, r.ChoukyouCourse, r.IchiDori, r.Oikiri, r.Ashiiro
 ) g;
 
 INSERT INTO Choukyou (
-  Id, UmaId, TanshukuKishuMeiId, Nengappi, BashoCourse, Kaisuu, IchiDori, OikiriSonota, Yajirushi, Reigai, AwaseReigai
+  Id, UmaId, TanshukuKishuMeiId, Nengappi, Renban, BashoCourse, Kaisuu, IchiDori, OikiriSonota, Yajirushi, Reigai, AwaseReigai
 )
 SELECT
   mc.NewId
   ,mc.UmaId
   ,j.Id
   ,mc.Ymd
+  ,1
   ,COALESCE(r.Basho, '') || COALESCE(r.ChoukyouCourse, '')
   ,r.Kaisuu
   ,r.IchiDori
@@ -68,6 +72,6 @@ INNER JOIN old.ChoukyouRireki r ON r.Id = mc.RepId
 LEFT JOIN Jinmei j ON j.Meishou = r.Kijousha;
 
 INSERT INTO ChoukyouTime (Id, ChoukyouId, F, Time, Comment)
-SELECT mc.NewId * 32 + t.F, mc.NewId, t.F, t.Time, t.Comment
+SELECT mc.NewId * 8 + (t.F - 1), mc.NewId, t.F, t.Time, t.Comment
 FROM old.ChoukyouTime t
 INNER JOIN mig_choukyou mc ON mc.RepId = t.ChoukyouRirekiId;

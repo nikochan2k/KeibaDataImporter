@@ -48,3 +48,5 @@ SQL
 
 # MatchingKey は SQL では計算できないので、Importer と同じ計算で埋める
 bun "$DIR/fill-matching-key.ts" "$NEW_DB"
+# 調教の場所・種別のコード化と Id の振り直し(SQL では Importer と同じ変換を書けない)
+bun "$DIR/fill-choukyou-id.ts" "$NEW_DB"
