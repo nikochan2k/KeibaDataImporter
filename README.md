@@ -31,7 +31,7 @@ bun run dev
 ```sh
 bun test
 bun run typecheck
-bun run check   # Biome
+bun run lint    # Biome (format・import整理・lint修正)
 ```
 
 ### テーブルを変えるとき

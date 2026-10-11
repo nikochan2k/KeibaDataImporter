@@ -11,7 +11,7 @@
     "serve": "bun run build && bun src/app/server.ts",
     "typecheck": "tsc --noEmit && tsc --noEmit -p web",
     "test": "bun test",
-    "check": "biome check ."
+    "lint": "biome check --write ."
   },
   "repository": {
     "type": "git",
