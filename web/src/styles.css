@@ -36,31 +36,62 @@ body {
 
 a {
   color: var(--accent);
+  text-underline-offset: 3px;
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
 }
 
 .topbar {
+  position: sticky;
+  top: 0;
+  z-index: 1;
   display: flex;
   align-items: center;
   gap: 24px;
-  padding: 10px 16px;
+  padding: 0 16px;
   background: var(--surface);
   border-bottom: 1px solid var(--line);
 }
 
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 17px;
+  letter-spacing: 0.02em;
+}
+
+.brand::before {
+  content: "";
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--accent);
+}
+
 .topbar nav {
   display: flex;
-  gap: 16px;
+  gap: 4px;
 }
 
 .topbar nav a {
   color: var(--muted);
   text-decoration: none;
-  padding: 2px 0;
+  padding: 14px 10px 12px;
   border-bottom: 2px solid transparent;
+  transition: color 0.15s;
+}
+
+.topbar nav a:hover {
+  color: var(--fg);
 }
 
 .topbar nav a.active {
   color: var(--fg);
+  font-weight: 600;
   border-bottom-color: var(--accent);
 }
 
@@ -73,7 +104,7 @@ main {
 
 h1 {
   font-size: 22px;
-  margin: 20px 0 8px;
+  margin: 24px 0 12px;
 }
 
 h2 {
@@ -83,14 +114,17 @@ h2 {
 
 table {
   width: 100%;
-  border-collapse: collapse;
+  border-collapse: separate;
+  border-spacing: 0;
   background: var(--surface);
   border: 1px solid var(--line);
+  border-radius: 8px;
+  overflow: hidden;
 }
 
 th,
 td {
-  padding: 6px 10px;
+  padding: 8px 12px;
   border-bottom: 1px solid var(--line);
   text-align: left;
   white-space: nowrap;
@@ -100,6 +134,15 @@ th {
   font-weight: 600;
   color: var(--muted);
   font-size: 13px;
+  background: color-mix(in srgb, var(--accent) 6%, var(--surface));
+}
+
+tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+tbody tr:hover td {
+  background: color-mix(in srgb, var(--accent) 8%, var(--surface));
 }
 
 .num {
@@ -108,9 +151,11 @@ th {
 }
 
 input,
+select,
 button {
   font: inherit;
-  padding: 5px 10px;
+  min-height: 36px;
+  padding: 5px 12px;
   border: 1px solid var(--line);
   border-radius: 6px;
   background: var(--surface);
@@ -121,8 +166,25 @@ input.wide {
   width: min(560px, 100%);
 }
 
-button {
+button,
+select {
   cursor: pointer;
+}
+
+button:hover:not(:disabled),
+select:hover:not(:disabled) {
+  border-color: var(--accent);
+}
+
+button[type="submit"]:hover:not(:disabled) {
+  filter: brightness(1.08);
+}
+
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0 0 16px;
 }
 
 button[type="submit"] {
@@ -178,4 +240,20 @@ button:disabled {
 .importing {
   text-align: center;
   margin-top: 3rem;
+}
+
+@media (max-width: 600px) {
+  .topbar {
+    gap: 12px;
+  }
+
+  main {
+    padding-inline: 12px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition: none !important;
+  }
 }

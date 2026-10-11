@@ -23,7 +23,7 @@ export function RacesPage() {
           list.length === 0 ? (
             <p className="muted">レースのデータがありません。取り込みを行ってください</p>
           ) : (
-            <p>
+            <div className="filters">
               <select
                 value={year ?? ""}
                 onChange={(e) => setParams(e.target.value ? { year: e.target.value } : {})}
@@ -34,7 +34,7 @@ export function RacesPage() {
                     {y}年
                   </option>
                 ))}
-              </select>{" "}
+              </select>
               <select
                 value={basho ?? ""}
                 disabled={!bashos.data}
@@ -51,7 +51,7 @@ export function RacesPage() {
                   </option>
                 ))}
               </select>
-            </p>
+            </div>
           )
         }
       </Async>
