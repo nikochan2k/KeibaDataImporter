@@ -311,11 +311,8 @@ button:disabled {
 }
 
 .popover {
-  position: absolute;
-  top: calc(100% - 8px);
-  left: 0;
-  z-index: 2;
   width: min(360px, 100%);
+  margin-bottom: 16px;
   padding: 8px;
   background: var(--surface);
   border: 1px solid var(--line);
