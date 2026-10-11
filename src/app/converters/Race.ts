@@ -35,11 +35,17 @@ export const betteiBareiHandi = new Codes([
 ]);
 
 export const joukenSaraKei = new Codes([
-  { code: 1, kol: /0|1|2|3|4|8|9|B|K/, jrdb: /11|12|13|14|18|19/, naiyou: "サラ系" },
+  {
+    code: 1,
+    kol: /0|1|2|3|4|8|9|B|K/,
+    jrdb: /11|12|13|14|18|19/,
+    jvdata: /^(11|12|13|14|18|19)$/,
+    naiyou: "サラ系",
+  },
 ]);
 
 export const joukenAraKei = new Codes([
-  { code: 1, kol: /5|6|7|A|C/, jrdb: /21|22|23|24/, naiyou: "アラブ系" },
+  { code: 1, kol: /5|6|7|A|C/, jrdb: /21|22|23|24/, jvdata: /^(21|22|23|24)$/, naiyou: "アラブ系" },
 ]);
 
 export const joukenBoba = new Codes([

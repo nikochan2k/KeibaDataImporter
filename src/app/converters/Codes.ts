@@ -37,9 +37,10 @@ export class Codes {
     return this.toCodeFrom("jrdb", str);
   }
 
+  /** JRA-VAN のコード表は JV-Data と同じ系統なので、jravan の指定がなければ jvdata を使う */
   public toCodeFromJravan(buffer: Buffer | string, offset?: number, length?: number) {
     const str = this.getStr(buffer, offset, length);
-    return this.toCodeFrom("jravan", str);
+    return this.toCodeFrom("jravan", str, "jvdata");
   }
 
   public toCodeFromJvData(buffer: Buffer | string, offset?: number, length?: number) {
@@ -47,7 +48,7 @@ export class Codes {
     return this.toCodeFrom("jvdata", str);
   }
 
-  protected toCodeFrom(key: string, str: string) {
+  protected toCodeFrom(key: string, str: string, fallbackKey?: string) {
     /* tslint:disable:triple-equals */
     if (str == null) {
       return str;
@@ -55,7 +56,7 @@ export class Codes {
     /* tslint:enable:triple-equals */
     for (let i = 0; i < this.codes.length; i++) {
       const c = this.codes[i];
-      const member = c[key];
+      const member = c[key] ?? (fallbackKey ? c[fallbackKey] : undefined);
       /* tslint:disable:triple-equals */
       if (member == null) {
         continue;

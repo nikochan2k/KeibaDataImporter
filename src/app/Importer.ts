@@ -4,6 +4,23 @@ import { Container, Inject, Service } from "typedi";
 import { getLogger } from "./LogUtil";
 import { Bridge } from "./reader/Bridge";
 import { DataToImport } from "./reader/DataToImport";
+import { JravanChok } from "./reader/JRAVAN/JravanChok";
+import { JravanDelc, JravanDelk, JravanDelu } from "./reader/JRAVAN/JravanDel";
+import { JravanDen1 } from "./reader/JRAVAN/JravanDen1";
+import { JravanDen2 } from "./reader/JRAVAN/JravanDen2";
+import { JravanKisi } from "./reader/JRAVAN/JravanKisi";
+import {
+  JravanOds1,
+  JravanOds3,
+  JravanOds4,
+  JravanOds5,
+  JravanOds6,
+} from "./reader/JRAVAN/JravanOds";
+import { JravanSch1 } from "./reader/JRAVAN/JravanSch1";
+import { JravanSei1 } from "./reader/JRAVAN/JravanSei1";
+import { JravanSei2 } from "./reader/JRAVAN/JravanSei2";
+import { JravanSeih } from "./reader/JRAVAN/JravanSeih";
+import { JravanUmaj } from "./reader/JRAVAN/JravanUmaj";
 import { Bab } from "./reader/JRDB/Bab";
 import { Bac } from "./reader/JRDB/Bac";
 import { C$a } from "./reader/JRDB/C$a";
@@ -97,12 +114,20 @@ export class Importer {
       { pattern: /kol_kyu\.kd[23]$/i, dataToImport: Container.get(KolKyu) },
       // KD1 厩舎データ
       { pattern: /kol_kyu\.dat$/i, dataToImport: Container.get(KolKyuKd1) },
+      // JRA-VAN 調教師
+      { pattern: /jracchok\.dat$/i, dataToImport: Container.get(JravanChok) },
+      // JRA-VAN 抹消調教師
+      { pattern: /jracdelc\.dat$/i, dataToImport: Container.get(JravanDelc) },
       // JRDB 調教師データ
       { pattern: /c[zs]a\d+\.txt$/i, dataToImport: Container.get(C$a) },
       // KD2/KD3 騎手データ
       { pattern: /kol_kis\.kd[23]$/i, dataToImport: Container.get(KolKis) },
       // KD1 騎手データ
       { pattern: /kol_kis\.dat$/i, dataToImport: Container.get(KolKisKd1) },
+      // JRA-VAN 騎手
+      { pattern: /jrackisi\.dat$/i, dataToImport: Container.get(JravanKisi) },
+      // JRA-VAN 抹消騎手
+      { pattern: /jracdelk\.dat$/i, dataToImport: Container.get(JravanDelk) },
       // JRDB 騎手データ
       { pattern: /k[zs]a\d+\.txt$/i, dataToImport: Container.get(K$a) },
       // KD2/KD3 種牡馬データ
@@ -113,6 +138,12 @@ export class Importer {
       { pattern: /kol_uma\.kd[23]$/i, dataToImport: Container.get(KolUma) },
       // KD1 競走馬データ
       { pattern: /kol_uma\.dat$/i, dataToImport: Container.get(KolUmaKd1) },
+      // JRA-VAN 競走馬
+      { pattern: /jracumaj\.dat$/i, dataToImport: Container.get(JravanUmaj) },
+      // JRA-VAN 抹消競走馬
+      { pattern: /jracdelu\.dat$/i, dataToImport: Container.get(JravanDelu) },
+      // JRA-VAN 年間スケジュール
+      { pattern: /jracsch1\.dat$/i, dataToImport: Container.get(JravanSch1) },
       // JRDB 馬基本データ
       { pattern: /ukc\d+\.txt$/i, dataToImport: Container.get(Ukc) },
       // KD2/KD3 3代血統図
@@ -125,6 +156,8 @@ export class Importer {
       { pattern: /kol_den1\.kd3$/i, dataToImport: Container.get(KolDen1) },
       // KD2 出走馬レースデータ
       { pattern: /kol_den1\.kd2$/i, dataToImport: Container.get(KolDen1Kd2) },
+      // JRA-VAN 出馬表１
+      { pattern: /jracden1\.dat$/i, dataToImport: Container.get(JravanDen1) },
       // JRDB 開催データ
       { pattern: /kaa\d+\.txt$/i, dataToImport: Container.get(Kaa) },
       { pattern: /kab\d+\.txt$/i, dataToImport: Container.get(Kab) },
@@ -142,6 +175,8 @@ export class Importer {
       { pattern: /kol_den2\.kd2$/i, dataToImport: Container.get(KolDen2Kd2) },
       // KD1 出馬表(レースと出走馬)
       { pattern: /kol_den\.dat$/i, dataToImport: Container.get(KolDenKd1) },
+      // JRA-VAN 出馬表２
+      { pattern: /jracden2\.dat$/i, dataToImport: Container.get(JravanDen2) },
       // JRDB 競走馬データ
       { pattern: /kyg\d+\.txt$/i, dataToImport: Container.get(Kyg) },
       { pattern: /kyh\d+\.txt$/i, dataToImport: Container.get(Kyh) },
@@ -159,6 +194,16 @@ export class Importer {
       { pattern: /kol_ods\.kd[23]$/i, dataToImport: Container.get(KolOds) },
       // KD3 予想オッズ２（馬単・３連複）
       { pattern: /kol_ods2\.kd3$/i, dataToImport: Container.get(KolOds2Kd3) },
+      // JRA-VAN オッズ（単勝・複勝・枠連）
+      { pattern: /jracods1\.dat$/i, dataToImport: Container.get(JravanOds1) },
+      // JRA-VAN オッズ（馬連）
+      { pattern: /jracods3\.dat$/i, dataToImport: Container.get(JravanOds3) },
+      // JRA-VAN オッズ（ワイド）
+      { pattern: /jracods4\.dat$/i, dataToImport: Container.get(JravanOds4) },
+      // JRA-VAN オッズ（馬単）
+      { pattern: /jracods5\.dat$/i, dataToImport: Container.get(JravanOds5) },
+      // JRA-VAN オッズ（3連複）
+      { pattern: /jracods6\.dat$/i, dataToImport: Container.get(JravanOds6) },
       // JRDB 基準オッズデータ
       { pattern: /oz\d+\.txt$/i, dataToImport: Container.get(Oz) },
       // JRDB ワイド基準オッズデータ
@@ -174,6 +219,8 @@ export class Importer {
       { pattern: /kol_sei1\.kd3$/i, dataToImport: Container.get(KolSei1) },
       // KD2 競走成績レースデータ
       { pattern: /kol_sei1\.kd2$/i, dataToImport: Container.get(KolSei1Kd2) },
+      // JRA-VAN 成績１
+      { pattern: /jracsei1\.dat$/i, dataToImport: Container.get(JravanSei1) },
       // JRDB 成績レースデータ
       { pattern: /sra\d+\.txt$/i, dataToImport: Container.get(Sra) },
       { pattern: /srb\d+\.txt$/i, dataToImport: Container.get(Srb) },
@@ -185,6 +232,10 @@ export class Importer {
       { pattern: /kol_sei\.dat$/i, dataToImport: Container.get(KolSeiKd1) },
       // KD1 競走成績２(19〜28番の出走馬)
       { pattern: /kol_sei2\.dat$/i, dataToImport: Container.get(KolSei2Kd1) },
+      // JRA-VAN 成績２
+      { pattern: /jracsei2\.dat$/i, dataToImport: Container.get(JravanSei2) },
+      // JRA-VAN 成績Ｈ（馬単・3連複の払戻金）
+      { pattern: /jracseih\.dat$/i, dataToImport: Container.get(JravanSeih) },
       // JRDB 成績データ
       { pattern: /sec\d+\.txt$/i, dataToImport: Container.get(Sec) },
       { pattern: /sed\d+\.txt$/i, dataToImport: Container.get(Sed) },

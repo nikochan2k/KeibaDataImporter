@@ -2,7 +2,7 @@ import { Codes } from "./Codes";
 
 export const basho = new Codes([
   { code: 0, kol: "00", jrdb: /08|京都/, jvdata: "08", naiyou: "京都" },
-  { code: 1, kol: "01", jrdb: /09|阪神/, jvdata: "00", naiyou: "阪神" },
+  { code: 1, kol: "01", jrdb: /09|阪神/, jvdata: "09", naiyou: "阪神" },
   { code: 2, kol: "02", jrdb: /07|中京/, jvdata: "07", naiyou: "中京" },
   { code: 3, kol: "03", jrdb: /10|小倉/, jvdata: "10", naiyou: "小倉" },
   { code: 4, kol: "04", jrdb: /05|東京/, jvdata: "05", naiyou: "東京" },

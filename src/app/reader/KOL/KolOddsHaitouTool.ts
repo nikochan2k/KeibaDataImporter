@@ -2,7 +2,7 @@ import { Service } from "typedi";
 import { Baken, Kakutei } from "../../converters/Common";
 import { OddsHaitou } from "../../entities/OddsHaitou";
 import { Shussouba } from "../../entities/Shussouba";
-import { HaitouInfo, OddsHaitouTool } from "../OddsHaitouTool";
+import { OddsHaitouTool } from "../OddsHaitouTool";
 import { readPositiveDouble, readPositiveInt, readStr } from "../Reader";
 
 @Service()
@@ -208,47 +208,6 @@ export class KolOddsHaitouTool extends OddsHaitouTool {
           await this.saveOddsHaitou(oddsHaitou);
         }
       }
-    }
-  }
-
-  public async saveRaceHaitou(
-    buffer: Buffer,
-    raceId: number,
-    kakutei: Kakutei,
-    infos: HaitouInfo[],
-  ) {
-    for (let i = 0; i < infos.length; i++) {
-      const info = infos[i];
-      const bangou1 = readPositiveInt(buffer, info.bangou1, info.bangou1Len);
-      if (!bangou1) {
-        continue;
-      }
-      let bangou2: number | undefined;
-      if (info.bangou2) {
-        bangou2 = readPositiveInt(buffer, info.bangou2, info.bangou2Len);
-        if (!bangou2 && [Baken.Tanshou, Baken.Fukushou].indexOf(info.baken) === -1) {
-          continue;
-        }
-      }
-      let bangou3: number | undefined;
-      if (info.bangou3) {
-        bangou3 = readPositiveInt(buffer, info.bangou3, info.bangou3Len);
-        if (!bangou3 && [Baken.Sanrenpuku, Baken.Sanrentan].indexOf(info.baken) !== -1) {
-          continue;
-        }
-      }
-      const oddsHaitou = new OddsHaitou();
-      oddsHaitou.RaceId = raceId;
-      oddsHaitou.Kakutei = kakutei;
-      oddsHaitou.Baken = info.baken;
-      oddsHaitou.Bangou1 = bangou1;
-      oddsHaitou.Bangou2 = bangou2;
-      oddsHaitou.Bangou3 = bangou3;
-      oddsHaitou.Haitoukin = readPositiveInt(buffer, info.haitou, info.haitouLen);
-      oddsHaitou.Ninki = info.ninki
-        ? readPositiveInt(buffer, info.ninki, info.ninkiLen)
-        : undefined;
-      await this.saveOddsHaitou(oddsHaitou);
     }
   }
 }

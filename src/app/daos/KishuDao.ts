@@ -1,11 +1,11 @@
 import { Inject, Service } from "typedi";
 import { EntityManager, Repository } from "typeorm";
-import { JinmeiKubun } from "../entities/Jinmei";
+import { Jinmei, JinmeiKubun } from "../entities/Jinmei";
 import { Kishu } from "../entities/Kishu";
 import { KishuMei } from "../entities/KishuMei";
 import { OrmManager, OrmRepository } from "../OrmManager";
 import { Tool } from "../reader/Tool";
-import { JinmeiDao } from "./JinmeiDao";
+import { JinmeiDao, normalizeJinmei } from "./JinmeiDao";
 
 @Service()
 export class KishuDao {
@@ -24,14 +24,54 @@ export class KishuDao {
   @Inject()
   private tool: Tool;
 
-  protected async getKishu(kishu: Kishu) {
-    let result: Kishu;
-    if (kishu.KolKishuCode) {
-      result = await this.kishuRepository.findOneBy({ KolKishuCode: kishu.KolKishuCode });
-    } else if (kishu.JrdbKishuCode) {
-      result = await this.kishuRepository.findOneBy({ JrdbKishuCode: kishu.JrdbKishuCode });
+  private static readonly codeKeys = ["KolKishuCode", "JrdbKishuCode", "JvDataKishuCode"] as const;
+
+  /** 同じ種類のコードを両方持っていて、値が違うなら別人 */
+  private conflicts(a: Kishu, b: Kishu) {
+    return KishuDao.codeKeys.some((k) => a[k] != null && b[k] != null && a[k] !== b[k]);
+  }
+
+  /** 名前(姓名か略称)が一致する騎手のうち、別人でないもの */
+  private async findByMeishou(toBe: Kishu, meishou: string) {
+    const candidates = await this.kishuRepository
+      .createQueryBuilder("k")
+      .innerJoin(KishuMei, "km", "km.KishuId = k.Id")
+      .innerJoin(Jinmei, "j", "j.Id = km.JinmeiId")
+      .where("j.Meishou = :meishou", { meishou: normalizeJinmei(meishou) })
+      .getMany();
+    return candidates.filter(
+      (c) =>
+        !this.conflicts(c, toBe) &&
+        (!toBe.Seinengappi || !c.Seinengappi || toBe.Seinengappi === c.Seinengappi),
+    );
+  }
+
+  /**
+   * 既存の騎手を探します。コード(KOL・JRDB・JRA-VAN)のどれかが一致すればその騎手、
+   * なければ姓名(と生年月日)が一致する騎手、姓名がなければ略称が一致する騎手が 1 人だけのときその騎手です。
+   * 別の情報源で取り込んだ騎手を同じ行にまとめるために、コードが違っても名前で探します。
+   */
+  protected async getKishu(kishu: Kishu, seimei?: string, tanshuku?: string) {
+    for (const key of KishuDao.codeKeys) {
+      if (kishu[key]) {
+        const found = await this.kishuRepository.findOneBy({ [key]: kishu[key] });
+        if (found) {
+          return found;
+        }
+      }
     }
-    return result;
+    if (seimei) {
+      const candidates = await this.findByMeishou(kishu, seimei);
+      if (candidates.length === 1 || (candidates.length > 1 && kishu.Seinengappi)) {
+        return candidates[0];
+      }
+    } else if (tanshuku) {
+      const candidates = await this.findByMeishou(kishu, tanshuku);
+      if (candidates.length === 1) {
+        return candidates[0];
+      }
+    }
+    return null;
   }
 
   public async getKishuWith(jinmeiId: number, umaId: number) {
@@ -68,8 +108,9 @@ LIMIT
   }
 
   public async saveKishu(toBe: Kishu, seimei?: string, tanshuku?: string, furigana?: string) {
-    const asIs = await this.getKishu(toBe);
-    if (!asIs || (seimei && tanshuku && furigana)) {
+    const asIs = await this.getKishu(toBe, seimei, tanshuku);
+    const newCode = !!asIs && KishuDao.codeKeys.some((k) => toBe[k] != null && asIs[k] == null);
+    if (!asIs || newCode || (seimei && tanshuku && furigana)) {
       toBe = await this.tool.saveOrUpdate(Kishu, asIs, toBe);
     } else {
       return asIs;

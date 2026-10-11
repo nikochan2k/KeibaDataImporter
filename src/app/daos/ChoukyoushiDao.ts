@@ -5,7 +5,7 @@ import { ChoukyoushiMei } from "../entities/ChoukyoushiMei";
 import { Jinmei, JinmeiKubun } from "../entities/Jinmei";
 import { OrmManager, OrmRepository } from "../OrmManager";
 import { Tool } from "../reader/Tool";
-import { JinmeiDao } from "./JinmeiDao";
+import { JinmeiDao, normalizeJinmei } from "./JinmeiDao";
 
 @Service()
 export class ChoukyoushiDao {
@@ -24,30 +24,57 @@ export class ChoukyoushiDao {
   @Inject()
   private tool: Tool;
 
-  protected async getChoukyoushi(choukyoushi: Choukyoushi) {
-    let result: Choukyoushi;
-    if (choukyoushi.KolKyuushaCode) {
-      result = await this.choukyoushiRepository.findOneBy({
-        KolKyuushaCode: choukyoushi.KolKyuushaCode,
-      });
-    } else if (choukyoushi.JrdbChoukyoushiCode) {
-      result = await this.choukyoushiRepository.findOneBy({
-        JrdbChoukyoushiCode: choukyoushi.JrdbChoukyoushiCode,
-      });
-    }
-    return result;
+  private static readonly codeKeys = [
+    "KolKyuushaCode",
+    "JrdbChoukyoushiCode",
+    "JvDataChoukyoushiCode",
+  ] as const;
+
+  /** 同じ種類のコードを両方持っていて、値が違うなら別人 */
+  private conflicts(a: Choukyoushi, b: Choukyoushi) {
+    return ChoukyoushiDao.codeKeys.some((k) => a[k] != null && b[k] != null && a[k] !== b[k]);
   }
 
-  protected async getChoukyoushiWith(meishou: string) {
-    return this.entityManager
-      .createQueryBuilder()
-      .select("c.*")
-      .from(Choukyoushi, "c")
-      .innerJoin(ChoukyoushiMei, "cm", "c.Id = cm.ChoukyoushiId")
+  /** 名前(姓名か略称)が一致する調教師のうち、別人でないもの */
+  private async findByMeishou(toBe: Choukyoushi, meishou: string) {
+    const candidates = await this.choukyoushiRepository
+      .createQueryBuilder("c")
+      .innerJoin(ChoukyoushiMei, "cm", "cm.ChoukyoushiId = c.Id")
       .innerJoin(Jinmei, "j", "j.Id = cm.JinmeiId")
-      .where("j.Meishou = :meishou")
-      .setParameter("meishou", meishou)
-      .getOne();
+      .where("j.Meishou = :meishou", { meishou: normalizeJinmei(meishou) })
+      .getMany();
+    return candidates.filter(
+      (c) =>
+        !this.conflicts(c, toBe) &&
+        (!toBe.Seinengappi || !c.Seinengappi || toBe.Seinengappi === c.Seinengappi),
+    );
+  }
+
+  /**
+   * 既存の調教師を探します。コード(KOL・JRDB・JRA-VAN)のどれかが一致すればその調教師、
+   * なければ姓名(と生年月日)が一致する調教師、姓名がなければ略称が一致する調教師が 1 人だけのときその調教師です。
+   */
+  protected async getChoukyoushi(choukyoushi: Choukyoushi, seimei?: string, tanshuku?: string) {
+    for (const key of ChoukyoushiDao.codeKeys) {
+      if (choukyoushi[key]) {
+        const found = await this.choukyoushiRepository.findOneBy({ [key]: choukyoushi[key] });
+        if (found) {
+          return found;
+        }
+      }
+    }
+    if (seimei) {
+      const candidates = await this.findByMeishou(choukyoushi, seimei);
+      if (candidates.length === 1 || (candidates.length > 1 && choukyoushi.Seinengappi)) {
+        return candidates[0];
+      }
+    } else if (tanshuku) {
+      const candidates = await this.findByMeishou(choukyoushi, tanshuku);
+      if (candidates.length === 1) {
+        return candidates[0];
+      }
+    }
+    return null;
   }
 
   public async saveChoukyoushi(
@@ -56,13 +83,10 @@ export class ChoukyoushiDao {
     tanshuku?: string,
     furigana?: string,
   ) {
-    let asIs: Choukyoushi;
-    if (toBe.KolKyuushaCode || toBe.JrdbChoukyoushiCode) {
-      asIs = await this.getChoukyoushi(toBe);
-    } else {
-      asIs = await this.getChoukyoushiWith(seimei);
-    }
-    if (!asIs || (seimei && tanshuku && furigana)) {
+    const asIs = await this.getChoukyoushi(toBe, seimei, tanshuku);
+    const newCode =
+      !!asIs && ChoukyoushiDao.codeKeys.some((k) => toBe[k] != null && asIs[k] == null);
+    if (!asIs || newCode || (seimei && tanshuku && furigana)) {
       toBe = await this.tool.saveOrUpdate(Choukyoushi, asIs, toBe);
     } else {
       return asIs;

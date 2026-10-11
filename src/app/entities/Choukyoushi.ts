@@ -35,6 +35,10 @@ export class Choukyoushi {
   @Column("varchar", { length: 30, nullable: true })
   public ShozokuBashoMei?: string;
 
+  /** 招待区分 (1:地方 2:外国) */
+  @Column("tinyint", { nullable: true })
+  public ShoutaiKubun?: number;
+
   @Column("tinyint", { nullable: true })
   public RitsuHokuNanBetsu?: number;
 
