@@ -15,6 +15,12 @@ export interface RaceSummary {
   hassouJikan: string | null;
 }
 
+/** レース一覧の絞り込みに使う競馬場 */
+export interface BashoOption {
+  basho: number;
+  bashoMei: string | null;
+}
+
 export interface RaceEntry {
   shussoubaId: number;
   wakuban: number | null;

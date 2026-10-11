@@ -3,7 +3,7 @@ import { basho } from "../converters/Common";
 import * as $R from "../converters/Race";
 import { seibetsu } from "../converters/Uma";
 import { dataSource } from "../DataSource";
-import type { RaceEntry, RaceSummary, UmaStart, UmaSummary } from "./types";
+import type { BashoOption, RaceEntry, RaceSummary, UmaStart, UmaSummary } from "./types";
 
 /** 数値コードを表示用の名前にする。値がなければ null */
 function label(codes: { toNaiyou(code: number): string }, code: number | null) {
@@ -70,6 +70,37 @@ function escapeLike(text: string) {
 /** 取り込み済みのデータを読む。書き込みはしない */
 @Injectable()
 export class BrowseService {
+  /** レースのある年。新しい年が先 */
+  public async raceYears(): Promise<number[]> {
+    const rows: { Nen: number }[] = await dataSource.query(
+      `SELECT DISTINCT K.Nen FROM Kaisai K
+        WHERE EXISTS (SELECT 1 FROM Race R WHERE R.KaisaiId = K.Id) ORDER BY K.Nen DESC`,
+    );
+    return rows.map((row) => row.Nen);
+  }
+
+  /** 指定した年に、レースのある競馬場 */
+  public async raceBashos(year: number): Promise<BashoOption[]> {
+    const rows: { Basho: number }[] = await dataSource.query(
+      `SELECT DISTINCT K.Basho FROM Kaisai K
+        WHERE K.Nen = ? AND EXISTS (SELECT 1 FROM Race R WHERE R.KaisaiId = K.Id) ORDER BY K.Basho`,
+      [year],
+    );
+    return rows.map((row) => ({ basho: row.Basho, bashoMei: label(basho, row.Basho) }));
+  }
+
+  /** 指定した年・競馬場のレース一覧 (日付順) */
+  public async racesAt(year: number, bashoCode: number): Promise<RaceSummary[]> {
+    const rows: RaceRow[] = await dataSource.query(
+      `SELECT ${RACE_COLUMNS} FROM Race R
+        INNER JOIN Kaisai K ON K.Id = R.KaisaiId
+        WHERE K.Nen = ? AND K.Basho = ?
+        ORDER BY K.Gatsu, K.Nichi, R.RaceBangou`,
+      [year, bashoCode],
+    );
+    return rows.map(toRaceSummary);
+  }
+
   /** 指定した月に、開催のある日 (YYYY-MM-DD) */
   public async raceDates(year: number, month: number): Promise<string[]> {
     const rows: { Nichi: number }[] = await dataSource.query(

@@ -38,6 +38,24 @@ describe("レース", () => {
     expect((await get("/api/race-dates?year=2024&month=5")).body).toEqual([]);
   });
 
+  test("年と競馬場でレースを選べる", async () => {
+    expect((await get("/api/race-years")).body).toEqual([2024]);
+    const bashos = (await get("/api/race-bashos?year=2024")).body;
+    expect(bashos.map((b) => b.bashoMei)).toEqual(["阪神", "東京"]);
+    expect((await get("/api/race-bashos?year=2023")).body).toEqual([]);
+    expect((await get("/api/race-bashos?year=x")).status).toBe(400);
+
+    const tokyo = bashos.find((b) => b.bashoMei === "東京");
+    const races = (await get(`/api/races?year=2024&basho=${tokyo.basho}`)).body;
+    expect(races.map((r) => [r.date, r.raceBangou])).toEqual([
+      ["2024-04-07", 1],
+      ["2024-04-07", 11],
+      ["2024-04-14", 2],
+    ]);
+    expect((await get("/api/races?year=2024")).status).toBe(400);
+    expect((await get("/api/races")).status).toBe(400);
+  });
+
   test("日付のレース一覧は、場所、レース番号の順", async () => {
     const { body } = await get("/api/races?date=2024-04-07");
     expect(body.map((r) => [r.bashoMei, r.raceBangou])).toEqual([

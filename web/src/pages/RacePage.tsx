@@ -11,7 +11,9 @@ export function RacePage() {
       {(r) => (
         <>
           <p>
-            <Link to={`/?date=${r.date}`}>← {r.date} のレース</Link>
+            <Link to={`/?year=${r.date.slice(0, 4)}&basho=${r.basho}`}>
+              ← {r.date.slice(0, 4)}年 {r.bashoMei} のレース
+            </Link>
           </p>
           <h1>{raceTitle(r)}</h1>
           <p className="muted">

@@ -1,50 +1,77 @@
 import { Link, useSearchParams } from "react-router";
-import { type RaceSummary, useApi } from "../api";
+import { type BashoOption, type RaceSummary, useApi } from "../api";
 import { Async, raceCondition } from "../components";
-import { today } from "../format";
 
-/** 日付ごとのレース一覧。同じ月の開催日から選べる */
+/** 年と競馬場を選んで、そのレースの一覧から選ぶ。最初は何も選ばれていない */
 export function RacesPage() {
   const [params, setParams] = useSearchParams();
-  const date = params.get("date") ?? today();
-  const [year, month] = date.split("-");
-  const dates = useApi<string[]>(`/api/race-dates?year=${Number(year)}&month=${Number(month)}`);
-  const races = useApi<RaceSummary[]>(`/api/races?date=${date}`);
+  const years = useApi<number[]>("/api/race-years");
+  const year = Number(params.get("year")) || undefined;
+  const bashos = useApi<BashoOption[]>(year ? `/api/race-bashos?year=${year}` : null);
+  // 年を変えたとき、その年に開催のない競馬場は選ばれていないことにする
+  const requested = Number(params.get("basho"));
+  const basho = bashos.data?.find((b) => b.basho === requested)?.basho;
+  const races = useApi<RaceSummary[]>(
+    year && basho !== undefined ? `/api/races?year=${year}&basho=${basho}` : null,
+  );
 
   return (
     <>
       <h1>レース</h1>
-      <p>
-        <input
-          type="date"
-          value={date}
-          onChange={(e) => e.target.value && setParams({ date: e.target.value })}
-        />
-      </p>
-      {dates.data && (
-        <p className="chips">
-          {dates.data.length === 0 && <span className="muted">この月の開催はありません</span>}
-          {dates.data.map((d) => (
-            <button
-              key={d}
-              type="button"
-              className={d === date ? "chip active" : "chip"}
-              onClick={() => setParams({ date: d })}
-            >
-              {Number(d.slice(8))}日
-            </button>
-          ))}
-        </p>
-      )}
-      <Async state={races}>
+      <Async state={years}>
         {(list) =>
           list.length === 0 ? (
-            <p className="muted">この日のレースはありません</p>
+            <p className="muted">レースのデータがありません。取り込みを行ってください</p>
           ) : (
+            <p>
+              <select
+                value={year ?? ""}
+                onChange={(e) => setParams(e.target.value ? { year: e.target.value } : {})}
+              >
+                <option value="">年を選択</option>
+                {list.map((y) => (
+                  <option key={y} value={y}>
+                    {y}年
+                  </option>
+                ))}
+              </select>{" "}
+              <select
+                value={basho ?? ""}
+                disabled={!bashos.data}
+                onChange={(e) =>
+                  setParams(
+                    e.target.value ? { year: String(year), basho: e.target.value } : { year: String(year) },
+                  )
+                }
+              >
+                <option value="">競馬場を選択</option>
+                {bashos.data?.map((b) => (
+                  <option key={b.basho} value={b.basho}>
+                    {b.bashoMei ?? b.basho}
+                  </option>
+                ))}
+              </select>
+            </p>
+          )
+        }
+      </Async>
+      {years.data && years.data.length > 0 && basho === undefined && (
+        <p className="muted">
+          {!year
+            ? "年を選択してください"
+            : bashos.data?.length === 0
+              ? "この年のレースはありません"
+              : bashos.data && "競馬場を選択してください"}
+        </p>
+      )}
+      {bashos.error && <p className="error">{bashos.error.message}</p>}
+      {races.data && (
+        <Async state={races}>
+          {(list) => (
             <table>
               <thead>
                 <tr>
-                  <th>場所</th>
+                  <th>日付</th>
                   <th className="num">R</th>
                   <th>レース</th>
                   <th>条件</th>
@@ -54,9 +81,9 @@ export function RacesPage() {
                 </tr>
               </thead>
               <tbody>
-                {list.map((race) => (
+                {list.map((race, i) => (
                   <tr key={race.id}>
-                    <td>{race.bashoMei}</td>
+                    <td>{race.date !== list[i - 1]?.date && race.date.slice(5).replace("-", "/")}</td>
                     <td className="num">{race.raceBangou}</td>
                     <td>
                       <Link to={`/races/${race.id}`}>{race.meishou ?? `${race.raceBangou}R`}</Link>
@@ -69,9 +96,9 @@ export function RacesPage() {
                 ))}
               </tbody>
             </table>
-          )
-        }
-      </Async>
+          )}
+        </Async>
+      )}
     </>
   );
 }
