@@ -1,15 +1,14 @@
 import { describe, expect, test } from "bun:test";
-import { createYielder } from "../src/app/util/Yield";
+import { yieldToEventLoop } from "../src/app/util/Yield";
 
-describe("createYielder", () => {
-  test("await だけが続く同期的な処理の間も、タイマーが動く", async () => {
+describe("yieldToEventLoop", () => {
+  test("譲ると、同期的な処理が続いていてもタイマーが動く", async () => {
     let ticks = 0;
     const timer = setInterval(() => ticks++, 5);
     try {
-      const yielder = createYielder(10);
       const end = Date.now() + 100;
       while (Date.now() < end) {
-        await yielder();
+        await yieldToEventLoop();
       }
     } finally {
       clearInterval(timer);

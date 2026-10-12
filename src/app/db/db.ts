@@ -11,12 +11,17 @@ const MIGRATIONS = path.resolve(import.meta.dirname, "../../../drizzle");
 let sqlite: Database | undefined;
 let database: BunSQLiteDatabase | undefined;
 let reader: Database | undefined;
+let openedFile: string | undefined;
 
 /**
  * データベースを開き、マイグレーションを当てる。ファイルは環境変数 KEIBA_DB で変える。
  * 取り込み(書き込み)中も閲覧(読み込み)が止まらないよう WAL にし、閲覧用には別の接続を開く。
+ * migrate: false は、マイグレーション済みのファイルをワーカーが開き直すときの指定。
  */
-export function openDb(file = process.env.KEIBA_DB || "db/keiba.sqlite") {
+export function openDb(
+  file = process.env.KEIBA_DB || "db/keiba.sqlite",
+  { migrate: applyMigrations = true } = {},
+) {
   closeDb();
   const memory = file === ":memory:";
   if (!memory) {
@@ -27,7 +32,10 @@ export function openDb(file = process.env.KEIBA_DB || "db/keiba.sqlite") {
     sqlite.exec("PRAGMA journal_mode = WAL");
   }
   database = drizzle(sqlite);
-  migrate(database, { migrationsFolder: MIGRATIONS });
+  if (applyMigrations) {
+    migrate(database, { migrationsFolder: MIGRATIONS });
+  }
+  openedFile = file;
   // メモリー上のデータベースは接続ごとに別物なので、同じ接続で読む
   reader = memory ? sqlite : new Database(file, { readwrite: true });
 }
@@ -41,6 +49,12 @@ export function closeDb() {
   sqlite = undefined;
   database = undefined;
   reader = undefined;
+  openedFile = undefined;
+}
+
+/** いま開いているデータベースのファイル。ワーカーが同じファイルを開くのに使う。開いていなければ undefined */
+export function openedDbFile(): string | undefined {
+  return openedFile;
 }
 
 function opened<T>(value: T | undefined): T {

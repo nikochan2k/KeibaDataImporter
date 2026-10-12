@@ -24,6 +24,8 @@ export class ImportProgress implements ImportProgressSink {
   /** 取り込みを止めるよう求められた理由。Importer と Traversal は、これがあれば次のファイルへ進まない */
   public stopReason?: string;
 
+  private stopListener?: (reason: string) => void;
+
   public attach(sink: ImportProgressSink) {
     this.sink = sink;
     this.stopReason = undefined;
@@ -31,11 +33,20 @@ export class ImportProgress implements ImportProgressSink {
 
   public detach() {
     this.sink = undefined;
+    this.stopListener = undefined;
+  }
+
+  /** 取り込みを別のスレッドで動かすとき、止める求めをそちらへ伝えるために使う。detach で外れる */
+  public onStop(listener: (reason: string) => void) {
+    this.stopListener = listener;
   }
 
   /** 取り込みを止める。いま読んでいるファイルは最後まで読み、次のファイルから進まない */
   public stop(reason: string) {
-    this.stopReason ??= reason;
+    if (this.stopReason === undefined) {
+      this.stopReason = reason;
+      this.stopListener?.(reason);
+    }
   }
 
   public fileStarted(basename: string, target: ImportTarget) {

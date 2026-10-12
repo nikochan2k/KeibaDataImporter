@@ -4,7 +4,8 @@ import * as path from "node:path";
 import { BadRequestError, ConflictError, NotFoundError } from "../http/errors";
 import { type ImportProgress, type ImportProgressSink, importProgress } from "../ImportProgress";
 import { getLogger } from "../LogUtil";
-import { traversal as defaultTraversal, type Traversal } from "../Traversal";
+import type { Traversal } from "../Traversal";
+import { workerTraversal as defaultTraversal } from "../WorkerTraversal";
 import type {
   ImportJob,
   ImportLogEntry,
@@ -37,6 +38,7 @@ function describe(target: ImportTarget) {
 /**
  * 取り込みジョブを管理する。
  * Bridge などの状態が共有されていて、SQLite の書き込みも一本なので、同時に走らせるのはひとつだけ。
+ * 取り込みそのものはワーカーで動く (WorkerTraversal)。
  */
 export class ImportJobService {
   private logger = getLogger(this);

@@ -10,6 +10,11 @@ export function silenceLoggers() {
   quiet = true;
 }
 
+/** silenceLoggers を呼んだかどうか。ワーカーにも同じ設定を引き継ぐために使う */
+export function loggersSilenced() {
+  return quiet;
+}
+
 export function getLogger(obj: object | string) {
   let categoryName: string;
   if (typeof obj === "string") {
