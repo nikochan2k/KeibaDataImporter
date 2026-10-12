@@ -5,7 +5,7 @@ import { formatChakujun, formatTime, formatZougen } from "../format";
 
 const TABS = [
   { key: "shutuba", label: "出馬表" },
-  { key: "preview", label: "評価" },
+  { key: "preview", label: "事前情報" },
   { key: "result", label: "成績表" },
 ] as const;
 
