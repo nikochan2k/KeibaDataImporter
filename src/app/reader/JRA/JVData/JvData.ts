@@ -4,6 +4,7 @@ import { JvdataBn } from "./JvdataBn";
 import { JvdataBr } from "./JvdataBr";
 import { JvdataBt } from "./JvdataBt";
 import { JvdataCh } from "./JvdataCh";
+import { JvdataHc, JvdataWc } from "./JvdataChoukyou";
 import { JvdataCs } from "./JvdataCs";
 import { JvdataHn } from "./JvdataHn";
 import { JvdataHr } from "./JvdataHr";
@@ -55,6 +56,8 @@ export class JvData extends DataToImport {
       JvdataHy,
       JvdataCs,
       JvdataBn,
+      JvdataHc,
+      JvdataWc,
     ]) {
       const record: JvdataRecord = new type();
       this.records.set(record.id, record);

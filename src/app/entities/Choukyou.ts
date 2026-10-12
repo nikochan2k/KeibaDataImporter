@@ -8,11 +8,15 @@ export const Choukyou = sqliteTable(
     Noriyaku: integer(),
     TanshukuKishuMeiId: integer(),
     Nengappi: integer().notNull(),
+    /** 調教時刻 (HH:MM)。JV-Data の坂路調教・ウッドチップ調教にある */
+    Jikoku: text(),
     /** 同じ馬・同じ日・同じ場所・同じ種別の調教が複数あるときの連番(1 始まり) */
     Renban: integer().notNull(),
     Basho: integer(),
     Type: integer(),
     Course: integer(),
+    /** 馬場周り (0: 右, 1: 左)。JV-Data のウッドチップ調教にある */
+    MigiHidari: integer(),
     BashoCourse: text(),
     Baba: integer(),
     Kaisuu: integer(),

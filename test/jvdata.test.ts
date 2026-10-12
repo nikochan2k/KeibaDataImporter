@@ -1,12 +1,17 @@
 import { afterAll, describe, expect, setDefaultTimeout, test } from "bun:test";
+import * as $CH from "../src/app/converters/Choukyou";
 import { Baken, Kakutei, TouzaiBetsu, touzaiBetsu } from "../src/app/converters/Common";
 import * as $K from "../src/app/converters/Kishu";
 import * as $R from "../src/app/converters/Race";
 import * as $S from "../src/app/converters/Shussouba";
 import * as $U from "../src/app/converters/Uma";
+import { choukyouDao } from "../src/app/daos/ChoukyouDao";
+import { umaDao } from "../src/app/daos/UmaDao";
 import { Banushi } from "../src/app/entities/Banushi";
 import { BanushiMei } from "../src/app/entities/BanushiMei";
+import { Choukyou } from "../src/app/entities/Choukyou";
 import { Choukyoushi } from "../src/app/entities/Choukyoushi";
+import { ChoukyouTime } from "../src/app/entities/ChoukyouTime";
 import { CourseSetsumei } from "../src/app/entities/CourseSetsumei";
 import { Hanshokuba } from "../src/app/entities/Hanshokuba";
 import { Kaisai } from "../src/app/entities/Kaisai";
@@ -34,6 +39,7 @@ import { JvdataBn } from "../src/app/reader/JRA/JVData/JvdataBn";
 import { JvdataBr } from "../src/app/reader/JRA/JVData/JvdataBr";
 import { JvdataBt } from "../src/app/reader/JRA/JVData/JvdataBt";
 import { JvdataCh } from "../src/app/reader/JRA/JVData/JvdataCh";
+import { JvdataHc, JvdataWc } from "../src/app/reader/JRA/JVData/JvdataChoukyou";
 import { JvdataCs } from "../src/app/reader/JRA/JVData/JvdataCs";
 import { JvdataHn } from "../src/app/reader/JRA/JVData/JvdataHn";
 import { JvdataHr } from "../src/app/reader/JRA/JVData/JvdataHr";
@@ -54,6 +60,7 @@ import { JvdataSe } from "../src/app/reader/JRA/JVData/JvdataSe";
 import { JvdataSk } from "../src/app/reader/JRA/JVData/JvdataSk";
 import { JvdataUm } from "../src/app/reader/JRA/JVData/JvdataUm";
 import { JvdataYs } from "../src/app/reader/JRA/JVData/JvdataYs";
+import { tool } from "../src/app/reader/Tool";
 import { repo } from "./helpers";
 import { JvdataRecord, parseJvdataCodes, parseJvdataSpec } from "./spec/jvdata";
 import { closeKolDb, emptyKolDb, importKolFiles } from "./spec/kol";
@@ -86,6 +93,8 @@ const handlers = [
   JvdataHy,
   JvdataCs,
   JvdataBn,
+  JvdataHc,
+  JvdataWc,
 ];
 
 describe("JV-Data の仕様書", () => {
@@ -1159,6 +1168,117 @@ describe("マスタ", () => {
     expect(kaisai[0].Basho).toBe(5);
     expect(kaisai[0].Gatsu).toBe(1);
     expect(kaisai[0].Nichi).toBe(5);
+  });
+});
+
+describe("調教", () => {
+  /** 坂路調教。時計は 0.1 秒単位 (4 ハロン合計、3 ハロン合計、2 ハロン合計、最後の 1 ハロン) */
+  function hc(jikoku: string, f4: number, f3: number, f2: number, f1: number) {
+    return new JvdataRecord("HC")
+      .set("データ区分", "1")
+      .set("トレセン区分", "0")
+      .set("調教年月日", "20071003")
+      .set("調教時刻", jikoku)
+      .set("血統登録番号", "2004101234")
+      .set("4ハロンタイム合計(800M～0M)", f4)
+      .set("ラップタイム(800M～600M)", f4 - f3)
+      .set("3ハロンタイム合計(600M～0M)", f3)
+      .set("ラップタイム(600M～400M)", f3 - f2)
+      .set("2ハロンタイム合計(400M～0M)", f2)
+      .set("ラップタイム(400M～200M)", f2 - f1)
+      .set("ラップタイム(200M～0M)", f1);
+  }
+
+  async function timesOf(choukyouId: number) {
+    const times = await repo(ChoukyouTime).findBy({ ChoukyouId: choukyouId });
+    return times.map((t) => [t.F, t.Time]).sort((a, b) => (b[0] ?? 0) - (a[0] ?? 0));
+  }
+
+  test("坂路調教: KOL から入った同じ調教の行に足し、違う調教は別の行にする", async () => {
+    await emptyKolDb();
+    // KOL から入った調教 (美浦の坂路は美浦南)
+    const uma = await umaDao.saveUma({
+      KettouTourokuBangou: "04101234",
+      KanaBamei: "テストホース",
+    } as Uma);
+    const days = tool.getDaysFrom1970With(2007, 10, 3);
+    const kol = {
+      UmaId: uma.Id,
+      Nengappi: 20071003,
+      Basho: 51,
+      Type: $CH.ChoukyouType.Hanro,
+      Oikiri: 3,
+    } as Choukyou;
+    choukyouDao.saveChoukyou(kol, days, [
+      { F: 4, Time: 52.3 },
+      { F: 3, Time: 38.1 },
+      { F: 1, Time: 12.4 },
+    ] as ChoukyouTime[]);
+
+    expect(
+      await importKolFiles({
+        "SLOP.jvd": Buffer.concat([
+          hc("0712", 523, 381, 250, 124).buffer,
+          // 同じ日の 2 本目
+          hc("0805", 550, 400, 262, 128).buffer,
+        ]),
+      }),
+    ).toEqual([]);
+    const list = await repo(Choukyou).find();
+    expect(list.map((c) => [c.Renban, c.Jikoku, c.Oikiri])).toEqual([
+      [1, "07:12", 3],
+      [2, "08:05", null],
+    ]);
+    expect(list[0].Id).toBe(kol.Id);
+    expect(list.every((c) => c.Basho === 51 && c.UmaId === uma.Id)).toBe(true);
+    expect(await timesOf(list[0].Id)).toEqual([
+      [4, 52.3],
+      [3, 38.1],
+      [2, 25],
+      [1, 12.4],
+    ]);
+  });
+
+  test("ウッドチップ調教: コース・馬場周りと、測定不良を除いた時計", async () => {
+    await emptyKolDb();
+    const wc = new JvdataRecord("WC")
+      .set("データ区分", "1")
+      .set("トレセン区分", "1")
+      .set("調教年月日", "20071003")
+      .set("調教時刻", "0630")
+      .set("血統登録番号", "2004101234")
+      .set("コース", "2")
+      .set("馬場周り", "0")
+      // 10・9 ハロンは測定不良、8 ハロンは上限
+      .set("10ハロンタイム合計(2000M～0M)", "0000")
+      .set("9ハロンタイム合計(1800M～0M)", "0000")
+      .set("8ロンタイム合計(1600M～0M)", "9999")
+      .set("6ハロンタイム合計(1200M～0M)", 834)
+      .set("5ハロンタイム合計(1000M～0M)", 680)
+      .set("4ハロンタイム合計(800M～0M)", 528)
+      .set("3ハロンタイム合計(600M～0M)", 385)
+      .set("2ハロンタイム合計(400M～0M)", 252)
+      .set("ラップタイム(200M～0M)", 121);
+    expect(await importKolFiles({ "WOOD.jvd": wc.buffer })).toEqual([]);
+    const choukyou = await repo(Choukyou).findOneByOrFail({});
+    expect(choukyou).toEqual(
+      expect.objectContaining({
+        Basho: 50,
+        Type: $CH.ChoukyouType.WoodChip,
+        Course: 3,
+        MigiHidari: 0,
+        Jikoku: "06:30",
+        Nengappi: 20071003,
+      }),
+    );
+    expect(await timesOf(choukyou.Id)).toEqual([
+      [6, 83.4],
+      [5, 68],
+      [4, 52.8],
+      [3, 38.5],
+      [2, 25.2],
+      [1, 12.1],
+    ]);
   });
 });
 

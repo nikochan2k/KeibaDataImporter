@@ -70,8 +70,9 @@ export const basho = new Codes([
   { code: 45, kol: /西脇/, naiyou: "西脇" },
   { code: 46, kol: /境町/, naiyou: "境町" },
   { code: 47, kol: /小向/, naiyou: "小向" },
-  { code: 50, kol: /栗東/, jrdb: /11|12|13|14|15|16|17|18|19|82/, naiyou: "栗東" },
-  { code: 51, kol: /美.*南/, jrdb: /01|02|03|04|05|10/, naiyou: "美浦南" },
+  { code: 50, kol: /栗東/, jrdb: /11|12|13|14|15|16|17|18|19|82/, jvdata: "1", naiyou: "栗東" },
+  // JV-Data のトレセン区分は美浦の南・北を区別しない。坂路・ウッドチップは KOL・JRDB と同じく美浦南にする
+  { code: 51, kol: /美.*南/, jrdb: /01|02|03|04|05|10/, jvdata: "0", naiyou: "美浦南" },
   { code: 52, kol: /美.*北/, jrdb: /06|07|08|09|62|68|70/, naiyou: "美浦北" },
   { code: 53, kol: /白井/, jrdb: "93", naiyou: "白井" },
   { code: 54, kol: /道営/, naiyou: "道営" },
@@ -183,11 +184,11 @@ export const type = new Codes([
 ]);
 
 export const course = new Codes([
-  { code: 1, kol: /A|[美北栗].*障/, jrdb: /05|08|70/, naiyou: "A" },
-  { code: 2, kol: /B|[美南].*W/, jrdb: /02|06|14/, naiyou: "B" },
-  { code: 3, kol: /C|[美南].*[芝ポP]|栗[^D]*W/, jrdb: /04|07|10|12/, naiyou: "C" },
-  { code: 4, kol: /D|栗.*[芝WポP]/, jrdb: /03|13|16|17/, naiyou: "D" },
-  { code: 5, kol: /E/, jrdb: /15/, naiyou: "E" },
+  { code: 1, kol: /A|[美北栗].*障/, jrdb: /05|08|70/, jvdata: "0", naiyou: "A" },
+  { code: 2, kol: /B|[美南].*W/, jrdb: /02|06|14/, jvdata: "1", naiyou: "B" },
+  { code: 3, kol: /C|[美南].*[芝ポP]|栗[^D]*W/, jrdb: /04|07|10|12/, jvdata: "2", naiyou: "C" },
+  { code: 4, kol: /D|栗.*[芝WポP]/, jrdb: /03|13|16|17/, jvdata: "3", naiyou: "D" },
+  { code: 5, kol: /E/, jrdb: /15/, jvdata: "4", naiyou: "E" },
 ]);
 
 export const baba = new Codes([
