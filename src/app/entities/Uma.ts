@@ -38,6 +38,10 @@ export const Uma = sqliteTable(
     ShibouNen: integer(),
     ChichiKeitouCode: integer(),
     HahaChichiKeitouCode: integer(),
+    /** JV-Data の系統 ID (Keitou)。系統情報 (BT) にある。JRDB の ChichiKeitouCode とは別の体系 */
+    KeitouId: text(),
+    /** 馬名の意味由来。JV-Data の馬名の意味由来情報 (HY) にある */
+    BameiYurai: text(),
   },
   (t) => [
     uniqueIndex("IxUma1").on(t.KolUmaCode),

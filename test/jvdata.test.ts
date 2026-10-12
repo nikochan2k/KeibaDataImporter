@@ -6,8 +6,10 @@ import * as $S from "../src/app/converters/Shussouba";
 import * as $U from "../src/app/converters/Uma";
 import { Banushi } from "../src/app/entities/Banushi";
 import { Choukyoushi } from "../src/app/entities/Choukyoushi";
+import { CourseSetsumei } from "../src/app/entities/CourseSetsumei";
 import { Hanshokuba } from "../src/app/entities/Hanshokuba";
 import { Kaisai } from "../src/app/entities/Kaisai";
+import { Keitou } from "../src/app/entities/Keitou";
 import { Kishu } from "../src/app/entities/Kishu";
 import { MeishouKubun } from "../src/app/entities/MeishouKubun";
 import { OddsHaitou } from "../src/app/entities/OddsHaitou";
@@ -18,6 +20,8 @@ import { RaceSeiseki } from "../src/app/entities/RaceSeiseki";
 import { Seisanba } from "../src/app/entities/Seisanba";
 import { Seisansha } from "../src/app/entities/Seisansha";
 import { SeisanshaMei } from "../src/app/entities/SeisanshaMei";
+import { Shijou } from "../src/app/entities/Shijou";
+import { ShijouTorihiki } from "../src/app/entities/ShijouTorihiki";
 import { Shoyuu } from "../src/app/entities/Shoyuu";
 import { Shussouba } from "../src/app/entities/Shussouba";
 import { ShussoubaSeiseki } from "../src/app/entities/ShussoubaSeiseki";
@@ -25,9 +29,13 @@ import { ShussoubaTsuukaJuni } from "../src/app/entities/ShussoubaTsuukaJuni";
 import { Uma } from "../src/app/entities/Uma";
 import { getJraTrack } from "../src/app/reader/JRA/JraTrack";
 import { JvdataBr } from "../src/app/reader/JRA/JVData/JvdataBr";
+import { JvdataBt } from "../src/app/reader/JRA/JVData/JvdataBt";
 import { JvdataCh } from "../src/app/reader/JRA/JVData/JvdataCh";
+import { JvdataCs } from "../src/app/reader/JRA/JVData/JvdataCs";
 import { JvdataHn } from "../src/app/reader/JRA/JVData/JvdataHn";
 import { JvdataHr } from "../src/app/reader/JRA/JVData/JvdataHr";
+import { JvdataHs } from "../src/app/reader/JRA/JVData/JvdataHs";
+import { JvdataHy } from "../src/app/reader/JRA/JVData/JvdataHy";
 import { JvdataH1, JvdataH6 } from "../src/app/reader/JRA/JVData/JvdataHyousuu";
 import { JvdataKs } from "../src/app/reader/JRA/JVData/JvdataKs";
 import {
@@ -70,6 +78,10 @@ const handlers = [
   JvdataKs,
   JvdataCh,
   JvdataYs,
+  JvdataBt,
+  JvdataHs,
+  JvdataHy,
+  JvdataCs,
 ];
 
 describe("JV-Data の仕様書", () => {
@@ -96,6 +108,10 @@ describe("JV-Data の仕様書", () => {
       "BR",
       "BN",
       "RC",
+      "BT",
+      "HS",
+      "HY",
+      "CS",
     ]) {
       const spec = parseJvdataSpec(id);
       const last = spec.fields[spec.fields.length - 1];
@@ -928,6 +944,114 @@ describe("マスタ", () => {
       seisansha.Id,
     );
     expect((await repo(Seisansha).find()).length).toBe(1);
+  });
+
+  test("系統情報・馬名の意味由来・市場取引価格", async () => {
+    await emptyKolDb();
+    // 系統情報が繁殖馬マスタより先に来ても、同じ馬になる
+    const bt = new JvdataRecord("BT");
+    bt.set("データ区分", "1")
+      .set("繁殖登録番号", "0000100001")
+      .set("系統ID", "0102")
+      .set("系統名", "テスト系")
+      .set("系統説明", "テストの系統の説明");
+    const deleted = new JvdataRecord("BT");
+    deleted.set("データ区分", "0").set("繁殖登録番号", "0000100002").set("系統ID", "0103");
+    expect(await importKolFiles({ "BT.jvd": Buffer.concat([bt.buffer, deleted.buffer]) })).toEqual(
+      [],
+    );
+    expect(await repo(Keitou).find()).toEqual([
+      { Id: "0102", Meishou: "テスト系", Setsumei: "テストの系統の説明" },
+    ]);
+    const hn = new JvdataRecord("HN");
+    hn.set("データ区分", "1")
+      .set("繁殖登録番号", "0000100001")
+      .set("馬名", "チチウマ")
+      .set("生年", 1995)
+      .set("性別コード", "1");
+    expect(await importKolFiles({ "HN.jvd": hn.buffer })).toEqual([]);
+    const chichi = await repo(Uma).findOneByOrFail({ KanaBamei: "チチウマ" });
+    expect(chichi.KeitouId).toBe("0102");
+    expect(await repo(Uma).count()).toBe(1);
+
+    const hy = new JvdataRecord("HY");
+    hy.set("データ区分", "1")
+      .set("血統登録番号", "2004101234")
+      .set("馬名", "テストホース")
+      .set("馬名の意味由来", "試すこと");
+    const hs = (kaishi: string, kakaku: number) =>
+      new JvdataRecord("HS")
+        .set("データ区分", "1")
+        .set("血統登録番号", "2004101234")
+        .set("父馬 繁殖登録番号", "0000100001")
+        .set("生年", 2004)
+        .set("主催者・市場コード", "000123")
+        .set("主催者名称", "テスト協会")
+        .set("市場の名称", "テストセール")
+        .set("市場の開催期間(開始日)", kaishi)
+        .set("市場の開催期間(終了日)", "20050712")
+        .set("取引時の競走馬の年齢", 1)
+        .set("取引価格", kakaku);
+    expect(
+      await importKolFiles({
+        "HOYU.jvd": hy.buffer,
+        "HOSE.jvd": Buffer.concat([
+          hs("20050711", 21000000).buffer,
+          // 同じ馬が同じ市場で再び取引されたもの
+          hs("20060710", 30000000).buffer,
+        ]),
+      }),
+    ).toEqual([]);
+    const uma = await repo(Uma).findOneByOrFail({ KettouTourokuBangou: "04101234" });
+    expect(uma.KanaBamei).toBe("テストホース");
+    expect(uma.BameiYurai).toBe("試すこと");
+    expect(uma.Seinen).toBe(2004);
+    expect(await repo(Shijou).find()).toEqual([
+      { Code: "000123", ShusaishaMei: "テスト協会", Meishou: "テストセール" },
+    ]);
+    const torihiki = await repo(ShijouTorihiki).find();
+    expect(torihiki.map((t) => [t.UmaId, t.KaishiNengappi, t.Kakaku])).toEqual([
+      [uma.Id, 20050711, 21000000],
+      [uma.Id, 20060710, 30000000],
+    ]);
+    expect(torihiki[0].ShuuryouNengappi).toBe(20050712);
+    expect(torihiki[0].Nenrei).toBe(1);
+  });
+
+  test("コース情報", async () => {
+    await emptyKolDb();
+    const cs = (kaishuu: string, setsumei: string) =>
+      new JvdataRecord("CS")
+        .set("データ区分", "1")
+        .set("競馬場コード", "05")
+        .set("距離", 1600)
+        .set("トラックコード", "11")
+        .set("コース改修年月日", kaishuu)
+        .set("コース説明", setsumei);
+    expect(
+      await importKolFiles({
+        "COMM.jvd": Buffer.concat([
+          cs("20030101", "改修前").buffer,
+          cs("20030101", "改修前 (更新)").buffer,
+          cs("20031101", "改修後").buffer,
+        ]),
+      }),
+    ).toEqual([]);
+    const list = await repo(CourseSetsumei).find();
+    expect(list.map((c) => [c.KaishuuNengappi, c.Setsumei])).toEqual([
+      [20030101, "改修前 (更新)"],
+      [20031101, "改修後"],
+    ]);
+    expect(list[0]).toEqual(
+      expect.objectContaining({
+        Basho: 4,
+        Kyori: 1600,
+        TrackCode: 11,
+        DirtShiba: $R.DirtShiba.Shiba,
+        MigiHidari: 1,
+        UchiSoto: 0,
+      }),
+    );
   });
 
   test("開催スケジュール", async () => {
