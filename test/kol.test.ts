@@ -1,13 +1,24 @@
 import { afterAll, beforeAll, describe, expect, setDefaultTimeout, test } from "bun:test";
 import * as fs from "node:fs";
+import {
+  ChakudosuuBunrui,
+  ChakudosuuKikan,
+  ChakudosuuTaishou,
+  ChakudosuuTrack,
+  keibajouBunrui,
+} from "../src/app/converters/Chakudosuu";
 import { Baken, Kakutei } from "../src/app/converters/Common";
 import { RecordShubetsu } from "../src/app/converters/Race";
 import * as $U from "../src/app/converters/Uma";
 import { findOneBy } from "../src/app/db/helpers";
 import { BanushiMei } from "../src/app/entities/BanushiMei";
+import { Chakudosuu } from "../src/app/entities/Chakudosuu";
+import { ChakudosuuShuukei } from "../src/app/entities/ChakudosuuShuukei";
 import { Choukyou } from "../src/app/entities/Choukyou";
+import { Choukyoushi } from "../src/app/entities/Choukyoushi";
 import { ChoukyouTime } from "../src/app/entities/ChoukyouTime";
 import { Kaisai } from "../src/app/entities/Kaisai";
+import { Kishu } from "../src/app/entities/Kishu";
 import { Kyousouba } from "../src/app/entities/Kyousouba";
 import { MeishouKubun } from "../src/app/entities/MeishouKubun";
 import { OddsHaitou } from "../src/app/entities/OddsHaitou";
@@ -507,6 +518,67 @@ describe("取り込み結果が見本ファイルと一致する", () => {
         expect(row?.Odds2).toBeCloseTo(upper, 5);
       }
     });
+  });
+
+  describe("KIS・KYU (騎手・厩舎データ) の成績", () => {
+    /** 1 着・2 着・3 着・着外 (各 width バイト) */
+    const read = (record: Buffer, address: number, width: number) =>
+      [0, 1, 2, 3].map((i) => Number.parseInt(field(record, address + i * width, width), 10) || 0);
+    const rowOf = (key: Partial<Chakudosuu>) => {
+      const row = findOneBy(Chakudosuu, key as never) as Chakudosuu | null;
+      return row ? [row.Chaku1, row.Chaku2, row.Chaku3, row.Chaku4Ika] : [0, 0, 0, 0];
+    };
+
+    for (const [kind, length, taishou, codeKey, entity, ruikei, honnen, zennen] of [
+      ["kis", 1729, ChakudosuuTaishou.Kishu, "KolKishuCode", Kishu, 207, 247, 987],
+      ["kyu", 1248, ChakudosuuTaishou.Choukyoushi, "KolKyuushaCode", Choukyoushi, 158, 198, 722],
+    ] as const) {
+      test(`${kind}: 通算累計・本年・昨年の成績が、データ作成年月日の時点の着度数になる`, async () => {
+        const result = await importKolKind(kind);
+        expect(result.errors).toEqual([]);
+        const dateAt = kind === "kis" ? 159 : 110;
+        let checked = 0;
+        for (const record of kolRecords(kind, length).slice(0, 20)) {
+          const code = Number.parseInt(field(record, 0, 5), 10);
+          const nengappi = Number.parseInt(field(record, dateAt, 8), 10);
+          const person = findOneBy(entity, { [codeKey]: code } as never) as { Id: number } | null;
+          expect(person).not.toBeNull();
+          const key = { Taishou: taishou, TaishouId: person?.Id, Nengappi: nengappi };
+          expect(
+            rowOf({ ...key, Kikan: ChakudosuuKikan.Ruikei, Bunrui: ChakudosuuBunrui.Heichi }),
+          ).toEqual(read(record, ruikei, 5));
+          expect(
+            rowOf({
+              ...key,
+              Kikan: ChakudosuuKikan.Honnen,
+              Bunrui: ChakudosuuBunrui.Shougai,
+            }),
+          ).toEqual(read(record, honnen + 12, 3));
+          expect(
+            rowOf({ ...key, Kikan: ChakudosuuKikan.Zennen, Bunrui: ChakudosuuBunrui.Heichi }),
+          ).toEqual(read(record, zennen, 3));
+          // 場所別の先頭は京都
+          const keibajou = kind === "kis" ? honnen + 470 : honnen + 254;
+          expect(
+            rowOf({
+              ...key,
+              Kikan: ChakudosuuKikan.Honnen,
+              Bunrui: keibajouBunrui(ChakudosuuTrack.Subete, 0),
+            }),
+          ).toEqual(read(record, keibajou, 3));
+          const shuukei = findOneBy(ChakudosuuShuukei, {
+            ...key,
+            Kikan: ChakudosuuKikan.Honnen,
+          } as never) as ChakudosuuShuukei | null;
+          expect(shuukei?.Nen).toBe(Math.floor(nengappi / 10000));
+          expect(shuukei?.HeichiHonShoukin ?? 0).toBe(
+            (Number.parseInt(field(record, honnen + 36, 7), 10) || 0) * 1000,
+          );
+          checked++;
+        }
+        expect(checked).toBeGreaterThan(0);
+      });
+    }
   });
 
   describe("SYU (種牡馬データ)", () => {
