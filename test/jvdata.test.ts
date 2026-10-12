@@ -10,6 +10,7 @@ import { Kaisai } from "../src/app/entities/Kaisai";
 import { Kishu } from "../src/app/entities/Kishu";
 import { OddsHaitou } from "../src/app/entities/OddsHaitou";
 import { Race } from "../src/app/entities/Race";
+import { RaceHyousuu } from "../src/app/entities/RaceHyousuu";
 import { RaceLapTime } from "../src/app/entities/RaceLapTime";
 import { RaceSeiseki } from "../src/app/entities/RaceSeiseki";
 import { Seisansha } from "../src/app/entities/Seisansha";
@@ -21,6 +22,7 @@ import { Uma } from "../src/app/entities/Uma";
 import { getJraTrack } from "../src/app/reader/JRA/JraTrack";
 import { JvdataCh } from "../src/app/reader/JRA/JVData/JvdataCh";
 import { JvdataHr } from "../src/app/reader/JRA/JVData/JvdataHr";
+import { JvdataH1, JvdataH6 } from "../src/app/reader/JRA/JVData/JvdataHyousuu";
 import { JvdataKs } from "../src/app/reader/JRA/JVData/JvdataKs";
 import {
   JvdataO1,
@@ -46,6 +48,8 @@ const handlers = [
   JvdataRa,
   JvdataSe,
   JvdataHr,
+  JvdataH1,
+  JvdataH6,
   JvdataO1,
   JvdataO2,
   JvdataO3,
@@ -518,6 +522,101 @@ describe("オッズ", () => {
     expect(t?.Odds1).toBeCloseTo(123456.7);
     expect(t?.Ninki).toBe(4896);
     expect(t?.Kakutei).toBe(Kakutei.Zenjitsu);
+  });
+});
+
+describe("票数", () => {
+  test("票数1・6 は組み合わせごとの票数と合計票数、オッズの行にまとまる", async () => {
+    await emptyKolDb();
+    const key = <T extends JvdataRecord>(r: T, kubun: string) =>
+      raceKey(r).set("データ区分", kubun);
+    const h1 = key(new JvdataRecord("H1"), "4");
+    const entry = (parent: string, index: number, bangou: string, hyousuu: string, ninki: string) =>
+      h1
+        .set(parent.includes("単勝") || parent.includes("複勝") ? "馬番" : "組番", bangou, {
+          parent,
+          index,
+        })
+        .set("票数", hyousuu, { parent, index })
+        .set("人気順", ninki, { parent, index });
+    entry("<単勝票数>", 0, "01", "00000012345", "01");
+    entry("<単勝票数>", 1, "02", "00000000000", "--");
+    entry("<単勝票数>", 27, "28", "00000000028", "02");
+    entry("<複勝票数>", 0, "01", "00000000777", "01");
+    entry("<枠連票数>", 1, "12", "00000000088", "01");
+    entry("<馬連票数>", 0, "0102", "00000000003", "001");
+    entry("<ワイド票数>", 0, "0102", "00000000004", "001");
+    entry("<馬単票数>", 1, "0103", "00000000005", "001");
+    entry("<3連複票数>", 0, "010203", "00000000006", "001");
+    h1.set("単勝票数合計", "12345678901")
+      .set("複勝票数合計", "00000022222")
+      .set("3連複票数合計", "00000000666")
+      .set("単勝返還票数合計", "00000000100")
+      .set("複勝返還票数合計", "00000000000");
+
+    const h6 = key(new JvdataRecord("H6"), "2");
+    const sanrentan = { parent: "<3連単票数>", index: 4895 };
+    h6.set("組番", "181716", sanrentan)
+      .set("票数", "00000000007", sanrentan)
+      .set("人気順", "4896", sanrentan)
+      .set("3連単票数合計", "00000000777")
+      .set("3連単返還票数合計", "00000000001");
+
+    // 確定の単勝オッズは、票数と同じ行になる
+    const o1 = key(new JvdataRecord("O1"), "4");
+    o1.set("馬番", "01", { parent: "<単勝オッズ>", index: 0 })
+      .set("オッズ", "0035", { parent: "<単勝オッズ>", index: 0 })
+      .set("人気順", "01", { parent: "<単勝オッズ>", index: 0 });
+
+    expect(
+      await importKolFiles({
+        "HYOUSUU.jvd": Buffer.concat([o1.buffer, h1.buffer, h6.buffer]),
+      }),
+    ).toEqual([]);
+
+    const odds = await repo(OddsHaitou).find();
+    const find = (baken: Baken, b1: number, b2?: number, b3?: number) =>
+      odds.find(
+        (o) =>
+          o.Baken === baken &&
+          o.Bangou1 === b1 &&
+          (o.Bangou2 ?? undefined) === b2 &&
+          (o.Bangou3 ?? undefined) === b3 &&
+          o.Kakutei === (baken === Baken.Sanrentan ? Kakutei.Zenjitsu : Kakutei.Kakutei),
+      );
+    const tan1 = find(Baken.Tanshou, 1);
+    expect(tan1?.Hyousuu).toBe(12345);
+    expect(tan1?.Ninki).toBe(1);
+    expect(tan1?.Odds1).toBeCloseTo(3.5);
+    // 発売前取消は 0 票、人気順はない
+    expect(find(Baken.Tanshou, 2)?.Hyousuu).toBe(0);
+    expect(find(Baken.Tanshou, 2)?.Ninki).toBeNull();
+    // 組番が空白 (登録なし) の組は保存しない
+    expect(find(Baken.Tanshou, 3)).toBeUndefined();
+    expect(find(Baken.Tanshou, 28)?.Hyousuu).toBe(28);
+    expect(find(Baken.Fukushou, 1)?.Hyousuu).toBe(777);
+    expect(find(Baken.Wakuren, 1, 2)?.Hyousuu).toBe(88);
+    expect(find(Baken.Umaren, 1, 2)?.Hyousuu).toBe(3);
+    expect(find(Baken.Wide, 1, 2)?.Hyousuu).toBe(4);
+    expect(find(Baken.Umatan, 1, 3)?.Hyousuu).toBe(5);
+    expect(find(Baken.Sanrenpuku, 1, 2, 3)?.Hyousuu).toBe(6);
+    const t = find(Baken.Sanrentan, 18, 17, 16);
+    expect(t?.Hyousuu).toBe(7);
+    expect(t?.Ninki).toBe(4896);
+
+    const goukei = await repo(RaceHyousuu).find();
+    const g = (baken: Baken) => goukei.find((r) => r.Baken === baken);
+    expect(g(Baken.Tanshou)?.GoukeiHyousuu).toBe(12345678901);
+    expect(g(Baken.Tanshou)?.HenkanHyousuu).toBe(100);
+    expect(g(Baken.Tanshou)?.Kakutei).toBe(Kakutei.Kakutei);
+    expect(g(Baken.Fukushou)?.GoukeiHyousuu).toBe(22222);
+    expect(g(Baken.Fukushou)?.HenkanHyousuu).toBe(0);
+    expect(g(Baken.Sanrenpuku)?.GoukeiHyousuu).toBe(666);
+    // 空白の合計は書かない
+    expect(g(Baken.Umaren)?.GoukeiHyousuu).toBeNull();
+    expect(g(Baken.Sanrentan)?.GoukeiHyousuu).toBe(777);
+    expect(g(Baken.Sanrentan)?.HenkanHyousuu).toBe(1);
+    expect(g(Baken.Sanrentan)?.Kakutei).toBe(Kakutei.Zenjitsu);
   });
 });
 

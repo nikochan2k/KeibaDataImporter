@@ -7,7 +7,7 @@ import { JvdataRecord } from "./JvdataRecord";
  * オッズ (O1〜O6)。
  * データ区分 1(中間)は、何度も提供され時刻の列もないので取り込まない。
  * 2:前日売最終、3:最終、4:確定、5:確定(月曜)を取り込む。
- * 票数は取り込まない。
+ * 票数は H1・H6 で取り込む (JvdataHyousuu)。
  */
 abstract class JvdataOdds extends JvdataRecord {
   private getKakutei(buffer: Buffer) {

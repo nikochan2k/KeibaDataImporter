@@ -9,6 +9,14 @@ import { JravanChok } from "./reader/JRA/JRAVAN/JravanChok";
 import { JravanDelc, JravanDelk, JravanDelu } from "./reader/JRA/JRAVAN/JravanDel";
 import { JravanDen1 } from "./reader/JRA/JRAVAN/JravanDen1";
 import { JravanDen2 } from "./reader/JRA/JRAVAN/JravanDen2";
+import {
+  JravanHyo1,
+  JravanHyo2,
+  JravanHyo3,
+  JravanHyo4,
+  JravanHyo5,
+  JravanHyo6,
+} from "./reader/JRA/JRAVAN/JravanHyo";
 import { JravanKisi } from "./reader/JRA/JRAVAN/JravanKisi";
 import {
   JravanOds1,
@@ -175,6 +183,22 @@ export class Importer {
       { pattern: /jracods4\.dat$/i, type: JravanOds4, source: "JRA-VAN", kind: "オッズ（ワイド）" },
       { pattern: /jracods5\.dat$/i, type: JravanOds5, source: "JRA-VAN", kind: "オッズ（馬単）" },
       { pattern: /jracods6\.dat$/i, type: JravanOds6, source: "JRA-VAN", kind: "オッズ（3連複）" },
+      {
+        pattern: /jrachyo1\.dat$/i,
+        type: JravanHyo1,
+        source: "JRA-VAN",
+        kind: "票数（単勝・複勝・枠連）",
+      },
+      {
+        pattern: /jrachyo2\.dat$/i,
+        type: JravanHyo2,
+        source: "JRA-VAN",
+        kind: "票数（19〜28番の単勝・複勝）",
+      },
+      { pattern: /jrachyo3\.dat$/i, type: JravanHyo3, source: "JRA-VAN", kind: "票数（馬連）" },
+      { pattern: /jrachyo4\.dat$/i, type: JravanHyo4, source: "JRA-VAN", kind: "票数（ワイド）" },
+      { pattern: /jrachyo5\.dat$/i, type: JravanHyo5, source: "JRA-VAN", kind: "票数（馬単）" },
+      { pattern: /jrachyo6\.dat$/i, type: JravanHyo6, source: "JRA-VAN", kind: "票数（3連複）" },
       { pattern: /oz\d+\.txt$/i, type: Oz, source: "JRDB", kind: "基準オッズデータ" },
       { pattern: /ow\d+\.txt$/i, type: Ow, source: "JRDB", kind: "ワイド基準オッズデータ" },
       { pattern: /ou\d+\.txt$/i, type: Ou, source: "JRDB", kind: "馬単基準オッズデータ" },

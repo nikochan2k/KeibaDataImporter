@@ -10,6 +10,7 @@ import { Kaisai } from "../src/app/entities/Kaisai";
 import { Kishu } from "../src/app/entities/Kishu";
 import { OddsHaitou } from "../src/app/entities/OddsHaitou";
 import { Race } from "../src/app/entities/Race";
+import { RaceHyousuu } from "../src/app/entities/RaceHyousuu";
 import { RaceLapTime } from "../src/app/entities/RaceLapTime";
 import { RaceSeiseki } from "../src/app/entities/RaceSeiseki";
 import { MeishouKubun } from "../src/app/entities/Shoyuu";
@@ -21,6 +22,14 @@ import { JravanChok } from "../src/app/reader/JRA/JRAVAN/JravanChok";
 import { JravanDelc, JravanDelk, JravanDelu } from "../src/app/reader/JRA/JRAVAN/JravanDel";
 import { JravanDen1 } from "../src/app/reader/JRA/JRAVAN/JravanDen1";
 import { JravanDen2 } from "../src/app/reader/JRA/JRAVAN/JravanDen2";
+import {
+  JravanHyo1,
+  JravanHyo2,
+  JravanHyo3,
+  JravanHyo4,
+  JravanHyo5,
+  JravanHyo6,
+} from "../src/app/reader/JRA/JRAVAN/JravanHyo";
 import { JravanKisi } from "../src/app/reader/JRA/JRAVAN/JravanKisi";
 import {
   JravanOds1,
@@ -48,6 +57,12 @@ const readers = {
   成績１: JravanSei1,
   成績２: JravanSei2,
   成績Ｈ: JravanSeih,
+  票数１: JravanHyo1,
+  票数２: JravanHyo2,
+  票数３: JravanHyo3,
+  票数４: JravanHyo4,
+  票数５: JravanHyo5,
+  票数６: JravanHyo6,
   オッズ１: JravanOds1,
   オッズ３: JravanOds3,
   オッズ４: JravanOds4,
@@ -383,6 +398,85 @@ describe("オッズ", () => {
     expect(wide?.Odds2).toBeCloseTo(2.5);
     expect(find(Baken.Umatan, 1, 3)?.Odds1).toBeCloseTo(30);
     expect(find(Baken.Sanrenpuku, 1, 2, 3)?.Odds1).toBeCloseTo(12.3);
+  });
+});
+
+describe("票数", () => {
+  test("票数１〜６ は組み合わせごとの票数と合計票数、オッズの行にまとまる", async () => {
+    await emptyKolDb();
+    const h1 = withKey(new JravanRecord("票数１"));
+    h1.set("単勝合計票数", 12345678901)
+      .set("複勝合計票数", 22222)
+      .set("枠連合計票数", 0)
+      .set("単勝票数(馬番01～18)", "000012345", { index: 0 })
+      .set("単勝票数(馬番01～18)", "000000000", { index: 1 })
+      .set("複勝票数(馬番01～18)", "000000777", { index: 0 })
+      .set("枠連票数(1-1～8-8)", "000000088", { index: 1 });
+    const h2 = withKey(new JravanRecord("票数２"));
+    h2.set("単勝票数(馬番19～28)", "000000019", { index: 0 }).set(
+      "複勝票数(馬番19～28)",
+      "000000028",
+      { index: 9 },
+    );
+    const h3 = withKey(new JravanRecord("票数３"));
+    h3.set("馬連合計票数", 333).set("馬連票数(馬連01-02～17-18)", "000000003", { index: 1 });
+    const h4 = withKey(new JravanRecord("票数４"));
+    h4.set("ワイド合計票数", 444).set("ﾜｲﾄﾞ票数(ﾜｲﾄﾞ01-02～17-18)", "000000004", { index: 0 });
+    const h5 = withKey(new JravanRecord("票数５"));
+    // 馬単は 01-02, 01-03, … の順。2 番目は 01-03
+    h5.set("馬単合計票数", 555).set("馬単票数(馬単01-02～18-17)", "00000000005", { index: 1 });
+    const h6 = withKey(new JravanRecord("票数６"));
+    h6.set("３連複合計票数", 666).set("３連複票数(三連複01-02-03～16-17-18)", "00000000006", {
+      index: 0,
+    });
+    const o1 = withKey(new JravanRecord("オッズ１"));
+    o1.set("単勝オッズ(馬番01～18)", "0035", { index: 0 });
+
+    expect(
+      await importKolFiles({
+        "JracOds1.dat": o1.buffer,
+        "JracHyo1.dat": h1.buffer,
+        "JracHyo2.dat": h2.buffer,
+        "JracHyo3.dat": h3.buffer,
+        "JracHyo4.dat": h4.buffer,
+        "JracHyo5.dat": h5.buffer,
+        "JracHyo6.dat": h6.buffer,
+      }),
+    ).toEqual([]);
+
+    const odds = await repo(OddsHaitou).find();
+    const find = (baken: Baken, b1: number, b2?: number, b3?: number) =>
+      odds.find(
+        (o) =>
+          o.Baken === baken &&
+          o.Bangou1 === b1 &&
+          (o.Bangou2 ?? undefined) === b2 &&
+          (o.Bangou3 ?? undefined) === b3,
+      );
+    const tan1 = find(Baken.Tanshou, 1);
+    expect(tan1?.Hyousuu).toBe(12345);
+    expect(tan1?.Odds1).toBeCloseTo(3.5);
+    expect(tan1?.Kakutei).toBe(Kakutei.Kakutei);
+    // '000000000' は無投票 (0 票)、全スペースは登録無し
+    expect(find(Baken.Tanshou, 2)?.Hyousuu).toBe(0);
+    expect(find(Baken.Tanshou, 3)).toBeUndefined();
+    expect(find(Baken.Fukushou, 1)?.Hyousuu).toBe(777);
+    expect(find(Baken.Wakuren, 1, 2)?.Hyousuu).toBe(88);
+    expect(find(Baken.Tanshou, 19)?.Hyousuu).toBe(19);
+    expect(find(Baken.Fukushou, 28)?.Hyousuu).toBe(28);
+    expect(find(Baken.Umaren, 1, 3)?.Hyousuu).toBe(3);
+    expect(find(Baken.Wide, 1, 2)?.Hyousuu).toBe(4);
+    expect(find(Baken.Umatan, 1, 3)?.Hyousuu).toBe(5);
+    expect(find(Baken.Sanrenpuku, 1, 2, 3)?.Hyousuu).toBe(6);
+
+    const goukei = new Map((await repo(RaceHyousuu).find()).map((r) => [r.Baken, r.GoukeiHyousuu]));
+    expect(goukei.get(Baken.Tanshou)).toBe(12345678901);
+    expect(goukei.get(Baken.Fukushou)).toBe(22222);
+    expect(goukei.get(Baken.Wakuren)).toBe(0);
+    expect(goukei.get(Baken.Umaren)).toBe(333);
+    expect(goukei.get(Baken.Wide)).toBe(444);
+    expect(goukei.get(Baken.Umatan)).toBe(555);
+    expect(goukei.get(Baken.Sanrenpuku)).toBe(666);
   });
 });
 

@@ -2,6 +2,7 @@ import { Logger } from "log4js";
 import { Baken, Kakutei } from "../converters/Common";
 import { upsertAll, upsertLater } from "../db/helpers";
 import { OddsHaitou } from "../entities/OddsHaitou";
+import { RaceHyousuu } from "../entities/RaceHyousuu";
 import { readPositiveInt } from "./Reader";
 
 export interface HaitouInfo {
@@ -57,6 +58,24 @@ export abstract class OddsHaitouTool {
       toBe.Id = this.calculateOddsHaitouId(toBe);
     }
     upsertAll(OddsHaitou, toBes);
+  }
+
+  /** 賭式ごとの合計票数を保存する。ID はレースID(28ビット)、確定(3ビット)、馬券(4ビット) */
+  public async saveRaceHyousuu(
+    raceId: number,
+    kakutei: Kakutei,
+    baken: Baken,
+    goukeiHyousuu: number | null,
+    henkanHyousuu?: number | null,
+  ) {
+    const toBe = {} as RaceHyousuu;
+    toBe.Id = raceId * 2 ** (3 + 4) + kakutei * 2 ** 4 + baken;
+    toBe.RaceId = raceId;
+    toBe.Kakutei = kakutei;
+    toBe.Baken = baken;
+    toBe.GoukeiHyousuu = goukeiHyousuu;
+    toBe.HenkanHyousuu = henkanHyousuu;
+    upsertLater(RaceHyousuu, toBe);
   }
 
   public async saveRaceHaitou(

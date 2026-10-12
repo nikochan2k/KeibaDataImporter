@@ -36,6 +36,13 @@
       "when": 1791779347413,
       "tag": "0004_houbokusaki_matching_key",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "6",
+      "when": 1791785842189,
+      "tag": "0005_race_hyousuu",
+      "breakpoints": true
     }
   ]
 }

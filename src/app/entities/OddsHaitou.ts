@@ -15,6 +15,8 @@ export const OddsHaitou = sqliteTable(
     Odds2: real(),
     Haitoukin: integer(),
     Ninki: integer(),
+    /** 票数。返還分を含む (1 票 100 円)。0 は無投票 */
+    Hyousuu: integer(),
     /** オッズを取得した時刻(HH:MM)。直前オッズ(TYB)で分かる。 */
     ShutokuJikan: text(),
   },

@@ -1,6 +1,7 @@
 import { Baken, Kakutei } from "../../../converters/Common";
+import { OddsHaitou } from "../../../entities/OddsHaitou";
 import { HaitouInfo } from "../../OddsHaitouTool";
-import { readPositiveInt } from "../../Reader";
+import { readInt, readPositiveInt } from "../../Reader";
 import { JraOddsHaitouTool } from "../JraOddsHaitouTool";
 
 /**
@@ -66,6 +67,50 @@ export class JvdataOddsHaitouTool extends JraOddsHaitouTool {
       }
       const ninki = readPositiveInt(buffer, o + bangouBytes + oddsBytes, layout.ninkiLength);
       await this.saveOne(raceId, kakutei, baken, bangou, odds1, odds2, ninki ?? undefined);
+    }
+  }
+
+  /**
+   * 票数 (H1・H6) の繰り返しを保存します。1 件の並びは、組番、票数(11)、人気順。
+   * 組番が空白の組(登録なし)と、票数が空白の組は保存しません。'0…0' (発売前取消・発売票数なし) は 0 票。
+   * 人気順は、取消 ('--' など) なら書きません。
+   * @param offset 繰り返しの先頭
+   * @param count 繰り返しの回数
+   */
+  public async saveHyousuuEntries(
+    buffer: Buffer,
+    offset: number,
+    count: number,
+    raceId: number,
+    kakutei: Kakutei,
+    baken: Baken,
+    layout: Pick<JvdataOddsLayout, "bangouCount" | "bangouLength" | "ninkiLength">,
+  ) {
+    const bangouBytes = layout.bangouCount * layout.bangouLength;
+    const stride = bangouBytes + 11 + layout.ninkiLength;
+    for (let i = 0; i < count; i++) {
+      const o = offset + i * stride;
+      const bangou: number[] = [];
+      for (let b = 0; b < layout.bangouCount; b++) {
+        bangou.push(readPositiveInt(buffer, o + b * layout.bangouLength, layout.bangouLength));
+      }
+      if (bangou.some((n) => !n)) {
+        continue;
+      }
+      const hyousuu = readInt(buffer, o + bangouBytes, 11);
+      if (hyousuu === null) {
+        continue;
+      }
+      const toBe = {} as OddsHaitou;
+      toBe.RaceId = raceId;
+      toBe.Kakutei = kakutei;
+      toBe.Baken = baken;
+      toBe.Bangou1 = bangou[0];
+      toBe.Bangou2 = bangou[1];
+      toBe.Bangou3 = bangou[2];
+      toBe.Hyousuu = hyousuu;
+      toBe.Ninki = readPositiveInt(buffer, o + bangouBytes + 11, layout.ninkiLength) ?? undefined;
+      await this.saveOddsHaitou(toBe);
     }
   }
 
