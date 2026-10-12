@@ -28,7 +28,7 @@ export abstract class JrdbShussoubaData extends JrdbRaceData {
       return info.shussouba;
     }
     await this.setShussouba(buffer, toBe, info);
-    return upsert(Shussouba, toBe, this.keepExisting);
+    return upsert(Shussouba, toBe);
   }
 
   protected async setShussouba(_buffer: Buffer, _toBe: Shussouba, _info: ShussoubaInfo) {}

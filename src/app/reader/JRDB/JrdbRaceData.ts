@@ -25,7 +25,7 @@ export abstract class JrdbRaceData extends JrdbKaisaiData {
       return null;
     }
     this.setRace(buffer, toBe);
-    return upsert(Race, toBe, this.keepExisting);
+    return upsert(Race, toBe);
   }
 
   protected setRace(_buffer: Buffer, _toBe: Race) {}
@@ -38,7 +38,7 @@ export abstract class JrdbRaceData extends JrdbKaisaiData {
     const toBe = {} as RaceSeiseki;
     toBe.Id = raceId;
     this.setRaceSeiseki(buffer, toBe);
-    upsertLater(RaceSeiseki, toBe, this.keepExisting);
+    upsertLater(RaceSeiseki, toBe);
   }
 
   protected setRaceSeiseki(_buffer: Buffer, _toBe: RaceSeiseki) {}

@@ -1,7 +1,7 @@
 import { afterAll, beforeAll, describe, expect, test } from "bun:test";
 import { Baken, Kakutei } from "../src/app/converters/Common";
 import { closeDb, currentSqlite, openDb, runInTransaction } from "../src/app/db/db";
-import { countBy, findBy, findOneBy, upsertAll, upsertLater } from "../src/app/db/helpers";
+import { countBy, findBy, findOneBy, save, upsertAll, upsertLater } from "../src/app/db/helpers";
 import { ChoukyouTime } from "../src/app/entities/ChoukyouTime";
 import { Kishu } from "../src/app/entities/Kishu";
 import { OddsHaitou } from "../src/app/entities/OddsHaitou";
@@ -149,6 +149,19 @@ describe("upsertAll", () => {
 
   test("空の配列は何もしない", () => {
     expect(() => upsertAll(ChoukyouTime, [])).not.toThrow();
+  });
+});
+
+describe("save", () => {
+  test("null で既存の値を消さない", () => {
+    save(ChoukyouTime, { ChoukyouId: 6, F: 1, Time: 1, Comment: "keep" });
+    save(ChoukyouTime, { ChoukyouId: 6, F: 1, Time: 2, Comment: null });
+    expect(findOneBy(ChoukyouTime, { ChoukyouId: 6, F: 1 })).toEqual({
+      ChoukyouId: 6,
+      F: 1,
+      Time: 2,
+      Comment: "keep",
+    });
   });
 });
 

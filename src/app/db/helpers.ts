@@ -126,7 +126,7 @@ export function countBy<T extends SQLiteTable>(table: T, where: Where<T> = {}): 
   return (statement.get(params) as { n: number }).n;
 }
 
-/** undefined の項目を除く (TypeORM と同じく、undefined の項目は保存しない) */
+/** undefined の項目を除く */
 function definedOf(row: object) {
   return Object.fromEntries(Object.entries(row).filter(([, value]) => value !== undefined));
 }
@@ -165,12 +165,13 @@ function paramsOf(values: Record<string, unknown>) {
 
 /**
  * 行を保存する (TypeORM の save)。主キーの行があれば渡した項目だけ更新し、なければ追加する。
+ * undefined と null の項目は書かない (既存の値を消さない)。
  * 自動採番の主キーが空なら追加して、採番された Id を row に入れる。row をそのまま返す。
  */
 export function save<T extends SQLiteTable>(table: T, row: Partial<Row<T>>): Row<T> {
   flushWrites(table);
   const keys = keysOf(table);
-  const values = definedOf(row);
+  const values = definedNonNullOf(row);
   const names = Object.keys(values);
   const params = paramsOf(values);
   const generated = keys.length === 1 && "autoIncrement" in keys[0] && keys[0].autoIncrement;

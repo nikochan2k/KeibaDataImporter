@@ -5,12 +5,6 @@ import { JrdbBridge } from "./JrdbBridge";
 export abstract class JrdbData extends DataToImport {
   private static YYMMDD = /(\d{2})(\d{2})(\d{2})/;
 
-  /**
-   * true のとき、空白の項目で既存の値を消さない。
-   * 速報版のように、一部の項目が空白で提供されるデータで使う。
-   */
-  protected keepExisting = false;
-
   protected async setup() {
     const result = JrdbData.YYMMDD.exec(bridge.basename);
     if (!result) {

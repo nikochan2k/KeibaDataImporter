@@ -81,6 +81,6 @@ export class Cha extends JrdbShussoubaData {
     const asIs = candidates.find((c) => c.Oikiri === toBe.Oikiri) ?? candidates[0] ?? null;
     toBe.Renban = asIs?.Renban ?? 1;
     toBe.Id = getChoukyouId(toBe.UmaId, days, toBe.Basho, toBe.Type, toBe.Renban);
-    return await tool.saveOrUpdate(Choukyou, asIs, toBe, true);
+    return await tool.saveOrUpdate(Choukyou, asIs, toBe);
   }
 }

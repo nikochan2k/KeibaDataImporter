@@ -49,7 +49,7 @@ export class Tyb extends JrdbData {
     if (race) {
       const toBe = {} as Race;
       toBe.HassouJikan = readJikan(buffer, 99);
-      await tool.saveOrUpdate(Race, race, toBe, true);
+      await tool.saveOrUpdate(Race, race, toBe);
     }
 
     const seiseki = {} as RaceSeiseki;
@@ -57,7 +57,7 @@ export class Tyb extends JrdbData {
     seiseki.Baba = $R.baba.toCodeFromJrdb(buffer, 69, 1);
     seiseki.BabaSokudo = $R.babaSokudo.toCodeFromJrdb(buffer, 70, 1);
     seiseki.Tenki = $R.tenki.toCodeFromJrdb(buffer, 71, 1);
-    upsertLater(RaceSeiseki, seiseki, true);
+    upsertLater(RaceSeiseki, seiseki);
   }
 
   protected async saveShussoubaHyouka(buffer: Buffer, shussoubaId: number) {
@@ -65,7 +65,7 @@ export class Tyb extends JrdbData {
     toBe.Id = shussoubaId;
     toBe.BataiCode = $S.bataiCode.toCodeFromJrdb(buffer, 97, 1);
     toBe.KehaiCode = $S.kehaiCode.toCodeFromJrdb(buffer, 98, 1);
-    upsertLater(ShussoubaHyouka, toBe, true);
+    upsertLater(ShussoubaHyouka, toBe);
   }
 
   protected async saveShussoubaYosou(buffer: Buffer, shussoubaId: number) {

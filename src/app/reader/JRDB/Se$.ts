@@ -86,7 +86,7 @@ export abstract class Se$ extends JrdbShussoubaData {
     const toBe = {} as ShussoubaSeiseki;
     toBe.Id = shussoubaId;
     await this.setShussoubaSeiseki(buffer, toBe);
-    upsertLater(ShussoubaSeiseki, toBe, this.keepExisting);
+    upsertLater(ShussoubaSeiseki, toBe);
   }
 
   protected async setShussoubaSeiseki(buffer: Buffer, toBe: ShussoubaSeiseki) {
@@ -123,7 +123,7 @@ export abstract class Se$ extends JrdbShussoubaData {
     toBe.Id = shussoubaId;
     this.setShussoubaHyouka(buffer, toBe);
 
-    upsertLater(ShussoubaHyouka, toBe, this.keepExisting);
+    upsertLater(ShussoubaHyouka, toBe);
   }
 
   protected setShussoubaHyouka(buffer: Buffer, toBe: ShussoubaHyouka) {
