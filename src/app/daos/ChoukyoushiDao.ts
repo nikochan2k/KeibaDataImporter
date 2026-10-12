@@ -1,7 +1,7 @@
 import { findOneBy, getOrCreate, query } from "../db/helpers";
 import { Choukyoushi } from "../entities/Choukyoushi";
 import { ChoukyoushiMei } from "../entities/ChoukyoushiMei";
-import { JinmeiKubun } from "../entities/Jinmei";
+import { MeishouKubun } from "../entities/MeishouKubun";
 import { tool } from "../reader/Tool";
 import { jinmeiDao, jinmeiMatchingKey, stripJinmei } from "./JinmeiDao";
 
@@ -74,7 +74,7 @@ export class ChoukyoushiDao {
           INNER JOIN Jinmei j ON j.Id = m.JinmeiId
           WHERE m.ChoukyoushiId = ? AND m.Kubun = ? AND (j.Meishou = ? OR j.MatchingKey = ?) LIMIT 1`,
         row.Id,
-        JinmeiKubun.Seimei,
+        MeishouKubun.Meishou,
         stripJinmei(seimei),
         jinmeiMatchingKey(seimei),
       ).length > 0
@@ -127,24 +127,24 @@ export class ChoukyoushiDao {
       return asIs;
     }
     if (seimei) {
-      await this.saveChoukyoushiMei(toBe, JinmeiKubun.Seimei, seimei);
+      await this.saveChoukyoushiMei(toBe, MeishouKubun.Meishou, seimei);
     }
     if (tanshuku) {
-      await this.saveChoukyoushiMei(toBe, JinmeiKubun.Tanshuku, tanshuku);
+      await this.saveChoukyoushiMei(toBe, MeishouKubun.Tanshuku, tanshuku);
       if (3 < tanshuku.length) {
         tanshuku = tanshuku.substring(0, 3);
-        await this.saveChoukyoushiMei(toBe, JinmeiKubun.Tanshuku, tanshuku);
+        await this.saveChoukyoushiMei(toBe, MeishouKubun.Tanshuku, tanshuku);
       }
     }
     if (furigana) {
-      await this.saveChoukyoushiMei(toBe, JinmeiKubun.Furigana, furigana);
+      await this.saveChoukyoushiMei(toBe, MeishouKubun.Furigana, furigana);
     }
     return toBe;
   }
 
   protected async saveChoukyoushiMei(
     choukyoushi: Choukyoushi,
-    kubun: JinmeiKubun,
+    kubun: MeishouKubun,
     meishou: string,
   ) {
     const jinmei = await jinmeiDao.save(meishou);

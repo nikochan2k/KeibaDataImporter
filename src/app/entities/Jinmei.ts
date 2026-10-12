@@ -1,12 +1,5 @@
 import { index, integer, sqliteTable, text, uniqueIndex } from "drizzle-orm/sqlite-core";
 
-/** 人名の区分。名前がどの区分かは人によって違うため、KishuMei / ChoukyoushiMei に持つ */
-export enum JinmeiKubun {
-  Seimei,
-  Tanshuku,
-  Furigana,
-}
-
 /**
  * 人名の辞書。表記(Meishou)ごとに1行。斎藤と斉藤のように異体字で別人になりうるので、
  * 表記が違えば別の行にする。MatchingKey は表記ゆれを許して探す(取り込み時の突き合わせ、UIからの検索)ための索引で、一意ではない。

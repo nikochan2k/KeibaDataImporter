@@ -9,6 +9,7 @@ import { Choukyoushi } from "../src/app/entities/Choukyoushi";
 import { Hanshokuba } from "../src/app/entities/Hanshokuba";
 import { Kaisai } from "../src/app/entities/Kaisai";
 import { Kishu } from "../src/app/entities/Kishu";
+import { MeishouKubun } from "../src/app/entities/MeishouKubun";
 import { OddsHaitou } from "../src/app/entities/OddsHaitou";
 import { Race } from "../src/app/entities/Race";
 import { RaceHyousuu } from "../src/app/entities/RaceHyousuu";
@@ -16,6 +17,7 @@ import { RaceLapTime } from "../src/app/entities/RaceLapTime";
 import { RaceSeiseki } from "../src/app/entities/RaceSeiseki";
 import { Seisanba } from "../src/app/entities/Seisanba";
 import { Seisansha } from "../src/app/entities/Seisansha";
+import { SeisanshaMei } from "../src/app/entities/SeisanshaMei";
 import { Shoyuu } from "../src/app/entities/Shoyuu";
 import { Shussouba } from "../src/app/entities/Shussouba";
 import { ShussoubaSeiseki } from "../src/app/entities/ShussoubaSeiseki";
@@ -737,7 +739,13 @@ describe("マスタ", () => {
     expect(hahaChichiChichi.KanaBamei).toBe("ハハノチチチチ");
     const seisansha = await repo(Seisansha).findOneByOrFail({ JvDataCode: "00012345" });
     const shoyuu = await repo(Shoyuu).findOneByOrFail({ Meishou: "テスト牧場" });
-    expect(seisansha.ShoyuuId).toBe(shoyuu.Id);
+    expect(await repo(SeisanshaMei).find()).toEqual([
+      expect.objectContaining({
+        SeisanshaId: seisansha.Id,
+        ShoyuuId: shoyuu.Id,
+        Kubun: MeishouKubun.Meishou,
+      }),
+    ]);
     expect(await repo(Seisanba).find()).toEqual([
       expect.objectContaining({ UmaId: uma.Id, SeisanshaId: seisansha.Id }),
     ]);
@@ -886,11 +894,25 @@ describe("マスタ", () => {
     expect(await importKolFiles({ "BR.jvd": br.buffer })).toEqual([]);
     const seisansha = await repo(Seisansha).findOneByOrFail({ JvDataCode: "00054321" });
     expect(seisansha.Id).toBe(nameOnly.Id);
-    expect(seisansha.Furigana).toBe("テストボクジョウ");
-    expect(seisansha.EigoMei).toBe("Test Farm");
     expect(seisansha.Juusho).toBe("新冠町");
-    const shoyuu = await repo(Shoyuu).findOneByOrFail({ Id: seisansha.ShoyuuId });
-    expect(shoyuu.Meishou).toBe("テスト牧場");
+    // 正式名・フリガナ・欧字が、区分ごとに生産者の名前になる (欧字は空白を残す)
+    const mei = await repo(SeisanshaMei).findBy({ SeisanshaId: seisansha.Id });
+    const names = new Map(
+      await Promise.all(
+        mei.map(
+          async (m) =>
+            [m.Kubun, (await repo(Shoyuu).findOneByOrFail({ Id: m.ShoyuuId })).Meishou] as const,
+        ),
+      ),
+    );
+    expect(names).toEqual(
+      new Map([
+        [MeishouKubun.Meishou, "テスト牧場"],
+        [MeishouKubun.Furigana, "テストボクジョウ"],
+        [MeishouKubun.Eigo, "Test Farm"],
+      ]),
+    );
+
     for (const umaId of [uma.Id, uma3.Id]) {
       expect(await repo(Seisanba).findBy({ UmaId: umaId })).toEqual([
         expect.objectContaining({ SeisanshaId: seisansha.Id }),

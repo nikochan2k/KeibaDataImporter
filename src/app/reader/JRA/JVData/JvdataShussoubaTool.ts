@@ -1,7 +1,7 @@
 import { HeichiShougai } from "../../../converters/Race";
 import { banushiDao } from "../../../daos/BanushiDao";
+import { MeishouKubun } from "../../../entities/MeishouKubun";
 import { Race } from "../../../entities/Race";
-import { MeishouKubun } from "../../../entities/Shoyuu";
 import { Shussouba } from "../../../entities/Shussouba";
 import { kolShussoubaTool } from "../../KOL/KolShussoubaTool";
 import { readInt, readPositiveInt, readRaw } from "../../Reader";
@@ -64,7 +64,7 @@ export class JvdataShussoubaTool extends JraShussoubaTool {
     }
     const banushiMei = tool.normalizeHoujinMei(buffer, 104, 64);
     if (banushiMei) {
-      await banushiDao.save(saved.shussouba.Id, MeishouKubun.Full, banushiMei);
+      await banushiDao.save(saved.shussouba.Id, MeishouKubun.Meishou, banushiMei);
     }
     return saved;
   }

@@ -1,8 +1,9 @@
 import { save } from "../../src/app/db/helpers";
-import { Jinmei, JinmeiKubun } from "../../src/app/entities/Jinmei";
+import { Jinmei } from "../../src/app/entities/Jinmei";
 import { Kaisai } from "../../src/app/entities/Kaisai";
 import { KishuMei } from "../../src/app/entities/KishuMei";
 import { Kyousouba } from "../../src/app/entities/Kyousouba";
+import { MeishouKubun } from "../../src/app/entities/MeishouKubun";
 import { Race } from "../../src/app/entities/Race";
 import { RaceMei } from "../../src/app/entities/RaceMei";
 import { Shussouba } from "../../src/app/entities/Shussouba";
@@ -110,12 +111,12 @@ export async function seedBrowseFixture() {
     Object.assign({} as KishuMei, {
       KishuId: 7,
       JinmeiId: tanshuku.Id,
-      Kubun: JinmeiKubun.Tanshuku,
+      Kubun: MeishouKubun.Tanshuku,
     }),
   );
   await save(
     KishuMei,
-    Object.assign({} as KishuMei, { KishuId: 7, JinmeiId: jinmei.Id, Kubun: JinmeiKubun.Seimei }),
+    Object.assign({} as KishuMei, { KishuId: 7, JinmeiId: jinmei.Id, Kubun: MeishouKubun.Meishou }),
   );
 
   // 11R: アルファが 2 着、ブラボーが 1 着、チャーリーは取消(着順なし)

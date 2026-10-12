@@ -1,6 +1,7 @@
 import { Database } from "bun:sqlite";
 import { afterAll, beforeAll, describe, expect, test } from "bun:test";
 import { Baken, Kakutei } from "../src/app/converters/Common";
+import { seisanshaDao } from "../src/app/daos/SeisanshaDao";
 import { closeDb, currentSqlite, openDb, runInTransaction } from "../src/app/db/db";
 import {
   countBy,
@@ -15,6 +16,9 @@ import { ensureSchema } from "../src/app/db/schema";
 import { ChoukyouTime } from "../src/app/entities/ChoukyouTime";
 import { Kishu } from "../src/app/entities/Kishu";
 import { OddsHaitou } from "../src/app/entities/OddsHaitou";
+import { Seisanba } from "../src/app/entities/Seisanba";
+import { Seisansha } from "../src/app/entities/Seisansha";
+import { SeisanshaMei } from "../src/app/entities/SeisanshaMei";
 import { jrdbOddsHaitouTool } from "../src/app/reader/JRDB/JrdbOddsHaitouTool";
 import { tool } from "../src/app/reader/Tool";
 
@@ -36,6 +40,29 @@ describe("スキーマ", () => {
     sqlite.exec('CREATE TABLE "Old" ("Id" integer)');
     expect(() => ensureSchema(sqlite, "test")).toThrow("Uma の列が違う、Old は定義にない");
     sqlite.close();
+  });
+});
+
+describe("生産者", () => {
+  test("正式名と略称は同じ生産者の名前になり、略称だけでも候補がひとりならその生産者", async () => {
+    const kol = await seisanshaDao.saveSeisanba(1001, {
+      meishou: "社台ファーム",
+      tanshuku: "社台Ｆ",
+    });
+    const seisanshaId = kol?.SeisanshaId;
+    expect(findBy(SeisanshaMei, { SeisanshaId: seisanshaId }).length).toBe(2);
+    // 略称だけの馬
+    expect((await seisanshaDao.saveSeisanba(1002, { tanshuku: "社台Ｆ" }))?.SeisanshaId).toBe(
+      seisanshaId,
+    );
+    // 同じ略称の別の生産者がいると、略称だけでは決められない
+    await seisanshaDao.saveSeisanba(1003, { meishou: "社台ファーム白老", tanshuku: "社台Ｆ" });
+    const ambiguous = await seisanshaDao.saveSeisanba(1004, { tanshuku: "社台Ｆ" });
+    expect(ambiguous?.SeisanshaId).not.toBe(seisanshaId);
+    // コードを持つ生産者は、正式名が同じで、まだコードのない生産者になる
+    await seisanshaDao.saveSeisansha({ JvDataCode: "00000001", meishou: "社台ファーム" });
+    expect(findOneBy(Seisansha, { JvDataCode: "00000001" })?.Id).toBe(seisanshaId);
+    expect(countBy(Seisanba, { SeisanshaId: seisanshaId })).toBe(2);
   });
 });
 

@@ -1,5 +1,5 @@
 import { index, integer, sqliteTable, uniqueIndex } from "drizzle-orm/sqlite-core";
-import { JinmeiKubun } from "./Jinmei";
+import { MeishouKubun } from "./MeishouKubun";
 
 export const ChoukyoushiMei = sqliteTable(
   "ChoukyoushiMei",
@@ -7,7 +7,7 @@ export const ChoukyoushiMei = sqliteTable(
     Id: integer().primaryKey({ autoIncrement: true }),
     ChoukyoushiId: integer().notNull(),
     JinmeiId: integer().notNull(),
-    Kubun: integer().$type<JinmeiKubun>().notNull(),
+    Kubun: integer().$type<MeishouKubun>().notNull(),
   },
   (t) => [
     uniqueIndex("IxChoukyoushiMei1").on(t.ChoukyoushiId, t.JinmeiId, t.Kubun),

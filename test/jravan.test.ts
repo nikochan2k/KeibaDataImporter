@@ -8,12 +8,12 @@ import { umaDao } from "../src/app/daos/UmaDao";
 import { Choukyoushi } from "../src/app/entities/Choukyoushi";
 import { Kaisai } from "../src/app/entities/Kaisai";
 import { Kishu } from "../src/app/entities/Kishu";
+import { MeishouKubun } from "../src/app/entities/MeishouKubun";
 import { OddsHaitou } from "../src/app/entities/OddsHaitou";
 import { Race } from "../src/app/entities/Race";
 import { RaceHyousuu } from "../src/app/entities/RaceHyousuu";
 import { RaceLapTime } from "../src/app/entities/RaceLapTime";
 import { RaceSeiseki } from "../src/app/entities/RaceSeiseki";
-import { MeishouKubun } from "../src/app/entities/Shoyuu";
 import { Shussouba } from "../src/app/entities/Shussouba";
 import { ShussoubaSeiseki } from "../src/app/entities/ShussoubaSeiseki";
 import { ShussoubaTsuukaJuni } from "../src/app/entities/ShussoubaTsuukaJuni";
@@ -734,11 +734,11 @@ describe("他の情報源との突き合わせ", () => {
   test("馬主・生産者の名前も、空白だけが違えば同じ行にまとめ、異体字が違えば別の行にする", async () => {
     await emptyKolDb();
     const dao = meishouDao;
-    const a = await dao.save(MeishouKubun.Full, "髙橋牧場");
-    const b = await dao.save(MeishouKubun.Full, "高橋 牧場");
+    const a = await dao.save(MeishouKubun.Meishou, "髙橋牧場");
+    const b = await dao.save(MeishouKubun.Meishou, "高橋 牧場");
     expect(b.Id).not.toBe(a.Id);
     expect(b.MatchingKey).toBe(a.MatchingKey);
-    const d = await dao.save(MeishouKubun.Full, "髙 橋牧場");
+    const d = await dao.save(MeishouKubun.Meishou, "髙 橋牧場");
     expect(d.Id).toBe(a.Id);
   });
 

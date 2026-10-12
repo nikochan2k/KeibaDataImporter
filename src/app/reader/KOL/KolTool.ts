@@ -9,7 +9,7 @@ import { umaDao } from "../../daos/UmaDao";
 import { Choukyoushi } from "../../entities/Choukyoushi";
 import { Kishu } from "../../entities/Kishu";
 import { Kyousouba } from "../../entities/Kyousouba";
-import { MeishouKubun } from "../../entities/Shoyuu";
+import { MeishouKubun } from "../../entities/MeishouKubun";
 import { Uma } from "../../entities/Uma";
 import { readInt, readPositiveInt, readStr, readStrWithNoSpace } from "../Reader";
 import { tool } from "../Tool";
@@ -26,7 +26,7 @@ export class KolTool {
   public async saveBanushi(buffer: Buffer, offset: number, shussoubaId: number) {
     const banushiMei = tool.normalizeHoujinMei(buffer, offset, 40);
     if (banushiMei) {
-      await banushiDao.save(shussoubaId, MeishouKubun.Full, banushiMei);
+      await banushiDao.save(shussoubaId, MeishouKubun.Meishou, banushiMei);
     }
     const tanshukuBanushiMei = tool.normalizeHoujinMei(buffer, offset + 40, 20);
     if (tanshukuBanushiMei) {
@@ -56,20 +56,12 @@ export class KolTool {
     return { Kyousouba: kyousouba, Uma: uma };
   }
 
-  /** 生産者名。正式名がなければ略称 (両方を保存すると、1 頭に生産者が 2 人になるため) */
+  /** 生産者の正式名と略称 */
   public async saveSeisansha(buffer: Buffer, offset: number, umaId: number) {
-    const seisanshaMei = tool.normalizeHoujinMei(buffer, offset, 40);
-    if (seisanshaMei) {
-      await seisanshaDao.saveSeisanba(umaId, { meishou: seisanshaMei });
-      return;
-    }
-    const tanshukuSeisanshaMei = tool.normalizeHoujinMei(buffer, offset + 40, 20);
-    if (tanshukuSeisanshaMei) {
-      await seisanshaDao.saveSeisanba(umaId, {
-        meishou: tanshukuSeisanshaMei,
-        kubun: MeishouKubun.Tanshuku,
-      });
-    }
+    await seisanshaDao.saveSeisanba(umaId, {
+      meishou: tool.normalizeHoujinMei(buffer, offset, 40),
+      tanshuku: tool.normalizeHoujinMei(buffer, offset + 40, 20),
+    });
   }
 
   public async saveShozokuChoukyoushi(buffer: Buffer, offset: number) {

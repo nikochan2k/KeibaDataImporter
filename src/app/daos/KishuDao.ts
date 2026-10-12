@@ -1,7 +1,7 @@
 import { findOneBy, getOrCreate, query } from "../db/helpers";
-import { JinmeiKubun } from "../entities/Jinmei";
 import { Kishu } from "../entities/Kishu";
 import { KishuMei } from "../entities/KishuMei";
+import { MeishouKubun } from "../entities/MeishouKubun";
 import { tool } from "../reader/Tool";
 import { jinmeiDao, jinmeiMatchingKey, stripJinmei } from "./JinmeiDao";
 
@@ -70,7 +70,7 @@ export class KishuDao {
           INNER JOIN Jinmei j ON j.Id = m.JinmeiId
           WHERE m.KishuId = ? AND m.Kubun = ? AND (j.Meishou = ? OR j.MatchingKey = ?) LIMIT 1`,
         row.Id,
-        JinmeiKubun.Seimei,
+        MeishouKubun.Meishou,
         stripJinmei(seimei),
         jinmeiMatchingKey(seimei),
       ).length > 0
@@ -151,22 +151,22 @@ LIMIT
       return asIs;
     }
     if (seimei) {
-      await this.saveKishuMei(toBe, JinmeiKubun.Seimei, seimei);
+      await this.saveKishuMei(toBe, MeishouKubun.Meishou, seimei);
     }
     if (tanshuku) {
-      await this.saveKishuMei(toBe, JinmeiKubun.Tanshuku, tanshuku);
+      await this.saveKishuMei(toBe, MeishouKubun.Tanshuku, tanshuku);
       if (3 < tanshuku.length) {
         tanshuku = tanshuku.substring(0, 3);
-        await this.saveKishuMei(toBe, JinmeiKubun.Tanshuku, tanshuku);
+        await this.saveKishuMei(toBe, MeishouKubun.Tanshuku, tanshuku);
       }
     }
     if (furigana) {
-      await this.saveKishuMei(toBe, JinmeiKubun.Furigana, furigana);
+      await this.saveKishuMei(toBe, MeishouKubun.Furigana, furigana);
     }
     return toBe;
   }
 
-  protected async saveKishuMei(kishu: Kishu, kubun: JinmeiKubun, meishou: string) {
+  protected async saveKishuMei(kishu: Kishu, kubun: MeishouKubun, meishou: string) {
     const jinmei = await jinmeiDao.save(meishou);
     getOrCreate(KishuMei, { KishuId: kishu.Id, JinmeiId: jinmei.Id, Kubun: kubun }, [
       "KishuId",

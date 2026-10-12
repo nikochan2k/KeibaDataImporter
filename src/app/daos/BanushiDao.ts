@@ -1,6 +1,6 @@
 import { getOrCreate } from "../db/helpers";
 import { Banushi } from "../entities/Banushi";
-import { MeishouKubun } from "../entities/Shoyuu";
+import { MeishouKubun } from "../entities/MeishouKubun";
 import { meishouDao } from "./MeishouDao";
 
 export class BanushiDao {
@@ -11,9 +11,10 @@ export class BanushiDao {
     banushiKaiCode?: number,
   ) {
     const shoyuu = await meishouDao.save(kubun, meishou, banushiKaiCode);
-    return getOrCreate(Banushi, { ShussoubaId: shussoubaId, ShoyuuId: shoyuu.Id }, [
+    return getOrCreate(Banushi, { ShussoubaId: shussoubaId, ShoyuuId: shoyuu.Id, Kubun: kubun }, [
       "ShussoubaId",
       "ShoyuuId",
+      "Kubun",
     ]);
   }
 }

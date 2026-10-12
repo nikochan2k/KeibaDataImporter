@@ -12,7 +12,7 @@ import { umaDao } from "../../daos/UmaDao";
 import { upsertLater } from "../../db/helpers";
 import { Choukyoushi } from "../../entities/Choukyoushi";
 import { Kyousouba } from "../../entities/Kyousouba";
-import { MeishouKubun } from "../../entities/Shoyuu";
+import { MeishouKubun } from "../../entities/MeishouKubun";
 import { Shussouba } from "../../entities/Shussouba";
 import { Kubun } from "../../entities/ShussoubaJoutai";
 import { ShussoubaYosou } from "../../entities/ShussoubaYosou";
@@ -77,7 +77,7 @@ export abstract class Ky$ extends JrdbShussoubaData {
       return null;
     }
     const banushiKaiCode = readInt(buffer, 444, 2);
-    await banushiDao.save(shussoubaId, MeishouKubun.Full, banushiMei, banushiKaiCode);
+    await banushiDao.save(shussoubaId, MeishouKubun.Meishou, banushiMei, banushiKaiCode);
   }
 
   protected async saveKyousouba(buffer: Buffer, info: ShussoubaInfo) {

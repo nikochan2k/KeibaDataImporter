@@ -25,8 +25,8 @@ export class JvdataBr extends JvdataRecord {
       JvDataCode: code,
       meishou,
       // 半角カナは読むときに全角になる
-      Furigana: readStr(buffer, 163, 72),
-      EigoMei: readStr(buffer, 235, 168),
+      furigana: readStr(buffer, 163, 72),
+      eigo: readStr(buffer, 235, 168),
       Juusho: readStr(buffer, 403, 20),
     });
   }
