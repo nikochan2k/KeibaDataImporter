@@ -221,7 +221,10 @@ export class LhaReader {
   reader: LhaArrayReader;
   offsetTree = new LhaTree();
   codeTree = new LhaTree();
-  ringBuffer = new LhaRingBuffer(1 << 13); // lh4 specific.
+  ringBuffer = new LhaRingBuffer(1 << 13);
+  /** 距離テーブルの符号数を表すビット数と最大値。lh4/5 は 4bit/14、lh6 は 5bit/16、lh7 は 5bit/17 */
+  offsetCountBits = 4;
+  offsetCountMax = 14;
   public entries: { [key: string]: LhaHeader } = {};
 
   constructor(buffer: Uint8Array) {
@@ -348,9 +351,9 @@ export class LhaReader {
 
   readOffsetTable() {
     const reader = this.reader;
-    const codeCount = Math.min(reader.readBits(4), 14);
+    const codeCount = Math.min(reader.readBits(this.offsetCountBits), this.offsetCountMax);
     if (codeCount <= 0) {
-      const constant = reader.readBits(4);
+      const constant = reader.readBits(this.offsetCountBits);
       this.offsetTree.setConstant(constant);
       return;
     } else {
@@ -369,16 +372,27 @@ export class LhaReader {
     return this.reader.buffer.slice(start, start + entry.originalSize);
   }
 
-  /** -lh0- は無圧縮、-lh4- / -lh5- は復号できる。ほかの方式は誤ったデータを返さないよう例外にする */
+  /** -lh0- は無圧縮、-lh4- ～ -lh7- は復号できる。ほかの方式は誤ったデータを返さないよう例外にする */
   private checkMethod(entry: LhaHeader) {
-    if (
-      entry.packedType !== "-lh0-" &&
-      entry.packedType !== "-lh4-" &&
-      entry.packedType !== "-lh5-"
-    ) {
+    const method = LhaReader.methods[entry.packedType];
+    if (!method) {
       throw new Error(`未対応の圧縮方式です: ${entry.packedType} (${entry.filename})`);
     }
+    if (entry.packedType === "-lh0-") return;
+    this.ringBuffer = new LhaRingBuffer(1 << method.windowBits);
+    this.offsetCountBits = method.offsetCountBits;
+    this.offsetCountMax = method.offsetCountMax;
   }
+
+  private static readonly methods: {
+    [type: string]: { windowBits: number; offsetCountBits: number; offsetCountMax: number };
+  } = {
+    "-lh0-": { windowBits: 0, offsetCountBits: 0, offsetCountMax: 0 },
+    "-lh4-": { windowBits: 13, offsetCountBits: 4, offsetCountMax: 14 },
+    "-lh5-": { windowBits: 13, offsetCountBits: 4, offsetCountMax: 14 },
+    "-lh6-": { windowBits: 15, offsetCountBits: 5, offsetCountMax: 16 },
+    "-lh7-": { windowBits: 16, offsetCountBits: 5, offsetCountMax: 17 },
+  };
 
   extractSync(id: string) {
     const entry = this.entries[id];

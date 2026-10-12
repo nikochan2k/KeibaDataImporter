@@ -17,7 +17,7 @@ describe("LhaReader", () => {
 
   test("未対応の圧縮方式は例外にする", () => {
     const broken = new Uint8Array(STORED_LZH);
-    broken.set(Buffer.from("-lh7-"), 2);
+    broken.set(Buffer.from("-lh1-"), 2);
     const reader = new LhaReader(broken);
     expect(() => reader.extractSync("jracdelk.dat")).toThrow("未対応の圧縮方式");
   });
