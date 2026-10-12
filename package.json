@@ -6,7 +6,7 @@
   "main": "src/app/main.ts",
   "scripts": {
     "start": "bun src/app/main.ts",
-    "dev": "bun src/app/dev.ts",
+    "dev": "bun --watch src/app/dev.ts",
     "build": "bun build web/index.html --outdir web/dist --minify --public-path /",
     "serve": "bun run build && bun src/app/server.ts",
     "typecheck": "tsc --noEmit && tsc --noEmit -p web",

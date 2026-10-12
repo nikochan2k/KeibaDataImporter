@@ -10,7 +10,7 @@ const apiPort = port + 1;
 
 /**
  * 開発用サーバー。画面は Bun の HMR 付きで配信し、/api は別ポートの API サーバーへ流す。
- * 画面だけが HMR の対象で、API 側のコードを変えたときは再起動が要る。
+ * 画面だけが HMR の対象。API 側のコードは `bun --watch`（`bun run dev`）がプロセスごと再起動して反映する。
  */
 async function main() {
   silenceLoggers();
