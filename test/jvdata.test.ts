@@ -14,9 +14,11 @@ import { Choukyoushi } from "../src/app/entities/Choukyoushi";
 import { ChoukyouTime } from "../src/app/entities/ChoukyouTime";
 import { CourseSetsumei } from "../src/app/entities/CourseSetsumei";
 import { Hanshokuba } from "../src/app/entities/Hanshokuba";
+import { Jogaiba } from "../src/app/entities/Jogaiba";
 import { Kaisai } from "../src/app/entities/Kaisai";
 import { Keitou } from "../src/app/entities/Keitou";
 import { Kishu } from "../src/app/entities/Kishu";
+import { Kyousouba } from "../src/app/entities/Kyousouba";
 import { MeishouKubun } from "../src/app/entities/MeishouKubun";
 import { OddsHaitou } from "../src/app/entities/OddsHaitou";
 import { Race } from "../src/app/entities/Race";
@@ -33,6 +35,7 @@ import { Shussouba } from "../src/app/entities/Shussouba";
 import { ShussoubaSeiseki } from "../src/app/entities/ShussoubaSeiseki";
 import { ShussoubaTsuukaJuni } from "../src/app/entities/ShussoubaTsuukaJuni";
 import { ShussoubaYosou } from "../src/app/entities/ShussoubaYosou";
+import { TokubetsuTourokuba } from "../src/app/entities/TokubetsuTourokuba";
 import { Uma } from "../src/app/entities/Uma";
 import { UmaBanushi } from "../src/app/entities/UmaBanushi";
 import { getJraTrack } from "../src/app/reader/JRA/JraTrack";
@@ -47,6 +50,7 @@ import { JvdataHr } from "../src/app/reader/JRA/JVData/JvdataHr";
 import { JvdataHs } from "../src/app/reader/JRA/JVData/JvdataHs";
 import { JvdataHy } from "../src/app/reader/JRA/JVData/JvdataHy";
 import { JvdataH1, JvdataH6 } from "../src/app/reader/JRA/JVData/JvdataHyousuu";
+import { JvdataJg } from "../src/app/reader/JRA/JVData/JvdataJg";
 import { JvdataKs } from "../src/app/reader/JRA/JVData/JvdataKs";
 import { JvdataDm, JvdataTm } from "../src/app/reader/JRA/JVData/JvdataMining";
 import {
@@ -60,6 +64,7 @@ import {
 import { JvdataRa } from "../src/app/reader/JRA/JVData/JvdataRa";
 import { JvdataSe } from "../src/app/reader/JRA/JVData/JvdataSe";
 import { JvdataSk } from "../src/app/reader/JRA/JVData/JvdataSk";
+import { JvdataTk } from "../src/app/reader/JRA/JVData/JvdataTk";
 import { JvdataUm } from "../src/app/reader/JRA/JVData/JvdataUm";
 import { JvdataYs } from "../src/app/reader/JRA/JVData/JvdataYs";
 import { tool } from "../src/app/reader/Tool";
@@ -99,6 +104,8 @@ const handlers = [
   JvdataWc,
   JvdataDm,
   JvdataTm,
+  JvdataTk,
+  JvdataJg,
 ];
 
 describe("JV-Data の仕様書", () => {
@@ -403,7 +410,7 @@ describe("レース", () => {
     const names = se(0, "2004101234", "テストホース", "01088", "1");
     const deleted = se(3, "2004101235", "ケサレタウマ", "01088", "0");
     const cancelled = se(4, "2004101236", "チュウシウマ", "01088", "9");
-    const noId = new JvdataRecord("TK").set("競走名本題", "とくべつ");
+    const noId = new JvdataRecord("WH");
     const shussouba = se(5, "2004101237", "ホントウノウマ", "01089", "2");
     const r = ra("2");
     expect(
@@ -1172,6 +1179,92 @@ describe("マスタ", () => {
     expect(kaisai[0].Basho).toBe(5);
     expect(kaisai[0].Gatsu).toBe(1);
     expect(kaisai[0].Nichi).toBe(5);
+  });
+});
+
+describe("特別登録馬・競走馬除外情報", () => {
+  const P = "<登録馬毎情報>";
+
+  function tk(kubun: string, kinryou?: number) {
+    const r = raceKey(new JvdataRecord("TK"));
+    r.set("データ区分", kubun)
+      .set("曜日コード", "1")
+      .set("競走名本題", "テストハンデキャップ")
+      .set("競走名略称3文字", "テスト")
+      .set("グレードコード", "C")
+      .set("競走種別コード", "13")
+      .set("競走記号コード", "000")
+      .set("重量種別コード", "1")
+      .set("競走条件コード 最若年条件", "999")
+      .set("距離", 1600)
+      .set("トラックコード", "11")
+      .set("ハンデ発表日", "20071001")
+      .set("登録頭数", 2);
+    const horse = (index: number, touroku: string, bamei: string, kouryuu: string) => {
+      const o = { parent: P, index };
+      r.set("連番", index + 1, o)
+        .set("血統登録番号", touroku, o)
+        .set("馬名", bamei, o)
+        .set("性別コード", "1", o)
+        .set("調教師コード", "01234", o)
+        .set("調教師名略称", "藤沢和", o)
+        .set("交流区分", kouryuu, o);
+      if (kinryou) {
+        r.set("負担重量", kinryou, o);
+      }
+    };
+    horse(0, "2004101234", "テストホース", "0");
+    horse(1, "2004101235", "チホウバ", "1");
+    return r;
+  }
+
+  test("特別登録馬: レースと登録馬を保存し、ハンデ発表後に負担重量が入る", async () => {
+    await emptyKolDb();
+    expect(
+      await importKolFiles({
+        // ハンデ発表後のあとにハンデ発表前が来ても、負担重量は消えない
+        "TOKU.jvd": Buffer.concat([tk("2", 560).buffer, tk("1").buffer]),
+      }),
+    ).toEqual([]);
+    const race = await repo(Race).findOneByOrFail({});
+    expect(race).toEqual(
+      expect.objectContaining({ RaceBangou: 11, Kyori: 1600, HandiHappyoubi: 20071001 }),
+    );
+    const list = await repo(TokubetsuTourokuba).find();
+    expect(list.map((t) => [t.Renban, t.Kinryou, t.KouryuuKubun])).toEqual([
+      [1, 56, null],
+      [2, 56, 1],
+    ]);
+    const uma = await repo(Uma).findOneByOrFail({ KettouTourokuBangou: "04101234" });
+    expect(list[0].UmaId).toBe(uma.Id);
+    const choukyoushi = await repo(Choukyoushi).findOneByOrFail({ JvDataChoukyoushiCode: "01234" });
+    const kyousouba = await repo(Kyousouba).findOneByOrFail({ Id: list[0].KyousoubaId ?? 0 });
+    expect(kyousouba.ChoukyoushiId).toBe(choukyoushi.Id);
+    // 特別登録馬は出走馬ではない
+    expect(await repo(Shussouba).count()).toBe(0);
+  });
+
+  test("競走馬除外情報: 受付の順番ごとに除外馬を保存する", async () => {
+    await emptyKolDb();
+    const jg = (jun: number, shussou: string, jogai: string) =>
+      raceKey(new JvdataRecord("JG"))
+        .set("データ区分", "1")
+        .set("血統登録番号", "2004101234")
+        .set("馬名", "テストホース")
+        .set("出馬投票受付順番", jun)
+        .set("出走区分", shussou)
+        .set("除外状態区分", jogai);
+    expect(
+      await importKolFiles({
+        "RACE.jvd": Buffer.concat([jg(1, "2", "2").buffer, jg(2, "5", "1").buffer]),
+      }),
+    ).toEqual([]);
+    const race = await repo(Race).findOneByOrFail({});
+    const uma = await repo(Uma).findOneByOrFail({ KettouTourokuBangou: "04101234" });
+    expect(await repo(Jogaiba).find()).toEqual([
+      { RaceId: race.Id, UmaId: uma.Id, UketsukeJun: 1, ShussouKubun: 2, JogaiJoutai: 2 },
+      { RaceId: race.Id, UmaId: uma.Id, UketsukeJun: 2, ShussouKubun: 5, JogaiJoutai: 1 },
+    ]);
   });
 });
 

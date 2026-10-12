@@ -85,6 +85,8 @@ export const Race = sqliteTable(
     YosouPace: integer(),
     Yosoushamei2: text(),
     KolNengappi: integer(),
+    /** ハンデキャップ競走のハンデ発表日 (yyyymmdd)。特別登録馬にある */
+    HandiHappyoubi: integer(),
   },
   (t) => [index("IxRace").on(t.KaisaiId, t.RaceBangou)],
 );

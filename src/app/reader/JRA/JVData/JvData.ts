@@ -11,6 +11,7 @@ import { JvdataHr } from "./JvdataHr";
 import { JvdataHs } from "./JvdataHs";
 import { JvdataHy } from "./JvdataHy";
 import { JvdataH1, JvdataH6 } from "./JvdataHyousuu";
+import { JvdataJg } from "./JvdataJg";
 import { JvdataKs } from "./JvdataKs";
 import { JvdataDm, JvdataTm } from "./JvdataMining";
 import { JvdataO1, JvdataO2, JvdataO3, JvdataO4, JvdataO5, JvdataO6 } from "./JvdataOdds";
@@ -18,6 +19,7 @@ import { JvdataRa } from "./JvdataRa";
 import { JvdataRecord } from "./JvdataRecord";
 import { JvdataSe } from "./JvdataSe";
 import { JvdataSk } from "./JvdataSk";
+import { JvdataTk } from "./JvdataTk";
 import { JvdataUm } from "./JvdataUm";
 import { JvdataYs } from "./JvdataYs";
 
@@ -61,6 +63,8 @@ export class JvData extends DataToImport {
       JvdataWc,
       JvdataDm,
       JvdataTm,
+      JvdataTk,
+      JvdataJg,
     ]) {
       const record: JvdataRecord = new type();
       this.records.set(record.id, record);

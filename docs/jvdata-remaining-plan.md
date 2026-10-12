@@ -102,23 +102,25 @@
 - 取り込む順序によらず、データ区分の大きい (あとの時点の) 予想を残す。そのために時点の列を持つ。
 - レースは `jvdataRaceTool.ensureRace` で作り、出走馬は馬番から ID を決めて、なければ作る。RA・SE が後から来ても同じ行に入る。
 
-## 7. 段階 5: 特別登録馬 TK・Tok1 と競走馬除外 JG
+## 7. 段階 5: 特別登録馬 TK・Tok1 と競走馬除外 JG — 済
 
 特別登録馬は出走馬ではない (馬番がなく、大半は出走しない) ので、`Shussouba` には入れない。
 
 ### 特別登録馬 (TK・Tok1 共通)
 
-- 新規 `TokubetsuTourokuba`: 主キーは (RaceId, Renban)。KyousoubaId, Kinryou, KouryuuKubun を持つ。
+- `TokubetsuTourokuba`: 主キーは (RaceId, UmaId)。Renban, KyousoubaId, Kinryou, KouryuuKubun (JV-Data だけ) を持つ。
+  - 連番は登録の変更でずれうるので、主キーは馬にした。
   - 調教師は `Kyousouba` に入れる (調教師コードと略称から `jraTool.saveChoukyoushi`)。
-  - データ区分 2 (ハンデ発表後) で負担重量を上書きする。
-  - 1 レコードで最大 300 頭 (Tok1 は 100 頭)。空の連番は読み飛ばす。
-- レース側は `ensureRace` で作り、競走名・グレード・競走種別・記号・重量種別・条件・距離・トラック・コース区分を入れる。RA と同じ項目は RA の処理を共通化して使う。
-- `Race.HandiHappyoubi` (ハンデ発表日) を足す。
-- Tok1 の JRA-VAN 形式は `src/app/reader/JRA/JRAVAN/JravanTok1.ts` に作る。Tok1 のコースレコード欄は段階 6 の `Record` に入れる。
+  - ハンデキャップ競走の負担重量は、データ区分 2 (ハンデ発表後) で入る。空白では既存の値を消さない。
+  - 1 頭ぶんの保存は `jraTool.saveTokubetsuTourokuba` で、TK・Tok1 共通。
+- レース側は RA と同じく、競走名・グレード・競走種別・記号・重量種別・条件・距離・トラックを入れる。
+- `Race.HandiHappyoubi` (ハンデ発表日) を足した。
+- Tok1 のコースレコード欄は、既存の `JravanRaceTool.createRaceWith` が出馬表・成績と同じく `Record` に入れる (段階 6 で `Record` を作り直すときに合わせて直す)。
+- 取り込まないもの: 特別競走番号、競走名の副題・カッコ内・欧字、年齢別の競走条件、コース区分、TK の馬記号と調教師の東西所属。
 
 ### JG 競走馬除外情報
 
-- 新規 `Jogaiba`: 主キーは (RaceId, KyousoubaId, UketsukeJun)。ShussouKubun (出走区分), JogaiJoutai (除外状態区分) を持つ。
+- `Jogaiba`: 主キーは (RaceId, UmaId, UketsukeJun)。ShussouKubun (出走区分), JogaiJoutai (除外状態区分) を持つ。
 
 ## 8. 段階 6〜8
 

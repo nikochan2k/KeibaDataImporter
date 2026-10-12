@@ -14,9 +14,11 @@ import { Race } from "../src/app/entities/Race";
 import { RaceHyousuu } from "../src/app/entities/RaceHyousuu";
 import { RaceLapTime } from "../src/app/entities/RaceLapTime";
 import { RaceSeiseki } from "../src/app/entities/RaceSeiseki";
+import { Record } from "../src/app/entities/Record";
 import { Shussouba } from "../src/app/entities/Shussouba";
 import { ShussoubaSeiseki } from "../src/app/entities/ShussoubaSeiseki";
 import { ShussoubaTsuukaJuni } from "../src/app/entities/ShussoubaTsuukaJuni";
+import { TokubetsuTourokuba } from "../src/app/entities/TokubetsuTourokuba";
 import { Uma } from "../src/app/entities/Uma";
 import { JravanChok } from "../src/app/reader/JRA/JRAVAN/JravanChok";
 import { JravanDelc, JravanDelk, JravanDelu } from "../src/app/reader/JRA/JRAVAN/JravanDel";
@@ -42,6 +44,7 @@ import { JravanSch1 } from "../src/app/reader/JRA/JRAVAN/JravanSch1";
 import { JravanSei1 } from "../src/app/reader/JRA/JRAVAN/JravanSei1";
 import { JravanSei2 } from "../src/app/reader/JRA/JRAVAN/JravanSei2";
 import { JravanSeih } from "../src/app/reader/JRA/JRAVAN/JravanSeih";
+import { JravanTok1 } from "../src/app/reader/JRA/JRAVAN/JravanTok1";
 import { JravanUmaj } from "../src/app/reader/JRA/JRAVAN/JravanUmaj";
 import { repo } from "./helpers";
 import { JravanRecord, parseJravanSpec } from "./spec/jravan";
@@ -52,6 +55,7 @@ afterAll(closeKolDb);
 setDefaultTimeout(60_000);
 
 const readers = {
+  特別登録馬: JravanTok1,
   出馬表１: JravanDen1,
   出馬表２: JravanDen2,
   成績１: JravanSei1,
@@ -141,6 +145,52 @@ function horse(
     .set("調教師コード", "01234", o)
     .set("調教師名略称", "藤沢和", o);
 }
+
+describe("特別登録馬", () => {
+  test("レース・コースレコードと登録馬を保存する", async () => {
+    await emptyKolDb();
+    const P2 = "<登録馬毎情報>";
+    const r = withKey(new JravanRecord("特別登録馬"));
+    r.set("曜日コード", "1")
+      .set("特別競走名本題２０字", "テストハンデキャップ")
+      .set("特別競走名略称３字", "テスト")
+      .set("グレードコード", "C")
+      .set("競走種別コード", "13")
+      .set("競走記号コード", "000")
+      .set("重量種別コード", "1")
+      .set("最若年条件", "999")
+      .set("距離", 1600)
+      .set("トラックコード", "11")
+      .set("走破タイム", "1321")
+      .set("年月日場回日Ｒ", "20050605030811", { nth: 1 })
+      .set("血統登録番号", "2001105555")
+      .set("馬名", "レコードホルダ")
+      .set("負担重量", 570)
+      .set("騎手名略称", "武豊")
+      .set("ハンデ発表日", "20071001")
+      .set("登録頭数", 1)
+      .set("連番", 1, { parent: P2 })
+      .set("血統登録番号", "2004101234", { parent: P2 })
+      .set("馬名", "テストホース", { parent: P2 })
+      .set("性別", "1", { parent: P2 })
+      .set("負担重量", 555, { parent: P2 })
+      .set("調教師コード", "01234", { parent: P2 })
+      .set("調教師名略称", "藤沢和", { parent: P2 });
+    expect(await importKolFiles({ "JracTok1.dat": r.buffer })).toEqual([]);
+    const race = await repo(Race).findOneByOrFail({});
+    expect(race).toEqual(
+      expect.objectContaining({ RaceBangou: 11, Kyori: 1600, HandiHappyoubi: 20071001 }),
+    );
+    const record = await repo(Record).findOneByOrFail({ Id: race.CourseRecordId ?? 0 });
+    expect(record.Time).toBeCloseTo(92.1);
+    const touroku = await repo(TokubetsuTourokuba).find();
+    const uma = await repo(Uma).findOneByOrFail({ KettouTourokuBangou: "04101234" });
+    expect(touroku).toEqual([
+      expect.objectContaining({ RaceId: race.Id, UmaId: uma.Id, Renban: 1, Kinryou: 55.5 }),
+    ]);
+    expect(await repo(Shussouba).count()).toBe(0);
+  });
+});
 
 describe("出馬表", () => {
   test("出馬表１と出馬表２", async () => {

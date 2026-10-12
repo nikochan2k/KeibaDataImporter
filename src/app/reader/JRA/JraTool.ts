@@ -2,11 +2,14 @@ import * as $U from "../../converters/Uma";
 import { choukyoushiDao } from "../../daos/ChoukyoushiDao";
 import { kishuDao } from "../../daos/KishuDao";
 import { umaDao } from "../../daos/UmaDao";
+import { upsert } from "../../db/helpers";
 import { Choukyoushi } from "../../entities/Choukyoushi";
 import { Kishu } from "../../entities/Kishu";
 import { Kyousouba } from "../../entities/Kyousouba";
+import { Race } from "../../entities/Race";
+import { TokubetsuTourokuba } from "../../entities/TokubetsuTourokuba";
 import { Uma } from "../../entities/Uma";
-import { readPositiveInt, readStr, readStrWithNoSpace } from "../Reader";
+import { readPositiveDouble, readPositiveInt, readStr, readStrWithNoSpace } from "../Reader";
 import { tool } from "../Tool";
 
 /** 血統登録番号: 生年(西暦)4桁 + 品種1桁 + 数字5桁 */
@@ -14,6 +17,18 @@ export interface JraTouroku {
   /** JRDB と同じ 8 桁 (生年の下 2 桁 + 品種 + 数字) */
   bangou: string;
   seinen: number;
+}
+
+/** 特別登録馬 1 頭ぶんの中の、項目の位置 (0 始まり)。連番は先頭の 3 バイト */
+export interface JraTokubetsuTourokubaOffsets {
+  touroku: number;
+  bamei: number;
+  bameiLength: number;
+  seibetsu: number;
+  choukyoushiCode: number;
+  choukyoushiTanshuku: number;
+  kinryou: number;
+  kouryuuKubun?: number;
 }
 
 export class JraTool {
@@ -95,6 +110,44 @@ export class JraTool {
     kyousouba.ChoukyoushiId = choukyoushi?.Id;
     kyousouba = await umaDao.saveKyousouba(kyousouba);
     return { Kyousouba: kyousouba, Uma: uma, Seinen: touroku?.seinen };
+  }
+
+  /**
+   * 特別登録馬 1 頭ぶんを保存します。buffer はその馬の情報だけを切り出したもの、offsets はその中の位置です。
+   * 血統登録番号も馬名もない (該当する連番がない) ときは保存しません。
+   */
+  public async saveTokubetsuTourokuba(
+    buffer: Buffer,
+    race: Race,
+    offsets: JraTokubetsuTourokubaOffsets,
+  ) {
+    const choukyoushi = await this.saveChoukyoushi(
+      buffer,
+      offsets.choukyoushiCode,
+      offsets.choukyoushiTanshuku,
+    );
+    const saved = await this.saveKyousouba(
+      buffer,
+      offsets.touroku,
+      offsets.bamei,
+      offsets.seibetsu,
+      choukyoushi,
+      offsets.bameiLength,
+    );
+    if (!saved) {
+      return null;
+    }
+    return upsert(TokubetsuTourokuba, {
+      RaceId: race.Id,
+      UmaId: saved.Uma.Id,
+      Renban: readPositiveInt(buffer, 0, 3),
+      KyousoubaId: saved.Kyousouba.Id,
+      Kinryou: readPositiveDouble(buffer, offsets.kinryou, 3, 0.1),
+      KouryuuKubun:
+        offsets.kouryuuKubun === undefined
+          ? undefined
+          : readPositiveInt(buffer, offsets.kouryuuKubun, 1),
+    });
   }
 
   /** 年月日(yyyymmdd)が入っていれば数値にする。0 や空白は null */

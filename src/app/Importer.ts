@@ -29,6 +29,7 @@ import { JravanSch1 } from "./reader/JRA/JRAVAN/JravanSch1";
 import { JravanSei1 } from "./reader/JRA/JRAVAN/JravanSei1";
 import { JravanSei2 } from "./reader/JRA/JRAVAN/JravanSei2";
 import { JravanSeih } from "./reader/JRA/JRAVAN/JravanSeih";
+import { JravanTok1 } from "./reader/JRA/JRAVAN/JravanTok1";
 import { JravanUmaj } from "./reader/JRA/JRAVAN/JravanUmaj";
 import { JvData } from "./reader/JRA/JVData/JvData";
 import { Bab } from "./reader/JRDB/Bab";
@@ -141,6 +142,7 @@ export class Importer {
       { pattern: /kol_ket5\.kd3$/i, type: KolKet5Kd3, source: "KOL", kind: "5代血統図" },
       { pattern: /kol_den1\.kd3$/i, type: KolDen1, source: "KOL", kind: "出走馬レースデータ" },
       { pattern: /kol_den1\.kd2$/i, type: KolDen1Kd2, source: "KOL", kind: "出走馬レースデータ" },
+      { pattern: /jractok1\.dat$/i, type: JravanTok1, source: "JRA-VAN", kind: "特別登録馬" },
       { pattern: /jracden1\.dat$/i, type: JravanDen1, source: "JRA-VAN", kind: "出馬表１" },
       { pattern: /kaa\d+\.txt$/i, type: Kaa, source: "JRDB", kind: "開催データ" },
       { pattern: /kab\d+\.txt$/i, type: Kab, source: "JRDB", kind: "開催データ" },
