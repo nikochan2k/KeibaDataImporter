@@ -1,13 +1,13 @@
 import { umaDao } from "../../../daos/UmaDao";
 import { upsert } from "../../../db/helpers";
-import { Jogaiba } from "../../../entities/Jogaiba";
+import { TouhyouJogaiba } from "../../../entities/TouhyouJogaiba";
 import { Uma } from "../../../entities/Uma";
 import { readInt, readPositiveInt, readStr } from "../../Reader";
 import { jraTool } from "../JraTool";
 import { jvdataRaceTool } from "./JvdataRaceTool";
 import { JvdataRecord } from "./JvdataRecord";
 
-/** 競走馬除外情報 (JG)。出馬投票で除外された馬を、レースごとに保存する。 */
+/** 競走馬除外情報 (JG)。出馬投票で除外された馬を、レースごとに TouhyouJogaiba に保存する。 */
 export class JvdataJg extends JvdataRecord {
   public readonly id = "JG";
   public readonly length = 80;
@@ -30,7 +30,7 @@ export class JvdataJg extends JvdataRecord {
     toBe.Seinen = touroku.seinen;
     jraTool.setBamei(toBe, readStr(buffer, 37, 36));
     const uma = await umaDao.saveUma(toBe);
-    upsert(Jogaiba, {
+    upsert(TouhyouJogaiba, {
       RaceId: ensured.race.Id,
       UmaId: uma.Id,
       UketsukeJun: uketsukeJun,

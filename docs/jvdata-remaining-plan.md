@@ -120,7 +120,7 @@
 
 ### JG 競走馬除外情報
 
-- `Jogaiba`: 主キーは (RaceId, UmaId, UketsukeJun)。ShussouKubun (出走区分), JogaiJoutai (除外状態区分) を持つ。
+- `TouhyouJogaiba`: 主キーは (RaceId, UmaId, UketsukeJun)。ShussouKubun (出走区分), JogaiJoutai (除外状態区分) を持つ。
 
 ## 8. 段階 6〜8
 

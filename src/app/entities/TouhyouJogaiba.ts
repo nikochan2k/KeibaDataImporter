@@ -1,11 +1,12 @@
 import { index, integer, primaryKey, sqliteTable } from "drizzle-orm/sqlite-core";
 
 /**
- * 競走除外馬 (JV-Data の競走馬除外情報 JG)。出馬投票した馬のうち、抽選などで除外された馬。
+ * 出馬投票の除外馬 (JV-Data の競走馬除外情報 JG)。出馬投票した馬のうち、抽選などで除外された馬で、馬番がない。
+ * 出走馬になったあとの除外 (発走除外・競走除外) は、出走馬の取消種別 (Shussouba.TorikeshiShubetsu) に持つ。
  * 同じ馬が同じ日に何度も出馬投票することがあるので、受付の順番まで主キーに含める。
  */
-export const Jogaiba = sqliteTable(
-  "Jogaiba",
+export const TouhyouJogaiba = sqliteTable(
+  "TouhyouJogaiba",
   {
     RaceId: integer().notNull(),
     UmaId: integer().notNull(),
@@ -18,8 +19,8 @@ export const Jogaiba = sqliteTable(
   },
   (t) => [
     primaryKey({ columns: [t.RaceId, t.UmaId, t.UketsukeJun] }),
-    index("IxJogaiba").on(t.UmaId),
+    index("IxTouhyouJogaiba").on(t.UmaId),
   ],
 );
 
-export type Jogaiba = typeof Jogaiba.$inferSelect;
+export type TouhyouJogaiba = typeof TouhyouJogaiba.$inferSelect;

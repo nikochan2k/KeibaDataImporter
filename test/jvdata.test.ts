@@ -14,7 +14,6 @@ import { Choukyoushi } from "../src/app/entities/Choukyoushi";
 import { ChoukyouTime } from "../src/app/entities/ChoukyouTime";
 import { CourseSetsumei } from "../src/app/entities/CourseSetsumei";
 import { Hanshokuba } from "../src/app/entities/Hanshokuba";
-import { Jogaiba } from "../src/app/entities/Jogaiba";
 import { Kaisai } from "../src/app/entities/Kaisai";
 import { Keitou } from "../src/app/entities/Keitou";
 import { Kishu } from "../src/app/entities/Kishu";
@@ -36,6 +35,7 @@ import { ShussoubaSeiseki } from "../src/app/entities/ShussoubaSeiseki";
 import { ShussoubaTsuukaJuni } from "../src/app/entities/ShussoubaTsuukaJuni";
 import { ShussoubaYosou } from "../src/app/entities/ShussoubaYosou";
 import { TokubetsuTourokuba } from "../src/app/entities/TokubetsuTourokuba";
+import { TouhyouJogaiba } from "../src/app/entities/TouhyouJogaiba";
 import { Uma } from "../src/app/entities/Uma";
 import { UmaBanushi } from "../src/app/entities/UmaBanushi";
 import { getJraTrack } from "../src/app/reader/JRA/JraTrack";
@@ -1261,7 +1261,7 @@ describe("特別登録馬・競走馬除外情報", () => {
     ).toEqual([]);
     const race = await repo(Race).findOneByOrFail({});
     const uma = await repo(Uma).findOneByOrFail({ KettouTourokuBangou: "04101234" });
-    expect(await repo(Jogaiba).find()).toEqual([
+    expect(await repo(TouhyouJogaiba).find()).toEqual([
       { RaceId: race.Id, UmaId: uma.Id, UketsukeJun: 1, ShussouKubun: 2, JogaiJoutai: 2 },
       { RaceId: race.Id, UmaId: uma.Id, UketsukeJun: 2, ShussouKubun: 5, JogaiJoutai: 1 },
     ]);
