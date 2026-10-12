@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import type { ImportJob } from "../../src/app/api/types";
 import type {
   BashoOption,
+  KishuStart,
+  KishuSummary,
   PedigreeAncestor,
   PreviewChoukyou,
   PreviewEntry,
@@ -13,10 +15,18 @@ import type {
   UmaSummary,
 } from "../../src/app/browse/types";
 
-export type { BashoOption, PedigreeAncestor, PreviewChoukyou, PreviewEntry, ImportJob, RaceDay, RaceMonth, RaceEntry, RaceSummary, UmaStart, UmaSummary };
+export type { BashoOption, KishuStart, KishuSummary, PedigreeAncestor, PreviewChoukyou, PreviewEntry, ImportJob, RaceDay, RaceMonth, RaceEntry, RaceSummary, UmaStart, UmaSummary };
 
 export type ShussoubaPreview = { race: RaceSummary; entry: PreviewEntry };
 export type RaceDetail = RaceSummary & { entries: RaceEntry[] };
+export type KishuDetail = KishuSummary & {
+  /** 指定したページの騎乗(新しい順) */
+  starts: KishuStart[];
+  /** 騎乗の総件数 */
+  startCount: number;
+  /** 1ページの件数 */
+  perPage: number;
+};
 export type UmaDetail = UmaSummary & {
   chichi: { id: number; bamei: string | null } | null;
   haha: { id: number; bamei: string | null } | null;

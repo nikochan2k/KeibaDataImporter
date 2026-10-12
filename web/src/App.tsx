@@ -3,6 +3,8 @@ import { useImportStatus } from "./ImportStatus";
 import { Importing } from "./Importing";
 import { canImport } from "./local";
 import { ImportsPage } from "./pages/ImportsPage";
+import { KishuPage } from "./pages/KishuPage";
+import { KishusPage } from "./pages/KishusPage";
 import { RacePage } from "./pages/RacePage";
 import { RacesPage } from "./pages/RacesPage";
 import { ShussoubaPage } from "./pages/ShussoubaPage";
@@ -23,6 +25,9 @@ export function App() {
           <NavLink to="/umas" className={running ? "busy" : undefined}>
             馬
           </NavLink>
+          <NavLink to="/kishus" className={running ? "busy" : undefined}>
+            騎手
+          </NavLink>
           {canImport && <NavLink to="/imports">取り込み</NavLink>}
         </nav>
       </header>
@@ -36,6 +41,8 @@ export function App() {
           <Route path="/shussouba/:id" element={<ShussoubaPage />} />
           <Route path="/umas" element={<UmasPage />} />
           <Route path="/umas/:id" element={<UmaPage />} />
+          <Route path="/kishus" element={<KishusPage />} />
+          <Route path="/kishus/:id" element={<KishuPage />} />
           {canImport && <Route path="/imports" element={<ImportsPage />} />}
           <Route path="*" element={<p>ページが見つかりません</p>} />
         </Routes>

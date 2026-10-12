@@ -137,6 +137,55 @@ th {
   background: color-mix(in srgb, var(--accent) 6%, var(--surface));
 }
 
+/* 画面の高さに収める。タイトルや見出しは動かさず、.scroll だけがスクロールする。高さは topbar(約53px)と main の余白(上8px・下48px)を引いたもの。下の余白は詰めて、ページ全体がスクロールしないようにする */
+.fill {
+  display: flex;
+  flex-direction: column;
+  height: calc(100dvh - 53px - 8px - 16px);
+  margin-bottom: -32px;
+}
+
+/* 表の上は縦を詰める */
+.fill > p {
+  margin: 4px 0;
+}
+
+.fill h1 {
+  margin: 4px 0;
+}
+
+/* 名前の右に、小さい字で付ける */
+h1.title small {
+  margin-left: 12px;
+  font-size: 14px;
+  font-weight: normal;
+}
+
+.fill .tabs {
+  margin: 8px 0 6px;
+}
+
+/* 縦に長い表。ヘッダを残してスクロールする。sticky は overflow: hidden の table 内では効かないので、枠は外側に持たせる */
+.scroll {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: auto;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+}
+
+.scroll table {
+  border: 0;
+  border-radius: 0;
+  overflow: visible;
+}
+
+.scroll th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
 tbody tr:last-child td {
   border-bottom: 0;
 }

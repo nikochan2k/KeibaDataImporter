@@ -131,6 +131,28 @@ describe("馬", () => {
   });
 });
 
+describe("騎手", () => {
+  test("名前の前方一致で探す", async () => {
+    expect((await get(`/api/kishus?q=${encodeURIComponent("豊")}`)).body).toHaveLength(0);
+    const { body } = await get(`/api/kishus?q=${encodeURIComponent("武")}`);
+    expect(body).toHaveLength(1);
+    expect(body[0]).toMatchObject({ id: 7, meishou: "武 豊", seinen: 1969, shozoku: "関西" });
+    expect((await get("/api/kishus?q=%20")).status).toBe(400);
+  });
+
+  test("騎手の詳細は騎乗した全レースを返す", async () => {
+    const { status, body } = await get("/api/kishus/7");
+    expect(status).toBe(200);
+    expect(body.starts.map((s) => [s.date, s.raceBangou, s.bamei, s.chakujun])).toEqual([
+      ["2024-04-07", 11, "アルファ", 2],
+    ]);
+    expect(body).toMatchObject({ startCount: 1, perPage: 50 });
+    expect((await get("/api/kishus/7?page=2")).body.starts).toEqual([]);
+    expect((await get("/api/kishus/7?page=0")).status).toBe(400);
+    expect((await get("/api/kishus/99999")).status).toBe(404);
+  });
+});
+
 describe("取り込み", () => {
   test("接続元が分からない (ローカルと確かめられない) ときは拒否する", async () => {
     const { status, body } = await get("/api/imports");

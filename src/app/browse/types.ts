@@ -70,6 +70,24 @@ export interface UmaSummary {
   seibetsu: string | null;
 }
 
+export interface KishuSummary {
+  id: number;
+  meishou: string | null;
+  seinen: number | null;
+  seibetsu: string | null;
+  /** 所属(関東・関西など) */
+  shozoku: string | null;
+}
+
+export interface KishuStart extends RaceSummary {
+  umaban: number;
+  chakujun: number | null;
+  time: number | null;
+  agari3F: number | null;
+  umaId: number | null;
+  bamei: string | null;
+}
+
 export interface PedigreeAncestor {
   id: number;
   bamei: string | null;

@@ -1,6 +1,7 @@
 import { save } from "../../src/app/db/helpers";
 import { Jinmei } from "../../src/app/entities/Jinmei";
 import { Kaisai } from "../../src/app/entities/Kaisai";
+import { Kishu } from "../../src/app/entities/Kishu";
 import { KishuMei } from "../../src/app/entities/KishuMei";
 import { Kyousouba } from "../../src/app/entities/Kyousouba";
 import { MeishouKubun } from "../../src/app/entities/MeishouKubun";
@@ -98,6 +99,10 @@ export async function seedBrowseFixture() {
     kyousouba.push(await save(Kyousouba, Object.assign({} as Kyousouba, { UmaId: uma.Id })));
   }
 
+  await save(
+    Kishu,
+    Object.assign({} as Kishu, { Id: 7, Seinengappi: 19690315, Seibetsu: 1, Shozoku: 2 }),
+  );
   const jinmei = await save(
     Jinmei,
     Object.assign({} as Jinmei, { Meishou: "武 豊", MatchingKey: "武豊" }),
