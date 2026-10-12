@@ -1,6 +1,6 @@
 import { Logger } from "log4js";
 import { Baken, Kakutei } from "../converters/Common";
-import { upsert, upsertAll } from "../db/helpers";
+import { upsertAll, upsertLater } from "../db/helpers";
 import { OddsHaitou } from "../entities/OddsHaitou";
 import { readPositiveInt } from "./Reader";
 
@@ -48,7 +48,7 @@ export abstract class OddsHaitouTool {
 
   public async saveOddsHaitou(toBe: OddsHaitou) {
     toBe.Id = this.calculateOddsHaitouId(toBe);
-    return upsert(OddsHaitou, toBe);
+    upsertLater(OddsHaitou, toBe);
   }
 
   /** 複数のオッズ配当をまとめて保存する。saveOddsHaitou と同じく渡した項目だけ更新する */

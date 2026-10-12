@@ -1,4 +1,4 @@
-import { upsert } from "../../db/helpers";
+import { upsertLater } from "../../db/helpers";
 import { Race } from "../../entities/Race";
 import { RaceKeika } from "../../entities/RaceKeika";
 import { keikaTool } from "../KeikaTool";
@@ -38,7 +38,7 @@ export abstract class Sr$ extends JrdbRaceData {
     toBe.RaceId = race.Id;
     toBe.Midashi2 = midashi2;
     toBe.Keika = keika;
-    upsert(RaceKeika, toBe);
+    upsertLater(RaceKeika, toBe);
 
     await keikaTool.parseRaceKeika(toBe);
   }

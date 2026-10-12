@@ -1,6 +1,6 @@
 import * as $K from "../../converters/Kaisai";
 import * as $R from "../../converters/Race";
-import { upsert } from "../../db/helpers";
+import { upsertLater } from "../../db/helpers";
 import { Kaisai } from "../../entities/Kaisai";
 import { KaisaiYosou } from "../../entities/KaisaiYosou";
 import { readDouble } from "../Reader";
@@ -27,7 +27,7 @@ export abstract class Ka$ extends JrdbKaisaiData {
     toBe.Id = kaisai.Id;
     this.setKaisaiYosou(buffer, toBe);
 
-    upsert(KaisaiYosou, toBe);
+    upsertLater(KaisaiYosou, toBe);
   }
 
   protected setKaisaiYosou(buffer: Buffer, toBe: KaisaiYosou) {

@@ -1,5 +1,5 @@
 import { Logger } from "log4js";
-import { findOneBy, upsert } from "../db/helpers";
+import { findOneBy, upsertLater } from "../db/helpers";
 import { Race } from "../entities/Race";
 import { Shussouba } from "../entities/Shussouba";
 import { Kubun, ShussoubaJoutai } from "../entities/ShussoubaJoutai";
@@ -123,6 +123,6 @@ export abstract class ShussoubaTool {
     toBe.Kubun = kubun;
     toBe.Code = code;
 
-    upsert(ShussoubaJoutai, toBe);
+    upsertLater(ShussoubaJoutai, toBe);
   }
 }

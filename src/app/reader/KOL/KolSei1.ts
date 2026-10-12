@@ -253,7 +253,7 @@ export class KolSei1 extends KolDataToImport {
       toBe.Midashi1 = midashi1;
       toBe.Midashi2 = midashi2;
       toBe.Keika = keika;
-      upsert(RaceKeika, toBe);
+      upsertLater(RaceKeika, toBe);
 
       await keikaTool.parseRaceKeika(toBe);
     }

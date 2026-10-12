@@ -1,5 +1,5 @@
 import { Logger } from "log4js";
-import { upsert } from "../db/helpers";
+import { upsertLater } from "../db/helpers";
 import { RaceKeika } from "../entities/RaceKeika";
 import { ShussoubaKeika } from "../entities/ShussoubaKeika";
 import { getLogger } from "../LogUtil";
@@ -39,7 +39,7 @@ export class KeikaTool {
     toBe.Id = raceKeika.Id * 2 ** 6 + umaban;
     toBe.RaceKeikaId = raceKeika.Id;
     toBe.ShussoubaId = shussoubaId;
-    upsert(ShussoubaKeika, toBe);
+    upsertLater(ShussoubaKeika, toBe);
   }
 
   public async parseRaceKeika(raceKeika: RaceKeika) {
