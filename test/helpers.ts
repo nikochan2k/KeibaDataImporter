@@ -2,7 +2,7 @@ import type { SQLiteTable } from "drizzle-orm/sqlite-core";
 import { countBy, findBy, findOneBy, type Where } from "../src/app/db/helpers";
 import { bridge } from "../src/app/reader/Bridge";
 import { JrdbBridge } from "../src/app/reader/JRDB/JrdbBridge";
-import { encodeSjis } from "../src/app/util/Sjis";
+import { encodeSjis } from "./encode-sjis";
 
 export type Field = [number, string];
 

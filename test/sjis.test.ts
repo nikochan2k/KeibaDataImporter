@@ -1,6 +1,7 @@
 import { describe, expect, test } from "bun:test";
 import Encoding from "encoding-japanese";
-import { decodeSjis, encodeSjis } from "../src/app/util/Sjis";
+import { decodeSjis } from "../src/app/util/Sjis";
+import { encodeSjis } from "./encode-sjis";
 
 const bytes = (...b: number[]) => Uint8Array.from(b);
 

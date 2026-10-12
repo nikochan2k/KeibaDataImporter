@@ -30,7 +30,7 @@ import {
   kd2UmaRunFrom,
 } from "../src/app/reader/KOL/KD1/Kd1Layout";
 import { kolRaceTool } from "../src/app/reader/KOL/KolRaceTool";
-import { encodeSjis } from "../src/app/util/Sjis";
+import { encodeSjis } from "./encode-sjis";
 import { repo } from "./helpers";
 import { type Kd1Kind, kd1Sections, parseKd1Spec } from "./spec/kd1";
 import { closeKolDb, emptyKolDb, importKolFiles, type KolField, parseKolSpec } from "./spec/kol";

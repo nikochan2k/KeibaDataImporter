@@ -10,7 +10,8 @@ import {
   kd2Sei1Layout,
 } from "../../src/app/reader/KOL/KD2/Kd2Layout";
 import { KolLayout } from "../../src/app/reader/KOL/KolLayout";
-import { decodeSjis, encodeSjis } from "../../src/app/util/Sjis";
+import { decodeSjis } from "../../src/app/util/Sjis";
+import { encodeSjis } from "../encode-sjis";
 
 export const kolDir = path.resolve(__dirname, "../../docs/kol-spec/KD3");
 

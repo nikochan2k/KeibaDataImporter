@@ -1,6 +1,6 @@
 import * as fs from "node:fs";
 import * as path from "node:path";
-import { encodeSjis } from "../../src/app/util/Sjis";
+import { encodeSjis } from "../encode-sjis";
 
 const specDir = path.resolve(__dirname, "../../docs/jvdata-spec/spec");
 

@@ -7,7 +7,7 @@ import {
   readStr,
   readTime,
 } from "../src/app/reader/Reader";
-import { encodeSjis } from "../src/app/util/Sjis";
+import { encodeSjis } from "./encode-sjis";
 
 const buf = (s: string) => encodeSjis(s);
 
