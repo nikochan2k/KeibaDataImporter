@@ -1,4 +1,14 @@
 import { afterAll, describe, expect, setDefaultTimeout, test } from "bun:test";
+import {
+  babaBunrui,
+  ChakudosuuBunrui,
+  ChakudosuuKikan,
+  ChakudosuuTaishou,
+  ChakudosuuTrack,
+  jravanKyori,
+  keibajouBunrui,
+  kyoriBunrui,
+} from "../src/app/converters/Chakudosuu";
 import { Baken, Kakutei } from "../src/app/converters/Common";
 import { RecordKubun, RecordShubetsu } from "../src/app/converters/Race";
 import { choukyoushiDao } from "../src/app/daos/ChoukyoushiDao";
@@ -6,6 +16,8 @@ import { jinmeiDao } from "../src/app/daos/JinmeiDao";
 import { kishuDao } from "../src/app/daos/KishuDao";
 import { meishouDao } from "../src/app/daos/MeishouDao";
 import { umaDao } from "../src/app/daos/UmaDao";
+import { Chakudosuu } from "../src/app/entities/Chakudosuu";
+import { ChakudosuuShuukei } from "../src/app/entities/ChakudosuuShuukei";
 import { Choukyoushi } from "../src/app/entities/Choukyoushi";
 import { Kaisai } from "../src/app/entities/Kaisai";
 import { Kishu } from "../src/app/entities/Kishu";
@@ -545,6 +557,89 @@ describe("票数", () => {
     expect(goukei.get(Baken.Wide)).toBe(444);
     expect(goukei.get(Baken.Umatan)).toBe(555);
     expect(goukei.get(Baken.Sanrenpuku)).toBe(666);
+  });
+});
+
+describe("着度数", () => {
+  test("競走馬・騎手・調教師の成績を、データ作成年月日の時点の着度数にする", async () => {
+    await emptyKolDb();
+    const umaj = new JravanRecord("競走馬")
+      .set("血統登録番号", "2004101234")
+      .set("馬名", "テストホース")
+      .set("データ作成年月日", "20071009")
+      .set("本賞金累計", 12345)
+      .set("平地収得賞金累計", 6000)
+      .set("総合着回数", 2, { index: 0 })
+      .set("総合着回数", 7, { index: 3 })
+      .set("芝・左", 1, { index: 0 })
+      .set("ダ・重", 1, { index: 2 })
+      .set("ダ・2201～", 3, { index: 3 });
+    const kisi = new JravanRecord("騎手")
+      .set("騎手コード", "01088")
+      .set("騎手名漢字", "武　豊")
+      .set("データ作成年月日", "20071009")
+      .set("本年平地本賞金", 50000)
+      .set("前年障害付加賞金", 30)
+      .set("生涯平地着回数", 3000, { index: 0 })
+      .set("生涯障害着回数", 5, { index: 1 })
+      .set("本年平地着回数", 80, { index: 0 })
+      .set("平地", 9, { parent: "<本年競馬場別ｘ10>", index: 4 })
+      .set("障害", 1, { parent: "<前年競馬場別ｘ10>", index: 7, sub: 3 })
+      .set("芝・1601～2200", 20, { index: 0 });
+    const chok = new JravanRecord("調教師")
+      .set("調教師コード", "01234")
+      .set("調教師名漢字", "藤沢　和雄")
+      .set("データ作成年月日", "20071009")
+      .set("前年平地着回数", 40, { index: 0 });
+    expect(
+      await importKolFiles({
+        "JracUmaj.dat": umaj.buffer,
+        "JracKisi.dat": kisi.buffer,
+        "JracChok.dat": chok.buffer,
+      }),
+    ).toEqual([]);
+
+    const rows = await repo(Chakudosuu).find();
+    expect(rows.every((r) => r.Nengappi === 20071009 && r.Chaku4 === null)).toBe(true);
+    const counts = (taishou: ChakudosuuTaishou, kikan: ChakudosuuKikan) =>
+      rows
+        .filter((r) => r.Taishou === taishou && r.Kikan === kikan)
+        .map((r) => [r.Bunrui, r.Chaku1, r.Chaku2, r.Chaku3, r.Chaku4Ika])
+        .sort((a, b) => (a[0] ?? 0) - (b[0] ?? 0));
+    expect(counts(ChakudosuuTaishou.Uma, ChakudosuuKikan.Ruikei)).toEqual([
+      [ChakudosuuBunrui.Sougou, 2, 0, 0, 7],
+      [ChakudosuuBunrui.ShibaHidari, 1, 0, 0, 0],
+      [babaBunrui(ChakudosuuTrack.Dirt, 2), 0, 0, 1, 0],
+      [kyoriBunrui(ChakudosuuTrack.Dirt, jravanKyori, 2), 0, 0, 0, 3],
+    ]);
+    expect(counts(ChakudosuuTaishou.Kishu, ChakudosuuKikan.Ruikei)).toEqual([
+      [ChakudosuuBunrui.Heichi, 3000, 0, 0, 0],
+      [ChakudosuuBunrui.Shougai, 0, 5, 0, 0],
+    ]);
+    expect(counts(ChakudosuuTaishou.Kishu, ChakudosuuKikan.Honnen)).toEqual([
+      [ChakudosuuBunrui.Heichi, 80, 0, 0, 0],
+      [keibajouBunrui(ChakudosuuTrack.Heichi, 4), 9, 0, 0, 0],
+      [kyoriBunrui(ChakudosuuTrack.Shiba, jravanKyori, 1), 20, 0, 0, 0],
+    ]);
+    expect(counts(ChakudosuuTaishou.Kishu, ChakudosuuKikan.Zennen)).toEqual([
+      [keibajouBunrui(ChakudosuuTrack.Shougai, 0), 0, 0, 0, 1],
+    ]);
+    expect(counts(ChakudosuuTaishou.Choukyoushi, ChakudosuuKikan.Zennen)).toEqual([
+      [ChakudosuuBunrui.Heichi, 40, 0, 0, 0],
+    ]);
+
+    const shuukei = await repo(ChakudosuuShuukei).find();
+    const of = (taishou: ChakudosuuTaishou, kikan: ChakudosuuKikan) =>
+      shuukei.find((r) => r.Taishou === taishou && r.Kikan === kikan);
+    expect(of(ChakudosuuTaishou.Uma, ChakudosuuKikan.Ruikei)).toEqual(
+      expect.objectContaining({ HonShoukin: 12345000, HeichiShuutokuShoukin: 6000000 }),
+    );
+    expect(of(ChakudosuuTaishou.Kishu, ChakudosuuKikan.Honnen)).toEqual(
+      expect.objectContaining({ Nen: 2007, HeichiHonShoukin: 50000000 }),
+    );
+    expect(of(ChakudosuuTaishou.Kishu, ChakudosuuKikan.Zennen)).toEqual(
+      expect.objectContaining({ Nen: 2006, ShougaiFukaShoukin: 30000 }),
+    );
   });
 });
 

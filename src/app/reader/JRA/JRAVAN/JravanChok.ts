@@ -1,9 +1,12 @@
+import { ChakudosuuTaishou } from "../../../converters/Chakudosuu";
+import { ChakudosuuWriter } from "../../../daos/ChakudosuuDao";
 import { choukyoushiDao } from "../../../daos/ChoukyoushiDao";
 import { Choukyoushi } from "../../../entities/Choukyoushi";
 import { DataToImport } from "../../DataToImport";
 import { readPositiveInt, readStr, readStrWithNoSpace } from "../../Reader";
+import { addJravanJinSeiseki } from "./JravanChakudosuu";
 
-/** 調教師 (JracChok.dat)。近走重賞勝鞍と成績の集計は取り込まない。 */
+/** 調教師 (JracChok.dat)。成績 (生涯・本年・前年の着回数と賞金) は着度数に入れる。近走重賞勝鞍は取り込まない。 */
 export class JravanChok extends DataToImport {
   protected getBufferLength() {
     return 906;
@@ -30,6 +33,22 @@ export class JravanChok extends DataToImport {
     const kanji = readStrWithNoSpace(buffer, 22, 32);
     const tanshuku = readStrWithNoSpace(buffer, 72, 8);
     const furigana = readStr(buffer, 54, 18);
-    await choukyoushiDao.saveChoukyoushi(choukyoushi, kanji, tanshuku, furigana);
+    const saved = await choukyoushiDao.saveChoukyoushi(choukyoushi, kanji, tanshuku, furigana);
+
+    const nengappi = readPositiveInt(buffer, 5, 8);
+    if (nengappi) {
+      const writer = new ChakudosuuWriter();
+      addJravanJinSeiseki(
+        writer,
+        buffer,
+        ChakudosuuTaishou.Choukyoushi,
+        saved.Id,
+        nengappi,
+        336,
+        { shoukin: 280, chakukaisuu: 376, keibajou: 400 },
+        { shoukin: 308, chakukaisuu: 640, keibajou: 664 },
+      );
+      writer.save();
+    }
   }
 }

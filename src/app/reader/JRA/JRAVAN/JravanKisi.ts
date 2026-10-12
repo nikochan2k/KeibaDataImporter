@@ -1,11 +1,14 @@
+import { ChakudosuuTaishou } from "../../../converters/Chakudosuu";
 import * as $K from "../../../converters/Kishu";
+import { ChakudosuuWriter } from "../../../daos/ChakudosuuDao";
 import { kishuDao } from "../../../daos/KishuDao";
 import { Kishu } from "../../../entities/Kishu";
 import { DataToImport } from "../../DataToImport";
 import { readPositiveInt, readStr, readStrWithNoSpace } from "../../Reader";
 import { jraTool } from "../JraTool";
+import { addJravanJinSeiseki } from "./JravanChakudosuu";
 
-/** 騎手 (JracKisi.dat)。近走重賞勝鞍と成績の集計は取り込まない。 */
+/** 騎手 (JracKisi.dat)。成績 (生涯・本年・前年の着回数と賞金) は着度数に入れる。近走重賞勝鞍は取り込まない。 */
 export class JravanKisi extends DataToImport {
   protected getBufferLength() {
     return 1161;
@@ -34,6 +37,22 @@ export class JravanKisi extends DataToImport {
     const kanji = readStrWithNoSpace(buffer, 22, 32);
     const tanshuku = readStrWithNoSpace(buffer, 72, 8);
     const furigana = readStr(buffer, 54, 18);
-    await kishuDao.saveKishu(kishu, kanji, tanshuku, furigana);
+    const saved = await kishuDao.saveKishu(kishu, kanji, tanshuku, furigana);
+
+    const nengappi = readPositiveInt(buffer, 5, 8);
+    if (nengappi) {
+      const writer = new ChakudosuuWriter();
+      addJravanJinSeiseki(
+        writer,
+        buffer,
+        ChakudosuuTaishou.Kishu,
+        saved.Id,
+        nengappi,
+        447,
+        { shoukin: 391, chakukaisuu: 487, keibajou: 511, kyori: 751 },
+        { shoukin: 419, chakukaisuu: 823, keibajou: 847, kyori: 1087 },
+      );
+      writer.save();
+    }
   }
 }
