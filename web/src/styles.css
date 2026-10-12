@@ -310,10 +310,14 @@ button:disabled {
   margin: 0 0 16px;
 }
 
-/* 下の表に重ねて出す */
+/* 下の表に重ねて出す。main の overflow-x で縦も切られるので、開いている間は main の高さをカレンダーが収まるだけ確保する(表は押し下げない) */
+main:has(.popover) {
+  min-height: 560px;
+}
+
 .popover {
   position: absolute;
-  top: calc(100% + 4px);
+  top: 40px;
   left: 0;
   z-index: 10;
   width: min(360px, 100%);
