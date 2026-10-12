@@ -11,6 +11,7 @@ export const specOf: { [prefix: string]: string } = {
   joa: "Jo/Jodata_doc2.txt",
   kaa: "Kaa/kaa_doc.txt",
   kab: "Kab/kab_doc.txt",
+  kka: "Kka/kka_doc.txt",
   kyg: "Kyg/kyg_doc.txt",
   kyh: "Kyh/kyh_doc.txt",
   kyi: "Kyi/kyi_doc.txt",

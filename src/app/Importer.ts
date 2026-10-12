@@ -44,6 +44,7 @@ import { Joa } from "./reader/JRDB/Joa";
 import { K$a } from "./reader/JRDB/K$a";
 import { Kaa } from "./reader/JRDB/Kaa";
 import { Kab } from "./reader/JRDB/Kab";
+import { Kka } from "./reader/JRDB/Kka";
 import { Kyg } from "./reader/JRDB/Kyg";
 import { Kyh } from "./reader/JRDB/Kyh";
 import { Kyi } from "./reader/JRDB/Kyi";
@@ -158,6 +159,7 @@ export class Importer {
       { pattern: /kyg\d+\.txt$/i, type: Kyg, source: "JRDB", kind: "競走馬データ" },
       { pattern: /kyh\d+\.txt$/i, type: Kyh, source: "JRDB", kind: "競走馬データ" },
       { pattern: /kyi\d+\.txt$/i, type: Kyi, source: "JRDB", kind: "競走馬データ" },
+      { pattern: /kka\d+\.txt$/i, type: Kka, source: "JRDB", kind: "競走馬拡張データ" },
       { pattern: /joa\d+\.txt$/i, type: Joa, source: "JRDB", kind: "情報データ" },
       { pattern: /cya\d+\.txt$/i, type: Cya, source: "JRDB", kind: "調教分析データ" },
       { pattern: /cyb\d+\.txt$/i, type: Cyb, source: "JRDB", kind: "調教分析データ" },

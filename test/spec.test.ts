@@ -25,6 +25,7 @@ import { jrdbShussoubaTool } from "../src/app/reader/JRDB/JrdbShussoubaTool";
 import { K$a } from "../src/app/reader/JRDB/K$a";
 import { Kaa } from "../src/app/reader/JRDB/Kaa";
 import { Kab } from "../src/app/reader/JRDB/Kab";
+import { Kka } from "../src/app/reader/JRDB/Kka";
 import { Kyg } from "../src/app/reader/JRDB/Kyg";
 import { Kyh } from "../src/app/reader/JRDB/Kyh";
 import { Kyi } from "../src/app/reader/JRDB/Kyi";
@@ -67,6 +68,7 @@ const readers: { [prefix: string]: new () => object } = {
   joa: Joa,
   kaa: Kaa,
   kab: Kab,
+  kka: Kka,
   kyg: Kyg,
   kyh: Kyh,
   kyi: Kyi,

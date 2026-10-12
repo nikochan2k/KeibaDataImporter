@@ -154,10 +154,11 @@
   - 回数: `Chaku1`〜`Chaku3` と `Chaku4Ika` (4 着以下) は必ず入れる。`Chaku4`・`Chaku5`・`Chakugai` (6 着以下) は JV-Data だけ。回数が全部 0 の分類は行を作らない。
 - `ChakudosuuShuukei`: 主キーは (Taishou, TaishouId, Nengappi, Kikan)。本年・前年の年、賞金 (円)、脚質傾向 (JV-Data)、連対脚質別回数 (KOL)、登録レース数。
 - 取り込むデータ元:
-  - JV-Data: CK
+  - JV-Data: CK (レースの日の時点)、UM・KS・CH・BN・BR (データ作成年月日の時点。KS・CH は 本年・前年・累計 の順で、引退した人は 引退年・引退前年・累計 なので、年は `ChakudosuuShuukei.Nen` で分かる)
   - JRA-VAN: 競走馬 (賞金・着回数の累計)、騎手・調教師 (生涯・本年・前年)
   - KOL: 騎手・厩舎 (通算累計・本年・昨年)、競走馬 (成績と賞金)、種牡馬 (産駒の本年・昨年)、出馬表出走馬 (場所別成績。KD3 だけ)
-- JRDB の競走馬拡張 (KKA) の着度数は、今回のレースの条件で絞った値なので、この表には入れない (未取り込み)。
+  - JRDB: 競走馬拡張データ (KKA) の生涯成績 (JRA 成績は中央、交流成績・他成績は `JrdbKouryuu`・`JrdbSonota`)。レースの日の時点。
+- KKA の今回のレースの条件で絞った着度数は、時点の表に合わないので、出走馬ごとの `ShussoubaJoukenChakudosuu` に入れる。
 
 ## 9. 決めること
 

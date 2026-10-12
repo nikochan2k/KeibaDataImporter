@@ -4,7 +4,11 @@ import * as path from "node:path";
 import * as log4js from "log4js";
 import { Codes } from "../../src/app/converters/Codes";
 import { openDb } from "../../src/app/db/db";
+import { save, updateBy } from "../../src/app/db/helpers";
+import { Kyousouba } from "../../src/app/entities/Kyousouba";
+import { Shussouba } from "../../src/app/entities/Shussouba";
 import { importer } from "../../src/app/Importer";
+import { jrdbShussoubaTool } from "../../src/app/reader/JRDB/JrdbShussoubaTool";
 import { Sed } from "../../src/app/reader/JRDB/Sed";
 import { base, record, setFileDate } from "../helpers";
 import { specOf } from "./docs";
@@ -71,21 +75,26 @@ function normalizeLineEnd(basename: string, file: string, tmp: string) {
 }
 
 /**
- * 直前情報(TYB)は、出走馬がすでにあることが前提なので、見本のレースキーと馬番から SED のレコードを作って先に取り込む。
+ * 直前情報(TYB)と競走馬拡張データ(KKA)は、出走馬がすでにあることが前提なので、
+ * 見本のレースキーと馬番から SED のレコードを作って先に取り込む。
  */
-async function seedShussoubaForTyb(file: string, basename: string) {
+async function seedShussoubaForTyb(file: string, basename: string, recordLength: number) {
   const m = basename.match(/(\d{2})(\d{2})(\d{2})\.txt$/);
   const date = `20${m[1]}${m[2]}${m[3]}`;
   setFileDate(+`20${m[1]}`, +m[2], +m[3]);
   const data = fs.readFileSync(file);
   const sed = new Sed();
-  for (let i = 0; i * 128 < data.length; i++) {
-    const rec = data.subarray(i * 128, (i + 1) * 128);
+  for (let i = 0; i * recordLength < data.length; i++) {
+    const rec = data.subarray(i * recordLength, (i + 1) * recordLength);
     const key = rec.toString("latin1", 0, 8);
     const umaban = rec.toString("latin1", 8, 10);
     await sed.save(
       record([...base, [1, key], [9, umaban], [11, String(10000000 + i)], [19, date]], 376),
     );
+    // 出走馬に競走馬を結びつける(本来は KYI などで入る)
+    const rsId = jrdbShussoubaTool.getRaceShussoubaId(rec, 8);
+    const kyousouba = save(Kyousouba, { UmaId: 9000 + i } as Kyousouba);
+    updateBy(Shussouba, { Id: rsId.shussoubaId }, { KyousoubaId: kyousouba.Id });
   }
 }
 
@@ -160,8 +169,12 @@ export async function importSamples(onlyPrefixes?: string[], excludePrefixes: st
         continue;
       }
       current = null;
-      if (prefix === "tyb") {
-        await seedShussoubaForTyb(normalizeLineEnd(basename, file, tmp), basename);
+      if (prefix === "tyb" || prefix === "kka") {
+        await seedShussoubaForTyb(
+          normalizeLineEnd(basename, file, tmp),
+          basename,
+          parseSpec(specOf[prefix]).tableLength,
+        );
       }
       current = prefix;
       await importer.import({ [basename]: normalizeLineEnd(basename, file, tmp) });

@@ -58,6 +58,57 @@ export enum ChakudosuuBunrui {
   Nenrei4Ijou,
   /** その日のレースの競馬場・コースでの成績 (KOL の出馬表の場所別成績) */
   KonkaiCourse = 31,
+  /** JRDB の交流成績 (JRA 所属馬の地方交流と海外。KOL の地方交流とは範囲が違う) */
+  JrdbKouryuu = 41,
+  /** JRDB の他成績 (地方所属時などの地方・海外) */
+  JrdbSonota,
+}
+
+/**
+ * 出走馬の「今回のレースと同じ条件」での着度数の条件 (JRDB の競走馬拡張データ)。
+ * 番号は項目の並び順で、項目の位置は 47 + (番号 - 1) * 12。
+ */
+export enum ShussoubaJouken {
+  /** 馬: 今回と同じ芝・ダート・障害 */
+  ShibaDirtShougai = 1,
+  /** 馬: 今回と同じ芝・ダート・障害と距離 */
+  ShibaDirtShougaiKyori,
+  /** 馬: 今回と同じトラックと距離 */
+  TrackKyori,
+  /** 馬: 今回と同じローテーション */
+  Rote,
+  /** 馬: 今回と同じ回り */
+  Mawari,
+  /** 馬: 今回と同じ騎手 */
+  Kishu,
+  /** 馬: 今回と同じ馬場状態 (良) */
+  Ryou,
+  /** 馬: 今回と同じ馬場状態 (稍重) */
+  Yaya,
+  /** 馬: 今回と同じ馬場状態 (重。不良を含む) */
+  Omo,
+  /** 馬: S ペース */
+  SPace,
+  /** 馬: M ペース */
+  MPace,
+  /** 馬: H ペース */
+  HPace,
+  /** 馬: 今回と同じ季節 (JRDB 独自の区分) */
+  Kisetsu,
+  /** 馬: 今回と同じ枠 (JRDB 独自の区分) */
+  Waku,
+  /** 今回の騎手: 今回と同じ距離 */
+  KishuKyori,
+  /** 今回の騎手: 今回と同じトラックと距離 */
+  KishuTrackKyori,
+  /** 今回の騎手: 今回の調教師との組み合わせ */
+  KishuChoukyoushi,
+  /** 今回の騎手: 今回の馬主との組み合わせ */
+  KishuBanushi,
+  /** 今回の騎手: 今回と同じブリンカー */
+  KishuBlinker,
+  /** 今回の調教師: 今回の馬主との組み合わせ */
+  ChoukyoushiBanushi,
 }
 
 const trackNames = ["芝", "ダート", "障害", "平地", ""];
@@ -116,6 +167,8 @@ const fixedNames: { [code: number]: string } = {
   [ChakudosuuBunrui.Nenrei3]: "3 歳",
   [ChakudosuuBunrui.Nenrei4Ijou]: "4 歳以上",
   [ChakudosuuBunrui.KonkaiCourse]: "その日の競馬場・コース",
+  [ChakudosuuBunrui.JrdbKouryuu]: "JRDB 交流",
+  [ChakudosuuBunrui.JrdbSonota]: "JRDB 他",
 };
 
 const withTrack = (track: number, name: string) =>

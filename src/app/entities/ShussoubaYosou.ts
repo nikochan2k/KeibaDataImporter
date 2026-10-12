@@ -145,6 +145,18 @@ export const ShussoubaYosou = sqliteTable("ShussoubaYosou", {
   TmKubun: integer(),
   /** 対戦型の予測スコア (0〜100) */
   TmScore: real(),
+  /** 父馬の産駒の芝の連対率 (％。JRDB の競走馬拡張データ) */
+  ChichiSankuShibaRentairitsu: integer(),
+  /** 父馬の産駒のダートの連対率 (％) */
+  ChichiSankuDirtRentairitsu: integer(),
+  /** 父馬の産駒の連対平均距離 (m) */
+  ChichiSankuRentaiHeikinKyori: integer(),
+  /** 母父馬の産駒の芝の連対率 (％) */
+  HahaChichiSankuShibaRentairitsu: integer(),
+  /** 母父馬の産駒のダートの連対率 (％) */
+  HahaChichiSankuDirtRentairitsu: integer(),
+  /** 母父馬の産駒の連対平均距離 (m) */
+  HahaChichiSankuRentaiHeikinKyori: integer(),
 });
 
 export type ShussoubaYosou = typeof ShussoubaYosou.$inferSelect;

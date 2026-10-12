@@ -1,8 +1,10 @@
 import { afterAll, beforeAll, describe, expect, test } from "bun:test";
 import type { SQLiteTable } from "drizzle-orm/sqlite-core";
+import { ChakudosuuBunrui, ShussoubaJouken } from "../src/app/converters/Chakudosuu";
 import { Baken, Kakutei } from "../src/app/converters/Common";
 import { closeDb, openDb } from "../src/app/db/db";
 import { countBy, findBy, findOneBy, save, updateBy, type Where } from "../src/app/db/helpers";
+import { Chakudosuu } from "../src/app/entities/Chakudosuu";
 import { Choukyou } from "../src/app/entities/Choukyou";
 import { Kishu } from "../src/app/entities/Kishu";
 import { Kyousouba } from "../src/app/entities/Kyousouba";
@@ -12,12 +14,14 @@ import { RaceSeiseki } from "../src/app/entities/RaceSeiseki";
 import { Shussouba } from "../src/app/entities/Shussouba";
 import { ShussoubaChoukyou } from "../src/app/entities/ShussoubaChoukyou";
 import { ShussoubaHyouka } from "../src/app/entities/ShussoubaHyouka";
+import { ShussoubaJoukenChakudosuu } from "../src/app/entities/ShussoubaJoukenChakudosuu";
 import { ShussoubaSeiseki } from "../src/app/entities/ShussoubaSeiseki";
 import { ShussoubaYosou } from "../src/app/entities/ShussoubaYosou";
 import { Cha } from "../src/app/reader/JRDB/Cha";
 import { Cyb } from "../src/app/reader/JRDB/Cyb";
 import { Hjc } from "../src/app/reader/JRDB/Hjc";
 import { K$a } from "../src/app/reader/JRDB/K$a";
+import { Kka } from "../src/app/reader/JRDB/Kka";
 import { Sed } from "../src/app/reader/JRDB/Sed";
 import { Tyb } from "../src/app/reader/JRDB/Tyb";
 import { kolChoukyouTool } from "../src/app/reader/KOL/KolChoukyouTool";
@@ -303,5 +307,71 @@ describe("KSA 騎手マスタ", () => {
     const kishu = await find(Kishu, { JrdbKishuCode: 10500 });
     expect(kishu.MinaraiKubun).toBe(0);
     expect(await countBy(Kishu, { JrdbKishuCode: 10500 })).toBe(1);
+  });
+});
+
+describe("KKA 競走馬拡張データ", () => {
+  const kka = (umaban: string, extra: Field[]) =>
+    record(
+      [
+        ...raceKey.filter(([pos]) => pos !== 9),
+        [9, umaban],
+        [11, "  1  2  3 10"], // JRA 成績
+        [23, "  0  0  0  4"], // 交流成績
+        [35, "  0  0  0  0"], // 他成績 (全部 0 なので行を作らない)
+        [47, "  2  1  0  5"], // 芝ダ障害別
+        [275, "  0  0  1  0"], // 調教師馬主別
+        [287, " 33"],
+        [290, " 20"],
+        [293, "1650"],
+        [297, " 31"],
+        [300, "  0"],
+        [303, "1500"],
+        ...extra,
+      ],
+      324,
+    );
+
+  test("生涯成績はレースの日の馬の着度数に、今回の条件の成績は出走馬ごとに、産駒の値は予想に入る", async () => {
+    const shussouba = await find(Shussouba, { RaceId: (await find(Race, {})).Id, Umaban: 5 });
+    const kyousouba = await save(Kyousouba, Object.assign({} as Kyousouba, { UmaId: 9101 }));
+    await updateBy(Shussouba, { Id: shussouba.Id }, { KyousoubaId: kyousouba.Id });
+    await new Kka().save(kka("05", []));
+
+    const rows = findBy(Chakudosuu, { TaishouId: 9101 })
+      .map((row) => [row.Bunrui, row.Nengappi, row.Chaku1, row.Chaku2, row.Chaku3, row.Chaku4Ika])
+      .sort((a, b) => a[0] - b[0]);
+    expect(rows).toEqual([
+      [ChakudosuuBunrui.Chuuou, 20240407, 1, 2, 3, 10],
+      [ChakudosuuBunrui.JrdbKouryuu, 20240407, 0, 0, 0, 4],
+    ]);
+
+    const joukens = findBy(ShussoubaJoukenChakudosuu, { ShussoubaId: shussouba.Id })
+      .map((row) => [row.Jouken, row.Chaku1, row.Chaku2, row.Chaku3, row.Chaku4Ika])
+      .sort((a, b) => a[0] - b[0]);
+    expect(joukens).toEqual([
+      [ShussoubaJouken.ShibaDirtShougai, 2, 1, 0, 5],
+      [ShussoubaJouken.ChoukyoushiBanushi, 0, 0, 1, 0],
+    ]);
+
+    const yosou = await find(ShussoubaYosou, { Id: shussouba.Id });
+    expect(yosou).toEqual(
+      expect.objectContaining({
+        ChichiSankuShibaRentairitsu: 33,
+        ChichiSankuDirtRentairitsu: 20,
+        ChichiSankuRentaiHeikinKyori: 1650,
+        HahaChichiSankuShibaRentairitsu: 31,
+        HahaChichiSankuDirtRentairitsu: 0,
+        HahaChichiSankuRentaiHeikinKyori: 1500,
+      }),
+    );
+  });
+
+  test("競走馬が分からないときは、生涯成績を読み飛ばして、今回の条件の成績は入る", async () => {
+    await new Kka().save(kka("06", []));
+    const race = await find(Race, {});
+    const shussouba = await find(Shussouba, { RaceId: race.Id, Umaban: 6 });
+    expect(findBy(ShussoubaJoukenChakudosuu, { ShussoubaId: shussouba.Id }).length).toBe(2);
+    expect(findBy(Chakudosuu, { Bunrui: ChakudosuuBunrui.Chuuou }).length).toBe(1);
   });
 });
