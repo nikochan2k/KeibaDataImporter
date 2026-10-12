@@ -9,7 +9,7 @@ import { importRoutes } from "./importRoutes";
 const logger = getLogger("http");
 
 /** ビルド済みフロントエンド (bun run build の出力先。実行ファイルでは、その隣の web/dist)。環境変数 WEB_DIR で変える */
-const DEFAULT_WEB_DIR = import.meta.dirname.startsWith("/$bunfs")
+const DEFAULT_WEB_DIR = /^(\/\$bunfs|[A-Za-z]:[\\/]~BUN)/.test(import.meta.dirname)
   ? path.resolve(path.dirname(process.execPath), "web/dist")
   : path.resolve(import.meta.dirname, "../../../web/dist");
 
