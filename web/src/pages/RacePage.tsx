@@ -182,7 +182,7 @@ export function RacePage() {
                 </tr>
               </thead>
               <tbody>
-                {r.entries.map((e) => (
+                {[...r.entries].sort((x, y) => x.umaban - y.umaban).map((e) => (
                   <tr key={e.shussoubaId}>
                     <td className={`num waku waku${e.wakuban}`}>{e.wakuban}</td>
                     <td className="num">{e.umaban}</td>
