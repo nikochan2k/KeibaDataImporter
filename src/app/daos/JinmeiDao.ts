@@ -1,5 +1,5 @@
 import { toMatchingKey } from "itaiji-normalize";
-import { findOneBy, save } from "../db/helpers";
+import { findOneBy, getOrCreate } from "../db/helpers";
 import { Jinmei } from "../entities/Jinmei";
 
 /** 空白(半角・全角)をすべて除く */
@@ -29,14 +29,7 @@ export class JinmeiDao {
   public async save(meishou: string) {
     meishou = stripJinmei(meishou);
     const matchingKey = jinmeiMatchingKey(meishou);
-    let jinmei = await findOneBy(Jinmei, { MatchingKey: matchingKey });
-    if (!jinmei) {
-      jinmei = {} as Jinmei;
-      jinmei.Meishou = meishou;
-      jinmei.MatchingKey = matchingKey;
-      jinmei = await save(Jinmei, jinmei);
-    }
-    return jinmei;
+    return getOrCreate(Jinmei, { Meishou: meishou, MatchingKey: matchingKey }, ["MatchingKey"]);
   }
 }
 

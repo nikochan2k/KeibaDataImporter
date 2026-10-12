@@ -1,4 +1,4 @@
-import { findOneBy, save } from "../db/helpers";
+import { findOneBy, getOrCreate, save } from "../db/helpers";
 import { RaceMei } from "../entities/RaceMei";
 import { Record } from "../entities/Record";
 import { tokubetsuMeiDao } from "./TokubetsuMeiDao";
@@ -19,16 +19,10 @@ export class RaceDao {
 
   public async saveRaceMei(raceId: number, meishou: string) {
     const tokubetsuMei = await tokubetsuMeiDao.save(meishou);
-    let raceMei = await findOneBy(RaceMei, {
-      RaceId: raceId,
-      TokubetsuMeiId: tokubetsuMei.Id,
-    });
-    if (!raceMei) {
-      raceMei = {} as RaceMei;
-      raceMei.RaceId = raceId;
-      raceMei.TokubetsuMeiId = tokubetsuMei.Id;
-      await save(RaceMei, raceMei);
-    }
+    getOrCreate(RaceMei, { RaceId: raceId, TokubetsuMeiId: tokubetsuMei.Id }, [
+      "RaceId",
+      "TokubetsuMeiId",
+    ]);
   }
 }
 

@@ -1,4 +1,4 @@
-import { findOneBy, query, save } from "../db/helpers";
+import { findOneBy, getOrCreate, query } from "../db/helpers";
 import { Choukyoushi } from "../entities/Choukyoushi";
 import { ChoukyoushiMei } from "../entities/ChoukyoushiMei";
 import { JinmeiKubun } from "../entities/Jinmei";
@@ -98,18 +98,11 @@ export class ChoukyoushiDao {
     meishou: string,
   ) {
     const jinmei = await jinmeiDao.save(meishou);
-    let choukyoushiMei = await findOneBy(ChoukyoushiMei, {
-      ChoukyoushiId: choukyoushi.Id,
-      JinmeiId: jinmei.Id,
-      Kubun: kubun,
-    });
-    if (!choukyoushiMei) {
-      choukyoushiMei = {} as ChoukyoushiMei;
-      choukyoushiMei.ChoukyoushiId = choukyoushi.Id;
-      choukyoushiMei.JinmeiId = jinmei.Id;
-      choukyoushiMei.Kubun = kubun;
-      await save(ChoukyoushiMei, choukyoushiMei);
-    }
+    getOrCreate(
+      ChoukyoushiMei,
+      { ChoukyoushiId: choukyoushi.Id, JinmeiId: jinmei.Id, Kubun: kubun },
+      ["ChoukyoushiId", "JinmeiId", "Kubun"],
+    );
   }
 }
 

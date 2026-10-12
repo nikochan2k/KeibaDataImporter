@@ -17,7 +17,6 @@ import {
   readStr,
   readTime,
 } from "../Reader";
-import { tool } from "../Tool";
 import { KolDataToImport } from "./KolDataToImport";
 import { kolKaisaiTool } from "./KolKaisaiTool";
 import { kolOddsHaitouTool } from "./KolOddsHaitouTool";
@@ -47,7 +46,7 @@ export class KolSei1 extends KolDataToImport {
       await this.saveRaceMei(buffer, race);
     }
 
-    await this.saveRaceSeiseki(buffer, race, raceSeiseki, dataNengappi);
+    await this.saveRaceSeiseki(buffer, race, dataNengappi);
     await this.saveRaceLapTime(buffer, race);
     await this.saveRaceKeika(buffer, race);
     await this.saveRaceHassouJoukyou(buffer, race);
@@ -164,12 +163,7 @@ export class KolSei1 extends KolDataToImport {
     await kolRaceTool.saveRaceMei(buffer, 59, 14, race);
   }
 
-  protected async saveRaceSeiseki(
-    buffer: Buffer,
-    race: Race,
-    asIs: RaceSeiseki,
-    dataNengappi: number,
-  ) {
+  protected async saveRaceSeiseki(buffer: Buffer, race: Race, dataNengappi: number) {
     const toBe = {} as RaceSeiseki;
     toBe.Id = race.Id;
     toBe.Shoukin1Chaku = readPositiveInt(buffer, this.at(288), 9);
@@ -189,7 +183,7 @@ export class KolSei1 extends KolDataToImport {
     }
     toBe.KolNengappi = dataNengappi;
 
-    await tool.saveOrUpdate(RaceSeiseki, asIs, toBe);
+    upsert(RaceSeiseki, toBe);
   }
 
   protected async saveRaceLapTime(buffer: Buffer, race: Race) {

@@ -1,5 +1,5 @@
 import { Logger } from "log4js";
-import { findOneBy, save } from "../db/helpers";
+import { findOneBy, upsert } from "../db/helpers";
 import { Race } from "../entities/Race";
 import { Shussouba } from "../entities/Shussouba";
 import { Kubun, ShussoubaJoutai } from "../entities/ShussoubaJoutai";
@@ -123,10 +123,6 @@ export abstract class ShussoubaTool {
     toBe.Kubun = kubun;
     toBe.Code = code;
 
-    const asIs = await findOneBy(ShussoubaJoutai, { Id: id });
-    if (asIs) {
-      return;
-    }
-    save(ShussoubaJoutai, toBe);
+    upsert(ShussoubaJoutai, toBe);
   }
 }

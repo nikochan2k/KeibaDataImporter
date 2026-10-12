@@ -214,6 +214,37 @@ export function upsert<T extends SQLiteTable>(
   return statement.get(paramsOf(values)) as Row<T>;
 }
 
+/**
+ * ユニーク制約の列 (target) が同じ行があればそれを、なければ row を追加して、その行を返す (INSERT ... ON CONFLICT DO UPDATE ... RETURNING)。
+ * 既存の行の値は変えない (最初に登録された値が残る)。名前の表のような「あれば取得、なければ作成」用。
+ * target は表のユニークインデックスと同じ列の組にすること。undefined の項目は書かない。
+ */
+export function getOrCreate<T extends SQLiteTable>(
+  table: T,
+  row: Partial<Row<T>>,
+  target: readonly (keyof Row<T> & string)[],
+): Row<T> {
+  const values = definedOf(row);
+  const names = Object.keys(values);
+  const statement = cached(
+    `getOrCreate:${getTableName(table)}|${names.join(",")}|${target.join(",")}`,
+    () => {
+      const columns = target.map((name) => columnOf(table, name));
+      // 更新はしないが、既存の行を RETURNING で受け取れるよう、ユニーク列を同じ値で更新する
+      return currentDb()
+        .insert(table)
+        .values(placeholders(names) as never)
+        .onConflictDoUpdate({
+          target: columns,
+          set: { [target[0]]: sql`${columns[0]}` } as never,
+        })
+        .returning()
+        .prepare();
+    },
+  );
+  return statement.get(paramsOf(values)) as Row<T>;
+}
+
 /** SQLite の 1 文に渡せる変数の上限 (SQLITE_MAX_VARIABLE_NUMBER) に収まるよう、複数行の追加を分ける大きさ */
 const MAX_VARIABLES = 30000;
 

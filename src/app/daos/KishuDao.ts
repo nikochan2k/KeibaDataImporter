@@ -1,4 +1,4 @@
-import { findOneBy, query, save } from "../db/helpers";
+import { findOneBy, getOrCreate, query } from "../db/helpers";
 import { JinmeiKubun } from "../entities/Jinmei";
 import { Kishu } from "../entities/Kishu";
 import { KishuMei } from "../entities/KishuMei";
@@ -119,18 +119,11 @@ LIMIT
 
   protected async saveKishuMei(kishu: Kishu, kubun: JinmeiKubun, meishou: string) {
     const jinmei = await jinmeiDao.save(meishou);
-    let kishuMei = await findOneBy(KishuMei, {
-      KishuId: kishu.Id,
-      JinmeiId: jinmei.Id,
-      Kubun: kubun,
-    });
-    if (!kishuMei) {
-      kishuMei = {} as KishuMei;
-      kishuMei.KishuId = kishu.Id;
-      kishuMei.JinmeiId = jinmei.Id;
-      kishuMei.Kubun = kubun;
-      await save(KishuMei, kishuMei);
-    }
+    getOrCreate(KishuMei, { KishuId: kishu.Id, JinmeiId: jinmei.Id, Kubun: kubun }, [
+      "KishuId",
+      "JinmeiId",
+      "Kubun",
+    ]);
   }
 }
 
