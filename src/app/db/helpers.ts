@@ -1,22 +1,6 @@
-import {
-  and,
-  count as countRows,
-  eq,
-  getTableColumns,
-  getTableName,
-  inArray,
-  isNull,
-  type SQL,
-  sql,
-} from "drizzle-orm";
+import { getTableName } from "drizzle-orm";
 import { getTableConfig, type SQLiteColumn, type SQLiteTable } from "drizzle-orm/sqlite-core";
-import {
-  currentDb,
-  currentSqlite,
-  isInTransaction,
-  setTransactionHooks,
-  statementCache,
-} from "./db";
+import { currentSqlite, isInTransaction, setTransactionHooks, statementCache } from "./db";
 
 /**
  * TypeORM の EntityManager / Repository と同じ使い方ができる、Drizzle の薄い関数。
@@ -31,14 +15,6 @@ export const IS_NULL = Symbol("IS_NULL");
 export type Where<T extends SQLiteTable> = {
   [K in keyof Row<T>]?: Row<T>[K] | readonly Row<T>[K][] | typeof IS_NULL;
 };
-
-function columnOf(table: SQLiteTable, key: string): SQLiteColumn {
-  const column = getTableColumns(table)[key];
-  if (!column) {
-    throw new Error(`${getTableConfig(table).name} に ${key} 列はありません`);
-  }
-  return column;
-}
 
 /**
  * 同じ形のクエリは、組み立てと準備を 1 回で済ませて使い回す (値は placeholder で渡す)。
@@ -55,10 +31,20 @@ function cached<Q>(key: string, build: () => Q): Q {
   return statement;
 }
 
-/** 条件の形 (cached の key 用) と、placeholder に渡す値 */
+/** 識別子を引用符で囲む */
+function id(name: string) {
+  return `"${name}"`;
+}
+
+/** 準備した文 (生の SQL)。同じ key なら使い回す。値は ? で渡す */
+function prepared(key: string, build: () => string) {
+  return cached(key, () => currentSqlite().prepare(build()));
+}
+
+/** 条件の形 (prepared の key 用) と、? に渡す値 */
 function whereParts<T extends SQLiteTable>(table: T, where: Where<T>) {
   let signature = "";
-  const params: Record<string, unknown> = {};
+  const params: unknown[] = [];
   for (const [key, value] of Object.entries(where)) {
     if (value === undefined || value === null) {
       throw new Error(`${getTableName(table)}.${key} の条件が ${value} です`);
@@ -67,63 +53,63 @@ function whereParts<T extends SQLiteTable>(table: T, where: Where<T>) {
       signature += `|${key}:null`;
     } else if (Array.isArray(value)) {
       signature += `|${key}:in${value.length}`;
-      value.forEach((v, i) => {
-        params[`w_${key}_${i}`] = v;
-      });
+      params.push(...value);
     } else {
       signature += `|${key}:eq`;
-      params[`w_${key}`] = value;
+      params.push(value);
     }
   }
   return { signature, params };
 }
 
-/** 条件の SQL。値は whereParts の placeholder (w_列名) にする */
-function whereOf<T extends SQLiteTable>(table: T, where: Where<T>): SQL | undefined {
+/** 条件の SQL (WHERE ...)。値は whereParts の順の ? にする。条件がなければ空 */
+function whereSql<T extends SQLiteTable>(where: Where<T>) {
   const conditions = Object.entries(where).map(([key, value]) => {
-    const column = columnOf(table, key);
     if (value === IS_NULL) {
-      return isNull(column);
+      return `${id(key)} IS NULL`;
     }
     if (Array.isArray(value)) {
-      return inArray(
-        column,
-        value.map((_, i) => sql.placeholder(`w_${key}_${i}`)),
-      );
+      return `${id(key)} IN (${value.map(() => "?").join(",")})`;
     }
-    return eq(column, sql.placeholder(`w_${key}`));
+    return `${id(key)} = ?`;
   });
-  return and(...conditions);
+  return conditions.length === 0 ? "" : ` WHERE ${conditions.join(" AND ")}`;
 }
 
 /** 条件に合う最初の行。なければ null */
 export function findOneBy<T extends SQLiteTable>(table: T, where: Where<T>): Row<T> | null {
   flushWritesFor(table, where);
   const { signature, params } = whereParts(table, where);
-  const statement = cached(`findOne:${getTableName(table)}${signature}`, () =>
-    currentDb().select().from(table).where(whereOf(table, where)).limit(1).prepare(),
+  const name = getTableName(table);
+  const statement = prepared(
+    `findOne:${name}${signature}`,
+    () => `SELECT * FROM ${id(name)}${whereSql(where)} LIMIT 1`,
   );
-  return (statement.get(params) as Row<T>) ?? null;
+  return (statement.get(...(params as never[])) as Row<T>) ?? null;
 }
 
 /** 条件に合う全部の行 */
 export function findBy<T extends SQLiteTable>(table: T, where: Where<T> = {}): Row<T>[] {
   flushWrites(table);
   const { signature, params } = whereParts(table, where);
-  const statement = cached(`find:${getTableName(table)}${signature}`, () =>
-    currentDb().select().from(table).where(whereOf(table, where)).prepare(),
+  const name = getTableName(table);
+  const statement = prepared(
+    `find:${name}${signature}`,
+    () => `SELECT * FROM ${id(name)}${whereSql(where)}`,
   );
-  return statement.all(params) as Row<T>[];
+  return statement.all(...(params as never[])) as Row<T>[];
 }
 
 /** 条件に合う行の数 */
 export function countBy<T extends SQLiteTable>(table: T, where: Where<T> = {}): number {
   flushWrites(table);
   const { signature, params } = whereParts(table, where);
-  const statement = cached(`count:${getTableName(table)}${signature}`, () =>
-    currentDb().select({ n: countRows() }).from(table).where(whereOf(table, where)).prepare(),
+  const name = getTableName(table);
+  const statement = prepared(
+    `count:${name}${signature}`,
+    () => `SELECT COUNT(*) AS n FROM ${id(name)}${whereSql(where)}`,
   );
-  return (statement.get(params) as { n: number }).n;
+  return (statement.get(...(params as never[])) as { n: number }).n;
 }
 
 /** undefined の項目を除く */
@@ -149,18 +135,18 @@ function keysOf(table: SQLiteTable): SQLiteColumn[] {
   return keys;
 }
 
-/** 項目名から、値を placeholder (v_項目名) にした行を作る */
-function placeholders(names: string[]) {
-  return Object.fromEntries(names.map((name) => [name, sql.placeholder(`v_${name}`)]));
+/** INSERT INTO 表 (項目) VALUES (?,..),(?,..) までの SQL。項目がなければ DEFAULT VALUES */
+function insertSql(tableName: string, names: string[], rowCount = 1) {
+  if (names.length === 0) {
+    return `INSERT INTO ${id(tableName)} DEFAULT VALUES`;
+  }
+  const one = `(${names.map(() => "?").join(",")})`;
+  return `INSERT INTO ${id(tableName)} (${names.map(id).join(",")}) VALUES ${Array(rowCount).fill(one).join(",")}`;
 }
 
-/** 項目の値を、placeholder に渡す形 (v_項目名) にする */
-function paramsOf(values: Record<string, unknown>) {
-  const params: Record<string, unknown> = {};
-  for (const name in values) {
-    params[`v_${name}`] = values[name];
-  }
-  return params;
+/** 項目の値を、insertSql の ? に渡す順にする */
+function valuesOf(values: Record<string, unknown>) {
+  return Object.values(values) as never[];
 }
 
 /**
@@ -173,30 +159,26 @@ export function save<T extends SQLiteTable>(table: T, row: Partial<Row<T>>): Row
   const keys = keysOf(table);
   const values = definedNonNullOf(row);
   const names = Object.keys(values);
-  const params = paramsOf(values);
+  const tableName = getTableName(table);
   const generated = keys.length === 1 && "autoIncrement" in keys[0] && keys[0].autoIncrement;
   if (generated && values[keys[0].name] == null) {
-    const statement = cached(`insertId:${getTableName(table)}|${names.join(",")}`, () =>
-      currentDb()
-        .insert(table)
-        .values(placeholders(names) as never)
-        .returning({ id: keys[0] })
-        .prepare(),
+    const statement = prepared(
+      `insertId:${tableName}|${names.join(",")}`,
+      () => `${insertSql(tableName, names)} RETURNING ${id(keys[0].name)} AS id`,
     );
-    const inserted = statement.get(params) as { id: number };
+    const inserted = statement.get(...valuesOf(values)) as { id: number };
     (row as Record<string, unknown>)[keys[0].name] = inserted.id;
     return row as Row<T>;
   }
-  const statement = cached(`save:${getTableName(table)}|${names.join(",")}`, () => {
+  const statement = prepared(`save:${tableName}|${names.join(",")}`, () => {
     const setNames = names.filter((name) => !keys.some((k) => k.name === name));
-    const insert = currentDb()
-      .insert(table)
-      .values(placeholders(names) as never);
-    return 0 < setNames.length
-      ? insert.onConflictDoUpdate({ target: keys, set: placeholders(setNames) as never }).prepare()
-      : insert.onConflictDoNothing({ target: keys }).prepare();
+    return `${insertSql(tableName, names)} ON CONFLICT (${keys.map((k) => id(k.name)).join(",")}) ${
+      0 < setNames.length
+        ? `DO UPDATE SET ${setNames.map((name) => `${id(name)}=excluded.${id(name)}`).join(",")}`
+        : "DO NOTHING"
+    }`;
   });
-  statement.run(params);
+  statement.run(...valuesOf(values));
   return row as Row<T>;
 }
 
@@ -218,18 +200,16 @@ export function upsert<T extends SQLiteTable>(
     Object.entries(definedOf(row)).filter(([, value]) => !(skipNull && value === null)),
   );
   const names = Object.keys(values);
-  const statement = cached(`upsert:${getTableName(table)}|${names.join(",")}`, () => {
+  const tableName = getTableName(table);
+  const statement = prepared(`upsert:${tableName}|${names.join(",")}`, () => {
     const setNames = names.filter((name) => !keys.some((k) => k.name === name));
     // 更新する項目がなくても、既存の行を RETURNING で受け取れるよう、主キーを同じ値で更新する
-    const update = placeholders(0 < setNames.length ? setNames : [keys[0].name]);
-    return currentDb()
-      .insert(table)
-      .values(placeholders(names) as never)
-      .onConflictDoUpdate({ target: keys, set: update as never })
-      .returning()
-      .prepare();
+    const update = 0 < setNames.length ? setNames : [keys[0].name];
+    return `${insertSql(tableName, names)} ON CONFLICT (${keys.map((k) => id(k.name)).join(",")}) DO UPDATE SET ${update
+      .map((name) => `${id(name)}=excluded.${id(name)}`)
+      .join(",")} RETURNING *`;
   });
-  return statement.get(paramsOf(values)) as Row<T>;
+  return statement.get(...valuesOf(values)) as Row<T>;
 }
 
 /**
@@ -245,23 +225,14 @@ export function getOrCreate<T extends SQLiteTable>(
   flushWrites(table);
   const values = definedOf(row);
   const names = Object.keys(values);
-  const statement = cached(
-    `getOrCreate:${getTableName(table)}|${names.join(",")}|${target.join(",")}`,
-    () => {
-      const columns = target.map((name) => columnOf(table, name));
-      // 更新はしないが、既存の行を RETURNING で受け取れるよう、ユニーク列を同じ値で更新する
-      return currentDb()
-        .insert(table)
-        .values(placeholders(names) as never)
-        .onConflictDoUpdate({
-          target: columns,
-          set: { [target[0]]: sql`${columns[0]}` } as never,
-        })
-        .returning()
-        .prepare();
-    },
+  const tableName = getTableName(table);
+  const statement = prepared(
+    `getOrCreate:${tableName}|${names.join(",")}|${target.join(",")}`,
+    // 更新はしないが、既存の行を RETURNING で受け取れるよう、ユニーク列を同じ値で更新する
+    () =>
+      `${insertSql(tableName, names)} ON CONFLICT (${target.map(id).join(",")}) DO UPDATE SET ${id(target[0])}=${id(target[0])} RETURNING *`,
   );
-  return statement.get(paramsOf(values)) as Row<T>;
+  return statement.get(...valuesOf(values)) as Row<T>;
 }
 
 /** SQLite の 1 文に渡せる変数の上限 (SQLITE_MAX_VARIABLE_NUMBER) に収まるよう、複数行の追加を分ける大きさ */
@@ -305,16 +276,13 @@ export function upsertAll<T extends SQLiteTable>(
         }
       }
       i += rowCount;
-      const statement = cached(`upsertAll:${tableName}|${signature}|${rowCount}`, () => {
+      const statement = prepared(`upsertAll:${tableName}|${signature}|${rowCount}`, () => {
         const setNames = names.filter((name) => !keys.some((k) => k.name === name));
-        const one = `(${names.map(() => "?").join(",")})`;
-        const target = keys.map((k) => `"${k.name}"`).join(",");
-        return currentSqlite().prepare(
-          `INSERT INTO "${tableName}" (${names.map((name) => `"${name}"`).join(",")}) VALUES ${Array(rowCount).fill(one).join(",")} ` +
-            (0 < setNames.length
-              ? `ON CONFLICT (${target}) DO UPDATE SET ${setNames.map((name) => `"${name}"=excluded."${name}"`).join(",")}`
-              : `ON CONFLICT (${target}) DO NOTHING`),
-        );
+        return `${insertSql(tableName, names, rowCount)} ON CONFLICT (${keys.map((k) => id(k.name)).join(",")}) ${
+          0 < setNames.length
+            ? `DO UPDATE SET ${setNames.map((name) => `${id(name)}=excluded.${id(name)}`).join(",")}`
+            : "DO NOTHING"
+        }`;
       });
       statement.run(...(params as never[]));
     }
@@ -432,14 +400,13 @@ export function updateBy<T extends SQLiteTable>(
     return;
   }
   const { signature, params } = whereParts(table, where);
-  const statement = cached(`update:${getTableName(table)}|${names.join(",")}${signature}`, () =>
-    currentDb()
-      .update(table)
-      .set(placeholders(names) as never)
-      .where(whereOf(table, where))
-      .prepare(),
+  const tableName = getTableName(table);
+  const statement = prepared(
+    `update:${tableName}|${names.join(",")}${signature}`,
+    () =>
+      `UPDATE ${id(tableName)} SET ${names.map((name) => `${id(name)}=?`).join(",")}${whereSql(where)}`,
   );
-  statement.run({ ...paramsOf(values), ...params });
+  statement.run(...valuesOf(values), ...(params as never[]));
 }
 
 /** 生の SQL で読む (? に params を順に当てる) */
