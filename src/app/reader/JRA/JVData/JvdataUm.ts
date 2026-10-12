@@ -1,11 +1,20 @@
+import {
+  babaBunrui,
+  ChakudosuuBunrui,
+  ChakudosuuKikan,
+  ChakudosuuTaishou,
+  jravanKyori,
+  kyoriBunrui,
+} from "../../../converters/Chakudosuu";
 import * as $C from "../../../converters/Common";
 import * as $U from "../../../converters/Uma";
 import { banushiDao } from "../../../daos/BanushiDao";
+import { ChakudosuuWriter } from "../../../daos/ChakudosuuDao";
 import { seisanshaDao } from "../../../daos/SeisanshaDao";
 import { umaDao } from "../../../daos/UmaDao";
 import { Kyousouba } from "../../../entities/Kyousouba";
 import { Uma } from "../../../entities/Uma";
-import { readPositiveInt, readStr } from "../../Reader";
+import { readInt, readPositiveInt, readStr } from "../../Reader";
 import { tool } from "../../Tool";
 import { jraTool } from "../JraTool";
 import { jvdataKettouTool } from "./JvdataKettouTool";
@@ -15,7 +24,7 @@ import { JvdataRecord } from "./JvdataRecord";
  * 競走馬マスタ (UM)。
  * 3 代血統は繁殖登録番号でつなぐ (繁殖馬マスタ・産駒マスタと同じ馬になる)。
  * 馬主は、データ作成年月日の時点の馬の馬主にする。
- * 賞金や着回数の累計、脚質傾向は取り込まない (レースの成績は馬毎レース情報から取り込む)。
+ * 着回数・賞金の累計と脚質傾向は、データ作成年月日の時点の着度数に入れる。
  */
 export class JvdataUm extends JvdataRecord {
   public readonly id = "UM";
@@ -77,6 +86,10 @@ export class JvdataUm extends JvdataRecord {
       await banushiDao.saveBanushi(banushi);
     }
 
+    if (sakuseiNengappi) {
+      this.saveChakudosuu(buffer, uma.Id, sakuseiNengappi);
+    }
+
     const choukyoushi = await jraTool.saveChoukyoushi(buffer, 849, 854);
     let kyousouba = {} as Kyousouba;
     kyousouba.UmaId = uma.Id;
@@ -84,5 +97,51 @@ export class JvdataUm extends JvdataRecord {
     kyousouba.UmaKigou = $U.umaKigou.toCodeFromJvData(buffer, 198, 2);
     kyousouba.ChoukyoushiId = choukyoushi?.Id;
     kyousouba = await umaDao.saveKyousouba(kyousouba);
+  }
+
+  /** 馬の着度数 (データ作成年月日時点までの累計) と賞金・脚質傾向 */
+  private saveChakudosuu(buffer: Buffer, umaId: number, nengappi: number) {
+    const writer = new ChakudosuuWriter();
+    const key = {
+      Taishou: ChakudosuuTaishou.Uma,
+      TaishouId: umaId,
+      Nengappi: nengappi,
+      Kikan: ChakudosuuKikan.Ruikei,
+    };
+    const add = (bunrui: number, offset: number) => writer.add(key, bunrui, buffer, offset, 3, 6);
+    add(ChakudosuuBunrui.Sougou, 1106);
+    add(ChakudosuuBunrui.Chuuou, 1124);
+    [
+      ChakudosuuBunrui.ShibaChokusen,
+      ChakudosuuBunrui.ShibaMigi,
+      ChakudosuuBunrui.ShibaHidari,
+      ChakudosuuBunrui.DirtChokusen,
+      ChakudosuuBunrui.DirtMigi,
+      ChakudosuuBunrui.DirtHidari,
+      ChakudosuuBunrui.Shougai,
+    ].forEach((bunrui, i) => add(bunrui, 1142 + i * 18));
+    for (let i = 0; i < 12; i++) {
+      add(babaBunrui(Math.floor(i / 4), i % 4), 1268 + i * 18);
+    }
+    for (let i = 0; i < 6; i++) {
+      add(kyoriBunrui(Math.floor(i / 3), jravanKyori, i % 3), 1484 + i * 18);
+    }
+    const shoukin = (offset: number) => readInt(buffer, offset, 9, 100);
+    const kyakushitsu = (i: number) => readInt(buffer, 1592 + i * 3, 3);
+    writer.addShuukei({
+      ...key,
+      HeichiHonShoukin: shoukin(1052),
+      ShougaiHonShoukin: shoukin(1061),
+      HeichiFukaShoukin: shoukin(1070),
+      ShougaiFukaShoukin: shoukin(1079),
+      HeichiShuutokuShoukin: shoukin(1088),
+      ShougaiShuutokuShoukin: shoukin(1097),
+      Nige: kyakushitsu(0),
+      Senkou: kyakushitsu(1),
+      Sashi: kyakushitsu(2),
+      Oikomi: kyakushitsu(3),
+      TourokuRaceSuu: readInt(buffer, 1604, 3),
+    });
+    writer.save();
   }
 }

@@ -1,12 +1,16 @@
+import { ChakudosuuTaishou } from "../../../converters/Chakudosuu";
 import * as $C from "../../../converters/Common";
+import { ChakudosuuWriter } from "../../../daos/ChakudosuuDao";
 import { choukyoushiDao } from "../../../daos/ChoukyoushiDao";
 import { Choukyoushi } from "../../../entities/Choukyoushi";
 import { readPositiveInt, readRaw, readStr, readStrWithNoSpace } from "../../Reader";
+import { addMasterJinBlocks } from "./JvdataChakudosuuTool";
 import { JvdataRecord } from "./JvdataRecord";
 
 /**
  * 調教師マスタ (CH)。
- * 最近の重賞勝利の情報と、成績の集計は取り込まない。
+ * 本年・前年・累計成績は、データ作成年月日の時点の着度数に入れる (引退した人は 引退年・引退前年・累計)。
+ * 最近の重賞勝利の情報は取り込まない。
  */
 export class JvdataCh extends JvdataRecord {
   public readonly id = "CH";
@@ -37,6 +41,12 @@ export class JvdataCh extends JvdataRecord {
     const kanji = readStrWithNoSpace(buffer, 41, 34);
     const tanshuku = readStrWithNoSpace(buffer, 105, 8);
     const furigana = readStr(buffer, 75, 30);
-    await choukyoushiDao.saveChoukyoushi(choukyoushi, kanji, tanshuku, furigana);
+    const saved = await choukyoushiDao.saveChoukyoushi(choukyoushi, kanji, tanshuku, furigana);
+    const nengappi = readPositiveInt(buffer, 3, 8);
+    if (nengappi) {
+      const writer = new ChakudosuuWriter();
+      addMasterJinBlocks(writer, buffer, ChakudosuuTaishou.Choukyoushi, saved.Id, nengappi, 704);
+      writer.save();
+    }
   }
 }

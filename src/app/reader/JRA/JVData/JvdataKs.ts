@@ -1,13 +1,17 @@
+import { ChakudosuuTaishou } from "../../../converters/Chakudosuu";
 import * as $K from "../../../converters/Kishu";
+import { ChakudosuuWriter } from "../../../daos/ChakudosuuDao";
 import { kishuDao } from "../../../daos/KishuDao";
 import { Kishu } from "../../../entities/Kishu";
 import { readPositiveInt, readRaw, readStr, readStrWithNoSpace } from "../../Reader";
 import { jraTool } from "../JraTool";
+import { addMasterJinBlocks } from "./JvdataChakudosuuTool";
 import { JvdataRecord } from "./JvdataRecord";
 
 /**
  * 騎手マスタ (KS)。
- * 初騎乗・初勝利・最近の重賞勝利の情報と、成績の集計は取り込まない。
+ * 本年・前年・累計成績は、データ作成年月日の時点の着度数に入れる (引退した人は 引退年・引退前年・累計)。
+ * 初騎乗・初勝利・最近の重賞勝利の情報は取り込まない。
  */
 export class JvdataKs extends JvdataRecord {
   public readonly id = "KS";
@@ -39,6 +43,12 @@ export class JvdataKs extends JvdataRecord {
     const kanji = readStrWithNoSpace(buffer, 41, 34);
     const tanshuku = readStrWithNoSpace(buffer, 139, 8);
     const furigana = readStr(buffer, 109, 30);
-    await kishuDao.saveKishu(kishu, kanji, tanshuku, furigana);
+    const saved = await kishuDao.saveKishu(kishu, kanji, tanshuku, furigana);
+    const nengappi = readPositiveInt(buffer, 3, 8);
+    if (nengappi) {
+      const writer = new ChakudosuuWriter();
+      addMasterJinBlocks(writer, buffer, ChakudosuuTaishou.Kishu, saved.Id, nengappi, 1015);
+      writer.save();
+    }
   }
 }

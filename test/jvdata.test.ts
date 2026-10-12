@@ -5,6 +5,7 @@ import {
   ChakudosuuKikan,
   ChakudosuuTaishou,
   ChakudosuuTrack,
+  jravanKyori,
   jvdataKyori,
   keibajouBunrui,
   kyoriBunrui,
@@ -61,6 +62,7 @@ import { JvdataBn } from "../src/app/reader/JRA/JVData/JvdataBn";
 import { JvdataBr } from "../src/app/reader/JRA/JVData/JvdataBr";
 import { JvdataBt } from "../src/app/reader/JRA/JVData/JvdataBt";
 import { JvdataCh } from "../src/app/reader/JRA/JVData/JvdataCh";
+import { bashoAt } from "../src/app/reader/JRA/JVData/JvdataChakudosuuTool";
 import { JvdataHc, JvdataWc } from "../src/app/reader/JRA/JVData/JvdataChoukyou";
 import { JvdataCk } from "../src/app/reader/JRA/JVData/JvdataCk";
 import { JvdataCs } from "../src/app/reader/JRA/JVData/JvdataCs";
@@ -1405,6 +1407,159 @@ describe("出走別着度数", () => {
     expect(shuukei.length).toBe(10);
     // 出走別着度数は出走馬もレースも作らない
     expect(await repo(Shussouba).count()).toBe(0);
+  });
+});
+
+describe("マスタの着度数", () => {
+  const SAKUSEI = "20071101";
+
+  /** KS・CH の成績の子項目は仕様書に位置の書式がないので、ブロックの先頭からの位置に直接書く */
+  function writeBlock(r: JvdataRecord, parent: string, kikan: number, rel: number, text: string) {
+    const { at } = r.locate(parent);
+    r.buffer.write(text, at + kikan * 1052 + rel, "ascii");
+  }
+
+  const rowsOf = async (taishou: ChakudosuuTaishou, id: number, kikan: ChakudosuuKikan) =>
+    (await repo(Chakudosuu).find())
+      .filter((row) => row.Taishou === taishou && row.TaishouId === id && row.Kikan === kikan)
+      .map((row) => [row.Bunrui, row.Chaku1, row.Chaku2, row.Chaku3, row.Chaku4Ika, row.Nengappi])
+      .sort((a, b) => (a[0] ?? 0) - (b[0] ?? 0));
+
+  test("競走馬マスタの着度数・賞金・脚質傾向は、データ作成年月日の時点に入る", async () => {
+    await emptyKolDb();
+    const um = new JvdataRecord("UM")
+      .set("データ区分", "1")
+      .set("データ作成年月日", SAKUSEI)
+      .set("血統登録番号", "2004101234")
+      .set("馬名", "テストホース")
+      .set("平地本賞金累計", 12345)
+      .set("障害収得賞金累計", 700)
+      .set("総合着回数", 3, { index: 0 })
+      .set("総合着回数", 12, { index: 5 })
+      .set("芝右・着回数", 2, { index: 0 })
+      .set("芝良・着回数", 1, { index: 1 })
+      .set("ダ16下・着回数", 4, { index: 2 })
+      .set("脚質傾向", 4, { index: 1 })
+      .set("登録レース数", 10);
+    expect(await importKolFiles({ "UM.jvd": um.buffer })).toEqual([]);
+    const uma = await repo(Uma).findOneByOrFail({ KettouTourokuBangou: "04101234" });
+    expect(await rowsOf(ChakudosuuTaishou.Uma, uma.Id, ChakudosuuKikan.Ruikei)).toEqual([
+      [ChakudosuuBunrui.Sougou, 3, 0, 0, 12, 20071101],
+      [ChakudosuuBunrui.ShibaMigi, 2, 0, 0, 0, 20071101],
+      [babaBunrui(ChakudosuuTrack.Shiba, 0), 0, 1, 0, 0, 20071101],
+      [kyoriBunrui(ChakudosuuTrack.Dirt, jravanKyori, 0), 0, 0, 4, 0, 20071101],
+    ]);
+    expect(await repo(ChakudosuuShuukei).findOneByOrFail({ TaishouId: uma.Id })).toEqual(
+      expect.objectContaining({
+        HeichiHonShoukin: 1234500,
+        ShougaiShuutokuShoukin: 70000,
+        Senkou: 4,
+        TourokuRaceSuu: 10,
+      }),
+    );
+  });
+
+  test("同じ馬・同じ日の CK と UM は、同じ行になる", async () => {
+    await emptyKolDb();
+    const ck = raceKey(new JvdataRecord("CK"), 11)
+      .set("データ区分", "1")
+      .set("開催月日", "1101")
+      .set("血統登録番号", "2004101234")
+      .set("馬名", "テストホース")
+      .set("総合着回数", 3, { index: 0 });
+    const um = new JvdataRecord("UM")
+      .set("データ区分", "1")
+      .set("データ作成年月日", SAKUSEI)
+      .set("血統登録番号", "2004101234")
+      .set("馬名", "テストホース")
+      .set("総合着回数", 3, { index: 0 });
+    expect(await importKolFiles({ "A.jvd": ck.buffer, "B.jvd": um.buffer })).toEqual([]);
+    const rows = await repo(Chakudosuu).findBy({ Bunrui: ChakudosuuBunrui.Sougou });
+    expect(rows.length).toBe(1);
+    expect(rows[0].Nengappi).toBe(20071101);
+  });
+
+  test("騎手・調教師マスタは、本年・前年・累計の着度数を入れる。引退した人は設定年で分かる", async () => {
+    await emptyKolDb();
+    const P = "<本年･前年･累計成績情報>";
+    const ks = new JvdataRecord("KS")
+      .set("データ区分", "1")
+      .set("データ作成年月日", SAKUSEI)
+      .set("騎手コード", "01088")
+      .set("騎手名", "武　豊");
+    writeBlock(ks, P, 0, 0, "2007");
+    writeBlock(ks, P, 0, 4, "0000012345");
+    writeBlock(ks, P, 0, 44, "000050");
+    // 札幌・障害 (2 つ目の競馬場の 2 番目ではなく、1 つ目の 2 番目)
+    writeBlock(ks, P, 1, 116 + 36 + 6, "000002");
+    // 累計の芝 2201m 以上の 3 着
+    writeBlock(ks, P, 2, 836 + 2 * 36 + 12, "000007");
+    // 引退した調教師: 引退年 2005 が本年のブロックにある
+    const ch = new JvdataRecord("CH")
+      .set("データ区分", "2")
+      .set("データ作成年月日", SAKUSEI)
+      .set("調教師コード", "09999")
+      .set("調教師名", "ヒキタイ");
+    writeBlock(ch, P, 0, 0, "2005");
+    writeBlock(ch, P, 0, 80, "000003");
+    expect(await importKolFiles({ "KS.jvd": ks.buffer, "CH.jvd": ch.buffer })).toEqual([]);
+
+    const kishu = await repo(Kishu).findOneByOrFail({ JvDataKishuCode: "01088" });
+    expect(await rowsOf(ChakudosuuTaishou.Kishu, kishu.Id, ChakudosuuKikan.Honnen)).toEqual([
+      [ChakudosuuBunrui.Heichi, 50, 0, 0, 0, 20071101],
+    ]);
+    expect(await rowsOf(ChakudosuuTaishou.Kishu, kishu.Id, ChakudosuuKikan.Zennen)).toEqual([
+      [keibajouBunrui(ChakudosuuTrack.Shougai, bashoAt(0)), 0, 2, 0, 0, 20071101],
+    ]);
+    expect(await rowsOf(ChakudosuuTaishou.Kishu, kishu.Id, ChakudosuuKikan.Ruikei)).toEqual([
+      [kyoriBunrui(ChakudosuuTrack.Shiba, jravanKyori, 2), 0, 0, 7, 0, 20071101],
+    ]);
+    const shuukei = await repo(ChakudosuuShuukei).find();
+    const nen = (taishou: ChakudosuuTaishou, kikan: ChakudosuuKikan) =>
+      shuukei.find((row) => row.Taishou === taishou && row.Kikan === kikan);
+    expect(nen(ChakudosuuTaishou.Kishu, ChakudosuuKikan.Honnen)).toEqual(
+      expect.objectContaining({ Nen: 2007, HeichiHonShoukin: 1234500 }),
+    );
+    // 引退した調教師は「本年」のブロックが引退年になる
+    const choukyoushi = await repo(Choukyoushi).findOneByOrFail({ JvDataChoukyoushiCode: "09999" });
+    expect(
+      await rowsOf(ChakudosuuTaishou.Choukyoushi, choukyoushi.Id, ChakudosuuKikan.Honnen),
+    ).toEqual([[ChakudosuuBunrui.Shougai, 3, 0, 0, 0, 20071101]]);
+    expect(nen(ChakudosuuTaishou.Choukyoushi, ChakudosuuKikan.Honnen)?.Nen).toBe(2005);
+  });
+
+  test("馬主・生産者マスタは、本年・累計の着度数を入れる", async () => {
+    await emptyKolDb();
+    const P = "<本年･累計成績情報>";
+    const bn = new JvdataRecord("BN")
+      .set("データ区分", "1")
+      .set("データ作成年月日", SAKUSEI)
+      .set("馬主コード", "123456")
+      .set("馬主名(法人格無)", "テスト")
+      .set("設定年", 2007, { parent: P })
+      .set("本賞金合計", 500, { parent: P })
+      .set("着回数", 7, { parent: P });
+    const br = new JvdataRecord("BR")
+      .set("データ区分", "1")
+      .set("データ作成年月日", SAKUSEI)
+      .set("生産者コード", "00054321")
+      .set("生産者名(法人格無)", "テスト牧場")
+      .set("着回数", 4, { parent: P, index: 1 });
+    expect(await importKolFiles({ "BN.jvd": bn.buffer, "BR.jvd": br.buffer })).toEqual([]);
+    const banushi = await repo(Banushi).findOneByOrFail({ JvDataCode: "123456" });
+    expect(await rowsOf(ChakudosuuTaishou.Banushi, banushi.Id, ChakudosuuKikan.Honnen)).toEqual([
+      [ChakudosuuBunrui.Chuuou, 7, 0, 0, 0, 20071101],
+    ]);
+    expect(
+      await repo(ChakudosuuShuukei).findOneByOrFail({
+        Taishou: ChakudosuuTaishou.Banushi,
+        Kikan: ChakudosuuKikan.Honnen,
+      }),
+    ).toEqual(expect.objectContaining({ Nen: 2007, HonShoukin: 50000 }));
+    const seisansha = await repo(Seisansha).findOneByOrFail({ JvDataCode: "00054321" });
+    expect(await rowsOf(ChakudosuuTaishou.Seisansha, seisansha.Id, ChakudosuuKikan.Ruikei)).toEqual(
+      [[ChakudosuuBunrui.Chuuou, 4, 0, 0, 0, 20071101]],
+    );
   });
 });
 

@@ -8,7 +8,6 @@ import {
   keibajouBunrui,
   kyoriBunrui,
 } from "../../../converters/Chakudosuu";
-import * as $C from "../../../converters/Common";
 import { banushiDao } from "../../../daos/BanushiDao";
 import { ChakudosuuWriter } from "../../../daos/ChakudosuuDao";
 import { choukyoushiDao } from "../../../daos/ChoukyoushiDao";
@@ -21,22 +20,15 @@ import { Uma } from "../../../entities/Uma";
 import { readInt, readPositiveInt, readStr, readStrWithNoSpace } from "../../Reader";
 import { tool } from "../../Tool";
 import { jraTool } from "../JraTool";
+import { addJinShuukei, addShoyuushaBlocks, bashoAt } from "./JvdataChakudosuuTool";
 import { jvdataKettouTool } from "./JvdataKettouTool";
 import { JvdataRecord } from "./JvdataRecord";
 
 /** 騎手・調教師の本年・累計成績 1 つぶんのバイト数 */
 const jinBlockLength = 1220;
 
-/** 馬主・生産者の本年・累計成績 1 つぶんのバイト数 */
-const shoyuushaBlockLength = 60;
-
 /** 本年・累計の順 */
 const kikanList = [ChakudosuuKikan.Honnen, ChakudosuuKikan.Ruikei];
-
-/** 競馬場別の並び (札幌・函館・福島・新潟・東京・中山・中京・京都・阪神・小倉) の i 番目の場所 */
-function bashoAt(i: number) {
-  return $C.basho.toCodeFromJvData(String(i + 1).padStart(2, "0")) as number;
-}
 
 /**
  * 出走別着度数 (CK)。出走時点 (レースの日) の、馬・騎手・調教師・馬主・生産者の着度数と賞金を、
@@ -159,15 +151,7 @@ export class JvdataCk extends JvdataRecord {
       for (let i = 0; i < 10; i++) {
         add(keibajouBunrui(ChakudosuuTrack.Shougai, bashoAt(i)), 1040 + i * 18, 3);
       }
-      const shoukin = (offset: number) => readInt(buffer, b + offset, 10, 100);
-      writer.addShuukei({
-        ...key,
-        Nen: readPositiveInt(buffer, b, 4),
-        HeichiHonShoukin: shoukin(4),
-        ShougaiHonShoukin: shoukin(14),
-        HeichiFukaShoukin: shoukin(24),
-        ShougaiFukaShoukin: shoukin(34),
-      });
+      addJinShuukei(writer, key, buffer, b);
     });
   }
 
@@ -186,17 +170,7 @@ export class JvdataCk extends JvdataRecord {
     if (!saved) {
       return;
     }
-    kikanList.forEach((kikan, k) => {
-      const b = blockOffset + k * shoyuushaBlockLength;
-      const key = { Taishou: taishou, TaishouId: saved.Id, Nengappi: nengappi, Kikan: kikan };
-      writer.add(key, ChakudosuuBunrui.Chuuou, buffer, b + 24, 6, 6);
-      writer.addShuukei({
-        ...key,
-        Nen: readPositiveInt(buffer, b, 4),
-        HonShoukin: readInt(buffer, b + 4, 10, 100),
-        FukaShoukin: readInt(buffer, b + 14, 10, 100),
-      });
-    });
+    addShoyuushaBlocks(writer, buffer, taishou, saved.Id, nengappi, blockOffset);
   }
 
   private saveBanushi(buffer: Buffer) {
