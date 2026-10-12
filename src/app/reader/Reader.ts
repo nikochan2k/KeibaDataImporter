@@ -64,6 +64,18 @@ const fromChar =
 const toChar =
   " !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~\"'\\。「」、・ヲァィゥェォャュョッーアイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワン゛゜";
 
+const stringMap = new Map(fromStrings.map((from, i) => [from, toStrings[i]]));
+const stringPattern = new RegExp(fromStrings.join("|"), "g");
+
+/** fromChar の同じ文字が複数あるときは、最初のものを使う */
+const charMap = new Map<string, string>();
+for (let i = 0; i < fromChar.length; i++) {
+  if (!charMap.has(fromChar[i])) {
+    charMap.set(fromChar[i], toChar.charAt(i));
+  }
+}
+const charPattern = new RegExp(`[${[...charMap.keys()].join("")}]`, "g");
+
 export function normalize(str: string) {
   // biome-ignore lint/suspicious/noControlCharactersInRegex: 制御文字の除去が目的
   str = str.replace(/[\x00-\x1f\x7f-\x9f\s]+/g, " ");
@@ -72,22 +84,8 @@ export function normalize(str: string) {
     return null;
   }
 
-  for (let i = 0; i < fromStrings.length; i++) {
-    str = str.split(fromStrings[i]).join(toStrings[i]);
-  }
-
-  let normalized = "";
-  for (let i = 0; i < str.length; i++) {
-    const c = str.charAt(i);
-    const index = fromChar.indexOf(c);
-    if (0 <= index) {
-      normalized += toChar.charAt(index);
-    } else {
-      normalized += c;
-    }
-  }
-
-  return normalized.trim();
+  str = str.replace(stringPattern, (m) => stringMap.get(m) as string);
+  return str.replace(charPattern, (c) => charMap.get(c) as string).trim();
 }
 
 export function readRaw(buffer: Buffer, offset: number, length: number) {
