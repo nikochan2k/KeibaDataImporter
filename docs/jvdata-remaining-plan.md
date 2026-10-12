@@ -132,12 +132,13 @@
 - KOL (出馬表・成績のコース・距離・G1 レコード) と JRA-VAN (コースレコード) は、距離・トラックをそのレースから入れる。KOL のレコードフラグ、JRA-VAN の騎手・調教師コード・天候・馬場も取り込む。
 - `Race.CourseRecordId` / `KyoriRecordId` / `RaceRecordId` はそのまま。
 
-### 段階 7: 重勝式 WIN5 WF
+### 段階 7: 重勝式 WIN5 WF — 済
 
-- 新規 `Win5`: 主キーは開催年月日。HatsubaiHyousuu、HenkanFlag・FuseiritsuFlag・TekichuuNashiFlag、CarryOverShoki・CarryOverZandaka、ChuushiFlag。
-- 新規 `Win5Race`: 主キーは (Win5Id, Jun 1〜5)。RaceId, YuukouHyousuu。
-- 新規 `Win5Haraimodoshi`: Win5Id, Umaban1〜5, Haraimodoshikin, TekichuuHyousuu (最大 243 組)。
-- データ区分 9 (重勝式中止) はレース中止と意味が違うので、`isActive` で読み飛ばさず `ChuushiFlag` に残す。
+- `Win5`: 主キーは開催日。Kubun (データ区分)、HatsubaiHyousuu、HenkanFlag・FuseiritsuFlag・TekichuuNashiFlag、CarryOverShoki・CarryOverZandaka。
+- `Win5Race`: 主キーは (開催日, 何レース目)。RaceId, YuukouHyousuu。対象レースは、レースの行がなければ作る。
+- `Win5Haraimodoshi`: 主キーは (開催日, Umaban1〜5)。Haraimodoshikin, TekichuuHyousuu (最大 243 組)。
+- 詳細発表時 → 1 レース目確定時 → 払戻発表時 → 成績 (月曜) と何度も提供されるので、`Win5.Kubun` を比べて、前の時点のデータは読み飛ばす。
+- データ区分 9 (重勝式中止) はレースの中止と意味が違うので、読み飛ばさず `Win5.Kubun` に残す (中止フラグの列は作らない)。
 
 ### 段階 8: 出走別着度数 CK (6870 バイト)
 

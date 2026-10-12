@@ -22,6 +22,7 @@ import { JvdataSe } from "./JvdataSe";
 import { JvdataSk } from "./JvdataSk";
 import { JvdataTk } from "./JvdataTk";
 import { JvdataUm } from "./JvdataUm";
+import { JvdataWf } from "./JvdataWf";
 import { JvdataYs } from "./JvdataYs";
 
 /**
@@ -67,6 +68,7 @@ export class JvData extends DataToImport {
       JvdataTk,
       JvdataJg,
       JvdataRc,
+      JvdataWf,
     ]) {
       const record: JvdataRecord = new type();
       this.records.set(record.id, record);

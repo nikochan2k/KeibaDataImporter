@@ -41,6 +41,9 @@ import { TokubetsuTourokuba } from "../src/app/entities/TokubetsuTourokuba";
 import { TouhyouJogaiba } from "../src/app/entities/TouhyouJogaiba";
 import { Uma } from "../src/app/entities/Uma";
 import { UmaBanushi } from "../src/app/entities/UmaBanushi";
+import { Win5 } from "../src/app/entities/Win5";
+import { Win5Haraimodoshi } from "../src/app/entities/Win5Haraimodoshi";
+import { Win5Race } from "../src/app/entities/Win5Race";
 import { getJraTrack } from "../src/app/reader/JRA/JraTrack";
 import { JvdataBn } from "../src/app/reader/JRA/JVData/JvdataBn";
 import { JvdataBr } from "../src/app/reader/JRA/JVData/JvdataBr";
@@ -70,6 +73,7 @@ import { JvdataSe } from "../src/app/reader/JRA/JVData/JvdataSe";
 import { JvdataSk } from "../src/app/reader/JRA/JVData/JvdataSk";
 import { JvdataTk } from "../src/app/reader/JRA/JVData/JvdataTk";
 import { JvdataUm } from "../src/app/reader/JRA/JVData/JvdataUm";
+import { JvdataWf } from "../src/app/reader/JRA/JVData/JvdataWf";
 import { JvdataYs } from "../src/app/reader/JRA/JVData/JvdataYs";
 import { tool } from "../src/app/reader/Tool";
 import { repo } from "./helpers";
@@ -111,6 +115,7 @@ const handlers = [
   JvdataTk,
   JvdataJg,
   JvdataRc,
+  JvdataWf,
 ];
 
 describe("JV-Data の仕様書", () => {
@@ -1272,6 +1277,92 @@ describe("レコードマスタ", () => {
     expect(holder).toEqual(
       expect.objectContaining({ Kinryou: 57, KishuId: kishu.Id, ChoukyoushiId: choukyoushi.Id }),
     );
+  });
+});
+
+describe("重勝式 (WIN5)", () => {
+  const R = "<重勝式対象レース情報>";
+  const Y = "<有効票数情報>";
+  const H = "<重勝式払戻情報>";
+
+  function wf(kubun: string) {
+    const r = new JvdataRecord("WF")
+      .set("データ区分", kubun)
+      .set("開催年", 2011)
+      .set("開催月日", "0424")
+      .set("重勝式発売票数", 5000000)
+      .set("キャリーオーバー金額初期", 0);
+    // 対象レースの子項目は仕様書に位置がないので、競馬場・回・日目・レース番号 (各 2 バイト) を直接書く
+    const { at } = r.locate(R);
+    for (let i = 0; i < 5; i++) {
+      const race = `${i < 3 ? "05" : "08"}0202${String(9 + (i % 3)).padStart(2, "0")}`;
+      r.buffer.write(race, at + i * 8, "ascii");
+    }
+    return r;
+  }
+
+  test("対象レース・有効票数・払戻を保存し、前の時点のデータで上書きしない", async () => {
+    await emptyKolDb();
+    const haraimodoshi = wf("3")
+      .set("有効票数", 120000, { parent: Y })
+      .set("有効票数", 3000, { parent: Y, index: 4 })
+      .set("返還フラグ", "0")
+      .set("不成立フラグ", "0")
+      .set("的中無フラグ", "0")
+      .set("キャリーオーバー金額残高", 0)
+      .set("組番", "0103051208", { parent: H })
+      .set("重勝式払戻金", 148000000, { parent: H })
+      .set("的中票数", 3, { parent: H });
+    expect(
+      await importKolFiles({
+        // 払戻発表時のあとに詳細発表時が来ても、払戻発表時が残る
+        "RACE.jvd": Buffer.concat([haraimodoshi.buffer, wf("1").buffer]),
+      }),
+    ).toEqual([]);
+    expect(await repo(Win5).find()).toEqual([
+      {
+        Nengappi: 20110424,
+        Kubun: 3,
+        HatsubaiHyousuu: 5000000,
+        HenkanFlag: 0,
+        FuseiritsuFlag: 0,
+        TekichuuNashiFlag: 0,
+        CarryOverShoki: 0,
+        CarryOverZandaka: 0,
+      },
+    ]);
+    const races = await repo(Win5Race).find();
+    expect(races.map((r) => [r.Jun, r.YuukouHyousuu])).toEqual([
+      [1, 120000],
+      [2, null],
+      [3, null],
+      [4, null],
+      [5, 3000],
+    ]);
+    // 対象レースは、レース詳細と同じレースになる
+    const race = await repo(Race).findOneByOrFail({ Id: races[4].RaceId });
+    const kaisai = await repo(Kaisai).findOneByOrFail({ Id: race.KaisaiId });
+    expect([kaisai.Basho, kaisai.Nen, kaisai.Gatsu, kaisai.Nichi, race.RaceBangou]).toEqual([
+      0, 2011, 4, 24, 10,
+    ]);
+    expect(await repo(Win5Haraimodoshi).find()).toEqual([
+      {
+        Nengappi: 20110424,
+        Umaban1: 1,
+        Umaban2: 3,
+        Umaban3: 5,
+        Umaban4: 12,
+        Umaban5: 8,
+        Haraimodoshikin: 148000000,
+        TekichuuHyousuu: 3,
+      },
+    ]);
+  });
+
+  test("重勝式の中止は、読み飛ばさずに残す", async () => {
+    await emptyKolDb();
+    expect(await importKolFiles({ "RACE.jvd": wf("9").buffer })).toEqual([]);
+    expect((await repo(Win5).findOneByOrFail({ Nengappi: 20110424 })).Kubun).toBe(9);
   });
 });
 
