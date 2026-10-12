@@ -23,6 +23,8 @@ export type UmaDetail = UmaSummary & {
   /** 5代までの祖先。父, 母, 父父, 父母, 母父, 母母, 父父父, ... の二分木順。不明は null */
   pedigree: (PedigreeAncestor | null)[];
   starts: UmaStart[];
+  /** 調教(新しい順) */
+  choukyou: PreviewChoukyou[];
 };
 
 /** サーバーが返したエラー ({ message } 形式) */

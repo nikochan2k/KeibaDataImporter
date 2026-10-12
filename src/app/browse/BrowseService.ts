@@ -132,6 +132,33 @@ function select<T>(sql: string, params: (string | number | null)[] = []): T[] {
 }
 
 /** 取り込み済みのデータを読む。書き込みはしない */
+/** ChoukyouTime の行を調教Idごとの時計にまとめる(F の長い順に並んだ行を渡す) */
+function groupTimes(rows: { ChoukyouId: number; F: number; Time: number | null }[]) {
+  const times = new Map<number, PreviewChoukyou["times"]>();
+  for (const t of rows) {
+    const list = times.get(t.ChoukyouId) ?? [];
+    list.push({ f: t.F, time: t.Time });
+    times.set(t.ChoukyouId, list);
+  }
+  return times;
+}
+
+function toPreviewChoukyou(
+  c: Choukyou,
+  extra: Pick<PreviewChoukyou, "honOikiri" | "yajirushi" | "awase" | "times">,
+): PreviewChoukyou {
+  return {
+    date: fromNengappi(c.Nengappi),
+    basho: label($C.basho, c.Basho),
+    type: label($C.type, c.Type),
+    course: c.BashoCourse || label($C.course, c.Course),
+    baba: label($C.baba, c.Baba),
+    oikiri: label($C.oikiri, c.Oikiri),
+    ashiiro: label($C.ashiiro, c.Ashiiro),
+    ...extra,
+  };
+}
+
 export class BrowseService {
   /** レースのある年月。新しい月が先 */
   public async raceMonths(): Promise<RaceMonth[]> {
@@ -340,12 +367,7 @@ export class BrowseService {
         ORDER BY T.ChoukyouId, T.F DESC`,
       [id],
     );
-    const times = new Map<number, PreviewChoukyou["times"]>();
-    for (const t of timeRows) {
-      const list = times.get(t.ChoukyouId) ?? [];
-      list.push({ f: t.F, time: t.Time });
-      times.set(t.ChoukyouId, list);
-    }
+    const times = groupTimes(timeRows);
     const mark = (name: string, code: number | null) => {
       const m = label($Y.shirushi, code);
       return m ? [{ name, mark: m }] : [];
@@ -409,19 +431,14 @@ export class BrowseService {
           comment: row.ChoukyouComment,
           items: choukyouRows
             .filter((c) => c.ShussoubaId === row.ShussoubaId)
-            .map((c) => ({
-              date: fromNengappi(c.Nengappi),
-              basho: label($C.basho, c.Basho),
-              type: label($C.type, c.Type),
-              course: c.BashoCourse || label($C.course, c.Course),
-              baba: label($C.baba, c.Baba),
-              oikiri: label($C.oikiri, c.Oikiri),
-              ashiiro: label($C.ashiiro, c.Ashiiro),
-              honOikiri: c.HonOikiri === 1,
-              yajirushi: label($C.yajirushi, c.Yajirushi),
-              awase: c.AwaseBamei,
-              times: times.get(c.Id) ?? [],
-            })),
+            .map((c) =>
+              toPreviewChoukyou(c, {
+                honOikiri: c.HonOikiri === 1,
+                yajirushi: label($C.yajirushi, c.Yajirushi),
+                awase: c.AwaseBamei,
+                times: times.get(c.Id) ?? [],
+              }),
+            ),
         },
       })),
     };
@@ -475,6 +492,7 @@ export class BrowseService {
       haha: { id: number; bamei: string | null } | null;
       pedigree: (PedigreeAncestor | null)[];
       starts: UmaStart[];
+      choukyou: PreviewChoukyou[];
     }
   > {
     const found: {
@@ -519,6 +537,23 @@ export class BrowseService {
         ORDER BY K.Nen DESC, K.Gatsu DESC, K.Nichi DESC, R.RaceBangou DESC`,
       [id],
     );
+    const choukyouRows: (Choukyou & { HonOikiri: number | null; AwaseBamei: string | null })[] =
+      select(
+        `SELECT C.*, AU.KanaBamei AS AwaseBamei,
+            (SELECT MAX(SC.HonOikiri) FROM ShussoubaChoukyou SC WHERE SC.ChoukyouId = C.Id) AS HonOikiri
+          FROM Choukyou C
+          LEFT JOIN Uma AU ON AU.Id = C.AwaseUmaId
+          WHERE C.UmaId = ? ORDER BY C.Nengappi DESC, C.Renban DESC`,
+        [id],
+      );
+    const times = groupTimes(
+      select(
+        `SELECT T.ChoukyouId, T.F, T.Time FROM ChoukyouTime T
+          INNER JOIN Choukyou C ON C.Id = T.ChoukyouId
+          WHERE C.UmaId = ? ORDER BY T.ChoukyouId, T.F DESC`,
+        [id],
+      ),
+    );
     return {
       id: uma.Id,
       bamei: uma.KanaBamei,
@@ -536,6 +571,14 @@ export class BrowseService {
         agari3F: row.Agari3F,
         kishuMei: row.KishuMei,
       })),
+      choukyou: choukyouRows.map((c) =>
+        toPreviewChoukyou(c, {
+          honOikiri: c.HonOikiri === 1,
+          yajirushi: null,
+          awase: c.AwaseBamei,
+          times: times.get(c.Id) ?? [],
+        }),
+      ),
     };
   }
 

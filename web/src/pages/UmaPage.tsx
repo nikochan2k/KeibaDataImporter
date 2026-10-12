@@ -1,14 +1,59 @@
 import { Link, useParams, useSearchParams } from "react-router";
-import { type PedigreeAncestor, type UmaDetail, useApi } from "../api";
+import { type PedigreeAncestor, type PreviewChoukyou, type UmaDetail, useApi } from "../api";
 import { Async, raceCondition } from "../components";
 import { formatChakujun, formatTime } from "../format";
 
 const TABS = [
   { key: "senreki", label: "戦歴" },
+  { key: "choukyou", label: "調教" },
   { key: "ketto", label: "血統" },
 ] as const;
 
 const GENERATIONS = 5;
+
+function times(c: PreviewChoukyou) {
+  return c.times
+    .filter((t) => t.time != null)
+    .map((t) => formatTime(t.time).replace(/^0:/, ""))
+    .join(" - ");
+}
+
+function ChoukyouTable({ items }: { items: PreviewChoukyou[] }) {
+  if (items.length === 0) {
+    return <p className="muted">調教記録はありません</p>;
+  }
+  return (
+    <table>
+      <thead>
+        <tr>
+          <th>日付</th>
+          <th>場所</th>
+          <th>コース</th>
+          <th>馬場</th>
+          <th>時計</th>
+          <th>追い方</th>
+          <th>併せ</th>
+        </tr>
+      </thead>
+      <tbody>
+        {items.map((c) => (
+          <tr key={`${c.date}${c.basho}${c.type}${times(c)}${c.awase}`}>
+            <td>
+              {c.date}
+              {c.honOikiri && " (本追切)"}
+            </td>
+            <td>{c.basho}</td>
+            <td>{[c.type, c.course].filter(Boolean).join(" ")}</td>
+            <td>{c.baba}</td>
+            <td>{times(c)}</td>
+            <td>{[c.oikiri, c.ashiiro].filter(Boolean).join(" ")}</td>
+            <td>{c.awase}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  );
+}
 
 /** 血統表。祖先は二分木順 (父, 母, 父父, ...) で、n 代目は 2^n 頭。左の列ほど行をまたぐ */
 function Pedigree({ pedigree }: { pedigree: (PedigreeAncestor | null)[] }) {
@@ -71,12 +116,18 @@ export function UmaPage() {
                 className={t.key === tab ? "active" : ""}
                 onClick={() => setParams({ tab: t.key }, { replace: true })}
               >
-                {t.key === "senreki" ? `${t.label} (${u.starts.length})` : t.label}
+                {t.key === "senreki"
+                  ? `${t.label} (${u.starts.length})`
+                  : t.key === "choukyou"
+                    ? `${t.label} (${u.choukyou.length})`
+                    : t.label}
               </button>
             ))}
           </div>
           {tab === "ketto" ? (
             <Pedigree pedigree={u.pedigree} />
+          ) : tab === "choukyou" ? (
+            <ChoukyouTable items={u.choukyou} />
           ) : u.starts.length === 0 ? (
             <p className="muted">出走記録はありません</p>
           ) : (
