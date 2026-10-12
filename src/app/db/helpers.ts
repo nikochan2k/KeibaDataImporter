@@ -267,9 +267,6 @@ export function getOrCreate<T extends SQLiteTable>(
 /** SQLite の 1 文に渡せる変数の上限 (SQLITE_MAX_VARIABLE_NUMBER) に収まるよう、複数行の追加を分ける大きさ */
 const MAX_VARIABLES = 30000;
 
-/** upsertAll の文を使い回す行数の上限。これより多い行数の文は、形が多様になりすぎるので使い回さない */
-const MAX_CACHED_ROWS = 64;
-
 /**
  * 主キーが決まっている複数の行を、まとめて追加または更新する (複数行の INSERT ... ON CONFLICT DO UPDATE)。
  * undefined の項目は書かず、渡した項目だけ更新する。skipNull (既定 true) のときは null の項目も書かない。保存後の行は読み戻さない。
@@ -293,42 +290,33 @@ export function upsertAll<T extends SQLiteTable>(
       groups.set(signature, [values]);
     }
   }
+  const tableName = getTableName(table);
   for (const [signature, group] of groups) {
     const names = Object.keys(group[0]);
     const size = Math.max(1, Math.floor(MAX_VARIABLES / names.length));
-    for (let i = 0; i < group.length; i += size) {
-      const chunk = group.slice(i, i + size);
-      const params: Record<string, unknown> = {};
-      chunk.forEach((values, n) => {
+    for (let i = 0; i < group.length; ) {
+      // 行数を 2 のべきに揃えて、文の形を少数にする (文を使い回せる)
+      const count = Math.min(group.length - i, size);
+      const rowCount = 2 ** Math.floor(Math.log2(count));
+      const params: unknown[] = [];
+      for (let n = i; n < i + rowCount; n++) {
         for (const name of names) {
-          params[`v${n}_${name}`] = values[name];
+          params.push(group[n][name]);
         }
-      });
-      const build = () => {
+      }
+      i += rowCount;
+      const statement = cached(`upsertAll:${tableName}|${signature}|${rowCount}`, () => {
         const setNames = names.filter((name) => !keys.some((k) => k.name === name));
-        const insert = currentDb()
-          .insert(table)
-          .values(
-            chunk.map((_, n) =>
-              Object.fromEntries(names.map((name) => [name, sql.placeholder(`v${n}_${name}`)])),
-            ) as never,
-          );
-        return 0 < setNames.length
-          ? insert
-              .onConflictDoUpdate({
-                target: keys,
-                set: Object.fromEntries(
-                  setNames.map((name) => [name, sql`excluded.${sql.identifier(name)}`]),
-                ) as never,
-              })
-              .prepare()
-          : insert.onConflictDoNothing({ target: keys }).prepare();
-      };
-      const statement =
-        chunk.length <= MAX_CACHED_ROWS
-          ? cached(`upsertAll:${getTableName(table)}|${signature}|${chunk.length}`, build)
-          : build();
-      statement.run(params);
+        const one = `(${names.map(() => "?").join(",")})`;
+        const target = keys.map((k) => `"${k.name}"`).join(",");
+        return currentSqlite().prepare(
+          `INSERT INTO "${tableName}" (${names.map((name) => `"${name}"`).join(",")}) VALUES ${Array(rowCount).fill(one).join(",")} ` +
+            (0 < setNames.length
+              ? `ON CONFLICT (${target}) DO UPDATE SET ${setNames.map((name) => `"${name}"=excluded."${name}"`).join(",")}`
+              : `ON CONFLICT (${target}) DO NOTHING`),
+        );
+      });
+      statement.run(...(params as never[]));
     }
   }
 }
