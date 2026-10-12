@@ -1,9 +1,10 @@
 import * as fs from "node:fs";
+import * as os from "node:os";
 import * as path from "node:path";
 import * as process from "node:process";
 import * as glob from "glob";
 import { Logger } from "log4js";
-import * as tmp from "tmp";
+
 import * as unzipper from "unzipper";
 import { Entries, importer } from "./Importer";
 import { importProgress } from "./ImportProgress";
@@ -281,7 +282,7 @@ export class Traversal {
   }
 
   protected async uncompressZipFile(zipFile: string) {
-    const dataDir = tmp.dirSync();
+    const dataDir = { name: fs.mkdtempSync(path.join(os.tmpdir(), "keiba-")) };
     const begin = performance.now();
     await fs
       .createReadStream(zipFile)
@@ -292,7 +293,7 @@ export class Traversal {
   }
 
   protected async uncompressLzhFile(lzhFile: string) {
-    const dataDir = tmp.dirSync();
+    const dataDir = { name: fs.mkdtempSync(path.join(os.tmpdir(), "keiba-")) };
     const begin = performance.now();
     const buf = fs.readFileSync(lzhFile);
     const view = ioutil.toUint8Array(buf);

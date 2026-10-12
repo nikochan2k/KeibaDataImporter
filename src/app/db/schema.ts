@@ -1,30 +1,16 @@
 import type { Database } from "bun:sqlite";
-import * as fs from "node:fs";
-import * as path from "node:path";
 import { is } from "drizzle-orm";
 import { getTableConfig, SQLiteTable } from "drizzle-orm/sqlite-core";
+import * as entities from "../entities";
 
 /**
  * テーブルは src/app/entities/*.ts の定義から直接作る (マイグレーションは使わない)。
  * テーブルの構成を変えたら、データベースを作り直して取り込み直す。
  */
-const ENTITIES = path.resolve(import.meta.dirname, "../entities");
-
-/** entities/*.ts で定義した表 */
+/** entities/*.ts で定義した表 (実行ファイルにも載るよう、ディレクトリを走査せず entities/index.ts から集める) */
 export function entityTables(): SQLiteTable[] {
-  const tables: SQLiteTable[] = [];
-  for (const file of fs.readdirSync(ENTITIES).sort()) {
-    if (!file.endsWith(".ts")) {
-      continue;
-    }
-    const module = require(path.join(ENTITIES, file));
-    for (const value of Object.values(module)) {
-      if (is(value, SQLiteTable)) {
-        tables.push(value);
-      }
-    }
-  }
-  return tables;
+  const values: unknown[] = Object.values(entities);
+  return values.filter((value): value is SQLiteTable => is(value, SQLiteTable));
 }
 
 function id(name: string) {

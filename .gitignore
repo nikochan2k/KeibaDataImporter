@@ -9,3 +9,4 @@ npm-debug.log
 /web/dist/
 /db/
 bun.lock
+/dist/
