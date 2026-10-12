@@ -1,14 +1,20 @@
-import { Link, useParams } from "react-router";
+import { Link, useParams, useSearchParams } from "react-router";
 import { type UmaDetail, useApi } from "../api";
 import { Async, raceCondition } from "../components";
 import { formatChakujun, formatTime } from "../format";
 
+const TABS = [{ key: "senreki", label: "戦歴" }] as const;
+
 export function UmaPage() {
   const { id } = useParams();
+  const [params, setParams] = useSearchParams();
   const uma = useApi<UmaDetail>(`/api/umas/${id}`);
   return (
     <Async state={uma}>
-      {(u) => (
+      {(u) => {
+        const requested = params.get("tab");
+        const tab = TABS.find((t) => t.key === requested)?.key ?? TABS[0].key;
+        return (
         <>
           <p>
             <Link to="/umas">← 馬の検索</Link>
@@ -23,7 +29,18 @@ export function UmaPage() {
             {" / "}母:{" "}
             {u.haha ? <Link to={`/umas/${u.haha.id}`}>{u.haha.bamei}</Link> : <span>-</span>}
           </p>
-          <h2>出走レース ({u.starts.length})</h2>
+          <div className="tabs">
+            {TABS.map((t) => (
+              <button
+                key={t.key}
+                type="button"
+                className={t.key === tab ? "active" : ""}
+                onClick={() => setParams({ tab: t.key }, { replace: true })}
+              >
+                {t.label} ({u.starts.length})
+              </button>
+            ))}
+          </div>
           {u.starts.length === 0 ? (
             <p className="muted">出走記録はありません</p>
           ) : (
@@ -62,7 +79,8 @@ export function UmaPage() {
             </table>
           )}
         </>
-      )}
+        );
+      }}
     </Async>
   );
 }
