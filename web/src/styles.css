@@ -310,9 +310,13 @@ button:disabled {
   margin: 0 0 16px;
 }
 
+/* 下の表に重ねて出す */
 .popover {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  z-index: 10;
   width: min(360px, 100%);
-  margin-bottom: 16px;
   padding: 8px;
   background: var(--surface);
   border: 1px solid var(--line);
