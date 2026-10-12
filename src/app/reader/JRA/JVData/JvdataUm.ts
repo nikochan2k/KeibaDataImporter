@@ -3,26 +3,17 @@ import * as $U from "../../../converters/Uma";
 import { seisanshaDao } from "../../../daos/SeisanshaDao";
 import { umaDao } from "../../../daos/UmaDao";
 import { Kyousouba } from "../../../entities/Kyousouba";
-import { MeishouKubun } from "../../../entities/Shoyuu";
 import { Uma } from "../../../entities/Uma";
 import { readPositiveInt, readStr } from "../../Reader";
 import { tool } from "../../Tool";
 import { jraTool } from "../JraTool";
+import { jvdataKettouTool } from "./JvdataKettouTool";
 import { JvdataRecord } from "./JvdataRecord";
-
-/** 3 代血統情報の並び (父・母・父父・父母・母父・母母・父父父・父父母・父母父・父母母・母父父・母父母・母母父・母母母) の親の位置 */
-const parentsOf: { [index: number]: [number, number] } = {
-  0: [2, 3],
-  1: [4, 5],
-  2: [6, 7],
-  3: [8, 9],
-  4: [10, 11],
-  5: [12, 13],
-};
 
 /**
  * 競走馬マスタ (UM)。
- * 馬主、賞金や着回数の累計、脚質傾向、繁殖登録番号は取り込まない
+ * 3 代血統は繁殖登録番号でつなぐ (繁殖馬マスタ・産駒マスタと同じ馬になる)。
+ * 馬主、賞金や着回数の累計、脚質傾向は取り込まない
  * (馬主は出走馬ごと、レースの成績は馬毎レース情報から取り込む)。
  */
 export class JvdataUm extends JvdataRecord {
@@ -40,19 +31,6 @@ export class JvdataUm extends JvdataRecord {
     }
     const seibetsu = $U.seibetsu.toCodeFromJvData(buffer, 200, 1);
 
-    // 3 代血統は、馬名だけがある。末端から親をたどる
-    const pedigree: Uma[] = [];
-    for (let i = 13; 0 <= i; i--) {
-      const oya = parentsOf[i];
-      const isSire = i % 2 === 0;
-      pedigree[i] = await this.saveOyaUma(
-        readStr(buffer, 204 + i * 46 + 10, 36),
-        isSire ? $U.Seibetsu.Boba : $U.Seibetsu.Hinba,
-        oya ? pedigree[oya[0]] : undefined,
-        oya ? pedigree[oya[1]] : undefined,
-      );
-    }
-
     let uma = {} as Uma;
     if (touroku) {
       uma.KettouTourokuBangou = touroku.bangou;
@@ -64,8 +42,16 @@ export class JvdataUm extends JvdataRecord {
     uma.Kesshu = $U.kesshu.toCodeFromJvData(buffer, 201, 1);
     uma.Seibetsu = seibetsu;
     uma.Keiro = $U.keiro.toCodeFromJvData(buffer, 202, 2);
+
+    // 3 代血統は、繁殖登録番号と馬名がある
+    const sosen = Array.from({ length: 14 }, (_, i) => ({
+      bangou: jvdataKettouTool.readHanshokuBangou(buffer, 204 + i * 46),
+      bamei: readStr(buffer, 204 + i * 46 + 10, 36),
+    }));
+    const pedigree = await jvdataKettouTool.saveSosen(await umaDao.findUma(uma), sosen);
     uma.ChichiUmaId = pedigree[0]?.Id;
     uma.HahaUmaId = pedigree[1]?.Id;
+    uma.JvDataSeisanshaCode = jvdataKettouTool.readSeisanshaCode(buffer, 882);
     uma.SanchiMei = readStr(buffer, 962, 20);
     uma.MasshouFlag =
       readStr(buffer, 21, 1) === "1" ? $C.MasshouFlag.Massou : $C.MasshouFlag.Geneki;
@@ -73,9 +59,10 @@ export class JvdataUm extends JvdataRecord {
     uma = await umaDao.saveUma(uma);
 
     const seisanshaMei = tool.normalizeHoujinMei(buffer, 890, 72);
-    if (seisanshaMei) {
-      await seisanshaDao.save(uma.Id, MeishouKubun.Full, seisanshaMei);
-    }
+    await seisanshaDao.saveSeisanba(uma.Id, {
+      JvDataCode: uma.JvDataSeisanshaCode,
+      meishou: seisanshaMei,
+    });
 
     const choukyoushi = await jraTool.saveChoukyoushi(buffer, 849, 854);
     let kyousouba = {} as Kyousouba;
@@ -84,22 +71,5 @@ export class JvdataUm extends JvdataRecord {
     kyousouba.UmaKigou = $U.umaKigou.toCodeFromJvData(buffer, 198, 2);
     kyousouba.ChoukyoushiId = choukyoushi?.Id;
     kyousouba = await umaDao.saveKyousouba(kyousouba);
-  }
-
-  private async saveOyaUma(
-    bamei: string | null,
-    seibetsu: $U.Seibetsu,
-    chichiUma?: Uma,
-    hahaUma?: Uma,
-  ) {
-    if (!bamei) {
-      return undefined;
-    }
-    const uma = {} as Uma;
-    jraTool.setBamei(uma, bamei);
-    uma.Seibetsu = seibetsu;
-    uma.ChichiUmaId = chichiUma?.Id;
-    uma.HahaUmaId = hahaUma?.Id;
-    return umaDao.saveUma(uma);
   }
 }

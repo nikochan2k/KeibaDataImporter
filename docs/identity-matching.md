@@ -10,6 +10,7 @@
 | 馬 | `src/app/daos/UmaDao.ts` | `KolUmaCode`, `KettouTourokuBangou` |
 | 騎手 | `src/app/daos/KishuDao.ts` | `KolKishuCode`, `JrdbKishuCode`, `JvDataKishuCode` |
 | 調教師 | `src/app/daos/ChoukyoushiDao.ts` | `KolKyuushaCode`, `JrdbChoukyoushiCode`, `JvDataChoukyoushiCode` |
+| 生産者 | `src/app/daos/SeisanshaDao.ts` | `JvDataCode` |
 
 ## 全体の流れ
 
@@ -45,6 +46,34 @@
 2. `conflicts` が偽のものだけ残す。
 3. 候補が複数なら `Seinen` の新しい順（同じなら `Id` の大きい順）で先頭を採る。
    馬名は別の馬に使い回されるため。併せ馬のように馬名しか分からない馬は、いま走っている馬である見込みが高い。
+
+### 繁殖馬 (`saveHanshokuba`)
+
+JV-Data の繁殖馬マスタ (HN)・産駒マスタ (SK)・競走馬マスタ (UM) の 3 代血統は、祖先を繁殖登録番号で指す。
+繁殖登録番号は同じ馬に複数あることがあるので、`Uma` の列にせず `Hanshokuba` 表 (繁殖登録番号 → `UmaId`) に置く。
+
+1. `Hanshokuba` に繁殖登録番号があれば、その馬。
+2. なければ、取り込み中の馬にすでにつないでいた祖先 (KOL・JRA-VAN などから馬名でつないだ親) のうち、
+   繁殖登録番号がまだなく、`conflicts` が偽のもの。
+3. それもなければ `getUma` で探す。ただし、別の繁殖登録番号が付いた馬は、血統登録番号が一致するときだけ採る
+   (馬名だけが同じ別の馬を区別するため)。
+4. 見つけた馬 (なければ新しい馬) に、その繁殖登録番号を付ける。
+
+### 生産者 (`getSeisansha`)
+
+関連は `Shoyuu`（名前）→ `Seisansha`（生産者）→ `Seisanba`（馬と生産者）。
+KOL・JRDB・JRA-VAN の生産者は名前だけ、JV-Data の生産者はコード (`JvDataCode`) もある。
+生産者は必ず名前 (`ShoyuuId`) を持つ。産駒マスタ (SK) はコードしかないので、生産者は作らず馬の側 (`Uma.JvDataSeisanshaCode`) にコードを持ち、
+生産者マスタ (BR) を取り込んだときに、同じコードを持つ馬を `Seisanba` でつなぐ。
+こうすると、名前だけで作った生産者 (KOL など) にも BR でコードが付き、同じ生産者が 2 行に分かれない。
+
+1. コードが一致する生産者があれば、その生産者。
+2. 名前 (`ShoyuuId`) が同じ生産者を探す。コードを持つ生産者どうしは別の生産者として扱う。
+   - コードがあるとき: まだコードのない生産者だけを採り、コードを付ける。
+   - コードがないとき: 同じ名前の生産者がひとりならその生産者。複数なら、コードのない生産者。
+3. どれにも当たらなければ新しい生産者。
+
+KOL は生産者の正式名と略称を持つが、1 頭に生産者が 2 人にならないよう、正式名がなければ略称を使う。
 
 ## 保存時の扱い（騎手・調教師）
 

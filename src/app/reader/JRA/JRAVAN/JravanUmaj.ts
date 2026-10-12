@@ -3,7 +3,6 @@ import * as $U from "../../../converters/Uma";
 import { seisanshaDao } from "../../../daos/SeisanshaDao";
 import { umaDao } from "../../../daos/UmaDao";
 import { Kyousouba } from "../../../entities/Kyousouba";
-import { MeishouKubun } from "../../../entities/Shoyuu";
 import { Uma } from "../../../entities/Uma";
 import { DataToImport } from "../../DataToImport";
 import { readPositiveInt, readStr } from "../../Reader";
@@ -52,9 +51,7 @@ export class JravanUmaj extends DataToImport {
     uma = await umaDao.saveUma(uma);
 
     const seisanshaMei = tool.normalizeHoujinMei(buffer, 444, 40);
-    if (seisanshaMei) {
-      await seisanshaDao.save(uma.Id, MeishouKubun.Full, seisanshaMei);
-    }
+    await seisanshaDao.saveSeisanba(uma.Id, { meishou: seisanshaMei });
 
     const choukyoushi = await jraTool.saveChoukyoushi(buffer, 550, 555);
     let kyousouba = {} as Kyousouba;

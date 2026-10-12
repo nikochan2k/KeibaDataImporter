@@ -1,5 +1,6 @@
 import * as $U from "../converters/Uma";
 import { findBy, findOneBy, IS_NULL, save, type Where } from "../db/helpers";
+import { Hanshokuba } from "../entities/Hanshokuba";
 import { Kyousouba } from "../entities/Kyousouba";
 import { Uma } from "../entities/Uma";
 import { tool } from "../reader/Tool";
@@ -66,6 +67,56 @@ export class UmaDao {
     }
     const asIs = await this.getUma(toBe);
     return await tool.saveOrUpdate(Uma, asIs, toBe);
+  }
+
+  /** 既存の馬を探します (saveUma と同じ探し方)。なければ null */
+  public findUma(uma: Uma) {
+    return this.getUma(uma);
+  }
+
+  public findUmaById(id: number) {
+    return findOneBy(Uma, { Id: id });
+  }
+
+  /** 繁殖登録番号の馬。まだ取り込んでいなければ null */
+  public findHanshokuba(bangou: string) {
+    const link = findOneBy(Hanshokuba, { HanshokuTourokuBangou: bangou });
+    return link ? this.findUmaById(link.UmaId) : null;
+  }
+
+  private hasHanshokuBangou(uma: Uma) {
+    return findOneBy(Hanshokuba, { UmaId: uma.Id }) !== null;
+  }
+
+  /**
+   * 繁殖登録番号の馬を保存します。番号で引き、なければ fallback (産駒の側ですでにつないでいた親など)、
+   * それもなければ saveUma と同じ探し方をします。
+   * 別の繁殖登録番号が付いた馬は、血統登録番号が一致するときだけ同じ馬とみなします
+   * (馬名だけが同じ別の馬を、繁殖登録番号で区別するため)。
+   */
+  public async saveHanshokuba(bangou: string, toBe: Uma, fallback?: Uma | null) {
+    if (toBe.Seibetsu === $U.Seibetsu.Senba) {
+      toBe.Seibetsu = $U.Seibetsu.Boba;
+    }
+    let asIs = this.findHanshokuba(bangou);
+    const linked = asIs !== null;
+    if (!asIs && fallback && !this.hasHanshokuBangou(fallback) && !this.conflicts(fallback, toBe)) {
+      asIs = fallback;
+    }
+    if (!asIs) {
+      const found = await this.getUma(toBe);
+      const sameKettou =
+        found?.KettouTourokuBangou != null &&
+        found.KettouTourokuBangou === toBe.KettouTourokuBangou;
+      if (found && (sameKettou || !this.hasHanshokuBangou(found))) {
+        asIs = found;
+      }
+    }
+    const uma = await tool.saveOrUpdate(Uma, asIs, toBe);
+    if (!linked) {
+      save(Hanshokuba, { HanshokuTourokuBangou: bangou, UmaId: uma.Id });
+    }
+    return uma;
   }
 
   public async saveKyousouba(toBe: Kyousouba) {

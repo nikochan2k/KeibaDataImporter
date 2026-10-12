@@ -48,7 +48,7 @@ if (data.quiet) {
 const { traversal } = await import("./Traversal");
 
 try {
-  openDb(data.file, { migrate: false });
+  openDb(data.file);
   importProgress.attach(sink);
   await traversal.traverse(data.entry);
   post({ type: "done" });

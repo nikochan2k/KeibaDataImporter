@@ -25,6 +25,13 @@ export const Uma = sqliteTable(
     Jiyuu: text(),
     Ikisaki: text(),
     YunyuubaFlag: integer(),
+    /** 輸入年 (西暦)。JV-Data の繁殖馬マスタ・産駒マスタにある */
+    YunyuuNen: integer(),
+    /**
+     * JV-Data の生産者コード (8 桁)。産駒マスタのように名前が分からないときのために、馬の側に持つ。
+     * 生産者マスタを取り込むと、同じコードの生産者 (Seisansha) に Seisanba でつながる
+     */
+    JvDataSeisanshaCode: text(),
     KyoriTekisei: integer(),
     OmoKousetsu: integer(),
     DirtKousetsu: integer(),
@@ -37,6 +44,7 @@ export const Uma = sqliteTable(
     uniqueIndex("IxUma2").on(t.KettouTourokuBangou),
     index("IxUma3").on(t.KanaBamei),
     index("IxUma4").on(t.EigoBamei),
+    index("IxUma5").on(t.JvDataSeisanshaCode),
   ],
 );
 

@@ -6,6 +6,7 @@ import * as $S from "../src/app/converters/Shussouba";
 import * as $U from "../src/app/converters/Uma";
 import { Banushi } from "../src/app/entities/Banushi";
 import { Choukyoushi } from "../src/app/entities/Choukyoushi";
+import { Hanshokuba } from "../src/app/entities/Hanshokuba";
 import { Kaisai } from "../src/app/entities/Kaisai";
 import { Kishu } from "../src/app/entities/Kishu";
 import { OddsHaitou } from "../src/app/entities/OddsHaitou";
@@ -13,6 +14,7 @@ import { Race } from "../src/app/entities/Race";
 import { RaceHyousuu } from "../src/app/entities/RaceHyousuu";
 import { RaceLapTime } from "../src/app/entities/RaceLapTime";
 import { RaceSeiseki } from "../src/app/entities/RaceSeiseki";
+import { Seisanba } from "../src/app/entities/Seisanba";
 import { Seisansha } from "../src/app/entities/Seisansha";
 import { Shoyuu } from "../src/app/entities/Shoyuu";
 import { Shussouba } from "../src/app/entities/Shussouba";
@@ -20,7 +22,9 @@ import { ShussoubaSeiseki } from "../src/app/entities/ShussoubaSeiseki";
 import { ShussoubaTsuukaJuni } from "../src/app/entities/ShussoubaTsuukaJuni";
 import { Uma } from "../src/app/entities/Uma";
 import { getJraTrack } from "../src/app/reader/JRA/JraTrack";
+import { JvdataBr } from "../src/app/reader/JRA/JVData/JvdataBr";
 import { JvdataCh } from "../src/app/reader/JRA/JVData/JvdataCh";
+import { JvdataHn } from "../src/app/reader/JRA/JVData/JvdataHn";
 import { JvdataHr } from "../src/app/reader/JRA/JVData/JvdataHr";
 import { JvdataH1, JvdataH6 } from "../src/app/reader/JRA/JVData/JvdataHyousuu";
 import { JvdataKs } from "../src/app/reader/JRA/JVData/JvdataKs";
@@ -34,6 +38,7 @@ import {
 } from "../src/app/reader/JRA/JVData/JvdataOdds";
 import { JvdataRa } from "../src/app/reader/JRA/JVData/JvdataRa";
 import { JvdataSe } from "../src/app/reader/JRA/JVData/JvdataSe";
+import { JvdataSk } from "../src/app/reader/JRA/JVData/JvdataSk";
 import { JvdataUm } from "../src/app/reader/JRA/JVData/JvdataUm";
 import { JvdataYs } from "../src/app/reader/JRA/JVData/JvdataYs";
 import { repo } from "./helpers";
@@ -57,6 +62,9 @@ const handlers = [
   JvdataO5,
   JvdataO6,
   JvdataUm,
+  JvdataHn,
+  JvdataSk,
+  JvdataBr,
   JvdataKs,
   JvdataCh,
   JvdataYs,
@@ -71,7 +79,22 @@ describe("JV-Data の仕様書", () => {
   }
 
   test("仕様書のレコードは、どれも末尾が CR/LF で、位置が重ならない", () => {
-    for (const id of ["TK", "RA", "SE", "HR", "H1", "H6", "UM", "KS", "CH", "BR", "BN", "RC"]) {
+    for (const id of [
+      "TK",
+      "RA",
+      "SE",
+      "HR",
+      "H1",
+      "H6",
+      "UM",
+      "HN",
+      "SK",
+      "KS",
+      "CH",
+      "BR",
+      "BN",
+      "RC",
+    ]) {
       const spec = parseJvdataSpec(id);
       const last = spec.fields[spec.fields.length - 1];
       expect(last.name).toBe("レコード区切");
@@ -642,6 +665,7 @@ describe("マスタ", () => {
       .set("産地名", "新冠")
       .set("調教師コード", "01234")
       .set("調教師名略称", "藤沢和")
+      .set("生産者コード", "00012345")
       .set("生産者名(法人格無)", "有限会社テスト牧場");
     const ks = new JvdataRecord("KS");
     ks.set("データ区分", "1")
@@ -711,8 +735,12 @@ describe("マスタ", () => {
     expect(hahaChichi.KanaBamei).toBe("ハハノチチ");
     const hahaChichiChichi = await repo(Uma).findOneByOrFail({ Id: hahaChichi.ChichiUmaId });
     expect(hahaChichiChichi.KanaBamei).toBe("ハハノチチチチ");
-    expect((await repo(Seisansha).find()).length).toBe(1);
-    expect((await repo(Shoyuu).findOneByOrFail({ Meishou: "テスト牧場" })).Id).toBeGreaterThan(0);
+    const seisansha = await repo(Seisansha).findOneByOrFail({ JvDataCode: "00012345" });
+    const shoyuu = await repo(Shoyuu).findOneByOrFail({ Meishou: "テスト牧場" });
+    expect(seisansha.ShoyuuId).toBe(shoyuu.Id);
+    expect(await repo(Seisanba).find()).toEqual([
+      expect.objectContaining({ UmaId: uma.Id, SeisanshaId: seisansha.Id }),
+    ]);
 
     const kishu = await repo(Kishu).findOneByOrFail({ JvDataKishuCode: "01088" });
     expect(kishu.Seinengappi).toBe(19690315);
@@ -735,6 +763,149 @@ describe("マスタ", () => {
     expect(chihou.TouzaiBetsu).toBe(TouzaiBetsu.Chihou);
     expect(chihou.ShoutaiKubun).toBe(1);
     expect(chihou.ShozokuBashoMei).toBe("大井");
+  });
+
+  test("繁殖馬・産駒: 祖先を繁殖登録番号でつなぐ", async () => {
+    await emptyKolDb();
+    // 先に馬名だけで母をつないでおく (KOL・JRA-VAN の血統のように)
+    const um = new JvdataRecord("UM");
+    um.set("データ区分", "1")
+      .set("血統登録番号", "2004101234")
+      .set("馬名", "テストホース")
+      .set("性別コード", "1")
+      .set("馬名", "ハハウマ", { parent: "<3代血統情報>", index: 1 });
+    expect(await importKolFiles({ "UM.jvd": um.buffer })).toEqual([]);
+    const hahaByName = await repo(Uma).findOneByOrFail({ KanaBamei: "ハハウマ" });
+
+    const sk = new JvdataRecord("SK");
+    sk.set("データ区分", "1")
+      .set("血統登録番号", "2004101234")
+      .set("生年月日", "20040401")
+      .set("性別コード", "1")
+      .set("品種コード", "1")
+      .set("毛色コード", "03")
+      .set("産駒持込区分", "1")
+      .set("輸入年", 2005)
+      .set("生産者コード", "00054321")
+      .set("産地名", "新冠")
+      .set("3代血統 繁殖登録番号", "0000100001", { index: 0 })
+      .set("3代血統 繁殖登録番号", "0000200002", { index: 1 })
+      .set("3代血統 繁殖登録番号", "0000100003", { index: 2 });
+    const chichi = new JvdataRecord("HN");
+    chichi
+      .set("データ区分", "1")
+      .set("繁殖登録番号", "0000100001")
+      .set("血統登録番号", "1995101111")
+      .set("馬名", "チチウマ")
+      .set("馬名欧字", "Chichi Uma")
+      .set("生年", 1995)
+      .set("性別コード", "1")
+      .set("品種コード", "1")
+      .set("毛色コード", "01")
+      .set("繁殖馬持込区分", "0")
+      .set("父馬繁殖登録番号", "0000100003");
+    // 外国の繁殖馬: 血統登録番号がなく、馬名は欧字
+    const chichiChichi = new JvdataRecord("HN");
+    chichiChichi
+      .set("データ区分", "1")
+      .set("繁殖登録番号", "0000100003")
+      .set("馬名", "Foreign Sire")
+      .set("馬名欧字", "Foreign Sire")
+      .set("生年", 1985)
+      .set("性別コード", "1")
+      .set("繁殖馬持込区分", "3")
+      .set("輸入年", 1990);
+    // 馬名が同じでも、繁殖登録番号が違えば別の馬
+    const douMei = new JvdataRecord("HN");
+    douMei
+      .set("データ区分", "1")
+      .set("繁殖登録番号", "0000100009")
+      .set("馬名", "チチウマ")
+      .set("生年", 1970)
+      .set("性別コード", "1");
+    expect(
+      await importKolFiles({
+        "SK.jvd": sk.buffer,
+        "HN.jvd": Buffer.concat([chichi.buffer, chichiChichi.buffer, douMei.buffer]),
+      }),
+    ).toEqual([]);
+
+    const uma = await repo(Uma).findOneByOrFail({ KettouTourokuBangou: "04101234" });
+    expect(uma.KanaBamei).toBe("テストホース");
+    expect(uma.Seinengappi).toBe(20040401);
+    expect(uma.YunyuubaFlag).toBe(2);
+    expect(uma.YunyuuNen).toBe(2005);
+    // 生産者マスタがまだないので、生産者はなく、馬がコードを持つだけ
+    expect(uma.JvDataSeisanshaCode).toBe("00054321");
+    expect(await repo(Seisansha).find()).toEqual([]);
+    expect(uma.SanchiMei).toBe("新冠");
+    // 馬名でつないでいた母に、繁殖登録番号が付く
+    expect(uma.HahaUmaId).toBe(hahaByName.Id);
+    const link = await repo(Hanshokuba).findOneByOrFail({ HanshokuTourokuBangou: "0000200002" });
+    expect(link.UmaId).toBe(hahaByName.Id);
+
+    const chichiUma = await repo(Uma).findOneByOrFail({ Id: uma.ChichiUmaId });
+    expect(chichiUma.KanaBamei).toBe("チチウマ");
+    expect(chichiUma.EigoBamei).toBe("Chichi Uma");
+    expect(chichiUma.KettouTourokuBangou).toBe("95101111");
+    expect(chichiUma.Seinen).toBe(1995);
+    expect(chichiUma.Keiro).toBe(1);
+    expect(chichiUma.YunyuubaFlag).toBe(1);
+    const chichiChichiUma = await repo(Uma).findOneByOrFail({ Id: chichiUma.ChichiUmaId });
+    expect(chichiChichiUma.KanaBamei).toBeNull();
+    expect(chichiChichiUma.EigoBamei).toBe("Foreign Sire");
+    expect(chichiChichiUma.YunyuubaFlag).toBe(3);
+    expect(chichiChichiUma.YunyuuNen).toBe(1990);
+    expect(chichiUma.YunyuuNen).toBeNull();
+
+    const douMeiUma = await repo(Uma).findBy({ KanaBamei: "チチウマ" });
+    expect(douMeiUma.length).toBe(2);
+    expect((await repo(Hanshokuba).find()).length).toBe(4);
+
+    // 名前だけの生産者 (KOL・JRDB・JRA-VAN のような)
+    const um2 = new JvdataRecord("UM");
+    um2
+      .set("データ区分", "1")
+      .set("血統登録番号", "2007107777")
+      .set("馬名", "ナマエダケ")
+      .set("生産者名(法人格無)", "テスト牧場");
+    expect(await importKolFiles({ "UM.jvd": um2.buffer })).toEqual([]);
+    const uma3 = await repo(Uma).findOneByOrFail({ KettouTourokuBangou: "07107777" });
+    const nameOnly = await repo(Seisansha).findOneByOrFail({});
+    expect(nameOnly.JvDataCode).toBeNull();
+
+    // 生産者マスタが来ると、名前だけの生産者にコードが付き、コードを持つ馬がつながる
+    const br = new JvdataRecord("BR");
+    br.set("データ区分", "1")
+      .set("生産者コード", "00054321")
+      .set("生産者名(法人格有)", "有限会社テスト牧場")
+      .set("生産者名(法人格無)", "テスト牧場")
+      .set("生産者名半角ｶﾅ", "ﾃｽﾄﾎﾞｸｼﾞｮｳ")
+      .set("生産者名欧字", "Test Farm")
+      .set("生産者住所自治省名", "新冠町");
+    expect(await importKolFiles({ "BR.jvd": br.buffer })).toEqual([]);
+    const seisansha = await repo(Seisansha).findOneByOrFail({ JvDataCode: "00054321" });
+    expect(seisansha.Id).toBe(nameOnly.Id);
+    expect(seisansha.Furigana).toBe("テストボクジョウ");
+    expect(seisansha.EigoMei).toBe("Test Farm");
+    expect(seisansha.Juusho).toBe("新冠町");
+    const shoyuu = await repo(Shoyuu).findOneByOrFail({ Id: seisansha.ShoyuuId });
+    expect(shoyuu.Meishou).toBe("テスト牧場");
+    for (const umaId of [uma.Id, uma3.Id]) {
+      expect(await repo(Seisanba).findBy({ UmaId: umaId })).toEqual([
+        expect.objectContaining({ SeisanshaId: seisansha.Id }),
+      ]);
+    }
+
+    // 生産者マスタのあとに来た産駒マスタも、同じ生産者につながる
+    const sk2 = new JvdataRecord("SK");
+    sk2.set("データ区分", "1").set("血統登録番号", "2006105555").set("生産者コード", "00054321");
+    expect(await importKolFiles({ "SK.jvd": sk2.buffer })).toEqual([]);
+    const uma2 = await repo(Uma).findOneByOrFail({ KettouTourokuBangou: "06105555" });
+    expect((await repo(Seisanba).findOneByOrFail({ UmaId: uma2.Id })).SeisanshaId).toBe(
+      seisansha.Id,
+    );
+    expect((await repo(Seisansha).find()).length).toBe(1);
   });
 
   test("開催スケジュール", async () => {

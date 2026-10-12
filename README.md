@@ -36,22 +36,11 @@ bun run lint    # Biome (format・import整理・lint修正)
 
 ### テーブルを変えるとき
 
-テーブルの定義は `src/app/entities/*.ts` (Drizzle の `sqliteTable`)。変えたら、マイグレーションを作る。
+テーブルの定義は `src/app/entities/*.ts` (Drizzle の `sqliteTable`)。マイグレーションは使わない。
 
-```sh
-bunx drizzle-kit generate --name <変更の名前>
-```
-
-`drizzle/` に SQL ができる。起動時 (`bun start` / `bun run serve`) に、まだ当たっていないマイグレーションが当たる。
-
-### 以前の実装で作ったデータベース
-
-TypeORM の頃に作ったデータベースは、そのままでは起動時のマイグレーションでエラーになる。
-バックアップを取ってから、1 回だけ次を実行して Drizzle の管理下に置く。
-
-```sh
-bun scripts/baseline-db.ts [データベース]
-```
+- 空のデータベースを開くと、定義から表を作る (`src/app/db/schema.ts` の `ensureSchema`)。
+- 表があるデータベースを開くと、表と列が定義と同じか確かめ、違えばエラーにする。
+- 定義を変えたら、データベースのファイル (既定は `db/keiba.sqlite`) を消して取り込み直す。
 
 ### 実装を変えたときの確かめ方
 

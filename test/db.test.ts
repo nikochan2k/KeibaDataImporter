@@ -1,3 +1,4 @@
+import { Database } from "bun:sqlite";
 import { afterAll, beforeAll, describe, expect, test } from "bun:test";
 import { Baken, Kakutei } from "../src/app/converters/Common";
 import { closeDb, currentSqlite, openDb, runInTransaction } from "../src/app/db/db";
@@ -10,6 +11,7 @@ import {
   upsertLater,
   upsertMerged,
 } from "../src/app/db/helpers";
+import { ensureSchema } from "../src/app/db/schema";
 import { ChoukyouTime } from "../src/app/entities/ChoukyouTime";
 import { Kishu } from "../src/app/entities/Kishu";
 import { OddsHaitou } from "../src/app/entities/OddsHaitou";
@@ -22,6 +24,19 @@ beforeAll(async () => {
 
 afterAll(async () => {
   closeDb();
+});
+
+describe("スキーマ", () => {
+  test("空のデータベースには表を作り、定義と違う表があればエラーにする", () => {
+    const sqlite = new Database(":memory:");
+    ensureSchema(sqlite, "test");
+    // 作った表は定義と同じなので、もう一度確かめても通る
+    ensureSchema(sqlite, "test");
+    sqlite.exec('ALTER TABLE "Uma" DROP COLUMN "YunyuuNen"');
+    sqlite.exec('CREATE TABLE "Old" ("Id" integer)');
+    expect(() => ensureSchema(sqlite, "test")).toThrow("Uma の列が違う、Old は定義にない");
+    sqlite.close();
+  });
 });
 
 describe("トランザクション", () => {

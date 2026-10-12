@@ -204,9 +204,7 @@ type Dump = { [entity: string]: { [column: string]: unknown }[] };
 async function dump(): Promise<Dump> {
   const out: Dump = {};
   const tables = readDb()
-    .query(
-      "SELECT name FROM sqlite_master WHERE type = 'table' AND name NOT LIKE 'sqlite_%' AND name NOT LIKE '__drizzle%'",
-    )
+    .query("SELECT name FROM sqlite_master WHERE type = 'table' AND name NOT LIKE 'sqlite_%'")
     .all() as { name: string }[];
   for (const { name } of tables) {
     out[name] = readDb().query(`SELECT * FROM "${name}"`).all() as never;

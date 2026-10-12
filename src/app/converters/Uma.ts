@@ -400,9 +400,10 @@ export const daiKeitou = new Codes([
 ]);
 
 export const yunyuubaFlag = new Codes([
-  { code: 1, kol: "1", naiyou: "日本馬" },
-  { code: 2, kol: "2", naiyou: "持込馬" },
-  { code: 3, kol: "3", naiyou: "輸入馬" },
+  // JV-Data の繁殖馬・産駒の持込区分 0:内国産 1:持込 2:輸入内国産扱い 3:輸入 (9:その他 は変換しない)
+  { code: 1, kol: "1", jvdata: "0", naiyou: "日本馬" },
+  { code: 2, kol: "2", jvdata: "1", naiyou: "持込馬" },
+  { code: 3, kol: "3", jvdata: /2|3/, naiyou: "輸入馬" },
   { code: 4, kol: "4", naiyou: "招待馬" },
   { code: 5, kol: "5", naiyou: "外国馬" },
 ]);

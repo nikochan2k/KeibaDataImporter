@@ -3,7 +3,6 @@ import * as $U from "../../converters/Uma";
 import { seisanshaDao } from "../../daos/SeisanshaDao";
 import { umaDao } from "../../daos/UmaDao";
 import { Kyousouba } from "../../entities/Kyousouba";
-import { MeishouKubun } from "../../entities/Shoyuu";
 import { Uma } from "../../entities/Uma";
 import { readInt, readStr } from "../Reader";
 import { tool } from "../Tool";
@@ -77,6 +76,6 @@ export class Ukc extends JrdbData {
     if (!seisanshaMei) {
       return;
     }
-    await seisanshaDao.save(umaId, MeishouKubun.Full, seisanshaMei);
+    await seisanshaDao.saveSeisanba(umaId, { meishou: seisanshaMei });
   }
 }

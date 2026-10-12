@@ -1,6 +1,8 @@
 import { DataToImport } from "../../DataToImport";
 import { readRaw } from "../../Reader";
+import { JvdataBr } from "./JvdataBr";
 import { JvdataCh } from "./JvdataCh";
+import { JvdataHn } from "./JvdataHn";
 import { JvdataHr } from "./JvdataHr";
 import { JvdataH1, JvdataH6 } from "./JvdataHyousuu";
 import { JvdataKs } from "./JvdataKs";
@@ -8,6 +10,7 @@ import { JvdataO1, JvdataO2, JvdataO3, JvdataO4, JvdataO5, JvdataO6 } from "./Jv
 import { JvdataRa } from "./JvdataRa";
 import { JvdataRecord } from "./JvdataRecord";
 import { JvdataSe } from "./JvdataSe";
+import { JvdataSk } from "./JvdataSk";
 import { JvdataUm } from "./JvdataUm";
 import { JvdataYs } from "./JvdataYs";
 
@@ -36,6 +39,9 @@ export class JvData extends DataToImport {
       JvdataO5,
       JvdataO6,
       JvdataUm,
+      JvdataHn,
+      JvdataSk,
+      JvdataBr,
       JvdataKs,
       JvdataCh,
       JvdataYs,

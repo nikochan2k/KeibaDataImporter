@@ -56,14 +56,19 @@ export class KolTool {
     return { Kyousouba: kyousouba, Uma: uma };
   }
 
+  /** 生産者名。正式名がなければ略称 (両方を保存すると、1 頭に生産者が 2 人になるため) */
   public async saveSeisansha(buffer: Buffer, offset: number, umaId: number) {
     const seisanshaMei = tool.normalizeHoujinMei(buffer, offset, 40);
     if (seisanshaMei) {
-      await seisanshaDao.save(umaId, MeishouKubun.Full, seisanshaMei);
+      await seisanshaDao.saveSeisanba(umaId, { meishou: seisanshaMei });
+      return;
     }
     const tanshukuSeisanshaMei = tool.normalizeHoujinMei(buffer, offset + 40, 20);
     if (tanshukuSeisanshaMei) {
-      await seisanshaDao.save(umaId, MeishouKubun.Tanshuku, tanshukuSeisanshaMei);
+      await seisanshaDao.saveSeisanba(umaId, {
+        meishou: tanshukuSeisanshaMei,
+        kubun: MeishouKubun.Tanshuku,
+      });
     }
   }
 

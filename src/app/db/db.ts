@@ -3,10 +3,7 @@ import { AsyncLocalStorage } from "node:async_hooks";
 import * as fs from "node:fs";
 import * as path from "node:path";
 import { type BunSQLiteDatabase, drizzle } from "drizzle-orm/bun-sqlite";
-import { migrate } from "drizzle-orm/bun-sqlite/migrator";
-
-/** drizzle-kit generate が出すマイグレーション */
-const MIGRATIONS = path.resolve(import.meta.dirname, "../../../drizzle");
+import { ensureSchema } from "./schema";
 
 let sqlite: Database | undefined;
 let database: BunSQLiteDatabase | undefined;
@@ -14,14 +11,11 @@ let reader: Database | undefined;
 let openedFile: string | undefined;
 
 /**
- * データベースを開き、マイグレーションを当てる。ファイルは環境変数 KEIBA_DB で変える。
+ * データベースを開く。ファイルは環境変数 KEIBA_DB で変える。
+ * 空のデータベースなら entities の定義から表を作り、表があれば定義と同じか確かめる (ensureSchema)。
  * 取り込み(書き込み)中も閲覧(読み込み)が止まらないよう WAL にし、閲覧用には別の接続を開く。
- * migrate: false は、マイグレーション済みのファイルをワーカーが開き直すときの指定。
  */
-export function openDb(
-  file = process.env.KEIBA_DB || "db/keiba.sqlite",
-  { migrate: applyMigrations = true } = {},
-) {
+export function openDb(file = process.env.KEIBA_DB || "db/keiba.sqlite") {
   closeDb();
   const memory = file === ":memory:";
   if (!memory) {
@@ -31,10 +25,8 @@ export function openDb(
   if (!memory) {
     sqlite.exec("PRAGMA journal_mode = WAL");
   }
+  ensureSchema(sqlite, file);
   database = drizzle(sqlite);
-  if (applyMigrations) {
-    migrate(database, { migrationsFolder: MIGRATIONS });
-  }
   openedFile = file;
   // メモリー上のデータベースは接続ごとに別物なので、同じ接続で読む
   reader = memory ? sqlite : new Database(file, { readwrite: true });
