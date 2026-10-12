@@ -11,19 +11,18 @@ class LhaArrayReader {
   }
 
   readBits(bits: number) {
-    const bitMasks = [1, 2, 4, 8, 16, 32, 64, 128];
-    let byte = this.buffer[this.offset];
+    const buffer = this.buffer;
     let result = 0;
-
-    for (let bitIndex = 0; bitIndex < bits; bitIndex++) {
-      const bit = (byte & bitMasks[this.subOffset]) >> this.subOffset;
-      result <<= 1;
-      result = result | bit;
-      this.subOffset--;
+    while (bits > 0) {
+      const available = this.subOffset + 1;
+      const take = bits < available ? bits : available;
+      result = (result << take) | ((buffer[this.offset] >> (available - take)) & ((1 << take) - 1));
+      bits -= take;
+      this.subOffset -= take;
       if (this.subOffset < 0) {
-        if (this.offset + 1 >= this.buffer.length) return -1;
+        if (this.offset + 1 >= buffer.length) return -1;
 
-        byte = this.buffer[++this.offset];
+        this.offset++;
         this.subOffset = 7;
       }
     }
@@ -106,7 +105,7 @@ class LhaArrayWriter {
 class LhaTree {
   static readonly LEAF = 1 << 15;
 
-  tree: number[];
+  tree = new Uint16Array(2);
   allocated: number;
   nextEntry: number;
 
@@ -137,8 +136,7 @@ class LhaTree {
   }
 
   build(codeLengths: number[], size: number) {
-    this.tree = [];
-    for (let i = 0; i < size; i++) this.tree[i] = LhaTree.LEAF;
+    this.tree = new Uint16Array(size * 2).fill(LhaTree.LEAF, 0, size);
 
     this.nextEntry = 0;
     this.allocated = 1;
@@ -149,36 +147,57 @@ class LhaTree {
     } while (!this.addCodesWithLength(codeLengths, codeLength));
   }
 
-  readCode(reader) {
-    let code = this.tree[0];
+  readCode(reader: LhaArrayReader) {
+    const tree = this.tree;
+    const buffer = reader.buffer;
+    let code = tree[0];
     while ((code & LhaTree.LEAF) === 0) {
-      const bit = reader.readBits(1);
-      code = this.tree[code + bit];
+      const bit = (buffer[reader.offset] >> reader.subOffset) & 1;
+      if (--reader.subOffset < 0) {
+        if (reader.offset + 1 >= buffer.length) {
+          code = tree[code - 1];
+          continue;
+        }
+        reader.offset++;
+        reader.subOffset = 7;
+      }
+      code = tree[code + bit];
     }
     return code & ~LhaTree.LEAF;
   }
 }
 
 class LhaRingBuffer {
-  data: number[] = [];
+  data: Uint8Array;
   offset = 0;
+  mask: number;
 
-  constructor(public size: number) {}
+  // size は 2 のべき乗
+  constructor(public size: number) {
+    this.data = new Uint8Array(size);
+    this.mask = size - 1;
+  }
 
   add(value: number) {
     this.data[this.offset] = value;
-    this.offset = (this.offset + 1) % this.size;
+    this.offset = (this.offset + 1) & this.mask;
   }
 
-  get(offset: number, length: number) {
-    const pos = this.offset + this.size - offset - 1;
-    const result: number[] = [];
+  copyTo(writer: LhaArrayWriter, offset: number, length: number) {
+    const { data, mask } = this;
+    let pos = (this.offset + this.size - offset - 1) & mask;
+    let ringOffset = this.offset;
+    let writeOffset = writer.offset;
+    const out = writer.data;
     for (let i = 0; i < length; i++) {
-      const code = this.data[(pos + i) % this.size];
-      result.push(code);
-      this.add(code);
+      const code = data[pos];
+      pos = (pos + 1) & mask;
+      data[ringOffset] = code;
+      ringOffset = (ringOffset + 1) & mask;
+      out[writeOffset++] = code;
     }
-    return result;
+    this.offset = ringOffset;
+    writer.offset = writeOffset;
   }
 }
 
@@ -398,8 +417,7 @@ export class LhaReader {
         }
 
         const length = code - 256 + 3;
-        const chunk = this.ringBuffer.get(offset, length);
-        for (const j in chunk) writer.write(chunk[j]); // TODO: Look at bulk-copying this.
+        this.ringBuffer.copyTo(writer, offset, length);
       }
     }
     return true;
