@@ -79,11 +79,33 @@ export function RacesPage() {
   const [year, month] = ym ? ym.split("-").map(Number) : [];
   const days = useApi<RaceDay[]>(ym ? `/api/race-days?year=${year}&month=${month}` : null);
 
+  // 前後の開催へ移るため、隣の開催月も読む(月をまたぐ移動用)
+  const monthIndex = keys?.indexOf(ym ?? "") ?? -1;
+  const neighborUrl = (i: number) => {
+    const key = keys?.[i];
+    return key ? `/api/race-days?year=${key.slice(0, 4)}&month=${Number(key.slice(5))}` : null;
+  };
+  const prevDays = useApi<RaceDay[]>(monthIndex >= 0 ? neighborUrl(monthIndex + 1) : null);
+  const nextDays = useApi<RaceDay[]>(monthIndex >= 0 ? neighborUrl(monthIndex - 1) : null);
+
   const date = params.get("date") ?? undefined;
   // 京都は場コード 0 なので、指定がないときを Number(null) の 0 にしない
   const bashoParam = params.get("basho");
   const basho = bashoParam === null ? Number.NaN : Number(bashoParam);
   const valid = days.data?.find((d) => d.date === date)?.bashos.some((b) => b.basho === basho);
+  // 中央競馬の開催(日付と場)を古い順に並べ、選んでいる開催の前後を求める
+  const chuou = [prevDays.data, days.data, nextDays.data]
+    .flatMap((list) => list ?? [])
+    .flatMap((d) => d.bashos.filter((b) => isChuou(b.basho)).map((b) => ({ date: d.date, basho: b.basho })))
+    .sort((a, b) => a.date.localeCompare(b.date));
+  const at = valid && date ? chuou.findIndex((e) => e.date === date && e.basho === basho) : -1;
+  // 選んでいるのが地方などで一覧にないときは、日付で前後を決める
+  const prevRace = valid && date ? (at >= 0 ? chuou[at - 1] : chuou.findLast((e) => e.date < date)) : undefined;
+  const nextRace = valid && date ? (at >= 0 ? chuou[at + 1] : chuou.find((e) => e.date > date)) : undefined;
+  const goRace = (e: { date: string; basho: number }) => {
+    setParams({ month: e.date.slice(0, 7), date: e.date, basho: String(e.basho) });
+    setOpened(false);
+  };
   const races = useApi<RaceSummary[]>(valid ? `/api/races?date=${date}&basho=${basho}` : null);
   const selectedMei = days.data?.find((d) => d.date === date)?.bashos.find((b) => b.basho === basho)?.bashoMei;
 
@@ -112,31 +134,66 @@ export function RacesPage() {
     <>
       <h1>レース</h1>
       <Async state={months}>
-        {(list) =>
-          list.length === 0 ? (
+        {(list) => {
+          const index = monthIndex;
+          const move = (i: number) => keys?.[i] && setParams({ month: keys[i] });
+          return list.length === 0 ? (
             <p className="muted">レースのデータがありません。取り込みを行ってください</p>
           ) : (
             <div className="picker" ref={picker}>
               <div className="filters">
-                <select
-                  value={ym}
-                  onChange={(e) => {
-                    setParams({ month: e.target.value });
-                    setOpened(true);
-                  }}
-                >
-                  {list.map((m, i) => (
-                    <option key={keys?.[i]} value={keys?.[i]}>
-                      {m.year}年{m.month}月
-                    </option>
-                  ))}
-                </select>
+                <button type="button" aria-label="前の開催" disabled={!prevRace} onClick={() => prevRace && goRace(prevRace)}>
+                  ◀
+                </button>
                 <button type="button" onClick={() => setOpened(!open)} aria-expanded={open}>
                   {valid && date ? `${date.replaceAll("-", "/")} ${selectedMei ?? basho}` : "開催日を選択"}
+                </button>
+                <button type="button" aria-label="次の開催" disabled={!nextRace} onClick={() => nextRace && goRace(nextRace)}>
+                  ▶
                 </button>
               </div>
               {open && year !== undefined && month !== undefined && days.data && (
                 <div className="popover">
+                  <div className="month-nav">
+                    <button type="button" aria-label="前の月" disabled={index + 1 >= list.length} onClick={() => move(index + 1)}>
+                      ◀
+                    </button>
+                    <select
+                      aria-label="年"
+                      value={year}
+                      onChange={(e) => {
+                        // 年を変えたら、その年にある月のうち今の月に最も近いものへ
+                        const near = list
+                          .filter((m) => m.year === Number(e.target.value))
+                          .sort((x, y) => Math.abs(x.month - month) - Math.abs(y.month - month))[0];
+                        if (near) {
+                          setParams({ month: `${near.year}-${String(near.month).padStart(2, "0")}` });
+                        }
+                      }}
+                    >
+                      {[...new Set(list.map((m) => m.year))].map((y) => (
+                        <option key={y} value={y}>
+                          {y}年
+                        </option>
+                      ))}
+                    </select>
+                    <select
+                      aria-label="月"
+                      value={month}
+                      onChange={(e) => setParams({ month: `${year}-${e.target.value.padStart(2, "0")}` })}
+                    >
+                      {list
+                        .filter((m) => m.year === year)
+                        .map((m) => (
+                          <option key={m.month} value={m.month}>
+                            {m.month}月
+                          </option>
+                        ))}
+                    </select>
+                    <button type="button" aria-label="次の月" disabled={index <= 0} onClick={() => move(index - 1)}>
+                      ▶
+                    </button>
+                  </div>
                   <Calendar
                     year={year}
                     month={month}
@@ -147,8 +204,8 @@ export function RacesPage() {
                 </div>
               )}
             </div>
-          )
-        }
+          );
+        }}
       </Async>
       {days.error && <p className="error">{days.error.message}</p>}
       {valid && (

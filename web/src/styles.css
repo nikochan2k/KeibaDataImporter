@@ -328,6 +328,13 @@ main:has(.popover) {
   box-shadow: 0 8px 24px rgb(0 0 0 / 0.18);
 }
 
+.month-nav {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  margin: 0 0 8px;
+}
+
 .calendar {
   display: grid;
   grid-template-columns: repeat(7, minmax(0, 1fr));
