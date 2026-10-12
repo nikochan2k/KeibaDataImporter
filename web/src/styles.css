@@ -374,6 +374,12 @@ main:has(.popover) {
   font-size: 13px;
 }
 
+/* 中央競馬以外(地方・外国)は控えめに */
+.calendar .day a.local {
+  color: var(--muted);
+  font-size: 12px;
+}
+
 .calendar .day a.active {
   background: var(--accent);
   color: var(--accent-fg);

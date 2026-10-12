@@ -5,6 +5,9 @@ import { Async, raceCondition } from "../components";
 
 const WEEKDAYS = ["日", "月", "火", "水", "木", "金", "土"];
 
+/** 場コードが中央競馬(京都 0 〜 函館 9)かどうか。それ以外は地方・外国 */
+const isChuou = (basho: number) => 0 <= basho && basho <= 9;
+
 /** 月のカレンダー。開催のある日だけ、競馬場のリンクを出す */
 function Calendar({
   year,
@@ -39,14 +42,21 @@ function Calendar({
         const bashos = byDate.get(date);
         return (
           // biome-ignore lint/suspicious/noArrayIndexKey: 並びは固定で、前の空白は日付を持たない
-          <div key={i} className={bashos ? "day race-day" : "day"}>
+          <div key={i} className={bashos?.some((b) => isChuou(b.basho)) ? "day race-day" : "day"}>
             {day > 0 && <span className="day-number">{day}</span>}
             {bashos?.map((b) => (
               <Link
                 key={b.basho}
                 to={`/?month=${ym}&date=${date}&basho=${b.basho}`}
                 onClick={onPick}
-                className={selected?.date === date && selected.basho === b.basho ? "active" : undefined}
+                className={
+                  [
+                    selected?.date === date && selected.basho === b.basho && "active",
+                    !isChuou(b.basho) && "local",
+                  ]
+                    .filter(Boolean)
+                    .join(" ") || undefined
+                }
               >
                 {b.bashoMei ?? b.basho}
               </Link>
