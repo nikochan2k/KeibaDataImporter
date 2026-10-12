@@ -1,7 +1,7 @@
 import * as fs from "node:fs";
-import { Logger } from "log4js";
 import type { ImportTarget } from "./api/types";
 import { importProgress } from "./ImportProgress";
+import type { Logger } from "./LogUtil";
 import { getLogger } from "./LogUtil";
 import { bridge } from "./reader/Bridge";
 import { DataToImport } from "./reader/DataToImport";

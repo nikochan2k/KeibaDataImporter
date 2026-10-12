@@ -3,11 +3,10 @@ import * as os from "node:os";
 import * as path from "node:path";
 import * as process from "node:process";
 import * as glob from "glob";
-import { Logger } from "log4js";
-
 import * as unzipper from "unzipper";
 import { Entries, importer } from "./Importer";
 import { importProgress } from "./ImportProgress";
+import type { Logger } from "./LogUtil";
 import { getLogger } from "./LogUtil";
 import * as ioutil from "./util/IOUtil";
 import { LhaReader } from "./util/LHA";

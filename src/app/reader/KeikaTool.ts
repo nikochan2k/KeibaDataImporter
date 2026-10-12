@@ -1,7 +1,7 @@
-import { Logger } from "log4js";
 import { upsertLater } from "../db/helpers";
 import { RaceKeika } from "../entities/RaceKeika";
 import { ShussoubaKeika } from "../entities/ShussoubaKeika";
+import type { Logger } from "../LogUtil";
 import { getLogger } from "../LogUtil";
 
 export class KeikaTool {

@@ -1,6 +1,6 @@
-import { Logger } from "log4js";
 import * as $C from "../../converters/Common";
 import { KaisaiKubun } from "../../converters/Kaisai";
+import type { Logger } from "../../LogUtil";
 import { getLogger } from "../../LogUtil";
 import { KaisaiInfo, KaisaiTool } from "../KaisaiTool";
 import { readPositiveInt, readRaw } from "../Reader";

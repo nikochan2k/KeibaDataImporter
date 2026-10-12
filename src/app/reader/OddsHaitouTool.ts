@@ -1,8 +1,8 @@
-import { Logger } from "log4js";
 import { Baken, Kakutei } from "../converters/Common";
 import { upsertAll, upsertLater } from "../db/helpers";
 import { OddsHaitou } from "../entities/OddsHaitou";
 import { RaceHyousuu } from "../entities/RaceHyousuu";
+import type { Logger } from "../LogUtil";
 import { readPositiveInt } from "./Reader";
 
 export interface HaitouInfo {

@@ -1,8 +1,8 @@
 import { desc, eq } from "drizzle-orm";
-import { Logger } from "log4js";
 import { currentDb } from "../db/db";
 import { findOneBy } from "../db/helpers";
 import { Kaisai } from "../entities/Kaisai";
+import type { Logger } from "../LogUtil";
 import { getLogger } from "../LogUtil";
 import { tool } from "./Tool";
 

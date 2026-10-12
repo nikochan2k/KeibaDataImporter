@@ -32,12 +32,12 @@
     "typescript": "^7.0.2"
   },
   "dependencies": {
+    "@logtape/logtape": "^2.4.1",
     "drizzle-orm": "^0.45.4",
     "elysia": "^1.4.30",
     "encoding-japanese": "^2.4.0",
     "glob": "^13.0.6",
     "itaiji-normalize": "^0.2.0",
-    "log4js": "^6.9.1",
     "react": "^19.3.0",
     "react-dom": "^19.3.0",
     "react-router": "^8.4.0",

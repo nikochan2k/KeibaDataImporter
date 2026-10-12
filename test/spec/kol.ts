@@ -1,9 +1,9 @@
 import * as fs from "node:fs";
 import * as os from "node:os";
 import * as path from "node:path";
-import * as log4js from "log4js";
 import { closeDb, openDb } from "../../src/app/db/db";
 import { importer } from "../../src/app/Importer";
+import { type LogRecord, recordLogs, restoreConsoleLogs } from "../../src/app/LogUtil";
 import {
   kd2Den1Layout,
   kd2Den2Layout,
@@ -215,16 +215,14 @@ export interface KolImportResult {
 }
 
 let ready = false;
+let logs: LogRecord[] = [];
 
 /** メモリ上の DB を用意する (最初の 1 回だけ) */
 async function setup() {
   if (ready) {
     return;
   }
-  log4js.configure({
-    appenders: { memory: { type: "recording" } },
-    categories: { default: { appenders: ["memory"], level: "debug" } },
-  });
+  logs = recordLogs();
   openDb(":memory:");
   ready = true;
 }
@@ -232,11 +230,7 @@ async function setup() {
 /** メモリ上の DB を閉じる。ほかのテストファイルが DB を開き直せるようにする */
 export async function closeKolDb() {
   // ほかのテストファイルのログが、このファイルの記録用の appender に溜まらないように、標準出力に戻す
-  log4js.recording().reset();
-  log4js.configure({
-    appenders: { out: { type: "stdout" } },
-    categories: { default: { appenders: ["out"], level: "debug" } },
-  });
+  restoreConsoleLogs();
   if (ready) {
     closeDb();
     ready = false;
@@ -269,7 +263,7 @@ export async function emptyKolDb() {
  */
 export async function importKolFiles(entries: { [basename: string]: Buffer }) {
   await setup();
-  log4js.recording().reset();
+  logs.length = 0;
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), "kol-files-"));
   try {
     const files: { [basename: string]: string } = {};
@@ -281,11 +275,9 @@ export async function importKolFiles(entries: { [basename: string]: Buffer }) {
   } finally {
     fs.rmSync(dir, { recursive: true, force: true });
   }
-  return log4js
-    .recording()
-    .replay()
-    .filter((e) => ["ERROR", "FATAL"].includes(e.level.levelStr))
-    .map((e) => e.data.map(String).join(" "));
+  return logs
+    .filter((e) => e.level === "error" || e.level === "fatal")
+    .map((e) => e.message.map(String).join(""));
 }
 
 /**
@@ -296,7 +288,7 @@ export async function importKolFiles(entries: { [basename: string]: Buffer }) {
  */
 export async function importKolKind(kind: string, gen: KolGen = "KD3"): Promise<KolImportResult> {
   await resetKolDb(kind, gen);
-  log4js.recording().reset();
+  logs.length = 0;
 
   const reads: KolRead[] = [];
   const seen = new Set<string>();
@@ -328,11 +320,9 @@ export async function importKolKind(kind: string, gen: KolGen = "KD3"): Promise<
   } finally {
     (Buffer.prototype as { copy: unknown }).copy = originalCopy;
   }
-  const errors = log4js
-    .recording()
-    .replay()
-    .filter((e) => ["ERROR", "FATAL"].includes(e.level.levelStr))
-    .map((e) => e.data.map(String).join(" "));
+  const errors = logs
+    .filter((e) => e.level === "error" || e.level === "fatal")
+    .map((e) => e.message.map(String).join(""));
   return { reads, errors };
 }
 

@@ -1,9 +1,9 @@
-import { Logger } from "log4js";
 import { findOneBy, upsertLater } from "../db/helpers";
 import { Race } from "../entities/Race";
 import { Shussouba } from "../entities/Shussouba";
 import { Kubun, ShussoubaJoutai } from "../entities/ShussoubaJoutai";
 import { Uma } from "../entities/Uma";
+import type { Logger } from "../LogUtil";
 import { getLogger } from "../LogUtil";
 import { readPositiveInt, readRaw } from "./Reader";
 

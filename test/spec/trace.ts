@@ -1,13 +1,13 @@
 import * as fs from "node:fs";
 import * as os from "node:os";
 import * as path from "node:path";
-import * as log4js from "log4js";
 import { Codes } from "../../src/app/converters/Codes";
 import { openDb } from "../../src/app/db/db";
 import { save, updateBy } from "../../src/app/db/helpers";
 import { Kyousouba } from "../../src/app/entities/Kyousouba";
 import { Shussouba } from "../../src/app/entities/Shussouba";
 import { importer } from "../../src/app/Importer";
+import { recordLogs } from "../../src/app/LogUtil";
 import { jrdbShussoubaTool } from "../../src/app/reader/JRDB/JrdbShussoubaTool";
 import { Sed } from "../../src/app/reader/JRDB/Sed";
 import { base, record, setFileDate } from "../helpers";
@@ -103,10 +103,7 @@ async function seedShussoubaForTyb(file: string, basename: string, recordLength:
  * Reader の読み取りはすべて Buffer.prototype.copy を通るので、そこで捕まえます。
  */
 export async function importSamples(onlyPrefixes?: string[], excludePrefixes: string[] = []) {
-  log4js.configure({
-    appenders: { memory: { type: "recording" } },
-    categories: { default: { appenders: ["memory"], level: "debug" } },
-  });
+  const records = recordLogs();
   const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "jrdb-spec-"));
   openDb(":memory:");
 
@@ -185,13 +182,10 @@ export async function importSamples(onlyPrefixes?: string[], excludePrefixes: st
     (Codes.prototype as unknown as { toCodeFrom: unknown }).toCodeFrom = originalToCodeFrom;
     fs.rmSync(tmp, { recursive: true, force: true });
   }
-  const logs = log4js
-    .recording()
-    .replay()
-    .map((e) => ({
-      level: e.level.levelStr as string,
-      category: e.categoryName as string,
-      message: e.data.map(String).join(" "),
-    }));
+  const logs = records.map((e) => ({
+    level: e.level === "warning" ? "WARN" : e.level.toUpperCase(),
+    category: e.category.join("."),
+    message: e.message.map(String).join(""),
+  }));
   return { reads, logs, unmapped };
 }

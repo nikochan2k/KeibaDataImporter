@@ -1,10 +1,9 @@
 import * as fs from "node:fs";
-import * as log4js from "log4js";
 import { runInTransaction } from "../db/db";
-import { getLogger } from "../LogUtil";
+import { getLogger, type Logger } from "../LogUtil";
 
 export abstract class DataToImport {
-  protected logger: log4js.Logger;
+  protected logger: Logger;
 
   private buf: Buffer;
 

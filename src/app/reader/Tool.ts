@@ -1,6 +1,6 @@
 import type { SQLiteTable } from "drizzle-orm/sqlite-core";
-import { Logger } from "log4js";
 import { save, updateBy, type Where } from "../db/helpers";
+import type { Logger } from "../LogUtil";
 import { getLogger } from "../LogUtil";
 import { readInt, readPositiveInt, readStrWithNoSpace } from "./Reader";
 

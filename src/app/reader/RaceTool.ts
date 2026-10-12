@@ -1,8 +1,8 @@
-import { Logger } from "log4js";
 import { raceDao } from "../daos/RaceDao";
 import { findOneBy, save } from "../db/helpers";
 import { Race } from "../entities/Race";
 import { RaceLapTime } from "../entities/RaceLapTime";
+import type { Logger } from "../LogUtil";
 import { getLogger } from "../LogUtil";
 import { readPositiveDouble } from "./Reader";
 import { tool } from "./Tool";
