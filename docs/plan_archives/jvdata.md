@@ -38,7 +38,7 @@ JV-Link が返すレコードを、1 レコード 1 行(末尾は CR LF)で並�
 | JG | 競走馬除外情報 | JvdataJg | 除外馬 (`TouhyouJogaiba`: レース、馬、受付の順番、出走区分、除外状態区分) |
 | RC | レコードマスタ | JvdataRc | コースレコード・G1 レコード (`Record`) と保持馬 (`RecordHoyuuba`: 馬、負担重量、騎手、調教師)。出馬表・成績のレコードと同じ行にまとめる |
 | WF | 重勝式 (WIN5) | JvdataWf | 発売票数・返還などのフラグ・キャリーオーバー (`Win5`)、対象レースと有効票数 (`Win5Race`)、払戻 (`Win5Haraimodoshi`) |
-| CK | 出走別着度数 | JvdataCk | 出走時点の、馬・騎手・調教師・馬主・生産者の分類ごとの着度数 (`Chakudosuu`) と、賞金・脚質傾向 (`ChakudosuuShuukei`)。(レース, 馬) ごと |
+| CK | 出走別着度数 | JvdataCk | レースの日の時点の、馬・騎手・調教師・馬主・生産者の分類ごとの着度数 (`Chakudosuu`) と、賞金・脚質傾向 (`ChakudosuuShuukei`) |
 | CS | コース情報 | JvdataCs | 競馬場・距離・トラック・コース改修年月日ごとのコースの説明 |
 
 ## 取り込まないもの

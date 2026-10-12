@@ -142,15 +142,22 @@
 
 ### 段階 8: 出走別着度数 CK (6870 バイト) — 済
 
-出走時点の、馬・騎手・調教師・馬主・生産者それぞれの着度数と賞金。CK には馬番がないので、出走馬ではなく (レース, 馬) をキーにする。
+出走時点の、馬・騎手・調教師・馬主・生産者それぞれの着度数と賞金。
 
-- `Chakudosuu` (縦持ち): 主キーは (RaceId, UmaId, Taishou, Kikan, Bunrui)。Chaku1〜Chaku5, Chakugai。
-  - Taishou: 馬 / 騎手 / 調教師 / 馬主 / 生産者
-  - Kikan: 累計 / 本年 (馬は累計だけ)
-  - Bunrui: 総合・中央・芝・ダート・障害・トラック (直線・右・左) 別・馬場状態別・距離別・競馬場別。距離別・競馬場別の番号は `converters/Chakudosuu.ts` の関数で作り、内容は `chakudosuuBunrui` で引ける。
-  - 回数が全部 0 の分類は行を作らない。
-- `ChakudosuuShuukei`: 主キーは (RaceId, UmaId, Taishou, Kikan)。対象者の Id (騎手・調教師・馬主・生産者)、本年の年、賞金 (円)、馬の脚質傾向と登録レース数。
-- 騎手・調教師・馬主・生産者は、コードと名前でマスタと同じ人につなぐ。
+その後、KOL・JRA-VAN のマスタの成績も同じ表に入れられるよう、表を (対象, 時点) ごとの形に作り直した。
+
+- `Chakudosuu`: 主キーは (Taishou, TaishouId, Nengappi, Kikan, Bunrui)。
+  - Taishou: 馬 / 騎手 / 調教師 / 馬主 / 生産者 / 種牡馬の産駒。TaishouId はそれぞれの表の Id (馬・種牡馬は Uma)。
+  - Nengappi: 時点。CK と KOL の出馬表はレースの日、マスタはデータ作成年月日。同じ日の同じ騎手は、何レース騎乗しても 1 組の行。
+  - Kikan: 累計 / 本年 / 前年。
+  - Bunrui: 総合・中央・平地・芝・ダート・障害・地方交流・地方外国・トラック別・直線・産駒の年齢別・その日の競馬場コース、馬場状態別 (`babaBunrui`)、距離別 (`kyoriBunrui`。データ元ごとに違う距離の区切りから番号を作る)、競馬場別 (`keibajouBunrui`)。内容は `chakudosuuBunruiNaiyou` で引ける。
+  - 回数: `Chaku1`〜`Chaku3` と `Chaku4Ika` (4 着以下) は必ず入れる。`Chaku4`・`Chaku5`・`Chakugai` (6 着以下) は JV-Data だけ。回数が全部 0 の分類は行を作らない。
+- `ChakudosuuShuukei`: 主キーは (Taishou, TaishouId, Nengappi, Kikan)。本年・前年の年、賞金 (円)、脚質傾向 (JV-Data)、連対脚質別回数 (KOL)、登録レース数。
+- 取り込むデータ元:
+  - JV-Data: CK
+  - JRA-VAN: 競走馬 (賞金・着回数の累計)、騎手・調教師 (生涯・本年・前年)
+  - KOL: 騎手・厩舎 (通算累計・本年・昨年)、競走馬 (成績と賞金)、種牡馬 (産駒の本年・昨年)、出馬表出走馬 (場所別成績。KD3 だけ)
+- JRDB の競走馬拡張 (KKA) の着度数は、今回のレースの条件で絞った値なので、この表には入れない (未取り込み)。
 
 ## 9. 決めること
 
