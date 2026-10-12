@@ -145,8 +145,8 @@ export function RacePage() {
         return (
         <>
           <p>
-            <Link to={`/?year=${r.date.slice(0, 4)}&basho=${r.basho}`}>
-              ← {r.date.slice(0, 4)}年 {r.bashoMei} のレース
+            <Link to={`/?month=${r.date.slice(0, 7)}&date=${r.date}&basho=${r.basho}`}>
+              ← {r.date.replaceAll("-", "/")} {r.bashoMei} のレース
             </Link>
           </p>
           <h1>{raceTitle(r)}</h1>
