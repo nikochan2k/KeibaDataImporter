@@ -2,7 +2,6 @@ import * as fs from "node:fs";
 import * as os from "node:os";
 import * as path from "node:path";
 import * as process from "node:process";
-import * as glob from "glob";
 import * as unzipper from "unzipper";
 import { Entries, importer } from "./Importer";
 import { importProgress } from "./ImportProgress";
@@ -207,11 +206,12 @@ export class Traversal {
 
   /** ディレクトリ配下のファイルを列挙する。数えるだけのときは非同期で、イベントループを止めない */
   protected async listImportFiles(lzhDir: string, async = false) {
-    const pattern = path.join(lzhDir, "**/*.*");
-    const matches = async
-      ? await glob.glob(pattern, { nocase: true })
-      : glob.sync(pattern, { nocase: true });
-    return matches.map((filepath) => this.createImportFile(filepath));
+    const entries = async
+      ? await fs.promises.readdir(lzhDir, { recursive: true, withFileTypes: true })
+      : fs.readdirSync(lzhDir, { recursive: true, withFileTypes: true });
+    return entries
+      .filter((entry) => entry.isFile() && /^[^.].*\./.test(entry.name))
+      .map((entry) => this.createImportFile(path.join(entry.parentPath, entry.name)));
   }
 
   protected createImportFile(filepath: string) {
@@ -311,12 +311,11 @@ export class Traversal {
   protected async traverseDataDir(dataDir: string) {
     const entries: Entries = {};
 
-    const pattern = path.join(dataDir, "*");
-    const pathes = glob.sync(pattern);
-    pathes.forEach((dataFile) => {
-      const basename = path.basename(dataFile);
-      entries[basename] = dataFile;
-    });
+    for (const basename of fs.readdirSync(dataDir)) {
+      if (!basename.startsWith(".")) {
+        entries[basename] = path.join(dataDir, basename);
+      }
+    }
 
     const begin = performance.now();
     try {
