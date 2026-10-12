@@ -6,6 +6,8 @@ import {
   ChakudosuuTaishou,
   ChakudosuuTrack,
   keibajouBunrui,
+  kolKyori,
+  kyoriBunrui,
 } from "../src/app/converters/Chakudosuu";
 import { Baken, Kakutei } from "../src/app/converters/Common";
 import { RecordShubetsu } from "../src/app/converters/Race";
@@ -520,7 +522,7 @@ describe("取り込み結果が見本ファイルと一致する", () => {
     });
   });
 
-  describe("KIS・KYU (騎手・厩舎データ) の成績", () => {
+  describe("KIS・KYU・UMA・DEN2 の成績 (着度数)", () => {
     /** 1 着・2 着・3 着・着外 (各 width バイト) */
     const read = (record: Buffer, address: number, width: number) =>
       [0, 1, 2, 3].map((i) => Number.parseInt(field(record, address + i * width, width), 10) || 0);
@@ -579,6 +581,53 @@ describe("取り込み結果が見本ファイルと一致する", () => {
         expect(checked).toBeGreaterThan(0);
       });
     }
+    test("uma: 成績と賞金が、データ作成年月日の時点の着度数になる", async () => {
+      const result = await importKolKind("uma");
+      expect(result.errors).toEqual([]);
+      let checked = 0;
+      for (const record of kolRecords("uma", 5166).slice(0, 20)) {
+        const uma = findOneBy(Uma, { KolUmaCode: Number.parseInt(field(record, 0, 7), 10) });
+        const key = {
+          Taishou: ChakudosuuTaishou.Uma,
+          TaishouId: uma?.Id ?? 0,
+          Nengappi: Number.parseInt(field(record, 624, 8), 10),
+          Kikan: ChakudosuuKikan.Ruikei,
+        };
+        expect(rowOf({ ...key, Bunrui: ChakudosuuBunrui.Sougou })).toEqual(read(record, 632, 3));
+        expect(rowOf({ ...key, Bunrui: ChakudosuuBunrui.ShibaHidari })).toEqual(
+          read(record, 680, 2),
+        );
+        expect(rowOf({ ...key, Bunrui: ChakudosuuBunrui.Shougai })).toEqual(read(record, 712, 2));
+        expect(rowOf({ ...key, Bunrui: kyoriBunrui(ChakudosuuTrack.Dirt, kolKyori, 7) })).toEqual(
+          read(record, 816 + 15 * 8, 2),
+        );
+        const shuukei = findOneBy(ChakudosuuShuukei, key as never) as ChakudosuuShuukei | null;
+        expect(shuukei?.HonShoukin ?? 0).toBe(Number.parseInt(field(record, 569, 10), 10) || 0);
+        checked++;
+      }
+      expect(checked).toBeGreaterThan(0);
+    });
+
+    test("den2: 場所別成績が、レースの日の時点の馬の着度数になる", async () => {
+      const result = await importKolKind("den2");
+      expect(result.errors).toEqual([]);
+      let checked = 0;
+      for (const record of kolRecords("den2", 1000).slice(0, 50)) {
+        const uma = findOneBy(Uma, { KolUmaCode: Number.parseInt(field(record, 25, 7), 10) });
+        const row = rowOf({
+          Taishou: ChakudosuuTaishou.Uma,
+          TaishouId: uma?.Id ?? 0,
+          Nengappi: Number.parseInt(field(record, 12, 8), 10),
+          Kikan: ChakudosuuKikan.Ruikei,
+          Bunrui: ChakudosuuBunrui.KonkaiCourse,
+        });
+        expect(row).toEqual(read(record, 842, 3));
+        if (row.some((n) => n > 0)) {
+          checked++;
+        }
+      }
+      expect(checked).toBeGreaterThan(0);
+    });
   });
 
   describe("SYU (種牡馬データ)", () => {

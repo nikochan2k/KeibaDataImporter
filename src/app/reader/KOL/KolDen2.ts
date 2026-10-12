@@ -1,9 +1,12 @@
+import { ChakudosuuBunrui, ChakudosuuKikan, ChakudosuuTaishou } from "../../converters/Chakudosuu";
 import * as $C from "../../converters/Common";
 import * as $K from "../../converters/Kishu";
 import * as $S from "../../converters/Shussouba";
 import { Bagu } from "../../converters/ShussoubaJoutai";
 import * as $SY from "../../converters/ShussoubaYosou";
-import { upsertLater, upsertMerged } from "../../db/helpers";
+import { ChakudosuuWriter } from "../../daos/ChakudosuuDao";
+import { findOneBy, upsertLater, upsertMerged } from "../../db/helpers";
+import { Kyousouba } from "../../entities/Kyousouba";
 import { Shussouba } from "../../entities/Shussouba";
 import { ShussoubaHyouka } from "../../entities/ShussoubaHyouka";
 import { Kubun } from "../../entities/ShussoubaJoutai";
@@ -57,6 +60,27 @@ export class KolDen2 extends KolDataToImport {
     await this.saveShussoubaYosou(buffer, shussouba);
     const tanshukuKishuMei = readStrWithNoSpace(buffer, 188, 8);
     await this.saveShussoubaChoukyou(buffer, info, tanshukuKishuMei);
+    this.saveBashoBetsuSeiseki(buffer, shussouba);
+  }
+
+  /** 場所別成績 (当該競馬場・コースでの成績)。レースの日の時点の馬の着度数にする。KD3 だけにある */
+  private saveBashoBetsuSeiseki(buffer: Buffer, shussouba: Shussouba) {
+    const nengappi = readPositiveInt(buffer, 12, 8);
+    const kyousouba = shussouba.KyousoubaId
+      ? findOneBy(Kyousouba, { Id: shussouba.KyousoubaId })
+      : null;
+    if (!this.has(842) || !nengappi || !kyousouba) {
+      return;
+    }
+    const writer = new ChakudosuuWriter();
+    const key = {
+      Taishou: ChakudosuuTaishou.Uma,
+      TaishouId: kyousouba.UmaId,
+      Nengappi: nengappi,
+      Kikan: ChakudosuuKikan.Ruikei,
+    };
+    writer.add(key, ChakudosuuBunrui.KonkaiCourse, buffer, this.at(842), 3);
+    writer.save();
   }
 
   protected async saveShussouba(buffer: Buffer, info: ShussoubaInfo, dataNengappi: number) {

@@ -1,3 +1,4 @@
+import { ChakudosuuKikan, ChakudosuuTaishou } from "../../converters/Chakudosuu";
 import * as $C from "../../converters/Common";
 import * as $K from "../../converters/Kaisai";
 import * as $KI from "../../converters/Kishu";
@@ -6,6 +7,7 @@ import * as $S from "../../converters/Shussouba";
 import { Bagu } from "../../converters/ShussoubaJoutai";
 import * as $SY from "../../converters/ShussoubaYosou";
 import * as $U from "../../converters/Uma";
+import { ChakudosuuWriter } from "../../daos/ChakudosuuDao";
 import { umaDao } from "../../daos/UmaDao";
 import { findOneBy, upsert, upsertLater, upsertMerged } from "../../db/helpers";
 import { Choukyoushi } from "../../entities/Choukyoushi";
@@ -30,6 +32,7 @@ import {
   readTime,
 } from "../Reader";
 import { tool } from "../Tool";
+import { addKolSeiseki, readKolRentaiKyakushitsu } from "./KolChakudosuu";
 import { kolChoukyouTool } from "./KolChoukyouTool";
 import { kolKaisaiTool } from "./KolKaisaiTool";
 import { kolOddsHaitouTool } from "./KolOddsHaitouTool";
@@ -38,8 +41,42 @@ import { kolShussoubaTool } from "./KolShussoubaTool";
 import { kolTool } from "./KolTool";
 import { kolUmaTool } from "./KolUmaTool";
 
+/** 競走馬データ。成績と賞金は、データ作成年月日の時点の着度数に入れる */
 export class KolUma extends DataToImport {
   private static readonly raceOffsets = [1064, 1654, 2244, 2834, 3424];
+
+  /** 成績 (成績トータル〜距離別) と賞金 (円) */
+  private saveChakudosuu(buffer: Buffer, umaId: number) {
+    const nengappi = readPositiveInt(buffer, 624, 8);
+    if (!nengappi) {
+      return;
+    }
+    const key = {
+      Taishou: ChakudosuuTaishou.Uma,
+      TaishouId: umaId,
+      Nengappi: nengappi,
+      Kikan: ChakudosuuKikan.Ruikei,
+    };
+    const writer = new ChakudosuuWriter();
+    addKolSeiseki(writer, key, buffer, { sougou: 632, chihouGaikoku: 644 }, 3);
+    addKolSeiseki(
+      writer,
+      key,
+      buffer,
+      { chihouKouryuu: 656, babaBetsu: 672, shougai: 712, babaJoutai: 720, kyori: 816 },
+      2,
+    );
+    writer.addShuukei({
+      ...key,
+      HonShoukin: readInt(buffer, 569, 10),
+      SouShoukin: readInt(buffer, 579, 10),
+      ShougaiHonShoukin: readInt(buffer, 589, 10),
+      ShougaiSouShoukin: readInt(buffer, 599, 10),
+      FukaShoukin: readInt(buffer, 609, 10),
+      ...readKolRentaiKyakushitsu(buffer, 664, 2),
+    });
+    writer.save();
+  }
 
   protected getBufferLength() {
     return 5166;
@@ -49,6 +86,7 @@ export class KolUma extends DataToImport {
     const result = await this.saveKyousouba(buffer);
     const kyousouba = result.Kyousouba;
     const uma = result.Uma;
+    this.saveChakudosuu(buffer, uma.Id);
     for (let i = 0; i < KolUma.raceOffsets.length; i++) {
       const offset = KolUma.raceOffsets[i];
       const raceBuffer = buffer.slice(offset, offset + 151);
