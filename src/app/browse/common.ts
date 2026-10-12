@@ -1,7 +1,17 @@
 import { basho } from "../converters/Common";
 import * as $R from "../converters/Race";
+import { jinmeiMatchingKey } from "../daos/JinmeiDao";
 import { readDb } from "../db/db";
 import type { RaceSummary } from "./types";
+
+/**
+ * 人名・名義の前方一致検索の範囲。検索語を取り込み時と同じ MatchingKey にして(異体字・全半角・空白を揃える)、
+ * MatchingKey の範囲検索にする。上端は UTF-8 で最大の文字を足す
+ */
+export function matchingKeyRange(query: string): [string, string] {
+  const key = jinmeiMatchingKey(query);
+  return [key, `${key}\u{10ffff}`];
+}
 
 /** 数値コードを表示用の名前にする。値がなければ null */
 export function label(codes: { toNaiyou(code: number): string }, code: number | null) {

@@ -162,6 +162,13 @@ describe("調教師", () => {
     expect((await get("/api/choukyoushis?q=%20")).status).toBe(400);
   });
 
+  test("空白の違いは問わず、MatchingKey で探す", async () => {
+    for (const q of ["矢作芳", "矢作 芳", "矢作\u3000芳"]) {
+      const { body } = await get(`/api/choukyoushis?q=${encodeURIComponent(q)}`);
+      expect(body.map((c: { id: number }) => c.id)).toEqual([5]);
+    }
+  });
+
   test("調教師の詳細は管理馬の出走を返す", async () => {
     const { status, body } = await get("/api/choukyoushis/5");
     expect(status).toBe(200);

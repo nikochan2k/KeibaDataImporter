@@ -4,17 +4,13 @@ import { NotFoundError } from "../http/errors";
 import {
   JINMEI_SUBQUERY,
   label,
+  matchingKeyRange,
   RACE_COLUMNS,
   type RaceRow,
   select,
   toRaceSummary,
 } from "./common";
 import type { KishuStart, KishuSummary } from "./types";
-
-/** 前方一致を Jinmei.Meishou の範囲検索にするための上端。UTF-8 で最大の文字を足す */
-function prefixUpperBound(prefix: string) {
-  return `${prefix}\u{10ffff}`;
-}
 
 /** 騎乗一覧の1ページの件数 */
 export const KISHU_STARTS_PER_PAGE = 50;
@@ -39,15 +35,15 @@ function toKishuSummary(row: KishuRow): KishuSummary {
   };
 }
 
-/** 名前(姓名・略称・フリガナなど、どの表記でも)の前方一致で探す。LIKE は大文字小文字を区別せずインデックスが効かないので範囲で比較する */
+/** 名前(姓名・略称・フリガナなど、どの表記でも)の前方一致で探す。異体字・全半角・空白の違いは MatchingKey で吸収し、インデックスが効くよう範囲で比較する */
 export function searchKishu(query: string, limit = 50): KishuSummary[] {
   const rows: KishuRow[] = select(
     `SELECT ${KISHU_COLUMNS} FROM Kishu K
       WHERE K.Id IN (
         SELECT KM.KishuId FROM Jinmei J INNER JOIN KishuMei KM ON KM.JinmeiId = J.Id
-          WHERE J.Meishou >= ? AND J.Meishou < ?)
+          WHERE J.MatchingKey >= ? AND J.MatchingKey < ?)
       ORDER BY Meishou LIMIT ?`,
-    [query, prefixUpperBound(query), limit],
+    [...matchingKeyRange(query), limit],
   );
   return rows.map(toKishuSummary);
 }

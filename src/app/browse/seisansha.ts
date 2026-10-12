@@ -1,11 +1,13 @@
 import { NotFoundError } from "../http/errors";
-import { JINMEI_SUBQUERY, RACE_COLUMNS, type RaceRow, select, toRaceSummary } from "./common";
+import {
+  JINMEI_SUBQUERY,
+  matchingKeyRange,
+  RACE_COLUMNS,
+  type RaceRow,
+  select,
+  toRaceSummary,
+} from "./common";
 import type { SeisanshaStart, SeisanshaSummary } from "./types";
-
-/** 前方一致を Shoyuu.Meishou の範囲検索にするための上端。UTF-8 で最大の文字を足す */
-function prefixUpperBound(prefix: string) {
-  return `${prefix}\u{10ffff}`;
-}
 
 /** 出走一覧の1ページの件数 */
 export const SEISANSHA_STARTS_PER_PAGE = 50;
@@ -25,15 +27,15 @@ function toSeisanshaSummary(row: SeisanshaRow): SeisanshaSummary {
   return { id: row.Id, meishou: row.Meishou, juusho: row.Juusho };
 }
 
-/** 名前(正式名・略称・フリガナなど、どの表記でも)の前方一致で探す。LIKE は大文字小文字を区別せずインデックスが効かないので範囲で比較する */
+/** 名前(正式名・略称・フリガナなど、どの表記でも)の前方一致で探す。異体字・全半角・空白の違いは MatchingKey で吸収し、インデックスが効くよう範囲で比較する */
 export function searchSeisansha(query: string, limit = 50): SeisanshaSummary[] {
   const rows: SeisanshaRow[] = select(
     `SELECT ${SEISANSHA_COLUMNS} FROM Seisansha B
       WHERE B.Id IN (
         SELECT BM.SeisanshaId FROM Shoyuu SH INNER JOIN SeisanshaMei BM ON BM.ShoyuuId = SH.Id
-          WHERE SH.Meishou >= ? AND SH.Meishou < ?)
+          WHERE SH.MatchingKey >= ? AND SH.MatchingKey < ?)
       ORDER BY Meishou LIMIT ?`,
-    [query, prefixUpperBound(query), limit],
+    [...matchingKeyRange(query), limit],
   );
   return rows.map(toSeisanshaSummary);
 }
