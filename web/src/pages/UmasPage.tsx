@@ -20,11 +20,12 @@ export function UmasPage() {
       <form onSubmit={submit}>
         <input
           type="search"
-          placeholder="馬名(カナ・英字)"
+          placeholder="馬名の先頭(カナ・英字)"
           value={input}
           onChange={(e) => setInput(e.target.value)}
         />{" "}
-        <button type="submit">検索</button>
+        <button type="submit">検索</button>{" "}
+        <span className="muted">前方一致(入力した文字で始まる馬名)</span>
       </form>
       {q && (
         <Async state={result}>

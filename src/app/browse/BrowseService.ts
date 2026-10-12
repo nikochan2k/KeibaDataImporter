@@ -79,8 +79,9 @@ function toRaceSummary(row: RaceRow): RaceSummary {
 }
 
 /** LIKE のワイルドカードを文字として扱うためのエスケープ */
-function escapeLike(text: string) {
-  return text.replace(/[\\%_]/g, (c) => `\\${c}`);
+/** 前方一致を IxUma3 / IxUma4 の範囲検索にするための上端。UTF-8 で最大の文字を足す */
+function prefixUpperBound(prefix: string) {
+  return `${prefix}\u{10ffff}`;
 }
 
 /** 状態の区分ごとの見出しとコード表 */
@@ -440,7 +441,7 @@ export class BrowseService {
     return { race, entry };
   }
 
-  /** 馬名(カナ)の部分一致で探す */
+  /** 馬名(カナ・英字)の前方一致で探す。LIKE は大文字小文字を区別せずインデックスが効かないので範囲で比較する */
   public async searchUma(query: string, limit = 50): Promise<UmaSummary[]> {
     const rows: {
       Id: number;
@@ -450,9 +451,9 @@ export class BrowseService {
       Seibetsu: number | null;
     }[] = select(
       `SELECT Id, KanaBamei, EigoBamei, COALESCE(Seinen, Seinengappi / 10000) AS Seinen, Seibetsu FROM Uma
-        WHERE KanaBamei LIKE ? ESCAPE '\\' OR EigoBamei LIKE ? ESCAPE '\\'
+        WHERE (KanaBamei >= ? AND KanaBamei < ?) OR (EigoBamei >= ? AND EigoBamei < ?)
         ORDER BY KanaBamei LIMIT ?`,
-      [`%${escapeLike(query)}%`, `%${escapeLike(query)}%`, limit],
+      [query, prefixUpperBound(query), query, prefixUpperBound(query), limit],
     );
     return rows.map((row) => ({
       id: row.Id,

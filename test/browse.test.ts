@@ -91,8 +91,9 @@ describe("レース", () => {
 });
 
 describe("馬", () => {
-  test("馬名の部分一致で探す", async () => {
-    const { body } = await get(`/api/umas?q=${encodeURIComponent("ルファ")}`);
+  test("馬名の前方一致で探す", async () => {
+    expect((await get(`/api/umas?q=${encodeURIComponent("ルファ")}`)).body).toHaveLength(0);
+    const { body } = await get(`/api/umas?q=${encodeURIComponent("アル")}`);
     expect(body).toHaveLength(1);
     expect(body[0]).toMatchObject({ bamei: "アルファ", seinen: 2020, seibetsu: "牡" });
   });
@@ -103,10 +104,11 @@ describe("馬", () => {
   });
 
   test("% と _ は文字として探す", async () => {
-    expect((await get(`/api/umas?q=${encodeURIComponent("%")}`)).body.map((u) => u.bamei)).toEqual([
-      "100%ウマ_",
-    ]);
-    expect((await get(`/api/umas?q=${encodeURIComponent("_")}`)).body).toHaveLength(1);
+    expect(
+      (await get(`/api/umas?q=${encodeURIComponent("100%")}`)).body.map((u) => u.bamei),
+    ).toEqual(["100%ウマ_"]);
+    expect((await get(`/api/umas?q=${encodeURIComponent("100_")}`)).body).toHaveLength(0);
+    expect((await get(`/api/umas?q=${encodeURIComponent("%")}`)).body).toHaveLength(0);
     expect((await get("/api/umas?q=%20")).status).toBe(400);
   });
 
