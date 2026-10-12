@@ -300,10 +300,31 @@ export const course = new Codes([
   { code: 6, jrdb: "3", naiyou: "A2" },
 ]);
 
-export const recordFlag = new Codes([
-  { code: 0, kol: "0", naiyou: "基準" },
-  { code: 1, kol: "1", naiyou: "レコード" },
-  { code: 2, kol: "2", naiyou: "参考" },
+/** レコードの種類 */
+export enum RecordShubetsu {
+  /** コースレコード (競馬場・距離・トラックごと。2 歳と 3 歳以上で別) */
+  Course = 1,
+  /** G1 レコード (レースごと) */
+  Race,
+  /** 距離の JRA レコード (KOL だけにある) */
+  Kyori,
+}
+
+/** レコード区分 */
+export enum RecordKubun {
+  /** 基準タイム (初めてのコースで出たタイム) */
+  Kijun,
+  Record,
+  /** 参考タイム (改装前のコースのタイム) */
+  Sankou,
+  Bikou,
+}
+
+export const recordKubun = new Codes([
+  { code: RecordKubun.Kijun, kol: "0", jvdata: "1", naiyou: "基準" },
+  { code: RecordKubun.Record, kol: "1", jvdata: "2", naiyou: "レコード" },
+  { code: RecordKubun.Sankou, kol: "2", jvdata: "3", naiyou: "参考" },
+  { code: RecordKubun.Bikou, jvdata: "4", naiyou: "備考" },
 ]);
 
 export const maeuriFlag = new Codes([{ code: 1, kol: "1", naiyou: "前売り" }]);

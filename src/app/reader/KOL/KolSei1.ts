@@ -141,12 +141,22 @@ export class KolSei1 extends KolDataToImport {
     toBe.Course = $R.course.toCodeFromKol(buffer, this.at(119), 1);
     toBe.Kyori = readPositiveInt(buffer, this.at(120), 4);
 
-    const courceRecord = await kolRaceTool.getRecord(buffer, this.at(125), 0);
-    toBe.CourseRecordId = courceRecord?.Id;
-    const kyoriRecord = await kolRaceTool.getRecord(buffer, this.at(178), this.at(231));
-    toBe.KyoriRecordId = kyoriRecord?.Id;
-    const raceRecord = await kolRaceTool.getRecord(buffer, this.at(233), this.at(286));
-    toBe.RaceRecordId = raceRecord?.Id;
+    const record = (
+      offset: number,
+      bashoOffset: number,
+      shubetsu: $R.RecordShubetsu,
+      kubunOffset?: number,
+    ) => kolRaceTool.saveRecord(buffer, offset, bashoOffset, shubetsu, toBe, kubunOffset);
+    toBe.CourseRecordId = (
+      await record(
+        this.at(125),
+        0,
+        $R.RecordShubetsu.Course,
+        this.has(124) ? this.at(124) : undefined,
+      )
+    )?.Id;
+    toBe.KyoriRecordId = (await record(this.at(178), this.at(231), $R.RecordShubetsu.Kyori))?.Id;
+    toBe.RaceRecordId = (await record(this.at(233), this.at(286), $R.RecordShubetsu.Race))?.Id;
 
     toBe.FukaShou = readPositiveInt(buffer, this.at(351), 9);
     toBe.MaeuriFlag = $R.maeuriFlag.toCodeFromKol(buffer, this.at(360), 1);

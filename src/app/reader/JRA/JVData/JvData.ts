@@ -16,6 +16,7 @@ import { JvdataKs } from "./JvdataKs";
 import { JvdataDm, JvdataTm } from "./JvdataMining";
 import { JvdataO1, JvdataO2, JvdataO3, JvdataO4, JvdataO5, JvdataO6 } from "./JvdataOdds";
 import { JvdataRa } from "./JvdataRa";
+import { JvdataRc } from "./JvdataRc";
 import { JvdataRecord } from "./JvdataRecord";
 import { JvdataSe } from "./JvdataSe";
 import { JvdataSk } from "./JvdataSk";
@@ -65,6 +66,7 @@ export class JvData extends DataToImport {
       JvdataTm,
       JvdataTk,
       JvdataJg,
+      JvdataRc,
     ]) {
       const record: JvdataRecord = new type();
       this.records.set(record.id, record);

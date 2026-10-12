@@ -1,6 +1,7 @@
 import { afterAll, beforeAll, describe, expect, setDefaultTimeout, test } from "bun:test";
 import * as fs from "node:fs";
 import { Baken, Kakutei } from "../src/app/converters/Common";
+import { RecordShubetsu } from "../src/app/converters/Race";
 import * as $U from "../src/app/converters/Uma";
 import { findOneBy } from "../src/app/db/helpers";
 import { BanushiMei } from "../src/app/entities/BanushiMei";
@@ -14,6 +15,8 @@ import { Race } from "../src/app/entities/Race";
 import { RaceHassouJoukyou } from "../src/app/entities/RaceHassouJoukyou";
 import { RaceLapTime } from "../src/app/entities/RaceLapTime";
 import { RaceSeiseki } from "../src/app/entities/RaceSeiseki";
+import { Record } from "../src/app/entities/Record";
+import { RecordHoyuuba } from "../src/app/entities/RecordHoyuuba";
 import { Shussouba } from "../src/app/entities/Shussouba";
 import { ShussoubaChoukyou } from "../src/app/entities/ShussoubaChoukyou";
 import { ShussoubaHassouJoukyou } from "../src/app/entities/ShussoubaHassouJoukyou";
@@ -321,6 +324,28 @@ describe("取り込み結果が見本ファイルと一致する", () => {
         Id: raceTool().getRaceId(record),
       });
       expect((race as { FukaShou?: number }).FukaShou).toBe(378000);
+    });
+
+    test("コース・距離・G1 のレコードが、種類と保持馬つきで保存される", async () => {
+      const result = await importKolKind("den1");
+      expect(result.errors).toEqual([]);
+      const races = (await repo(Race).find()).filter((r) => r.CourseRecordId != null);
+      expect(races.length).toBeGreaterThan(0);
+      for (const race of races) {
+        const record = findOneBy(Record, { Id: race.CourseRecordId ?? 0 });
+        expect(record?.Shubetsu).toBe(RecordShubetsu.Course);
+        expect(record?.Kyori).toBe(race.Kyori);
+        expect(record?.Kubun).not.toBeNull();
+        expect(await repo(RecordHoyuuba).countBy({ RecordId: record?.Id })).toBeGreaterThan(0);
+        if (race.KyoriRecordId != null) {
+          expect(findOneBy(Record, { Id: race.KyoriRecordId })?.Shubetsu).toBe(
+            RecordShubetsu.Kyori,
+          );
+        }
+        if (race.RaceRecordId != null) {
+          expect(findOneBy(Record, { Id: race.RaceRecordId })?.Shubetsu).toBe(RecordShubetsu.Race);
+        }
+      }
     });
 
     test("曜日は、曜日コードの 2 桁目から読む", async () => {

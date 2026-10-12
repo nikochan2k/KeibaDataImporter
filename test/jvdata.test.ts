@@ -3,6 +3,7 @@ import * as $CH from "../src/app/converters/Choukyou";
 import { Baken, Kakutei, TouzaiBetsu, touzaiBetsu } from "../src/app/converters/Common";
 import * as $K from "../src/app/converters/Kishu";
 import * as $R from "../src/app/converters/Race";
+import { RecordKubun, RecordShubetsu } from "../src/app/converters/Race";
 import * as $S from "../src/app/converters/Shussouba";
 import * as $U from "../src/app/converters/Uma";
 import { choukyouDao } from "../src/app/daos/ChoukyouDao";
@@ -24,6 +25,8 @@ import { Race } from "../src/app/entities/Race";
 import { RaceHyousuu } from "../src/app/entities/RaceHyousuu";
 import { RaceLapTime } from "../src/app/entities/RaceLapTime";
 import { RaceSeiseki } from "../src/app/entities/RaceSeiseki";
+import { Record } from "../src/app/entities/Record";
+import { RecordHoyuuba } from "../src/app/entities/RecordHoyuuba";
 import { Seisanba } from "../src/app/entities/Seisanba";
 import { Seisansha } from "../src/app/entities/Seisansha";
 import { SeisanshaMei } from "../src/app/entities/SeisanshaMei";
@@ -62,6 +65,7 @@ import {
   JvdataO6,
 } from "../src/app/reader/JRA/JVData/JvdataOdds";
 import { JvdataRa } from "../src/app/reader/JRA/JVData/JvdataRa";
+import { JvdataRc } from "../src/app/reader/JRA/JVData/JvdataRc";
 import { JvdataSe } from "../src/app/reader/JRA/JVData/JvdataSe";
 import { JvdataSk } from "../src/app/reader/JRA/JVData/JvdataSk";
 import { JvdataTk } from "../src/app/reader/JRA/JVData/JvdataTk";
@@ -106,6 +110,7 @@ const handlers = [
   JvdataTm,
   JvdataTk,
   JvdataJg,
+  JvdataRc,
 ];
 
 describe("JV-Data の仕様書", () => {
@@ -1179,6 +1184,94 @@ describe("マスタ", () => {
     expect(kaisai[0].Basho).toBe(5);
     expect(kaisai[0].Gatsu).toBe(1);
     expect(kaisai[0].Nichi).toBe(5);
+  });
+});
+
+describe("レコードマスタ", () => {
+  const P = "<レコード保持馬情報>";
+
+  function rc(shikibetsu: string) {
+    return new JvdataRecord("RC")
+      .set("データ区分", "1")
+      .set("レコード識別区分", shikibetsu)
+      .set("開催年", 2005)
+      .set("開催月日", "0605")
+      .set("競馬場コード", "05")
+      .set("開催回[第N回]", 3)
+      .set("開催日目[N日目]", 2)
+      .set("レース番号", 11)
+      .set("競走種別コード", "13")
+      .set("距離", 1600)
+      .set("トラックコード", "11")
+      .set("レコード区分", "2")
+      .set("レコードタイム", "1321")
+      .set("天候コード", "1")
+      .set("芝馬場状態コード", "1")
+      .set("ダート馬場状態コード", "2");
+  }
+
+  function hoyuuba(r: JvdataRecord, index: number, touroku: string, bamei: string) {
+    const o = { parent: P, index };
+    return r
+      .set("血統登録番号", touroku, o)
+      .set("馬名", bamei, o)
+      .set("性別コード", "1", o)
+      .set("調教師コード", "01234", o)
+      .set("調教師名", "藤沢　和雄", o)
+      .set("負担重量", 570, o)
+      .set("騎手コード", "01088", o)
+      .set("騎手名", "武　豊", o);
+  }
+
+  test("コースレコード・G1 レコードと保持馬 (同着) を保存し、同じレコードは 1 行にまとめる", async () => {
+    await emptyKolDb();
+    const course = hoyuuba(rc("1"), 0, "2001105555", "レコードホルダ");
+    const g1 = hoyuuba(
+      hoyuuba(rc("2").set("特別競走番号", 1234), 0, "2001105555", "レコードホルダ"),
+      1,
+      "2001106666",
+      "ドウチャク",
+    );
+    expect(
+      await importKolFiles({
+        // 同じレコードが何度来ても 1 行
+        "DIFF.jvd": Buffer.concat([course.buffer, g1.buffer, course.buffer]),
+      }),
+    ).toEqual([]);
+    const records = await repo(Record).find();
+    expect(records.map((r) => r.Shubetsu).sort()).toEqual([
+      RecordShubetsu.Course,
+      RecordShubetsu.Race,
+    ]);
+    const c = records.find((r) => r.Shubetsu === RecordShubetsu.Course);
+    expect(c).toEqual(
+      expect.objectContaining({
+        Nengappi: 20050605,
+        Kubun: RecordKubun.Record,
+        Basho: 4,
+        Kyori: 1600,
+        TrackCode: 11,
+        DirtShiba: $R.DirtShiba.Shiba,
+        KyousouShubetsuCode: 13,
+        Tenki: 0,
+        Baba: 0,
+      }),
+    );
+    expect(c?.Time).toBeCloseTo(92.1);
+    // レコードが出たレースの ID。レースの行はまだなく、あとからレース詳細が来ると同じ ID になる
+    expect(await repo(Race).count()).toBe(0);
+    const r = ra("7").key(2005, "0605", "05", 3, 2, 11);
+    expect(await importKolFiles({ "RA.jvd": r.buffer })).toEqual([]);
+    expect(c?.RaceId).toBe((await repo(Race).findOneByOrFail({})).Id);
+    const g = records.find((r) => r.Shubetsu === RecordShubetsu.Race);
+    expect(g?.TokubetsuBangou).toBe(1234);
+    expect((await repo(RecordHoyuuba).findBy({ RecordId: g?.Id ?? 0 })).length).toBe(2);
+    const holder = await repo(RecordHoyuuba).findOneByOrFail({ RecordId: c?.Id ?? 0 });
+    const kishu = await repo(Kishu).findOneByOrFail({ JvDataKishuCode: "01088" });
+    const choukyoushi = await repo(Choukyoushi).findOneByOrFail({ JvDataChoukyoushiCode: "01234" });
+    expect(holder).toEqual(
+      expect.objectContaining({ Kinryou: 57, KishuId: kishu.Id, ChoukyoushiId: choukyoushi.Id }),
+    );
   });
 });
 

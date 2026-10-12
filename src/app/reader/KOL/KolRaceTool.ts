@@ -1,17 +1,17 @@
 import * as $C from "../../converters/Common";
 import * as $R from "../../converters/Race";
 import { jinmeiDao } from "../../daos/JinmeiDao";
-import { raceDao } from "../../daos/RaceDao";
+import { recordDao } from "../../daos/RecordDao";
 import { umaDao } from "../../daos/UmaDao";
 import { save } from "../../db/helpers";
 import { Race } from "../../entities/Race";
 import { RaceHassouJoukyou } from "../../entities/RaceHassouJoukyou";
 import { Record } from "../../entities/Record";
+import { RecordHoyuuba } from "../../entities/RecordHoyuuba";
 import { ShussoubaHassouJoukyou } from "../../entities/ShussoubaHassouJoukyou";
 import { Uma } from "../../entities/Uma";
 import { RaceTool } from "../RaceTool";
 import {
-  readInt,
   readPositiveDouble,
   readPositiveInt,
   readStr,
@@ -51,16 +51,24 @@ export class KolRaceTool extends RaceTool {
     return super.getRaceId(buffer, kaisaiId);
   }
 
-  public async getRecord(buffer: Buffer, offset: number, bashoOffset: number) {
+  /**
+   * レースの出馬表・成績にある、そのレースのコースのレコードを保存します。馬名がなければ null。
+   * 距離・芝ダートなどはそのレースのもの。kubunOffset はレコードフラグ (コースレコードだけにある) の位置。
+   */
+  public async saveRecord(
+    buffer: Buffer,
+    offset: number,
+    bashoOffset: number,
+    shubetsu: $R.RecordShubetsu,
+    race: Race,
+    kubunOffset?: number,
+  ) {
     const bamei = readStrWithNoSpace(buffer, offset + 12, 30);
-    if (!bamei) {
+    const nengappi = readPositiveInt(buffer, offset, 8);
+    const time = readTime(buffer, offset + 8, 4);
+    if (!bamei || !nengappi || !time) {
       return null;
     }
-
-    const record = {} as Record;
-    const nengappi = readInt(buffer, offset, 8);
-    record.Nengappi = nengappi;
-    record.Time = readTime(buffer, offset + 8, 4);
     let uma = {} as Uma;
     if (tool.isEnglish(bamei)) {
       uma.EigoBamei = bamei;
@@ -68,13 +76,27 @@ export class KolRaceTool extends RaceTool {
       uma.KanaBamei = bamei;
     }
     uma = await umaDao.saveUma(uma);
-    record.UmaId = uma.Id;
-    record.Kinryou = readPositiveDouble(buffer, offset + 42, 3, 0.1);
-    const tanshukuKishuMei = readStrWithNoSpace(buffer, offset + 45, 8);
-    const jinmei = await jinmeiDao.save(tanshukuKishuMei);
-    record.TanshukuKishuMeiId = jinmei.Id;
+    const jinmei = await jinmeiDao.save(readStrWithNoSpace(buffer, offset + 45, 8));
+
+    const record = {} as Record;
+    record.Shubetsu = shubetsu;
+    record.Nengappi = nengappi;
+    record.Time = time;
+    if (kubunOffset !== undefined) {
+      record.Kubun = $R.recordKubun.toCodeFromKol(buffer, kubunOffset, 1);
+    }
     record.Basho = $C.basho.toCodeFromKol(buffer, bashoOffset, 2);
-    return raceDao.saveRecord(record);
+    record.Kyori = race.Kyori;
+    record.DirtShiba = race.DirtShiba;
+    record.MigiHidari = race.MigiHidari;
+    record.UchiSoto = race.UchiSoto;
+    return recordDao.saveRecord(record, [
+      {
+        UmaId: uma.Id,
+        Kinryou: readPositiveDouble(buffer, offset + 42, 3, 0.1),
+        TanshukuKishuMeiId: jinmei.Id,
+      } as RecordHoyuuba,
+    ]);
   }
 
   public async saveRaceHassouJoukyou(buffer: Buffer, offset: number, race: Race) {

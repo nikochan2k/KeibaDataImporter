@@ -123,12 +123,22 @@ export class KolDen1 extends KolDataToImport {
     toBe.UchiSoto = $R.uchiSoto.toCodeFromKol(buffer, this.at(107), 1);
     toBe.Course = $R.course.toCodeFromKol(buffer, this.at(108), 1);
     toBe.Kyori = readPositiveInt(buffer, this.at(109), 4);
-    const courceRecord = await kolRaceTool.getRecord(buffer, this.at(114), 0);
-    toBe.CourseRecordId = courceRecord?.Id;
-    const kyoriRecord = await kolRaceTool.getRecord(buffer, this.at(167), this.at(220));
-    toBe.KyoriRecordId = kyoriRecord?.Id;
-    const raceRecord = await kolRaceTool.getRecord(buffer, this.at(222), this.at(275));
-    toBe.RaceRecordId = raceRecord?.Id;
+    const record = (
+      offset: number,
+      bashoOffset: number,
+      shubetsu: $R.RecordShubetsu,
+      kubunOffset?: number,
+    ) => kolRaceTool.saveRecord(buffer, offset, bashoOffset, shubetsu, toBe, kubunOffset);
+    toBe.CourseRecordId = (
+      await record(
+        this.at(114),
+        0,
+        $R.RecordShubetsu.Course,
+        this.has(113) ? this.at(113) : undefined,
+      )
+    )?.Id;
+    toBe.KyoriRecordId = (await record(this.at(167), this.at(220), $R.RecordShubetsu.Kyori))?.Id;
+    toBe.RaceRecordId = (await record(this.at(222), this.at(275), $R.RecordShubetsu.Race))?.Id;
     toBe.Shoukin1Chaku = readPositiveInt(buffer, this.at(277), 9);
     toBe.Shoukin2Chaku = readPositiveInt(buffer, this.at(286), 9);
     toBe.Shoukin3Chaku = readPositiveInt(buffer, this.at(295), 9);

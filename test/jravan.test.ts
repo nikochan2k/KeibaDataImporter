@@ -1,5 +1,6 @@
 import { afterAll, describe, expect, setDefaultTimeout, test } from "bun:test";
 import { Baken, Kakutei } from "../src/app/converters/Common";
+import { RecordKubun, RecordShubetsu } from "../src/app/converters/Race";
 import { choukyoushiDao } from "../src/app/daos/ChoukyoushiDao";
 import { jinmeiDao } from "../src/app/daos/JinmeiDao";
 import { kishuDao } from "../src/app/daos/KishuDao";
@@ -15,6 +16,7 @@ import { RaceHyousuu } from "../src/app/entities/RaceHyousuu";
 import { RaceLapTime } from "../src/app/entities/RaceLapTime";
 import { RaceSeiseki } from "../src/app/entities/RaceSeiseki";
 import { Record } from "../src/app/entities/Record";
+import { RecordHoyuuba } from "../src/app/entities/RecordHoyuuba";
 import { Shussouba } from "../src/app/entities/Shussouba";
 import { ShussoubaSeiseki } from "../src/app/entities/ShussoubaSeiseki";
 import { ShussoubaTsuukaJuni } from "../src/app/entities/ShussoubaTsuukaJuni";
@@ -162,7 +164,8 @@ describe("特別登録馬", () => {
       .set("距離", 1600)
       .set("トラックコード", "11")
       .set("走破タイム", "1321")
-      .set("年月日場回日Ｒ", "20050605030811", { nth: 1 })
+      .set("レコード区分コード", "2")
+      .set("年月日場回日Ｒ", "2005060503020311", { nth: 1 })
       .set("血統登録番号", "2001105555")
       .set("馬名", "レコードホルダ")
       .set("負担重量", 570)
@@ -181,8 +184,23 @@ describe("特別登録馬", () => {
     expect(race).toEqual(
       expect.objectContaining({ RaceBangou: 11, Kyori: 1600, HandiHappyoubi: 20071001 }),
     );
+    // コースレコードは、距離・トラックがそのレースのもの
     const record = await repo(Record).findOneByOrFail({ Id: race.CourseRecordId ?? 0 });
+    expect(record).toEqual(
+      expect.objectContaining({
+        Shubetsu: RecordShubetsu.Course,
+        Kubun: RecordKubun.Record,
+        Nengappi: 20050605,
+        Basho: 6,
+        Kyori: 1600,
+        TrackCode: 11,
+      }),
+    );
     expect(record.Time).toBeCloseTo(92.1);
+    const holder = await repo(Uma).findOneByOrFail({ KettouTourokuBangou: "01105555" });
+    expect(await repo(RecordHoyuuba).find()).toEqual([
+      expect.objectContaining({ RecordId: record.Id, UmaId: holder.Id, Kinryou: 57 }),
+    ]);
     const touroku = await repo(TokubetsuTourokuba).find();
     const uma = await repo(Uma).findOneByOrFail({ KettouTourokuBangou: "04101234" });
     expect(touroku).toEqual([

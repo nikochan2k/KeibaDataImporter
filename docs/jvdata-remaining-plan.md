@@ -124,14 +124,13 @@
 
 ## 8. 段階 6〜8
 
-### 段階 6: レコードマスタ RC (既存の `Record` を作り直す)
+### 段階 6: レコードマスタ RC (`Record` を作り直す) — 済
 
-今の `Record` (KOL 用: Nengappi, Time, UmaId, Kinryou, 騎手, Basho) では、RC の項目が入りきらない。
-
-- `Record`: Id, Shikibetsu (1: コース / 2: G1), RaceId, Basho, TokubetsuBangou, KyousouShubetsu, Kyori, Track, RecordKubun, Time, Tenkou, Baba。
-- 新規 `RecordHoyuuba`: RecordId, UmaId, Kinryou, KishuId, ChoukyoushiId (同着を考えて最大 3 頭)。
-- `KolRaceTool.getRecord`、`RaceDao.saveRecord`、`Race.CourseRecordId` / `KyoriRecordId` / `RaceRecordId` と閲覧の参照を新しい構造に合わせる。
-- Tok1 のコースレコード欄もここに入れる。
+- `Record`: Shubetsu (コース / G1 / 距離の JRA レコード)、Nengappi、Time、Kubun (基準・レコード・参考・備考)、Basho、RaceId (レコードが出たレース)、Kyori、TrackCode、DirtShiba・MigiHidari・UchiSoto、KyousouShubetsuCode、TokubetsuBangou、Tenki、Baba。
+- `RecordHoyuuba`: 主キーは (RecordId, UmaId)。Kinryou、KishuId (JRA-VAN・JV-Data)、TanshukuKishuMeiId (KOL)、ChoukyoushiId。同着で複数頭。
+- 同じレコードは、種類・日付・場所・距離・タイムが同じ行にまとめる (`RecordDao.saveRecord`)。KOL・JRA-VAN のレースごとのレコードと RC が同じ行になる。
+- KOL (出馬表・成績のコース・距離・G1 レコード) と JRA-VAN (コースレコード) は、距離・トラックをそのレースから入れる。KOL のレコードフラグ、JRA-VAN の騎手・調教師コード・天候・馬場も取り込む。
+- `Race.CourseRecordId` / `KyoriRecordId` / `RaceRecordId` はそのまま。
 
 ### 段階 7: 重勝式 WIN5 WF
 
