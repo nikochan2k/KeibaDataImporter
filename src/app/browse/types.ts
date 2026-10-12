@@ -107,6 +107,15 @@ export interface ChoukyoushiStart extends RaceSummary {
   kishuMei: string | null;
 }
 
+export interface BanushiSummary {
+  id: number;
+  meishou: string | null;
+  /** 服色標示 */
+  fukushoku: string | null;
+}
+
+export type BanushiStart = ChoukyoushiStart;
+
 export interface PedigreeAncestor {
   id: number;
   bamei: string | null;

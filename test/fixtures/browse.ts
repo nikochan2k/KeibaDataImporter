@@ -1,4 +1,6 @@
 import { save } from "../../src/app/db/helpers";
+import { Banushi } from "../../src/app/entities/Banushi";
+import { BanushiMei } from "../../src/app/entities/BanushiMei";
 import { Choukyoushi } from "../../src/app/entities/Choukyoushi";
 import { ChoukyoushiMei } from "../../src/app/entities/ChoukyoushiMei";
 import { Jinmei } from "../../src/app/entities/Jinmei";
@@ -9,10 +11,12 @@ import { Kyousouba } from "../../src/app/entities/Kyousouba";
 import { MeishouKubun } from "../../src/app/entities/MeishouKubun";
 import { Race } from "../../src/app/entities/Race";
 import { RaceMei } from "../../src/app/entities/RaceMei";
+import { Shoyuu } from "../../src/app/entities/Shoyuu";
 import { Shussouba } from "../../src/app/entities/Shussouba";
 import { ShussoubaSeiseki } from "../../src/app/entities/ShussoubaSeiseki";
 import { TokubetsuMei } from "../../src/app/entities/TokubetsuMei";
 import { Uma } from "../../src/app/entities/Uma";
+import { UmaBanushi } from "../../src/app/entities/UmaBanushi";
 
 /** Race の NOT NULL 列を 0 で埋めて作る */
 function race(overrides: Partial<Race>) {
@@ -112,6 +116,42 @@ export async function seedBrowseFixture() {
       Kubun: MeishouKubun.Meishou,
     }),
   );
+  // アルファは 2024-04-10 に馬主が変わる (A → B)
+  const banushiA = await save(
+    Banushi,
+    Object.assign({} as Banushi, { Fukushoku: "水色，赤山形一本輪" }),
+  );
+  const banushiB = await save(Banushi, Object.assign({} as Banushi, {}));
+  for (const [banushi, meishou] of [
+    [banushiA, "サンデーレーシング"],
+    [banushiB, "キャロットファーム"],
+  ] as const) {
+    const shoyuu = await save(
+      Shoyuu,
+      Object.assign({} as Shoyuu, { Meishou: meishou, MatchingKey: meishou }),
+    );
+    await save(
+      BanushiMei,
+      Object.assign({} as BanushiMei, {
+        BanushiId: banushi.Id,
+        ShoyuuId: shoyuu.Id,
+        Kubun: MeishouKubun.Meishou,
+      }),
+    );
+  }
+  for (const [nengappi, banushi] of [
+    [20240101, banushiA],
+    [20240410, banushiB],
+  ] as const) {
+    await save(
+      UmaBanushi,
+      Object.assign({} as UmaBanushi, {
+        UmaId: horses[0].Id,
+        Nengappi: nengappi,
+        BanushiId: banushi.Id,
+      }),
+    );
+  }
   const kyousouba: Kyousouba[] = [];
   for (const [i, uma] of horses.entries()) {
     kyousouba.push(

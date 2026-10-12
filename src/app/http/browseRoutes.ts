@@ -1,4 +1,5 @@
 import { Elysia } from "elysia";
+import { getBanushi, searchBanushi } from "../browse/banushi";
 import { parseDate, raceDays, raceMonths, racesOn } from "../browse/calendar";
 import { getChoukyoushi, searchChoukyoushi } from "../browse/choukyoushi";
 import { getKishu, searchKishu } from "../browse/kishu";
@@ -66,4 +67,14 @@ export const browseRoutes = new Elysia({ prefix: "/api" })
       toInt(params.id, "id"),
       query.page === undefined ? 1 : toInt(query.page, "page"),
     ),
+  )
+  .get("/banushis", ({ query }) => {
+    const q = typeof query.q === "string" ? query.q.trim() : "";
+    if (q === "") {
+      throw new BadRequestError("q は必須です");
+    }
+    return searchBanushi(q);
+  })
+  .get("/banushis/:id", ({ params, query }) =>
+    getBanushi(toInt(params.id, "id"), query.page === undefined ? 1 : toInt(query.page, "page")),
   );

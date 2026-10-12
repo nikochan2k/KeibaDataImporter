@@ -176,6 +176,39 @@ describe("調教師", () => {
   });
 });
 
+describe("馬主", () => {
+  test("名前の前方一致で探す", async () => {
+    expect((await get(`/api/banushis?q=${encodeURIComponent("レーシング")}`)).body).toHaveLength(0);
+    const { body } = await get(`/api/banushis?q=${encodeURIComponent("サンデー")}`);
+    expect(body).toHaveLength(1);
+    expect(body[0]).toMatchObject({
+      meishou: "サンデーレーシング",
+      fukushoku: "水色，赤山形一本輪",
+    });
+    expect((await get("/api/banushis?q=%20")).status).toBe(400);
+  });
+
+  test("馬主の詳細は、その時点で持っていた馬の出走だけを返す", async () => {
+    const [a, b] = await Promise.all(
+      ["サンデー", "キャロット"].map(
+        async (q) => (await get(`/api/banushis?q=${encodeURIComponent(q)}`)).body[0].id,
+      ),
+    );
+    const first = await get(`/api/banushis/${a}`);
+    expect(first.status).toBe(200);
+    expect(first.body.starts.map((s) => [s.date, s.raceBangou, s.bamei])).toEqual([
+      ["2024-04-07", 11, "アルファ"],
+    ]);
+    expect(first.body).toMatchObject({ startCount: 1, perPage: 50 });
+    expect((await get(`/api/banushis/${b}`)).body.starts.map((s) => s.date)).toEqual([
+      "2024-04-14",
+    ]);
+    expect((await get(`/api/banushis/${a}?page=2`)).body.starts).toEqual([]);
+    expect((await get(`/api/banushis/${a}?page=0`)).status).toBe(400);
+    expect((await get("/api/banushis/99999")).status).toBe(404);
+  });
+});
+
 describe("取り込み", () => {
   test("接続元が分からない (ローカルと確かめられない) ときは拒否する", async () => {
     const { status, body } = await get("/api/imports");
