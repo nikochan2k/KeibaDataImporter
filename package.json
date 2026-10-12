@@ -27,7 +27,6 @@
     "@types/encoding-japanese": "^2.4.0",
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
-    "@types/unzipper": "^0.10.11",
     "encoding-japanese": "^2.4.0",
     "typescript": "^7.0.2"
   },
@@ -35,10 +34,10 @@
     "@logtape/logtape": "^2.4.1",
     "drizzle-orm": "^0.45.4",
     "elysia": "^1.4.30",
+    "fflate": "^0.8.3",
     "itaiji-normalize": "^0.2.0",
     "react": "^19.3.0",
     "react-dom": "^19.3.0",
-    "react-router": "^8.4.0",
-    "unzipper": "^0.12.5"
+    "react-router": "^8.4.0"
   }
 }

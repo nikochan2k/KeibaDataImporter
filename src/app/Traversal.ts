@@ -2,7 +2,7 @@ import * as fs from "node:fs";
 import * as os from "node:os";
 import * as path from "node:path";
 import * as process from "node:process";
-import * as unzipper from "unzipper";
+import { unzipSync } from "fflate";
 import { Entries, importer } from "./Importer";
 import { importProgress } from "./ImportProgress";
 import type { Logger } from "./LogUtil";
@@ -283,10 +283,14 @@ export class Traversal {
   protected async uncompressZipFile(zipFile: string) {
     const dataDir = { name: fs.mkdtempSync(path.join(os.tmpdir(), "keiba-")) };
     const begin = performance.now();
-    await fs
-      .createReadStream(zipFile)
-      .pipe(unzipper.Extract({ path: dataDir.name }))
-      .promise();
+    const files = unzipSync(fs.readFileSync(zipFile));
+    for (const [name, bytes] of Object.entries(files)) {
+      if (name.endsWith("/")) continue;
+      const filepath = path.resolve(dataDir.name, name);
+      if (!filepath.startsWith(dataDir.name + path.sep)) continue;
+      fs.mkdirSync(path.dirname(filepath), { recursive: true });
+      fs.writeFileSync(filepath, bytes);
+    }
     this.timings.uncompress += performance.now() - begin;
     await this.traverseDataDir(dataDir.name);
   }

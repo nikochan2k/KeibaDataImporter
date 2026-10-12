@@ -37,9 +37,6 @@ run([
   "build",
   "--compile",
   ...(target ? [`--target=${target}`] : []),
-  // unzipper が S3 読み込み用に任意で require する。使わないので外す
-  "--external",
-  "@aws-sdk/client-s3",
   "src/app/server.ts",
   "src/app/ImportWorker.ts",
   "--outfile",
