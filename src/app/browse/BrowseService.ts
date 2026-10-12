@@ -11,6 +11,7 @@ import type { ShussoubaHyouka } from "../entities/ShussoubaHyouka";
 import { Kubun } from "../entities/ShussoubaJoutai";
 import { BadRequestError, NotFoundError } from "../http/errors";
 import type {
+  PedigreeAncestor,
   PreviewChoukyou,
   PreviewEntry,
   RaceDay,
@@ -20,6 +21,9 @@ import type {
   UmaStart,
   UmaSummary,
 } from "./types";
+
+/** 血統表に出す祖先の代数 */
+const PEDIGREE_GENERATIONS = 5;
 
 /** 数値コードを表示用の名前にする。値がなければ null */
 function label(codes: { toNaiyou(code: number): string }, code: number | null) {
@@ -469,6 +473,7 @@ export class BrowseService {
     UmaSummary & {
       chichi: { id: number; bamei: string | null } | null;
       haha: { id: number; bamei: string | null } | null;
+      pedigree: (PedigreeAncestor | null)[];
       starts: UmaStart[];
     }
   > {
@@ -522,6 +527,7 @@ export class BrowseService {
       seibetsu: label(seibetsu, uma.Seibetsu),
       chichi: uma.ChichiId == null ? null : { id: uma.ChichiId, bamei: uma.ChichiBamei },
       haha: uma.HahaId == null ? null : { id: uma.HahaId, bamei: uma.HahaBamei },
+      pedigree: this.pedigree(uma.Id),
       starts: rows.map((row) => ({
         ...toRaceSummary(row),
         umaban: row.Umaban,
@@ -531,6 +537,40 @@ export class BrowseService {
         kishuMei: row.KishuMei,
       })),
     };
+  }
+
+  /**
+   * 5代までの祖先。二分木を配列にした並びで、位置 k は父=2n・母=2n+1 の n=k+2 番目 (父, 母, 父父, 父母, 母父, 母母, 父父父, ...)。
+   * 分かっていない祖先とその先は null
+   */
+  private pedigree(id: number): (PedigreeAncestor | null)[] {
+    type Row = {
+      Id: number;
+      KanaBamei: string | null;
+      ChichiUmaId: number | null;
+      HahaUmaId: number | null;
+    };
+    const fetch = (ids: number[]): Map<number, Row> => {
+      if (ids.length === 0) {
+        return new Map();
+      }
+      const rows: Row[] = select(
+        `SELECT Id, KanaBamei, ChichiUmaId, HahaUmaId FROM Uma WHERE Id IN (${ids.map(() => "?").join(",")})`,
+        ids,
+      );
+      return new Map(rows.map((row) => [row.Id, row]));
+    };
+    const result: (PedigreeAncestor | null)[] = [];
+    let slots: (Row | null)[] = [fetch([id]).get(id) ?? null];
+    for (let depth = 1; depth <= PEDIGREE_GENERATIONS; depth++) {
+      const parentIds = slots.flatMap((child) => [child?.ChichiUmaId, child?.HahaUmaId]);
+      const rows = fetch(parentIds.filter((value): value is number => value != null));
+      slots = parentIds.map((parentId) => (parentId == null ? null : (rows.get(parentId) ?? null)));
+      for (const parent of slots) {
+        result.push(parent == null ? null : { id: parent.Id, bamei: parent.KanaBamei });
+      }
+    }
+    return result;
   }
 
   /** 日付の文字列 (YYYY-MM-DD) を年月日にする。不正なら 400 */

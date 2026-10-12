@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import type { ImportJob } from "../../src/app/api/types";
 import type {
   BashoOption,
+  PedigreeAncestor,
   PreviewChoukyou,
   PreviewEntry,
   RaceDay,
@@ -12,13 +13,15 @@ import type {
   UmaSummary,
 } from "../../src/app/browse/types";
 
-export type { BashoOption, PreviewChoukyou, PreviewEntry, ImportJob, RaceDay, RaceMonth, RaceEntry, RaceSummary, UmaStart, UmaSummary };
+export type { BashoOption, PedigreeAncestor, PreviewChoukyou, PreviewEntry, ImportJob, RaceDay, RaceMonth, RaceEntry, RaceSummary, UmaStart, UmaSummary };
 
 export type ShussoubaPreview = { race: RaceSummary; entry: PreviewEntry };
 export type RaceDetail = RaceSummary & { entries: RaceEntry[] };
 export type UmaDetail = UmaSummary & {
   chichi: { id: number; bamei: string | null } | null;
   haha: { id: number; bamei: string | null } | null;
+  /** 5代までの祖先。父, 母, 父父, 父母, 母父, 母母, 父父父, ... の二分木順。不明は null */
+  pedigree: (PedigreeAncestor | null)[];
   starts: UmaStart[];
 };
 

@@ -70,6 +70,11 @@ export interface UmaSummary {
   seibetsu: string | null;
 }
 
+export interface PedigreeAncestor {
+  id: number;
+  bamei: string | null;
+}
+
 export interface UmaStart extends RaceSummary {
   umaban: number;
   chakujun: number | null;

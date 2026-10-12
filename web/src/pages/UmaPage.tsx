@@ -1,9 +1,43 @@
 import { Link, useParams, useSearchParams } from "react-router";
-import { type UmaDetail, useApi } from "../api";
+import { type PedigreeAncestor, type UmaDetail, useApi } from "../api";
 import { Async, raceCondition } from "../components";
 import { formatChakujun, formatTime } from "../format";
 
-const TABS = [{ key: "senreki", label: "戦歴" }] as const;
+const TABS = [
+  { key: "senreki", label: "戦歴" },
+  { key: "ketto", label: "血統" },
+] as const;
+
+const GENERATIONS = 5;
+
+/** 血統表。祖先は二分木順 (父, 母, 父父, ...) で、n 代目は 2^n 頭。左の列ほど行をまたぐ */
+function Pedigree({ pedigree }: { pedigree: (PedigreeAncestor | null)[] }) {
+  const rows = 2 ** GENERATIONS;
+  return (
+    <table className="pedigree">
+      <tbody>
+        {Array.from({ length: rows }, (_, row) => {
+          const cells = [];
+          for (let generation = 1; generation <= GENERATIONS; generation++) {
+            const span = rows / 2 ** generation;
+            if (row % span !== 0) {
+              continue;
+            }
+            const ancestor = pedigree[2 ** generation - 2 + row / span] ?? null;
+            // 偶数番目 (0 始まり) が父系、奇数番目が母系
+            const sire = (row / span) % 2 === 0;
+            cells.push(
+              <td key={generation} rowSpan={span} className={sire ? "sire" : "dam"}>
+                {ancestor ? <Link to={`/umas/${ancestor.id}`}>{ancestor.bamei}</Link> : "-"}
+              </td>,
+            );
+          }
+          return <tr key={row}>{cells}</tr>;
+        })}
+      </tbody>
+    </table>
+  );
+}
 
 export function UmaPage() {
   const { id } = useParams();
@@ -37,11 +71,13 @@ export function UmaPage() {
                 className={t.key === tab ? "active" : ""}
                 onClick={() => setParams({ tab: t.key }, { replace: true })}
               >
-                {t.label} ({u.starts.length})
+                {t.key === "senreki" ? `${t.label} (${u.starts.length})` : t.label}
               </button>
             ))}
           </div>
-          {u.starts.length === 0 ? (
+          {tab === "ketto" ? (
+            <Pedigree pedigree={u.pedigree} />
+          ) : u.starts.length === 0 ? (
             <p className="muted">出走記録はありません</p>
           ) : (
             <table>

@@ -456,3 +456,17 @@ td.lines {
   white-space: nowrap;
   vertical-align: top;
 }
+
+table.pedigree td {
+  border: 1px solid var(--line);
+  vertical-align: middle;
+}
+table.pedigree td.sire {
+  background: rgba(30, 99, 214, 0.1);
+}
+table.pedigree td.dam {
+  background: rgba(232, 106, 166, 0.12);
+}
+table.pedigree tbody tr:hover td {
+  background: inherit;
+}
