@@ -425,3 +425,30 @@ tbody tr:hover td.waku5 { background: #f2cc00; }
 tbody tr:hover td.waku6 { background: #2e9b46; }
 tbody tr:hover td.waku7 { background: #f08a1c; }
 tbody tr:hover td.waku8 { background: #e86aa6; }
+
+.tabs {
+  display: flex;
+  gap: 4px;
+  margin: 12px 0;
+  border-bottom: 1px solid var(--line);
+}
+.tabs button {
+  padding: 6px 16px;
+  border: 1px solid var(--line);
+  border-bottom: none;
+  border-radius: 4px 4px 0 0;
+  background: var(--bg);
+  color: var(--muted);
+  font: inherit;
+  cursor: pointer;
+}
+.tabs button.active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--accent-fg);
+}
+
+td.lines {
+  white-space: nowrap;
+  vertical-align: top;
+}
