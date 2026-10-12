@@ -1,5 +1,8 @@
 import { Elysia } from "elysia";
-import { BrowseService, browseService } from "../browse/BrowseService";
+import { parseDate, raceDays, raceMonths, racesOn } from "../browse/calendar";
+import { racePreview, shussoubaPreview } from "../browse/preview";
+import { getRace } from "../browse/race";
+import { getUma, searchUma } from "../browse/uma";
 import { BadRequestError } from "./errors";
 
 /** パスやクエリの整数を読む。不正なら 400 */
@@ -13,34 +16,29 @@ function toInt(text: unknown, name: string, min = 1, max = Number.MAX_SAFE_INTEG
 
 export const browseRoutes = new Elysia({ prefix: "/api" })
   /** レースのある年月 */
-  .get("/race-months", () => browseService.raceMonths())
+  .get("/race-months", () => raceMonths())
   /** 指定した月の、開催のある日と競馬場 */
   .get("/race-days", ({ query }) =>
-    browseService.raceDays(
-      toInt(query.year, "year", 1900, 2999),
-      toInt(query.month, "month", 1, 12),
-    ),
+    raceDays(toInt(query.year, "year", 1900, 2999), toInt(query.month, "month", 1, 12)),
   )
   /** 指定した日 (YYYY-MM-DD) のレース一覧。basho があればその競馬場だけ */
   .get("/races", ({ query }) => {
-    const [year, month, day] = BrowseService.parseDate(query.date);
-    return browseService.racesOn(
+    const [year, month, day] = parseDate(query.date);
+    return racesOn(
       year,
       month,
       day,
       query.basho === undefined ? undefined : toInt(query.basho, "basho", 0),
     );
   })
-  .get("/races/:id", ({ params }) => browseService.race(toInt(params.id, "id")))
-  .get("/races/:id/preview", ({ params }) => browseService.racePreview(toInt(params.id, "id")))
-  .get("/shussouba/:id/preview", ({ params }) =>
-    browseService.shussoubaPreview(toInt(params.id, "id")),
-  )
+  .get("/races/:id", ({ params }) => getRace(toInt(params.id, "id")))
+  .get("/races/:id/preview", ({ params }) => racePreview(toInt(params.id, "id")))
+  .get("/shussouba/:id/preview", ({ params }) => shussoubaPreview(toInt(params.id, "id")))
   .get("/umas", ({ query }) => {
     const q = typeof query.q === "string" ? query.q.trim() : "";
     if (q === "") {
       throw new BadRequestError("q は必須です");
     }
-    return browseService.searchUma(q);
+    return searchUma(q);
   })
-  .get("/umas/:id", ({ params }) => browseService.uma(toInt(params.id, "id")));
+  .get("/umas/:id", ({ params }) => getUma(toInt(params.id, "id")));
