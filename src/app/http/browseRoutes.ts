@@ -32,6 +32,9 @@ export const browseRoutes = new Elysia({ prefix: "/api" })
     );
   })
   .get("/races/:id", ({ params }) => browseService.race(toInt(params.id, "id")))
+  .get("/shussouba/:id/preview", ({ params }) =>
+    browseService.shussoubaPreview(toInt(params.id, "id")),
+  )
   .get("/umas", ({ query }) => {
     const q = typeof query.q === "string" ? query.q.trim() : "";
     if (q === "") {

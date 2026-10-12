@@ -51,6 +51,15 @@ export interface RaceEntry {
   agari3F: number | null;
   bataijuu: number | null;
   zougen: number | null;
+  /** 着差(クビ、1/2、1.3/4 など) */
+  chakusa: string | null;
+  ninki: number | null;
+  odds: number | null;
+  /** コーナー通過順(例: 3-3-2-1) */
+  tsuuka: string | null;
+  choukyoushiMei: string | null;
+  /** 調教師の所属(東・西など) */
+  choukyoushiShozoku: string | null;
 }
 
 export interface UmaSummary {
@@ -67,4 +76,64 @@ export interface UmaStart extends RaceSummary {
   time: number | null;
   agari3F: number | null;
   kishuMei: string | null;
+}
+
+/** 調教1本 */
+export interface PreviewChoukyou {
+  date: string;
+  basho: string | null;
+  type: string | null;
+  course: string | null;
+  baba: string | null;
+  oikiri: string | null;
+  ashiiro: string | null;
+  honOikiri: boolean;
+  yajirushi: string | null;
+  awase: string | null;
+  /** 全体〜ラスト(ハロンの長い順)の時計 */
+  times: { f: number; time: number | null }[];
+}
+
+/** 出走前の情報(状態・評価・予想・調教)を出走馬ごとにまとめたもの */
+export interface PreviewEntry {
+  shussoubaId: number;
+  wakuban: number | null;
+  umaban: number;
+  umaId: number | null;
+  bamei: string | null;
+  kishuMei: string | null;
+  joutai: { kubun: string; naiyou: string }[];
+  hyouka: {
+    idm: number | null;
+    kehai: string | null;
+    batai: string | null;
+    paddock: string | null;
+    ashimoto: string | null;
+    bagu: string | null;
+    kyuushaHyouka: string | null;
+  };
+  yosou: {
+    shirushi: { name: string; mark: string }[];
+    sougouShisuu: number | null;
+    idm: number | null;
+    kishuShisuu: number | null;
+    jouhouShisuu: number | null;
+    choukyouShisuu: number | null;
+    kyuushaShisuu: number | null;
+    ninkiShisuu: number | null;
+    kyakushitsu: number | null;
+  };
+  choukyou: {
+    tanpyou: string | null;
+    type: string | null;
+    ryou: string | null;
+    ryouHyouka: string | null;
+    yajirushi: string | null;
+    isshuumaeShisuu: number | null;
+    oikiriShisuu: number | null;
+    shiageShisuu: number | null;
+    shiageHenka: string | null;
+    comment: string | null;
+    items: PreviewChoukyou[];
+  };
 }

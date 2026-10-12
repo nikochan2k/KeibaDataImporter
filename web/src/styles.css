@@ -370,3 +370,58 @@ button:disabled {
   background: var(--accent);
   color: var(--accent-fg);
 }
+
+/* 枠番の色(JRA の枠色) */
+.waku {
+  font-weight: 700;
+  text-align: center;
+}
+
+.waku1 {
+  background: #fff;
+  color: #000;
+}
+
+.waku2 {
+  background: #222;
+  color: #fff;
+}
+
+.waku3 {
+  background: #d32f2f;
+  color: #fff;
+}
+
+.waku4 {
+  background: #1e63d6;
+  color: #fff;
+}
+
+.waku5 {
+  background: #f2cc00;
+  color: #000;
+}
+
+.waku6 {
+  background: #2e9b46;
+  color: #fff;
+}
+
+.waku7 {
+  background: #f08a1c;
+  color: #000;
+}
+
+.waku8 {
+  background: #e86aa6;
+  color: #000;
+}
+
+tbody tr:hover td.waku1 { background: #fff; }
+tbody tr:hover td.waku2 { background: #222; }
+tbody tr:hover td.waku3 { background: #d32f2f; }
+tbody tr:hover td.waku4 { background: #1e63d6; }
+tbody tr:hover td.waku5 { background: #f2cc00; }
+tbody tr:hover td.waku6 { background: #2e9b46; }
+tbody tr:hover td.waku7 { background: #f08a1c; }
+tbody tr:hover td.waku8 { background: #e86aa6; }

@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import type { ImportJob } from "../../src/app/api/types";
 import type {
   BashoOption,
+  PreviewChoukyou,
+  PreviewEntry,
   RaceDay,
   RaceMonth,
   RaceEntry,
@@ -10,8 +12,9 @@ import type {
   UmaSummary,
 } from "../../src/app/browse/types";
 
-export type { BashoOption, ImportJob, RaceDay, RaceMonth, RaceEntry, RaceSummary, UmaStart, UmaSummary };
+export type { BashoOption, PreviewChoukyou, PreviewEntry, ImportJob, RaceDay, RaceMonth, RaceEntry, RaceSummary, UmaStart, UmaSummary };
 
+export type ShussoubaPreview = { race: RaceSummary; entry: PreviewEntry };
 export type RaceDetail = RaceSummary & { entries: RaceEntry[] };
 export type UmaDetail = UmaSummary & {
   chichi: { id: number; bamei: string | null } | null;
