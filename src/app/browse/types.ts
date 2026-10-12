@@ -116,6 +116,15 @@ export interface BanushiSummary {
 
 export type BanushiStart = ChoukyoushiStart;
 
+export interface SeisanshaSummary {
+  id: number;
+  meishou: string | null;
+  /** 所在地 */
+  juusho: string | null;
+}
+
+export type SeisanshaStart = ChoukyoushiStart;
+
 export interface PedigreeAncestor {
   id: number;
   bamei: string | null;

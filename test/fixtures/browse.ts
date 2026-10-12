@@ -11,6 +11,9 @@ import { Kyousouba } from "../../src/app/entities/Kyousouba";
 import { MeishouKubun } from "../../src/app/entities/MeishouKubun";
 import { Race } from "../../src/app/entities/Race";
 import { RaceMei } from "../../src/app/entities/RaceMei";
+import { Seisanba } from "../../src/app/entities/Seisanba";
+import { Seisansha } from "../../src/app/entities/Seisansha";
+import { SeisanshaMei } from "../../src/app/entities/SeisanshaMei";
 import { Shoyuu } from "../../src/app/entities/Shoyuu";
 import { Shussouba } from "../../src/app/entities/Shussouba";
 import { ShussoubaSeiseki } from "../../src/app/entities/ShussoubaSeiseki";
@@ -152,6 +155,24 @@ export async function seedBrowseFixture() {
       }),
     );
   }
+  // アルファの生産者
+  const seisansha = await save(Seisansha, Object.assign({} as Seisansha, { Juusho: "北海道" }));
+  const seisanshaShoyuu = await save(
+    Shoyuu,
+    Object.assign({} as Shoyuu, { Meishou: "社台ファーム", MatchingKey: "社台ファーム" }),
+  );
+  await save(
+    SeisanshaMei,
+    Object.assign({} as SeisanshaMei, {
+      SeisanshaId: seisansha.Id,
+      ShoyuuId: seisanshaShoyuu.Id,
+      Kubun: MeishouKubun.Meishou,
+    }),
+  );
+  await save(
+    Seisanba,
+    Object.assign({} as Seisanba, { UmaId: horses[0].Id, SeisanshaId: seisansha.Id }),
+  );
   const kyousouba: Kyousouba[] = [];
   for (const [i, uma] of horses.entries()) {
     kyousouba.push(

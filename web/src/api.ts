@@ -16,10 +16,12 @@ import type {
   RaceEntry,
   RaceSummary,
   UmaStart,
+  SeisanshaStart,
+  SeisanshaSummary,
   UmaSummary,
 } from "../../src/app/browse/types";
 
-export type { BanushiStart, BanushiSummary, BashoOption, ChoukyoushiStart, ChoukyoushiSummary, KishuStart, KishuSummary, PedigreeAncestor, PreviewChoukyou, PreviewEntry, ImportJob, RaceDay, RaceMonth, RaceEntry, RaceSummary, UmaStart, UmaSummary };
+export type { BanushiStart, BanushiSummary, BashoOption, ChoukyoushiStart, ChoukyoushiSummary, KishuStart, KishuSummary, PedigreeAncestor, PreviewChoukyou, PreviewEntry, ImportJob, RaceDay, RaceMonth, RaceEntry, RaceSummary, SeisanshaStart, SeisanshaSummary, UmaStart, UmaSummary };
 
 export type ShussoubaPreview = { race: RaceSummary; entry: PreviewEntry };
 export type RaceDetail = RaceSummary & { entries: RaceEntry[] };
@@ -34,6 +36,14 @@ export type KishuDetail = KishuSummary & {
 export type BanushiDetail = BanushiSummary & {
   /** 指定したページの出走(新しい順) */
   starts: BanushiStart[];
+  /** 出走の総件数 */
+  startCount: number;
+  /** 1ページの件数 */
+  perPage: number;
+};
+export type SeisanshaDetail = SeisanshaSummary & {
+  /** 指定したページの出走(新しい順) */
+  starts: SeisanshaStart[];
   /** 出走の総件数 */
   startCount: number;
   /** 1ページの件数 */

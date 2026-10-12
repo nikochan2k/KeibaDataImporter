@@ -5,6 +5,7 @@ import { getChoukyoushi, searchChoukyoushi } from "../browse/choukyoushi";
 import { getKishu, searchKishu } from "../browse/kishu";
 import { racePreview, shussoubaPreview } from "../browse/preview";
 import { getRace } from "../browse/race";
+import { getSeisansha, searchSeisansha } from "../browse/seisansha";
 import { getUma, searchUma } from "../browse/uma";
 import { BadRequestError } from "./errors";
 
@@ -77,4 +78,14 @@ export const browseRoutes = new Elysia({ prefix: "/api" })
   })
   .get("/banushis/:id", ({ params, query }) =>
     getBanushi(toInt(params.id, "id"), query.page === undefined ? 1 : toInt(query.page, "page")),
+  )
+  .get("/seisanshas", ({ query }) => {
+    const q = typeof query.q === "string" ? query.q.trim() : "";
+    if (q === "") {
+      throw new BadRequestError("q は必須です");
+    }
+    return searchSeisansha(q);
+  })
+  .get("/seisanshas/:id", ({ params, query }) =>
+    getSeisansha(toInt(params.id, "id"), query.page === undefined ? 1 : toInt(query.page, "page")),
   );

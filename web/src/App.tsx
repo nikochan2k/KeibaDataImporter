@@ -7,6 +7,8 @@ import { BanushiPage } from "./pages/BanushiPage";
 import { BanushisPage } from "./pages/BanushisPage";
 import { ChoukyoushiPage } from "./pages/ChoukyoushiPage";
 import { ChoukyoushisPage } from "./pages/ChoukyoushisPage";
+import { SeisanshaPage } from "./pages/SeisanshaPage";
+import { SeisanshasPage } from "./pages/SeisanshasPage";
 import { KishuPage } from "./pages/KishuPage";
 import { KishusPage } from "./pages/KishusPage";
 import { RacePage } from "./pages/RacePage";
@@ -38,6 +40,9 @@ export function App() {
           <NavLink to="/banushis" className={running ? "busy" : undefined}>
             馬主
           </NavLink>
+          <NavLink to="/seisanshas" className={running ? "busy" : undefined}>
+            生産者
+          </NavLink>
           {canImport && <NavLink to="/imports">取り込み</NavLink>}
         </nav>
       </header>
@@ -57,6 +62,8 @@ export function App() {
           <Route path="/choukyoushis/:id" element={<ChoukyoushiPage />} />
           <Route path="/banushis" element={<BanushisPage />} />
           <Route path="/banushis/:id" element={<BanushiPage />} />
+          <Route path="/seisanshas" element={<SeisanshasPage />} />
+          <Route path="/seisanshas/:id" element={<SeisanshaPage />} />
           {canImport && <Route path="/imports" element={<ImportsPage />} />}
           <Route path="*" element={<p>ページが見つかりません</p>} />
         </Routes>

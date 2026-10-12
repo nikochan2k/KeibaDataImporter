@@ -209,6 +209,30 @@ describe("馬主", () => {
   });
 });
 
+describe("生産者", () => {
+  test("名前の前方一致で探す", async () => {
+    expect((await get(`/api/seisanshas?q=${encodeURIComponent("ファーム")}`)).body).toHaveLength(0);
+    const { body } = await get(`/api/seisanshas?q=${encodeURIComponent("社台")}`);
+    expect(body).toHaveLength(1);
+    expect(body[0]).toMatchObject({ meishou: "社台ファーム", juusho: "北海道" });
+    expect((await get("/api/seisanshas?q=%20")).status).toBe(400);
+  });
+
+  test("生産者の詳細は、生産馬の出走を返す", async () => {
+    const { id } = (await get(`/api/seisanshas?q=${encodeURIComponent("社台")}`)).body[0];
+    const res = await get(`/api/seisanshas/${id}`);
+    expect(res.status).toBe(200);
+    expect(res.body.starts.map((s) => [s.date, s.bamei])).toEqual([
+      ["2024-04-14", "アルファ"],
+      ["2024-04-07", "アルファ"],
+    ]);
+    expect(res.body).toMatchObject({ startCount: 2, perPage: 50 });
+    expect((await get(`/api/seisanshas/${id}?page=2`)).body.starts).toEqual([]);
+    expect((await get(`/api/seisanshas/${id}?page=0`)).status).toBe(400);
+    expect((await get("/api/seisanshas/99999")).status).toBe(404);
+  });
+});
+
 describe("取り込み", () => {
   test("接続元が分からない (ローカルと確かめられない) ときは拒否する", async () => {
     const { status, body } = await get("/api/imports");
