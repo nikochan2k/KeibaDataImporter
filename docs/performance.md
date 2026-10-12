@@ -113,6 +113,8 @@ bun --cpu-prof --cpu-prof-dir=<出力先> <スクリプト>
 - 適用先は `ShussoubaYosou` / `ShussoubaHyouka` / `ShussoubaSeiseki` (KOL・JRDB・JRA の全呼び出し)。
 - 結果: `uma` の取り込みが約 1.6 秒から約 1.35 秒 (各 4 回の計測で、旧 1.52〜1.84 秒、新 1.29〜1.55 秒)。
 
+段階 2 で `RaceSeiseki` (全呼び出し) と、`KolUma` の `Shussouba` の追加も `upsertLater` にした。あわせて、主キーを全部指定した `findOneBy` / `updateBy` は、その行が溜まっていなければ表を書き出さないようにした (毎レコード同じ表を読む `KolUma` で、1 行ずつ書き出すことになるのを避ける)。`uma` は 1.28〜1.55 秒で、段階 1 から目立った差はなかった (各 948 行で、元々 50〜70ms の見込みだった)。
+
 ## 効かなかった手法
 
 - **`PRAGMA synchronous = NORMAL`**: `uma` の取り込みは 1.5〜1.6 秒のままで変化なし。取り込みは既に 1 ファイルを 1 トランザクションで書いていて、同期待ちが効いていない。

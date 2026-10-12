@@ -1,4 +1,4 @@
-import { upsert } from "../../db/helpers";
+import { upsert, upsertLater } from "../../db/helpers";
 import { Kaisai } from "../../entities/Kaisai";
 import { Race } from "../../entities/Race";
 import { RaceSeiseki } from "../../entities/RaceSeiseki";
@@ -38,7 +38,7 @@ export abstract class JrdbRaceData extends JrdbKaisaiData {
     const toBe = {} as RaceSeiseki;
     toBe.Id = raceId;
     this.setRaceSeiseki(buffer, toBe);
-    upsert(RaceSeiseki, toBe, this.keepExisting);
+    upsertLater(RaceSeiseki, toBe, this.keepExisting);
   }
 
   protected setRaceSeiseki(_buffer: Buffer, _toBe: RaceSeiseki) {}

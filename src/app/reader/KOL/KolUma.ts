@@ -246,7 +246,7 @@ export class KolUma extends DataToImport {
     toBe.Baba = $R.baba.toCodeFromKol(buffer, 129, 1);
     toBe.KolNengappi = 0;
 
-    upsert(RaceSeiseki, toBe);
+    upsertLater(RaceSeiseki, toBe);
   }
 
   protected async saveShussouba(
@@ -275,9 +275,10 @@ export class KolUma extends DataToImport {
     toBe.Nenrei = tool.normalizeNenrei(nenrei, nen);
     toBe.KolNengappi = 0;
 
-    const shussouba = await tool.saveOrUpdate(Shussouba, asIs, toBe);
-    await kolTool.saveBanushi(buffer, 10, shussouba.Id);
-    return shussouba;
+    // asIs は無い (あれば上で戻っている) ので追加だけ。呼び出し元は Id しか使わない
+    upsertLater(Shussouba, toBe);
+    await kolTool.saveBanushi(buffer, 10, toBe.Id);
+    return toBe;
   }
 
   protected async saveShussoubaJoutai(buffer: Buffer, shussouba: Shussouba) {

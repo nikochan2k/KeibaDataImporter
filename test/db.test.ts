@@ -187,6 +187,16 @@ describe("upsertLater", () => {
     });
   });
 
+  test("主キーを全部指定した読み取りは、その行が溜まっていなければ書き出さない", async () => {
+    await runInTransaction(async () => {
+      upsertLater(ChoukyouTime, time(16, 1, { Time: 1 }));
+      expect(findOneBy(ChoukyouTime, { ChoukyouId: 16, F: 2 })).toBeNull();
+      expect(stored(16)).toBe(0);
+      expect(findOneBy(ChoukyouTime, { ChoukyouId: 16, F: 1 })?.Time).toBe(1);
+      expect(stored(16)).toBe(1);
+    });
+  });
+
   test("ROLLBACK では捨てられる", async () => {
     await expect(
       runInTransaction(async () => {

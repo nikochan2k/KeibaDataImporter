@@ -98,7 +98,7 @@ function whereOf<T extends SQLiteTable>(table: T, where: Where<T>): SQL | undefi
 
 /** 条件に合う最初の行。なければ null */
 export function findOneBy<T extends SQLiteTable>(table: T, where: Where<T>): Row<T> | null {
-  flushWrites(table);
+  flushWritesFor(table, where);
   const { signature, params } = whereParts(table, where);
   const statement = cached(`findOne:${getTableName(table)}${signature}`, () =>
     currentDb().select().from(table).where(whereOf(table, where)).limit(1).prepare(),
@@ -387,6 +387,32 @@ export function flushWrites(table?: SQLiteTable): void {
   }
 }
 
+/**
+ * where が主キーの値だけを指す (全部の主キー列の一致) とき、その行が溜まっていなければ書き出さない。
+ * ほかの主キーの溜めた行は、この行の読み書きに影響しないので、溜めたままにできる。それ以外の where は表ごと書き出す。
+ */
+function flushWritesFor<T extends SQLiteTable>(table: T, where: Where<T>): void {
+  const rows = pending.get(table);
+  if (!rows) {
+    return;
+  }
+  const keys = keysOf(table);
+  const entries = Object.entries(where);
+  if (
+    entries.length === keys.length &&
+    keys.every((k) => {
+      const value = (where as Record<string, unknown>)[k.name];
+      return value !== undefined && value !== null && value !== IS_NULL && !Array.isArray(value);
+    })
+  ) {
+    const id = JSON.stringify(keys.map((k) => (where as Record<string, unknown>)[k.name]));
+    if (!rows.has(id)) {
+      return;
+    }
+  }
+  flushWrites(table);
+}
+
 function discardWrites() {
   pending.clear();
   pendingRows = 0;
@@ -400,7 +426,7 @@ export function updateBy<T extends SQLiteTable>(
   where: Where<T>,
   set: Partial<Row<T>>,
 ): void {
-  flushWrites(table);
+  flushWritesFor(table, where);
   const values = definedOf(set);
   const names = Object.keys(values);
   if (names.length === 0) {

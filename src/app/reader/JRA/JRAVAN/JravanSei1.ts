@@ -1,6 +1,6 @@
 import { Baken, Kakutei } from "../../../converters/Common";
 import * as $R from "../../../converters/Race";
-import { upsert } from "../../../db/helpers";
+import { upsertLater } from "../../../db/helpers";
 import { Race } from "../../../entities/Race";
 import { RaceSeiseki } from "../../../entities/RaceSeiseki";
 import { DataToImport } from "../../DataToImport";
@@ -83,7 +83,7 @@ export class JravanSei1 extends DataToImport {
     }
     toBe.Baba = $R.baba.toCodeFromJravan(buffer, 331, 1);
     toBe.Tenki = $R.tenki.toCodeFromJravan(buffer, 332, 1);
-    upsert(RaceSeiseki, toBe);
+    upsertLater(RaceSeiseki, toBe);
   }
 
   protected async saveRaceLapTime(buffer: Buffer, race: Race) {

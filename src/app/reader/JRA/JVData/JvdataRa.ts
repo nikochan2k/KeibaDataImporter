@@ -1,5 +1,5 @@
 import * as $R from "../../../converters/Race";
-import { upsert } from "../../../db/helpers";
+import { upsertLater } from "../../../db/helpers";
 import { Race } from "../../../entities/Race";
 import { RaceSeiseki } from "../../../entities/RaceSeiseki";
 import { readInt, readPositiveDouble, readPositiveInt, readRaw } from "../../Reader";
@@ -66,7 +66,7 @@ export class JvdataRa extends JvdataRecord {
     const shiba = $R.baba.toCodeFromJvData(buffer, 888, 1);
     const dart = $R.baba.toCodeFromJvData(buffer, 889, 1);
     toBe.Baba = (dirt ? (dart ?? shiba) : (shiba ?? dart)) ?? undefined;
-    upsert(RaceSeiseki, toBe, true);
+    upsertLater(RaceSeiseki, toBe, true);
   }
 
   private async saveRaceLapTime(buffer: Buffer, race: Race) {

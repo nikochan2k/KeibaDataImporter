@@ -3,7 +3,7 @@ import * as $K from "../../converters/Kishu";
 import * as $R from "../../converters/Race";
 import * as $S from "../../converters/Shussouba";
 import * as $SY from "../../converters/ShussoubaYosou";
-import { findOneBy, upsert, upsertLater } from "../../db/helpers";
+import { findOneBy, upsertLater } from "../../db/helpers";
 import { Race } from "../../entities/Race";
 import { RaceSeiseki } from "../../entities/RaceSeiseki";
 import { Shussouba } from "../../entities/Shussouba";
@@ -57,7 +57,7 @@ export class Tyb extends JrdbData {
     seiseki.Baba = $R.baba.toCodeFromJrdb(buffer, 69, 1);
     seiseki.BabaSokudo = $R.babaSokudo.toCodeFromJrdb(buffer, 70, 1);
     seiseki.Tenki = $R.tenki.toCodeFromJrdb(buffer, 71, 1);
-    upsert(RaceSeiseki, seiseki, true);
+    upsertLater(RaceSeiseki, seiseki, true);
   }
 
   protected async saveShussoubaHyouka(buffer: Buffer, shussoubaId: number) {
