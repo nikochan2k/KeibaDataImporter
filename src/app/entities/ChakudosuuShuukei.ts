@@ -2,40 +2,44 @@ import { integer, primaryKey, sqliteTable } from "drizzle-orm/sqlite-core";
 import type { ChakudosuuKikan, ChakudosuuTaishou } from "../converters/Chakudosuu";
 
 /**
- * 出走時点の着度数 (Chakudosuu) の対象・期間ごとの集計。賞金 (円) は中央のもの。
- * 馬は平地・障害の本賞金・付加賞金・収得賞金と脚質傾向、
- * 騎手・調教師は平地・障害の本賞金・付加賞金、馬主・生産者は本賞金・付加賞金の合計がある。
+ * 着度数 (Chakudosuu) と同じ対象・時点・期間の、賞金と脚質の集計。賞金は円。
+ * データ元によって持つ項目が違う。
  */
 export const ChakudosuuShuukei = sqliteTable(
   "ChakudosuuShuukei",
   {
-    RaceId: integer().notNull(),
-    UmaId: integer().notNull(),
     Taishou: integer().$type<ChakudosuuTaishou>().notNull(),
+    TaishouId: integer().notNull(),
+    Nengappi: integer().notNull(),
     Kikan: integer().$type<ChakudosuuKikan>().notNull(),
-    /** 対象の騎手 (Kishu)・調教師 (Choukyoushi)・馬主 (Banushi)・生産者 (Seisansha) の Id。馬は UmaId */
-    TaishouId: integer(),
-    /** 本年の成績の年 */
+    /** 本年・前年の年 */
     Nen: integer(),
     HeichiHonShoukin: integer(),
     ShougaiHonShoukin: integer(),
     HeichiFukaShoukin: integer(),
     ShougaiFukaShoukin: integer(),
-    /** 平地の収得賞金 (中央と中央以外。馬だけ) */
     HeichiShuutokuShoukin: integer(),
     ShougaiShuutokuShoukin: integer(),
-    /** 本賞金の合計 (馬主・生産者) */
+    /** 本賞金の合計 (平地と障害を分けないデータ元) */
     HonShoukin: integer(),
     FukaShoukin: integer(),
-    /** 脚質傾向 (過去の中央のレースの脚質の回数。馬だけ) */
+    /** 総賞金 (本賞金と付加賞金の合計。KOL の競走馬) */
+    SouShoukin: integer(),
+    ShougaiSouShoukin: integer(),
+    /** 脚質傾向 (出走したレースの脚質の回数。JV-Data の馬) */
     Nige: integer(),
     Senkou: integer(),
     Sashi: integer(),
     Oikomi: integer(),
-    /** JRA-VAN に登録されている成績のレース数 (馬だけ) */
+    /** 連対したレースの脚質の回数 (KOL) */
+    RentaiNige: integer(),
+    RentaiSenkou: integer(),
+    RentaiSashi: integer(),
+    RentaiOikomi: integer(),
+    /** JRA-VAN に登録されている成績のレース数 (JV-Data の馬) */
     TourokuRaceSuu: integer(),
   },
-  (t) => [primaryKey({ columns: [t.RaceId, t.UmaId, t.Taishou, t.Kikan] })],
+  (t) => [primaryKey({ columns: [t.Taishou, t.TaishouId, t.Nengappi, t.Kikan] })],
 );
 
 export type ChakudosuuShuukei = typeof ChakudosuuShuukei.$inferSelect;
