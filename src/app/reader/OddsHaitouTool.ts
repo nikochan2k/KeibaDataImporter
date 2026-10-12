@@ -1,6 +1,6 @@
 import { Logger } from "log4js";
 import { Baken, Kakutei } from "../converters/Common";
-import { upsert } from "../db/helpers";
+import { upsert, upsertAll } from "../db/helpers";
 import { OddsHaitou } from "../entities/OddsHaitou";
 import { readPositiveInt } from "./Reader";
 
@@ -51,12 +51,21 @@ export abstract class OddsHaitouTool {
     return upsert(OddsHaitou, toBe);
   }
 
+  /** 複数のオッズ配当をまとめて保存する。saveOddsHaitou と同じく渡した項目だけ更新する */
+  public async saveOddsHaitouAll(toBes: OddsHaitou[]) {
+    for (const toBe of toBes) {
+      toBe.Id = this.calculateOddsHaitouId(toBe);
+    }
+    upsertAll(OddsHaitou, toBes);
+  }
+
   public async saveRaceHaitou(
     buffer: Buffer,
     raceId: number,
     kakutei: Kakutei,
     infos: HaitouInfo[],
   ) {
+    const rows: OddsHaitou[] = [];
     for (let i = 0; i < infos.length; i++) {
       const info = infos[i];
       const bangou1 = readPositiveInt(buffer, info.bangou1, info.bangou1Len);
@@ -88,7 +97,8 @@ export abstract class OddsHaitouTool {
       oddsHaitou.Ninki = info.ninki
         ? readPositiveInt(buffer, info.ninki, info.ninkiLen)
         : undefined;
-      await this.saveOddsHaitou(oddsHaitou);
+      rows.push(oddsHaitou);
     }
+    await this.saveOddsHaitouAll(rows);
   }
 }

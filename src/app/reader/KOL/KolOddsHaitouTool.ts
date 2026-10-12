@@ -32,6 +32,7 @@ export class KolOddsHaitouTool extends OddsHaitouTool {
   }
 
   public async saveTanshouOdds(buffer: Buffer, offset: number, raceId: number, kakutei: Kakutei) {
+    const rows: OddsHaitou[] = [];
     for (let bangou = 1; bangou <= 18; bangou++) {
       const odds1 = this.getOdds(buffer, offset, 5);
       offset += 5;
@@ -44,11 +45,13 @@ export class KolOddsHaitouTool extends OddsHaitouTool {
       oddsHaitou.Baken = Baken.Tanshou;
       oddsHaitou.Bangou1 = bangou;
       oddsHaitou.Odds1 = odds1;
-      await this.saveOddsHaitou(oddsHaitou);
+      rows.push(oddsHaitou);
     }
+    await this.saveOddsHaitouAll(rows);
   }
 
   public async saveWakurenOdds(buffer: Buffer, offset: number, raceId: number, kakutei: Kakutei) {
+    const rows: OddsHaitou[] = [];
     // １－１、１－２、…、１－８、２－２、…、８－８ の 36 通り
     for (let bangou1 = 1; bangou1 <= 8; bangou1++) {
       for (let bangou2 = bangou1; bangou2 <= 8; bangou2++) {
@@ -64,12 +67,14 @@ export class KolOddsHaitouTool extends OddsHaitouTool {
         oddsHaitou.Bangou1 = bangou1;
         oddsHaitou.Bangou2 = bangou2;
         oddsHaitou.Odds1 = odds1;
-        await this.saveOddsHaitou(oddsHaitou);
+        rows.push(oddsHaitou);
       }
     }
+    await this.saveOddsHaitouAll(rows);
   }
 
   public async saveUmarenOdds(buffer: Buffer, offset: number, raceId: number, kakutei: Kakutei) {
+    const rows: OddsHaitou[] = [];
     for (let bangou1 = 1; bangou1 <= 17; bangou1++) {
       for (let bangou2 = bangou1 + 1; bangou2 <= 18; bangou2++) {
         const odds1 = this.getOdds(buffer, offset, 7);
@@ -84,12 +89,14 @@ export class KolOddsHaitouTool extends OddsHaitouTool {
         oddsHaitou.Bangou1 = bangou1;
         oddsHaitou.Bangou2 = bangou2;
         oddsHaitou.Odds1 = odds1;
-        await this.saveOddsHaitou(oddsHaitou);
+        rows.push(oddsHaitou);
       }
     }
+    await this.saveOddsHaitouAll(rows);
   }
 
   public async saveFukushouOdds(buffer: Buffer, offset: number, raceId: number, kakutei: Kakutei) {
+    const rows: OddsHaitou[] = [];
     for (let bangou = 1; bangou <= 18; bangou++) {
       const odds1 = this.getOdds(buffer, offset, 3);
       offset += 3;
@@ -105,11 +112,13 @@ export class KolOddsHaitouTool extends OddsHaitouTool {
       oddsHaitou.Bangou1 = bangou;
       oddsHaitou.Odds1 = odds1;
       oddsHaitou.Odds2 = odds2;
-      await this.saveOddsHaitou(oddsHaitou);
+      rows.push(oddsHaitou);
     }
+    await this.saveOddsHaitouAll(rows);
   }
 
   public async saveWideOdds(buffer: Buffer, offset: number, raceId: number, kakutei: Kakutei) {
+    const rows: OddsHaitou[] = [];
     for (let bangou1 = 1; bangou1 <= 17; bangou1++) {
       for (let bangou2 = bangou1 + 1; bangou2 <= 18; bangou2++) {
         const odds1 = this.getOdds(buffer, offset, 5);
@@ -127,12 +136,14 @@ export class KolOddsHaitouTool extends OddsHaitouTool {
         oddsHaitou.Bangou2 = bangou2;
         oddsHaitou.Odds1 = odds1;
         oddsHaitou.Odds2 = odds2;
-        await this.saveOddsHaitou(oddsHaitou);
+        rows.push(oddsHaitou);
       }
     }
+    await this.saveOddsHaitouAll(rows);
   }
 
   public async saveUmatanOdds(buffer: Buffer, offset: number, raceId: number, kakutei: Kakutei) {
+    const rows: OddsHaitou[] = [];
     for (let bangou1 = 1; bangou1 <= 18; bangou1++) {
       for (let bangou2 = 1; bangou2 <= 18; bangou2++) {
         if (bangou1 === bangou2) {
@@ -150,9 +161,10 @@ export class KolOddsHaitouTool extends OddsHaitouTool {
         oddsHaitou.Bangou1 = bangou1;
         oddsHaitou.Bangou2 = bangou2;
         oddsHaitou.Odds1 = odds1;
-        await this.saveOddsHaitou(oddsHaitou);
+        rows.push(oddsHaitou);
       }
     }
+    await this.saveOddsHaitouAll(rows);
   }
 
   public async saveSanrenpukuOdds(
@@ -161,6 +173,7 @@ export class KolOddsHaitouTool extends OddsHaitouTool {
     raceId: number,
     kakutei: Kakutei,
   ) {
+    const rows: OddsHaitou[] = [];
     for (let bangou1 = 1; bangou1 <= 16; bangou1++) {
       for (let bangou2 = bangou1 + 1; bangou2 <= 17; bangou2++) {
         for (let bangou3 = bangou2 + 1; bangou3 <= 18; bangou3++) {
@@ -177,13 +190,15 @@ export class KolOddsHaitouTool extends OddsHaitouTool {
           oddsHaitou.Bangou2 = bangou2;
           oddsHaitou.Bangou3 = bangou3;
           oddsHaitou.Odds1 = odds1;
-          await this.saveOddsHaitou(oddsHaitou);
+          rows.push(oddsHaitou);
         }
       }
     }
+    await this.saveOddsHaitouAll(rows);
   }
 
   public async saveSanrentanOdds(buffer: Buffer, offset: number, raceId: number, kakutei: Kakutei) {
+    const rows: OddsHaitou[] = [];
     for (let bangou1 = 1; bangou1 <= 18; bangou1++) {
       for (let bangou2 = 1; bangou2 <= 18; bangou2++) {
         for (let bangou3 = 1; bangou3 <= 18; bangou3++) {
@@ -203,10 +218,11 @@ export class KolOddsHaitouTool extends OddsHaitouTool {
           oddsHaitou.Bangou2 = bangou2;
           oddsHaitou.Bangou3 = bangou3;
           oddsHaitou.Odds1 = odds1;
-          await this.saveOddsHaitou(oddsHaitou);
+          rows.push(oddsHaitou);
         }
       }
     }
+    await this.saveOddsHaitouAll(rows);
   }
 }
 
