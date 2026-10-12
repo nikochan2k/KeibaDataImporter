@@ -363,9 +363,28 @@ export class LhaReader {
     }
   }
 
+  /** 圧縮されていない (-lh0-) エントリはそのまま切り出す。ハフマン符号として読むと終わらなくなる */
+  private extractStored(entry: LhaHeader) {
+    const start = entry.packedOffset ?? 0;
+    return this.reader.buffer.slice(start, start + entry.originalSize);
+  }
+
+  /** -lh0- は無圧縮、-lh4- / -lh5- は復号できる。ほかの方式は誤ったデータを返さないよう例外にする */
+  private checkMethod(entry: LhaHeader) {
+    if (
+      entry.packedType !== "-lh0-" &&
+      entry.packedType !== "-lh4-" &&
+      entry.packedType !== "-lh5-"
+    ) {
+      throw new Error(`未対応の圧縮方式です: ${entry.packedType} (${entry.filename})`);
+    }
+  }
+
   extractSync(id: string) {
     const entry = this.entries[id];
     if (!entry) return null;
+    this.checkMethod(entry);
+    if (entry.packedType === "-lh0-") return this.extractStored(entry);
     this.reader.seek(entry.packedOffset, LhaArrayReader.SeekAbsolute);
     const writer = new LhaArrayWriter(entry.originalSize);
     while (this.extractBlock(writer)) {
@@ -377,6 +396,12 @@ export class LhaReader {
   extract(id: string, callback: LhaReadCallback) {
     const entry = this.entries[id];
     if (!entry) return null;
+    this.checkMethod(entry);
+    if (entry.packedType === "-lh0-") {
+      const data = this.extractStored(entry);
+      if (callback) callback(data.length, data.length);
+      return data;
+    }
 
     this.reader.seek(entry.packedOffset, LhaArrayReader.SeekAbsolute);
     const writer = new LhaArrayWriter(entry.originalSize);
