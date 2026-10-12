@@ -10,7 +10,7 @@ export const Kyousouba = sqliteTable(
     ChoukyoushiId: integer(),
     KoueiGaikokuChoukyoushiMei: text(),
   },
-  (t) => [index("IxKyousouba").on(t.UmaId)],
+  (t) => [index("IxKyousouba").on(t.UmaId), index("IxKyousouba2").on(t.ChoukyoushiId)],
 );
 
 export type Kyousouba = typeof Kyousouba.$inferSelect;

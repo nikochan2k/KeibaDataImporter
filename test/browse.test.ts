@@ -153,6 +153,29 @@ describe("騎手", () => {
   });
 });
 
+describe("調教師", () => {
+  test("名前の前方一致で探す", async () => {
+    expect((await get(`/api/choukyoushis?q=${encodeURIComponent("芳")}`)).body).toHaveLength(0);
+    const { body } = await get(`/api/choukyoushis?q=${encodeURIComponent("矢作")}`);
+    expect(body).toHaveLength(1);
+    expect(body[0]).toMatchObject({ id: 5, meishou: "矢作 芳人", seinen: 1960, shozoku: "関西" });
+    expect((await get("/api/choukyoushis?q=%20")).status).toBe(400);
+  });
+
+  test("調教師の詳細は管理馬の出走を返す", async () => {
+    const { status, body } = await get("/api/choukyoushis/5");
+    expect(status).toBe(200);
+    expect(body.starts.map((s) => [s.date, s.raceBangou, s.bamei, s.kishuMei])).toEqual([
+      ["2024-04-14", 2, "アルファ", null],
+      ["2024-04-07", 11, "アルファ", "武 豊"],
+    ]);
+    expect(body).toMatchObject({ startCount: 2, perPage: 50 });
+    expect((await get("/api/choukyoushis/5?page=2")).body.starts).toEqual([]);
+    expect((await get("/api/choukyoushis/5?page=0")).status).toBe(400);
+    expect((await get("/api/choukyoushis/99999")).status).toBe(404);
+  });
+});
+
 describe("取り込み", () => {
   test("接続元が分からない (ローカルと確かめられない) ときは拒否する", async () => {
     const { status, body } = await get("/api/imports");

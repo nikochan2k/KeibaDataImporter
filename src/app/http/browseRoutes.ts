@@ -1,5 +1,6 @@
 import { Elysia } from "elysia";
 import { parseDate, raceDays, raceMonths, racesOn } from "../browse/calendar";
+import { getChoukyoushi, searchChoukyoushi } from "../browse/choukyoushi";
 import { getKishu, searchKishu } from "../browse/kishu";
 import { racePreview, shussoubaPreview } from "../browse/preview";
 import { getRace } from "../browse/race";
@@ -52,4 +53,17 @@ export const browseRoutes = new Elysia({ prefix: "/api" })
   })
   .get("/kishus/:id", ({ params, query }) =>
     getKishu(toInt(params.id, "id"), query.page === undefined ? 1 : toInt(query.page, "page")),
+  )
+  .get("/choukyoushis", ({ query }) => {
+    const q = typeof query.q === "string" ? query.q.trim() : "";
+    if (q === "") {
+      throw new BadRequestError("q は必須です");
+    }
+    return searchChoukyoushi(q);
+  })
+  .get("/choukyoushis/:id", ({ params, query }) =>
+    getChoukyoushi(
+      toInt(params.id, "id"),
+      query.page === undefined ? 1 : toInt(query.page, "page"),
+    ),
   );

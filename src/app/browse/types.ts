@@ -88,6 +88,25 @@ export interface KishuStart extends RaceSummary {
   bamei: string | null;
 }
 
+export interface ChoukyoushiSummary {
+  id: number;
+  meishou: string | null;
+  seinen: number | null;
+  seibetsu: string | null;
+  /** 所属(関東・関西など) */
+  shozoku: string | null;
+}
+
+export interface ChoukyoushiStart extends RaceSummary {
+  umaban: number;
+  chakujun: number | null;
+  time: number | null;
+  agari3F: number | null;
+  umaId: number | null;
+  bamei: string | null;
+  kishuMei: string | null;
+}
+
 export interface PedigreeAncestor {
   id: number;
   bamei: string | null;

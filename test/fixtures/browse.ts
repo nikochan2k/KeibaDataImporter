@@ -1,4 +1,6 @@
 import { save } from "../../src/app/db/helpers";
+import { Choukyoushi } from "../../src/app/entities/Choukyoushi";
+import { ChoukyoushiMei } from "../../src/app/entities/ChoukyoushiMei";
 import { Jinmei } from "../../src/app/entities/Jinmei";
 import { Kaisai } from "../../src/app/entities/Kaisai";
 import { Kishu } from "../../src/app/entities/Kishu";
@@ -94,9 +96,30 @@ export async function seedBrowseFixture() {
       await save(Uma, Object.assign({} as Uma, { KanaBamei: kana, KyuuBamei: "", ...extra })),
     );
   }
+  await save(
+    Choukyoushi,
+    Object.assign({} as Choukyoushi, { Id: 5, Seinengappi: 19600101, Seibetsu: 1, TouzaiBetsu: 1 }),
+  );
+  const choukyoushiJinmei = await save(
+    Jinmei,
+    Object.assign({} as Jinmei, { Meishou: "矢作 芳人", MatchingKey: "矢作芳人" }),
+  );
+  await save(
+    ChoukyoushiMei,
+    Object.assign({} as ChoukyoushiMei, {
+      ChoukyoushiId: 5,
+      JinmeiId: choukyoushiJinmei.Id,
+      Kubun: MeishouKubun.Meishou,
+    }),
+  );
   const kyousouba: Kyousouba[] = [];
-  for (const uma of horses) {
-    kyousouba.push(await save(Kyousouba, Object.assign({} as Kyousouba, { UmaId: uma.Id })));
+  for (const [i, uma] of horses.entries()) {
+    kyousouba.push(
+      await save(
+        Kyousouba,
+        Object.assign({} as Kyousouba, { UmaId: uma.Id, ChoukyoushiId: i === 0 ? 5 : null }),
+      ),
+    );
   }
 
   await save(
