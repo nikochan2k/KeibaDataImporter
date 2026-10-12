@@ -3,7 +3,7 @@ import { JinmeiKubun } from "../entities/Jinmei";
 import { Kishu } from "../entities/Kishu";
 import { KishuMei } from "../entities/KishuMei";
 import { tool } from "../reader/Tool";
-import { jinmeiDao, jinmeiMatchingKey } from "./JinmeiDao";
+import { jinmeiDao, jinmeiMatchingKey, stripJinmei } from "./JinmeiDao";
 
 export class KishuDao {
   private static readonly codeKeys = ["KolKishuCode", "JrdbKishuCode", "JvDataKishuCode"] as const;
@@ -15,20 +15,29 @@ export class KishuDao {
 
   /** 名前(姓名か略称)が一致する騎手のうち、別人でないもの */
   private async findByMeishou(toBe: Kishu, meishou: string) {
-    const rows = query<Kishu>(
-      `SELECT k.* FROM Kishu k
+    const rows = query<Kishu & { Exact: number }>(
+      `SELECT k.*, j.Meishou = ? AS Exact FROM Kishu k
         INNER JOIN KishuMei km ON km.KishuId = k.Id
         INNER JOIN Jinmei j ON j.Id = km.JinmeiId
-        WHERE j.MatchingKey = ?`,
+        WHERE j.Meishou = ? OR j.MatchingKey = ?`,
+      stripJinmei(meishou),
+      stripJinmei(meishou),
       jinmeiMatchingKey(meishou),
     );
-    // 名前が複数一致しても 1 人 1 行にする
-    const candidates = [...new Map(rows.map((row) => [row.Id, row])).values()];
-    return candidates.filter(
-      (c) =>
-        !this.conflicts(c, toBe) &&
-        (!toBe.Seinengappi || !c.Seinengappi || toBe.Seinengappi === c.Seinengappi),
+    // 名前が複数一致しても 1 人 1 行にする。表記が同じ名前で当たったかも持つ
+    const byId = new Map<number, { row: Kishu; exact: boolean }>();
+    for (const { Exact, ...row } of rows) {
+      const prev = byId.get(row.Id);
+      byId.set(row.Id, { row, exact: !!Exact || !!prev?.exact });
+    }
+    const candidates = [...byId.values()].filter(
+      ({ row }) =>
+        !this.conflicts(row, toBe) &&
+        (!toBe.Seinengappi || !row.Seinengappi || toBe.Seinengappi === row.Seinengappi),
     );
+    // 表記が同じ人がいればその人たち、いなければ異体字・空白の違いを許した人たち
+    const exact = candidates.filter((c) => c.exact);
+    return (exact.length > 0 ? exact : candidates).map((c) => c.row);
   }
 
   /**
@@ -59,9 +68,10 @@ export class KishuDao {
       query<{ Id: number }>(
         `SELECT m.Id FROM KishuMei m
           INNER JOIN Jinmei j ON j.Id = m.JinmeiId
-          WHERE m.KishuId = ? AND m.Kubun = ? AND j.MatchingKey = ? LIMIT 1`,
+          WHERE m.KishuId = ? AND m.Kubun = ? AND (j.Meishou = ? OR j.MatchingKey = ?) LIMIT 1`,
         row.Id,
         JinmeiKubun.Seimei,
+        stripJinmei(seimei),
         jinmeiMatchingKey(seimei),
       ).length > 0
     );

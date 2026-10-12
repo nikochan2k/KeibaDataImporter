@@ -25,11 +25,11 @@ export class JinmeiDao {
     return findOneBy(Jinmei, { Id: id });
   }
 
-  /** 突き合わせ用のキーが同じ名前があればそれを、なければ新しく作って返します。 */
+  /** 同じ表記があればそれを、なければ新しく作って返します。 */
   public async save(meishou: string) {
     meishou = stripJinmei(meishou);
     const matchingKey = jinmeiMatchingKey(meishou);
-    return getOrCreate(Jinmei, { Meishou: meishou, MatchingKey: matchingKey }, ["MatchingKey"]);
+    return getOrCreate(Jinmei, { Meishou: meishou, MatchingKey: matchingKey }, ["Meishou"]);
   }
 }
 

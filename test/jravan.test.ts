@@ -649,13 +649,15 @@ describe("他の情報源との突き合わせ", () => {
     expect(c.Id).not.toBe(a.Id);
   });
 
-  test("異体字・空白だけが違う名前は1行にまとめ、最初の表記を残す", async () => {
+  test("空白だけが違う名前は1行にまとめ、異体字が違う名前は別の行にする", async () => {
     await emptyKolDb();
     const dao = jinmeiDao;
     const a = await dao.save("髙 橋");
-    const b = await dao.save("高橋");
-    // 突き合わせ用のキーが同じなら同じ行で、名前は最初の表記のまま
+    const b = await dao.save("髙橋");
+    const c = await dao.save("高橋");
     expect(b.Id).toBe(a.Id);
-    expect(b.Meishou).toBe("髙橋");
+    expect(c.Id).not.toBe(a.Id);
+    // 表記は違っても、探すためのキーは同じ
+    expect(c.MatchingKey).toBe(a.MatchingKey);
   });
 });
