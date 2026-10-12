@@ -1,4 +1,13 @@
 import { afterAll, describe, expect, setDefaultTimeout, test } from "bun:test";
+import {
+  babaBunrui,
+  ChakudosuuBunrui,
+  ChakudosuuKikan,
+  ChakudosuuTaishou,
+  ChakudosuuTrack,
+  keibajouBunrui,
+  kyoriBunrui,
+} from "../src/app/converters/Chakudosuu";
 import * as $CH from "../src/app/converters/Choukyou";
 import { Baken, Kakutei, TouzaiBetsu, touzaiBetsu } from "../src/app/converters/Common";
 import * as $K from "../src/app/converters/Kishu";
@@ -10,6 +19,8 @@ import { choukyouDao } from "../src/app/daos/ChoukyouDao";
 import { umaDao } from "../src/app/daos/UmaDao";
 import { Banushi } from "../src/app/entities/Banushi";
 import { BanushiMei } from "../src/app/entities/BanushiMei";
+import { Chakudosuu } from "../src/app/entities/Chakudosuu";
+import { ChakudosuuShuukei } from "../src/app/entities/ChakudosuuShuukei";
 import { Choukyou } from "../src/app/entities/Choukyou";
 import { Choukyoushi } from "../src/app/entities/Choukyoushi";
 import { ChoukyouTime } from "../src/app/entities/ChoukyouTime";
@@ -50,6 +61,7 @@ import { JvdataBr } from "../src/app/reader/JRA/JVData/JvdataBr";
 import { JvdataBt } from "../src/app/reader/JRA/JVData/JvdataBt";
 import { JvdataCh } from "../src/app/reader/JRA/JVData/JvdataCh";
 import { JvdataHc, JvdataWc } from "../src/app/reader/JRA/JVData/JvdataChoukyou";
+import { JvdataCk } from "../src/app/reader/JRA/JVData/JvdataCk";
 import { JvdataCs } from "../src/app/reader/JRA/JVData/JvdataCs";
 import { JvdataHn } from "../src/app/reader/JRA/JVData/JvdataHn";
 import { JvdataHr } from "../src/app/reader/JRA/JVData/JvdataHr";
@@ -116,6 +128,7 @@ const handlers = [
   JvdataJg,
   JvdataRc,
   JvdataWf,
+  JvdataCk,
 ];
 
 describe("JV-Data の仕様書", () => {
@@ -1277,6 +1290,104 @@ describe("レコードマスタ", () => {
     expect(holder).toEqual(
       expect.objectContaining({ Kinryou: 57, KishuId: kishu.Id, ChoukyoushiId: choukyoushi.Id }),
     );
+  });
+});
+
+describe("出走別着度数", () => {
+  /** 騎手・調教師の成績の子項目は仕様書に位置の書式がないので、ブロックの先頭からの位置に直接書く */
+  function writeJin(r: JvdataRecord, parent: string, kikan: number, rel: number, text: string) {
+    const { at } = r.locate(parent);
+    r.buffer.write(text, at + kikan * 1220 + rel, "ascii");
+  }
+
+  test("馬・騎手・調教師・馬主・生産者の着度数と賞金を、(レース, 馬) ごとに保存する", async () => {
+    await emptyKolDb();
+    const ck = raceKey(new JvdataRecord("CK"));
+    ck.set("データ区分", "1")
+      .set("血統登録番号", "2004101234")
+      .set("馬名", "テストホース")
+      .set("平地本賞金累計", 12345)
+      .set("平地収得賞金累計", 6000)
+      .set("総合着回数", 3, { index: 0 })
+      .set("総合着回数", 12, { index: 5 })
+      .set("芝右・着回数", 2, { index: 0 })
+      .set("芝良・着回数", 1, { index: 1 })
+      .set("芝1401-1600・着回数", 4, { index: 2 })
+      .set("東京芝・着回数", 5, { index: 0 })
+      .set("脚質傾向", 4, { index: 1 })
+      .set("登録レース数", 10)
+      .set("騎手コード", "01088")
+      .set("騎手名", "武　豊")
+      .set("調教師コード", "01234")
+      .set("調教師名", "藤沢　和雄")
+      .set("馬主コード", "123456")
+      .set("馬主名(法人格無)", "テスト")
+      .set("設定年", 2007, { parent: "<本年･累計成績情報>" })
+      .set("本賞金合計", 500, { parent: "<本年･累計成績情報>" })
+      .set("着回数", 7, { parent: "<本年･累計成績情報>" })
+      .set("生産者コード", "00054321")
+      .set("生産者名(法人格無)", "テスト牧場");
+    // 騎手: 本年の設定年と芝 1 着 (5 バイト)、累計の東京・障害 2 着 (3 バイト)
+    writeJin(ck, "<騎手本年･累計成績情報>", 0, 0, "2007");
+    writeJin(ck, "<騎手本年･累計成績情報>", 0, 44, "00050");
+    writeJin(ck, "<騎手本年･累計成績情報>", 1, 1040 + 4 * 18 + 3, "002");
+    expect(await importKolFiles({ "SNAP.jvd": ck.buffer })).toEqual([]);
+
+    const race = await repo(Race).findOneByOrFail({});
+    const uma = await repo(Uma).findOneByOrFail({ KettouTourokuBangou: "04101234" });
+    const rows = await repo(Chakudosuu).find();
+    expect(rows.every((r) => r.RaceId === race.Id && r.UmaId === uma.Id)).toBe(true);
+    const counts = (taishou: ChakudosuuTaishou, kikan: ChakudosuuKikan) =>
+      rows
+        .filter((r) => r.Taishou === taishou && r.Kikan === kikan)
+        .map((r) => [r.Bunrui, r.Chaku1, r.Chaku2, r.Chaku3, r.Chakugai])
+        .sort((a, b) => (a[0] ?? 0) - (b[0] ?? 0));
+    // 回数が全部 0 の分類は行を作らない
+    expect(counts(ChakudosuuTaishou.Uma, ChakudosuuKikan.Ruikei)).toEqual([
+      [ChakudosuuBunrui.Sougou, 3, 0, 0, 12],
+      [ChakudosuuBunrui.ShibaMigi, 2, 0, 0, 0],
+      [babaBunrui(ChakudosuuTrack.Shiba, 0), 0, 1, 0, 0],
+      [kyoriBunrui(ChakudosuuTrack.Shiba, 2), 0, 0, 4, 0],
+      [keibajouBunrui(ChakudosuuTrack.Shiba, 4), 5, 0, 0, 0],
+    ]);
+    expect(counts(ChakudosuuTaishou.Kishu, ChakudosuuKikan.Honnen)).toEqual([
+      [ChakudosuuBunrui.Shiba, 50, 0, 0, 0],
+    ]);
+    expect(counts(ChakudosuuTaishou.Kishu, ChakudosuuKikan.Ruikei)).toEqual([
+      [keibajouBunrui(ChakudosuuTrack.Shougai, 4), 0, 2, 0, 0],
+    ]);
+    expect(counts(ChakudosuuTaishou.Banushi, ChakudosuuKikan.Honnen)).toEqual([
+      [ChakudosuuBunrui.Chuuou, 7, 0, 0, 0],
+    ]);
+
+    const shuukei = await repo(ChakudosuuShuukei).find();
+    const of = (taishou: ChakudosuuTaishou, kikan: ChakudosuuKikan) =>
+      shuukei.find((s) => s.Taishou === taishou && s.Kikan === kikan);
+    expect(of(ChakudosuuTaishou.Uma, ChakudosuuKikan.Ruikei)).toEqual(
+      expect.objectContaining({
+        HeichiHonShoukin: 1234500,
+        HeichiShuutokuShoukin: 600000,
+        Senkou: 4,
+        TourokuRaceSuu: 10,
+      }),
+    );
+    const kishu = await repo(Kishu).findOneByOrFail({ JvDataKishuCode: "01088" });
+    expect(of(ChakudosuuTaishou.Kishu, ChakudosuuKikan.Honnen)).toEqual(
+      expect.objectContaining({ TaishouId: kishu.Id, Nen: 2007 }),
+    );
+    const choukyoushi = await repo(Choukyoushi).findOneByOrFail({ JvDataChoukyoushiCode: "01234" });
+    expect(of(ChakudosuuTaishou.Choukyoushi, ChakudosuuKikan.Ruikei)?.TaishouId).toBe(
+      choukyoushi.Id,
+    );
+    const banushi = await repo(Banushi).findOneByOrFail({ JvDataCode: "123456" });
+    expect(of(ChakudosuuTaishou.Banushi, ChakudosuuKikan.Honnen)).toEqual(
+      expect.objectContaining({ TaishouId: banushi.Id, Nen: 2007, HonShoukin: 50000 }),
+    );
+    const seisansha = await repo(Seisansha).findOneByOrFail({ JvDataCode: "00054321" });
+    expect(of(ChakudosuuTaishou.Seisansha, ChakudosuuKikan.Ruikei)?.TaishouId).toBe(seisansha.Id);
+    expect(shuukei.length).toBe(9);
+    // 出走別着度数は出走馬を作らない
+    expect(await repo(Shussouba).count()).toBe(0);
   });
 });
 
