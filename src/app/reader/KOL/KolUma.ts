@@ -7,7 +7,7 @@ import { Bagu } from "../../converters/ShussoubaJoutai";
 import * as $SY from "../../converters/ShussoubaYosou";
 import * as $U from "../../converters/Uma";
 import { umaDao } from "../../daos/UmaDao";
-import { findOneBy, upsert } from "../../db/helpers";
+import { findOneBy, upsert, upsertLater } from "../../db/helpers";
 import { Choukyoushi } from "../../entities/Choukyoushi";
 import { Kaisai } from "../../entities/Kaisai";
 import { Kyousouba } from "../../entities/Kyousouba";
@@ -326,7 +326,7 @@ export class KolUma extends DataToImport {
     }
     toBe.YonCornerIchiDori = $S.ichi.toCodeFromKol(buffer, 247, 1);
 
-    return upsert(ShussoubaSeiseki, toBe);
+    upsertLater(ShussoubaSeiseki, toBe);
   }
 
   protected async saveShussoubaYosou(buffer: Buffer, shussouba: Shussouba) {
@@ -335,7 +335,7 @@ export class KolUma extends DataToImport {
     toBe.KolYosou1 = $SY.shirushi.toCodeFromKol(buffer, 206, 1);
     toBe.KolYosou2 = $SY.shirushi.toCodeFromKol(buffer, 207, 1);
 
-    return upsert(ShussoubaYosou, toBe);
+    upsertLater(ShussoubaYosou, toBe);
   }
 
   protected async saveShussoubaHyouka(buffer: Buffer, shussouba: Shussouba) {
@@ -343,7 +343,7 @@ export class KolUma extends DataToImport {
     toBe.Id = shussouba.Id;
     toBe.KolRecordShisuu = readInt(buffer, 100, 3);
 
-    return upsert(ShussoubaHyouka, toBe);
+    upsertLater(ShussoubaHyouka, toBe);
   }
 
   protected async saveChoukyou(buffer: Buffer, shussouba: Shussouba, uma: Uma) {

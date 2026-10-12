@@ -1,5 +1,5 @@
 import * as $CH from "../../converters/Choukyou";
-import { upsert } from "../../db/helpers";
+import { upsertLater } from "../../db/helpers";
 import { Shussouba } from "../../entities/Shussouba";
 import { ShussoubaHyouka } from "../../entities/ShussoubaHyouka";
 import { JrdbShussoubaData } from "./JrdbShussoubaData";
@@ -16,7 +16,7 @@ export abstract class Cy$ extends JrdbShussoubaData {
     toBe.Id = shussouba.Id;
     this.setChoukyou(buffer, toBe);
 
-    upsert(ShussoubaHyouka, toBe);
+    upsertLater(ShussoubaHyouka, toBe);
   }
 
   protected setChoukyou(buffer: Buffer, sc: ShussoubaHyouka) {

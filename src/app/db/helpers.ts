@@ -10,7 +10,13 @@ import {
   sql,
 } from "drizzle-orm";
 import { getTableConfig, type SQLiteColumn, type SQLiteTable } from "drizzle-orm/sqlite-core";
-import { currentDb, currentSqlite, statementCache } from "./db";
+import {
+  currentDb,
+  currentSqlite,
+  isInTransaction,
+  setTransactionHooks,
+  statementCache,
+} from "./db";
 
 /**
  * TypeORM の EntityManager / Repository と同じ使い方ができる、Drizzle の薄い関数。
@@ -92,6 +98,7 @@ function whereOf<T extends SQLiteTable>(table: T, where: Where<T>): SQL | undefi
 
 /** 条件に合う最初の行。なければ null */
 export function findOneBy<T extends SQLiteTable>(table: T, where: Where<T>): Row<T> | null {
+  flushWrites(table);
   const { signature, params } = whereParts(table, where);
   const statement = cached(`findOne:${getTableName(table)}${signature}`, () =>
     currentDb().select().from(table).where(whereOf(table, where)).limit(1).prepare(),
@@ -101,6 +108,7 @@ export function findOneBy<T extends SQLiteTable>(table: T, where: Where<T>): Row
 
 /** 条件に合う全部の行 */
 export function findBy<T extends SQLiteTable>(table: T, where: Where<T> = {}): Row<T>[] {
+  flushWrites(table);
   const { signature, params } = whereParts(table, where);
   const statement = cached(`find:${getTableName(table)}${signature}`, () =>
     currentDb().select().from(table).where(whereOf(table, where)).prepare(),
@@ -110,6 +118,7 @@ export function findBy<T extends SQLiteTable>(table: T, where: Where<T> = {}): R
 
 /** 条件に合う行の数 */
 export function countBy<T extends SQLiteTable>(table: T, where: Where<T> = {}): number {
+  flushWrites(table);
   const { signature, params } = whereParts(table, where);
   const statement = cached(`count:${getTableName(table)}${signature}`, () =>
     currentDb().select({ n: countRows() }).from(table).where(whereOf(table, where)).prepare(),
@@ -154,6 +163,7 @@ function paramsOf(values: Record<string, unknown>) {
  * 自動採番の主キーが空なら追加して、採番された Id を row に入れる。row をそのまま返す。
  */
 export function save<T extends SQLiteTable>(table: T, row: Partial<Row<T>>): Row<T> {
+  flushWrites(table);
   const keys = keysOf(table);
   const values = definedOf(row);
   const names = Object.keys(values);
@@ -195,6 +205,7 @@ export function upsert<T extends SQLiteTable>(
   row: Partial<Row<T>>,
   skipNull = false,
 ): Row<T> {
+  flushWrites(table);
   const keys = keysOf(table);
   const values = Object.fromEntries(
     Object.entries(definedOf(row)).filter(([, value]) => !(skipNull && value === null)),
@@ -224,6 +235,7 @@ export function getOrCreate<T extends SQLiteTable>(
   row: Partial<Row<T>>,
   target: readonly (keyof Row<T> & string)[],
 ): Row<T> {
+  flushWrites(table);
   const values = definedOf(row);
   const names = Object.keys(values);
   const statement = cached(
@@ -310,12 +322,85 @@ export function upsertAll<T extends SQLiteTable>(table: T, rows: readonly Partia
   }
 }
 
+/** 溜めておく行数の上限。超えたら書き出す (メモリーの抑制) */
+const MAX_PENDING_ROWS = 5000;
+
+const pending = new Map<SQLiteTable, Map<string, Record<string, unknown>>>();
+let pendingRows = 0;
+
+/**
+ * 戻り値が要らない upsert。トランザクションの中なら溜めて、あとでまとめて書く (upsertAll)。外ならその場で書く。
+ * 同じ主キーの行は項目ごとにマージする (あとの値が勝つ)。upsert を順に呼んだ結果と同じになる。
+ * 溜めた行は、同じ表を読む・書く直前、生の SQL の直前、COMMIT の直前に書き出す。ROLLBACK では捨てる。
+ * skipNull の意味は upsert と同じ。主キーが空の行 (自動採番の表) には使えない。
+ */
+export function upsertLater<T extends SQLiteTable>(
+  table: T,
+  row: Partial<Row<T>>,
+  skipNull = false,
+): void {
+  const values = Object.fromEntries(
+    Object.entries(definedOf(row)).filter(([, value]) => !(skipNull && value === null)),
+  );
+  if (!isInTransaction()) {
+    upsertAll(table, [values as Partial<Row<T>>]);
+    return;
+  }
+  const id = keysOf(table).map((k) => {
+    const value = values[k.name];
+    if (value === undefined || value === null) {
+      throw new Error(`${getTableName(table)}.${k.name} が空の行は溜められません`);
+    }
+    return value;
+  });
+  let rows = pending.get(table);
+  if (!rows) {
+    rows = new Map();
+    pending.set(table, rows);
+  }
+  const key = JSON.stringify(id);
+  const queued = rows.get(key);
+  if (queued) {
+    Object.assign(queued, values);
+  } else {
+    rows.set(key, values);
+    pendingRows++;
+    if (MAX_PENDING_ROWS <= pendingRows) {
+      flushWrites();
+    }
+  }
+}
+
+/** upsertLater で溜めた行を書く。table を渡すとその表だけ */
+export function flushWrites(table?: SQLiteTable): void {
+  if (pendingRows === 0) {
+    return;
+  }
+  const tables = table ? [table] : [...pending.keys()];
+  for (const t of tables) {
+    const rows = pending.get(t);
+    if (rows) {
+      pending.delete(t);
+      pendingRows -= rows.size;
+      upsertAll(t, [...rows.values()]);
+    }
+  }
+}
+
+function discardWrites() {
+  pending.clear();
+  pendingRows = 0;
+}
+
+setTransactionHooks(() => flushWrites(), discardWrites);
+
 /** 条件に合う行の項目を更新する */
 export function updateBy<T extends SQLiteTable>(
   table: T,
   where: Where<T>,
   set: Partial<Row<T>>,
 ): void {
+  flushWrites(table);
   const values = definedOf(set);
   const names = Object.keys(values);
   if (names.length === 0) {
@@ -334,6 +419,7 @@ export function updateBy<T extends SQLiteTable>(
 
 /** 生の SQL で読む (? に params を順に当てる) */
 export function query<T>(sql: string, ...params: (string | number | null)[]): T[] {
+  flushWrites();
   return currentSqlite()
     .query(sql)
     .all(...params) as T[];

@@ -9,7 +9,7 @@ import * as $U from "../../converters/Uma";
 import { banushiDao } from "../../daos/BanushiDao";
 import { choukyoushiDao } from "../../daos/ChoukyoushiDao";
 import { umaDao } from "../../daos/UmaDao";
-import { upsert } from "../../db/helpers";
+import { upsertLater } from "../../db/helpers";
 import { Choukyoushi } from "../../entities/Choukyoushi";
 import { Kyousouba } from "../../entities/Kyousouba";
 import { MeishouKubun } from "../../entities/Shoyuu";
@@ -114,7 +114,7 @@ export abstract class Ky$ extends JrdbShussoubaData {
     toBe.Id = shussouba.Id;
     await this.setShussoubaYosou(buffer, toBe);
 
-    upsert(ShussoubaYosou, toBe);
+    upsertLater(ShussoubaYosou, toBe);
   }
 
   protected async setShussoubaYosou(buffer: Buffer, toBe: ShussoubaYosou) {

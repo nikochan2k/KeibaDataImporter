@@ -3,7 +3,7 @@ import * as $R from "../../converters/Race";
 import * as $S from "../../converters/Shussouba";
 import { choukyoushiDao } from "../../daos/ChoukyoushiDao";
 import { umaDao } from "../../daos/UmaDao";
-import { query, save, updateBy, upsert } from "../../db/helpers";
+import { query, save, updateBy, upsertLater } from "../../db/helpers";
 import { Choukyoushi } from "../../entities/Choukyoushi";
 import { Kyousouba } from "../../entities/Kyousouba";
 import { Race } from "../../entities/Race";
@@ -86,7 +86,7 @@ export abstract class Se$ extends JrdbShussoubaData {
     const toBe = {} as ShussoubaSeiseki;
     toBe.Id = shussoubaId;
     await this.setShussoubaSeiseki(buffer, toBe);
-    upsert(ShussoubaSeiseki, toBe, this.keepExisting);
+    upsertLater(ShussoubaSeiseki, toBe, this.keepExisting);
   }
 
   protected async setShussoubaSeiseki(buffer: Buffer, toBe: ShussoubaSeiseki) {
@@ -123,7 +123,7 @@ export abstract class Se$ extends JrdbShussoubaData {
     toBe.Id = shussoubaId;
     this.setShussoubaHyouka(buffer, toBe);
 
-    upsert(ShussoubaHyouka, toBe, this.keepExisting);
+    upsertLater(ShussoubaHyouka, toBe, this.keepExisting);
   }
 
   protected setShussoubaHyouka(buffer: Buffer, toBe: ShussoubaHyouka) {

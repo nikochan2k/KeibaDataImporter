@@ -33,6 +33,7 @@ export function openDb(file = process.env.KEIBA_DB || "db/keiba.sqlite") {
 }
 
 export function closeDb() {
+  hooks.discard();
   if (reader && reader !== sqlite) {
     reader.close();
   }
@@ -80,6 +81,20 @@ export function readDb(): Database {
   return opened(reader);
 }
 
+/** トランザクションの前後で呼ぶ処理 (helpers の書き込み待ちが登録する。helpers を import すると循環するため、登録式にしている) */
+const hooks = { beforeCommit: () => {}, discard: () => {} };
+
+/** COMMIT の直前に呼ぶ処理と、ROLLBACK や接続を閉じるときに呼ぶ処理を登録する */
+export function setTransactionHooks(beforeCommit: () => void, discard: () => void) {
+  hooks.beforeCommit = beforeCommit;
+  hooks.discard = discard;
+}
+
+/** トランザクションの中かどうか */
+export function isInTransaction(): boolean {
+  return inTransaction.getStore() === true;
+}
+
 /** トランザクションの中かどうか。中で実行された処理(非同期の続きも含む)は、外側のトランザクションに加わる */
 const inTransaction = new AsyncLocalStorage<boolean>();
 
@@ -97,9 +112,11 @@ export async function runInTransaction<T>(fn: () => Promise<T>): Promise<T> {
     db.exec("BEGIN TRANSACTION");
     try {
       const result = await fn();
+      hooks.beforeCommit();
       db.exec("COMMIT");
       return result;
     } catch (e) {
+      hooks.discard();
       db.exec("ROLLBACK");
       throw e;
     }

@@ -1,4 +1,4 @@
-import { upsert } from "../../db/helpers";
+import { upsertLater } from "../../db/helpers";
 import { Shussouba } from "../../entities/Shussouba";
 import { ShussoubaHyouka } from "../../entities/ShussoubaHyouka";
 import { Kubun } from "../../entities/ShussoubaJoutai";
@@ -30,7 +30,7 @@ export class Skb extends JrdbShussoubaData {
     toBe.BaguSonotaComment = readStr(buffer, 193, 40);
     toBe.RaceComment = readStr(buffer, 233, 40);
 
-    upsert(ShussoubaHyouka, toBe);
+    upsertLater(ShussoubaHyouka, toBe);
   }
 
   protected async saveShussoubaJoutaiSeries(buffer: Buffer, shussoubaId: number) {

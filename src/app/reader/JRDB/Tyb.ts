@@ -3,7 +3,7 @@ import * as $K from "../../converters/Kishu";
 import * as $R from "../../converters/Race";
 import * as $S from "../../converters/Shussouba";
 import * as $SY from "../../converters/ShussoubaYosou";
-import { findOneBy, upsert } from "../../db/helpers";
+import { findOneBy, upsert, upsertLater } from "../../db/helpers";
 import { Race } from "../../entities/Race";
 import { RaceSeiseki } from "../../entities/RaceSeiseki";
 import { Shussouba } from "../../entities/Shussouba";
@@ -65,7 +65,7 @@ export class Tyb extends JrdbData {
     toBe.Id = shussoubaId;
     toBe.BataiCode = $S.bataiCode.toCodeFromJrdb(buffer, 97, 1);
     toBe.KehaiCode = $S.kehaiCode.toCodeFromJrdb(buffer, 98, 1);
-    upsert(ShussoubaHyouka, toBe, true);
+    upsertLater(ShussoubaHyouka, toBe, true);
   }
 
   protected async saveShussoubaYosou(buffer: Buffer, shussoubaId: number) {
@@ -83,7 +83,7 @@ export class Tyb extends JrdbData {
     toBe.PaddockShirushi = $SY.shirushi.toCodeFromJrdb(buffer, 95, 1);
     toBe.ChokuzenSougouShirushi = $SY.shirushi.toCodeFromJrdb(buffer, 96, 1);
 
-    upsert(ShussoubaYosou, toBe);
+    upsertLater(ShussoubaYosou, toBe);
   }
 
   protected async saveOddsHaitou(buffer: Buffer, shussouba: Shussouba) {
@@ -114,6 +114,6 @@ export class Tyb extends JrdbData {
     toBe.Bataijuu = readPositiveInt(buffer, 88, 3);
     toBe.Zougen = readSignedInt(buffer, 91, 3);
 
-    upsert(ShussoubaSeiseki, toBe);
+    upsertLater(ShussoubaSeiseki, toBe);
   }
 }

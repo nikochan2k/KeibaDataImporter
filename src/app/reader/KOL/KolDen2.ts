@@ -3,7 +3,7 @@ import * as $K from "../../converters/Kishu";
 import * as $S from "../../converters/Shussouba";
 import { Bagu } from "../../converters/ShussoubaJoutai";
 import * as $SY from "../../converters/ShussoubaYosou";
-import { upsert } from "../../db/helpers";
+import { upsert, upsertLater } from "../../db/helpers";
 import { Shussouba } from "../../entities/Shussouba";
 import { ShussoubaHyouka } from "../../entities/ShussoubaHyouka";
 import { Kubun } from "../../entities/ShussoubaJoutai";
@@ -114,7 +114,7 @@ export class KolDen2 extends KolDataToImport {
     const kolBridge = <KolBridge>bridge;
     toBe.Kyakushitsu = kolBridge.yosouKyakushitsuMap.get(toBe.Id);
 
-    return upsert(ShussoubaYosou, toBe);
+    upsertLater(ShussoubaYosou, toBe);
   }
 
   protected async saveShussoubaChoukyou(
@@ -129,7 +129,7 @@ export class KolDen2 extends KolDataToImport {
       toBe.ChoukyouHonsuuCourse = readPositiveInt(buffer, this.at(718), 3);
       toBe.ChoukyouHonsuuHanro = readPositiveInt(buffer, this.at(721), 3);
       toBe.ChoukyouHonsuuPool = readPositiveInt(buffer, this.at(724), 3);
-      upsert(ShussoubaHyouka, toBe);
+      upsertLater(ShussoubaHyouka, toBe);
     }
 
     const choukyouAwaseFlag = readPositiveInt(buffer, this.at(607), 1);

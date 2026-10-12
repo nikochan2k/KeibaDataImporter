@@ -1,5 +1,5 @@
 import * as $SY from "../../converters/ShussoubaYosou";
-import { upsert } from "../../db/helpers";
+import { upsertLater } from "../../db/helpers";
 import { Shussouba } from "../../entities/Shussouba";
 import { ShussoubaYosou } from "../../entities/ShussoubaYosou";
 import { readDouble, readInt } from "../Reader";
@@ -27,6 +27,6 @@ export class Joa extends JrdbShussoubaData {
     toBe.Em = $SY.em.toCodeFromJrdb(buffer, 88, 1);
     toBe.KyuushaBbShirushi = $SY.shirushi.toCodeFromJrdb(buffer, 89, 1);
     toBe.KishuBbShirushi = $SY.shirushi.toCodeFromJrdb(buffer, 100, 1);
-    return upsert(ShussoubaYosou, toBe);
+    upsertLater(ShussoubaYosou, toBe);
   }
 }

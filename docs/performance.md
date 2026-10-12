@@ -103,6 +103,16 @@ bun --cpu-prof --cpu-prof-dir=<出力先> <スクリプト>
 
 旧実装との一致は、UTF-16 の全コード単位 (63,488 文字) と、半角カナ・濁点の 3 連の組み合わせで確認した。差異は 0 件。
 
+### 6. `upsertLater` による書き込みの後回し (`src/app/db/helpers.ts`)
+
+[bulk-upsert-plan.md](./bulk-upsert-plan.md) の段階 1。戻り値が要らない `upsert` を、トランザクションの中では溜めて、まとめて `upsertAll` で書く。
+
+- 同じ主キーの行は項目ごとにマージする (`upsert` を順に呼んだ結果と同じ)。
+- 同じ表を読む・書く直前、生の SQL の直前、COMMIT の直前、5,000 行を超えたときに書き出す。ROLLBACK では捨てる。
+- `db.ts` の `setTransactionHooks` で、COMMIT 前と ROLLBACK 時の処理を登録する (`helpers.ts` を import すると循環するため)。
+- 適用先は `ShussoubaYosou` / `ShussoubaHyouka` / `ShussoubaSeiseki` (KOL・JRDB・JRA の全呼び出し)。
+- 結果: `uma` の取り込みが約 1.6 秒から約 1.35 秒 (各 4 回の計測で、旧 1.52〜1.84 秒、新 1.29〜1.55 秒)。
+
 ## 効かなかった手法
 
 - **`PRAGMA synchronous = NORMAL`**: `uma` の取り込みは 1.5〜1.6 秒のままで変化なし。取り込みは既に 1 ファイルを 1 トランザクションで書いていて、同期待ちが効いていない。

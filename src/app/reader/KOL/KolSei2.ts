@@ -3,7 +3,7 @@ import * as $K from "../../converters/Kishu";
 import * as $S from "../../converters/Shussouba";
 import { Bagu } from "../../converters/ShussoubaJoutai";
 import * as $SY from "../../converters/ShussoubaYosou";
-import { findOneBy, upsert } from "../../db/helpers";
+import { findOneBy, upsert, upsertLater } from "../../db/helpers";
 import { Kyousouba } from "../../entities/Kyousouba";
 import { Shussouba } from "../../entities/Shussouba";
 import { ShussoubaHyouka } from "../../entities/ShussoubaHyouka";
@@ -137,7 +137,7 @@ export class KolSei2 extends DataToImport {
     toBe.YonCornerIchiDori = $S.ichi.toCodeFromKol(buffer, 306, 1);
     toBe.KolNengappi = dataNengappi;
 
-    return upsert(ShussoubaSeiseki, toBe);
+    upsertLater(ShussoubaSeiseki, toBe);
   }
 
   protected async saveShussoubaYosou(buffer: Buffer, shussouba: Shussouba) {
@@ -146,7 +146,7 @@ export class KolSei2 extends DataToImport {
     toBe.KolYosou1 = $SY.shirushi.toCodeFromKol(buffer, 265, 1);
     toBe.KolYosou2 = $SY.shirushi.toCodeFromKol(buffer, 266, 1);
 
-    return upsert(ShussoubaYosou, toBe);
+    upsertLater(ShussoubaYosou, toBe);
   }
 
   protected async saveShussoubaHyouka(buffer: Buffer, shussouba: Shussouba) {
@@ -154,7 +154,7 @@ export class KolSei2 extends DataToImport {
     toBe.Id = shussouba.Id;
     toBe.KolRecordShisuu = readInt(buffer, 159, 3);
 
-    return upsert(ShussoubaHyouka, toBe);
+    upsertLater(ShussoubaHyouka, toBe);
   }
 
   protected async saveChoukyou(buffer: Buffer, info: ShussoubaInfo) {
