@@ -1,7 +1,7 @@
 import * as $K from "../../converters/Kishu";
 import * as $S from "../../converters/Shussouba";
 import { Bagu } from "../../converters/ShussoubaJoutai";
-import { upsert, upsertLater } from "../../db/helpers";
+import { upsertLater, upsertMerged } from "../../db/helpers";
 import { Race } from "../../entities/Race";
 import { Shussouba } from "../../entities/Shussouba";
 import { Kubun } from "../../entities/ShussoubaJoutai";
@@ -99,7 +99,7 @@ export abstract class JraShussoubaTool extends ShussoubaTool {
     toBe.KishuId = kishu?.Id;
     toBe.MinaraiKubun = $K.minaraiKubun.toCodeFromJvData(buffer, o.minarai, 1) ?? 0;
 
-    toBe = upsert(Shussouba, toBe);
+    toBe = upsertMerged(Shussouba, toBe);
     if (readInt(buffer, o.blinker, 1) === 1) {
       await this.saveShussoubaJoutai(toBe.Id, Kubun.Bagu, Bagu.Blinker);
     }

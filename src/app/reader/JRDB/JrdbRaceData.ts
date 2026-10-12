@@ -1,4 +1,4 @@
-import { upsert, upsertLater } from "../../db/helpers";
+import { upsertLater, upsertMerged } from "../../db/helpers";
 import { Kaisai } from "../../entities/Kaisai";
 import { Race } from "../../entities/Race";
 import { RaceSeiseki } from "../../entities/RaceSeiseki";
@@ -25,7 +25,7 @@ export abstract class JrdbRaceData extends JrdbKaisaiData {
       return null;
     }
     this.setRace(buffer, toBe);
-    return upsert(Race, toBe);
+    return upsertMerged(Race, toBe);
   }
 
   protected setRace(_buffer: Buffer, _toBe: Race) {}

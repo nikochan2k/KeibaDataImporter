@@ -338,6 +338,52 @@ export function upsertLater<T extends SQLiteTable>(
   }
 }
 
+/**
+ * upsert と同じ結果の行を返すが、書き込みは upsertLater で溜めてまとめて書く。
+ * 返す行は、保存済みの行に、溜めてある項目と今回の項目を重ねたもの (表にない項目は null)。
+ * 保存済みの行は、溜めた行を書き出さずに読む。トランザクションの外ではその場で upsert する。
+ * NOT NULL 列が空の行は、追加の失敗が書き出すとき (あとの行の処理中) に起きる。
+ */
+export function upsertMerged<T extends SQLiteTable>(
+  table: T,
+  row: Partial<Row<T>>,
+  skipNull = true,
+): Row<T> {
+  if (!isInTransaction()) {
+    return upsert(table, row, skipNull);
+  }
+  const keys = keysOf(table);
+  const tableName = getTableName(table);
+  const values = Object.fromEntries(
+    Object.entries(definedOf(row)).filter(([, value]) => !(skipNull && value === null)),
+  );
+  const keyValues = keys.map((k) => values[k.name]);
+  if (keyValues.some((v) => v === undefined || v === null)) {
+    throw new Error(`${tableName}.${keys.map((k) => k.name).join(",")} が空の行は溜められません`);
+  }
+  const asIs = prepared(
+    `byKey:${tableName}`,
+    () =>
+      `SELECT * FROM ${id(tableName)} WHERE ${keys.map((k) => `${id(k.name)} = ?`).join(" AND ")}`,
+  ).get(...(keyValues as never[])) as Record<string, unknown> | null;
+  const queued = pending.get(table)?.get(JSON.stringify(keyValues));
+  const merged = { ...(asIs ?? nullRowOf(table)), ...queued, ...values };
+  upsertLater(table, row, skipNull);
+  return merged as Row<T>;
+}
+
+const nullRows = new WeakMap<SQLiteTable, Record<string, null>>();
+
+/** 全部の列が null の行 (まだ保存されていない行の土台) */
+function nullRowOf(table: SQLiteTable): Record<string, null> {
+  let row = nullRows.get(table);
+  if (!row) {
+    row = Object.fromEntries(getTableConfig(table).columns.map((c) => [c.name, null]));
+    nullRows.set(table, row);
+  }
+  return row;
+}
+
 /** upsertLater で溜めた行を書く。table を渡すとその表だけ */
 export function flushWrites(table?: SQLiteTable): void {
   if (pendingRows === 0) {

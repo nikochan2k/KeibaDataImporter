@@ -1,4 +1,4 @@
-import { upsert } from "../../db/helpers";
+import { upsertMerged } from "../../db/helpers";
 import { Shussouba } from "../../entities/Shussouba";
 import { ShussoubaInfo } from "../ShussoubaTool";
 
@@ -28,7 +28,7 @@ export abstract class JrdbShussoubaData extends JrdbRaceData {
       return info.shussouba;
     }
     await this.setShussouba(buffer, toBe, info);
-    return upsert(Shussouba, toBe);
+    return upsertMerged(Shussouba, toBe);
   }
 
   protected async setShussouba(_buffer: Buffer, _toBe: Shussouba, _info: ShussoubaInfo) {}

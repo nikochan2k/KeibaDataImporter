@@ -1,5 +1,5 @@
 import * as $R from "../../converters/Race";
-import { upsert } from "../../db/helpers";
+import { upsert, upsertMerged } from "../../db/helpers";
 import { Kaisai } from "../../entities/Kaisai";
 import { Race } from "../../entities/Race";
 import { RaceTool } from "../RaceTool";
@@ -120,7 +120,7 @@ export abstract class JraRaceTool extends RaceTool {
    * @param skipNull true (既定) のとき、項目が空白のレコードで既存の値を消しません
    */
   public upsertRace(toBe: Race, skipNull = true) {
-    return upsert(Race, toBe, skipNull);
+    return upsertMerged(Race, toBe, skipNull);
   }
 
   /**

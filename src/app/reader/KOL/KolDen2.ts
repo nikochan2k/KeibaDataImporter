@@ -3,7 +3,7 @@ import * as $K from "../../converters/Kishu";
 import * as $S from "../../converters/Shussouba";
 import { Bagu } from "../../converters/ShussoubaJoutai";
 import * as $SY from "../../converters/ShussoubaYosou";
-import { upsert, upsertLater } from "../../db/helpers";
+import { upsertLater, upsertMerged } from "../../db/helpers";
 import { Shussouba } from "../../entities/Shussouba";
 import { ShussoubaHyouka } from "../../entities/ShussoubaHyouka";
 import { Kubun } from "../../entities/ShussoubaJoutai";
@@ -91,7 +91,7 @@ export class KolDen2 extends KolDataToImport {
 
     toBe.KolNengappi = dataNengappi;
 
-    toBe = upsert(Shussouba, toBe);
+    toBe = upsertMerged(Shussouba, toBe);
     await kolTool.saveBanushi(buffer, 67, toBe.Id);
     return toBe;
   }

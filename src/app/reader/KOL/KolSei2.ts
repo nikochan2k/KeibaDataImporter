@@ -3,7 +3,7 @@ import * as $K from "../../converters/Kishu";
 import * as $S from "../../converters/Shussouba";
 import { Bagu } from "../../converters/ShussoubaJoutai";
 import * as $SY from "../../converters/ShussoubaYosou";
-import { findOneBy, upsert, upsertLater } from "../../db/helpers";
+import { findOneBy, upsertLater, upsertMerged } from "../../db/helpers";
 import { Kyousouba } from "../../entities/Kyousouba";
 import { Shussouba } from "../../entities/Shussouba";
 import { ShussoubaHyouka } from "../../entities/ShussoubaHyouka";
@@ -86,7 +86,7 @@ export class KolSei2 extends DataToImport {
     const nen = readInt(buffer, 2, 4);
     toBe.Nenrei = tool.normalizeNenrei(nenrei, nen);
 
-    toBe = upsert(Shussouba, toBe);
+    toBe = upsertMerged(Shussouba, toBe);
     await kolTool.saveBanushi(buffer, 69, toBe.Id);
     return toBe;
   }

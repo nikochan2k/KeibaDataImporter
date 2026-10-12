@@ -7,7 +7,7 @@ import { Bagu } from "../../converters/ShussoubaJoutai";
 import * as $SY from "../../converters/ShussoubaYosou";
 import * as $U from "../../converters/Uma";
 import { umaDao } from "../../daos/UmaDao";
-import { findOneBy, upsert, upsertLater } from "../../db/helpers";
+import { findOneBy, upsert, upsertLater, upsertMerged } from "../../db/helpers";
 import { Choukyoushi } from "../../entities/Choukyoushi";
 import { Kaisai } from "../../entities/Kaisai";
 import { Kyousouba } from "../../entities/Kyousouba";
@@ -230,7 +230,7 @@ export class KolUma extends DataToImport {
     toBe.TorikeshiTousuu = readInt(buffer, 125, 2);
     toBe.KolNengappi = 0;
 
-    return upsert(Race, toBe);
+    return upsertMerged(Race, toBe);
   }
 
   protected async saveRaceMei(buffer: Buffer, race: Race) {

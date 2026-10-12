@@ -2,7 +2,7 @@ import { Baken, Kakutei } from "../../converters/Common";
 import * as $K from "../../converters/Kaisai";
 import * as $R from "../../converters/Race";
 import * as $RK from "../../converters/RaceKeika";
-import { findOneBy, upsert, upsertLater } from "../../db/helpers";
+import { findOneBy, upsert, upsertLater, upsertMerged } from "../../db/helpers";
 import { Kaisai } from "../../entities/Kaisai";
 import { Race } from "../../entities/Race";
 import { RaceKeika } from "../../entities/RaceKeika";
@@ -155,7 +155,7 @@ export class KolSei1 extends KolDataToImport {
     toBe.SuiteiTimeRyou = readTime(buffer, this.at(370), 4);
     toBe.SuiteiTimeOmoFuryou = readTime(buffer, this.at(374), 4);
 
-    return upsert(Race, toBe);
+    return upsertMerged(Race, toBe);
   }
 
   protected async saveRaceMei(buffer: Buffer, race: Race) {

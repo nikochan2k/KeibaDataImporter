@@ -1,6 +1,6 @@
 import * as $K from "../../converters/Kaisai";
 import * as $R from "../../converters/Race";
-import { upsert } from "../../db/helpers";
+import { upsert, upsertMerged } from "../../db/helpers";
 import { Kaisai } from "../../entities/Kaisai";
 import { Race } from "../../entities/Race";
 import { bridge } from "../Bridge";
@@ -146,7 +146,7 @@ export class KolDen1 extends KolDataToImport {
 
     toBe.KolNengappi = dataNengappi;
 
-    return upsert(Race, toBe);
+    return upsertMerged(Race, toBe);
   }
 
   protected async saveRaceMei(buffer: Buffer, race: Race) {

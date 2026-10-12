@@ -1,7 +1,15 @@
 import { afterAll, beforeAll, describe, expect, test } from "bun:test";
 import { Baken, Kakutei } from "../src/app/converters/Common";
 import { closeDb, currentSqlite, openDb, runInTransaction } from "../src/app/db/db";
-import { countBy, findBy, findOneBy, save, upsertAll, upsertLater } from "../src/app/db/helpers";
+import {
+  countBy,
+  findBy,
+  findOneBy,
+  save,
+  upsertAll,
+  upsertLater,
+  upsertMerged,
+} from "../src/app/db/helpers";
 import { ChoukyouTime } from "../src/app/entities/ChoukyouTime";
 import { Kishu } from "../src/app/entities/Kishu";
 import { OddsHaitou } from "../src/app/entities/OddsHaitou";
@@ -250,5 +258,53 @@ describe("upsertLater", () => {
         upsertLater(ChoukyouTime, { F: 1 } as ChoukyouTime);
       }),
     ).rejects.toThrow("ChoukyouTime.ChoukyouId");
+  });
+});
+
+describe("upsertMerged", () => {
+  const time = (ChoukyouId: number, F: number, rest: Partial<ChoukyouTime> = {}) =>
+    ({ ChoukyouId, F, ...rest }) as ChoukyouTime;
+  const stored = (id: number) =>
+    (
+      currentSqlite()
+        .query("SELECT COUNT(*) AS n FROM ChoukyouTime WHERE ChoukyouId = ?")
+        .get(id) as { n: number }
+    ).n;
+
+  test("溜めたまま、保存後と同じ行を返す", async () => {
+    upsertAll(ChoukyouTime, [time(20, 1, { Time: 1, Comment: "a" })]);
+    const returned: unknown[] = [];
+    await runInTransaction(async () => {
+      // 保存済みの行に重ねる。null は既存の値を消さない
+      returned.push(upsertMerged(ChoukyouTime, time(20, 1, { Time: 2, Comment: null })));
+      // 溜めた行にさらに重ねる
+      returned.push(upsertMerged(ChoukyouTime, time(20, 1, { Comment: "b" })));
+      // 保存されていない行は、ない項目が null
+      returned.push(upsertMerged(ChoukyouTime, time(20, 2, { Time: 5 })));
+      expect(stored(20)).toBe(1);
+    });
+    expect(returned).toEqual([
+      { ChoukyouId: 20, F: 1, Time: 2, Comment: "a" },
+      { ChoukyouId: 20, F: 1, Time: 2, Comment: "b" },
+      { ChoukyouId: 20, F: 2, Time: 5, Comment: null },
+    ]);
+    expect(findOneBy(ChoukyouTime, { ChoukyouId: 20, F: 1 })).toEqual(returned[1] as never);
+    expect(findOneBy(ChoukyouTime, { ChoukyouId: 20, F: 2 })).toEqual(returned[2] as never);
+  });
+
+  test("skipNull = false なら null で消す", async () => {
+    upsertAll(ChoukyouTime, [time(21, 1, { Time: 1, Comment: "a" })]);
+    let returned: unknown;
+    await runInTransaction(async () => {
+      returned = upsertMerged(ChoukyouTime, time(21, 1, { Comment: null }), false);
+    });
+    expect(returned).toEqual({ ChoukyouId: 21, F: 1, Time: 1, Comment: null });
+    expect(findOneBy(ChoukyouTime, { ChoukyouId: 21, F: 1 })).toEqual(returned as never);
+  });
+
+  test("トランザクションの外では、その場で書く", () => {
+    const row = upsertMerged(ChoukyouTime, time(22, 1, { Time: 1 }));
+    expect(row).toEqual({ ChoukyouId: 22, F: 1, Time: 1, Comment: null });
+    expect(stored(22)).toBe(1);
   });
 });
