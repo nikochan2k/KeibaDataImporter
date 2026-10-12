@@ -115,7 +115,13 @@ export class ImportJobService {
     };
   }
 
+  /** 画面に出すログに積むとともに、サーバーのコンソールにも出す。ワーカーのロガーは黙らせてあるので、ここで出す */
   private log(job: ImportJob, level: ImportLogLevel, message: string) {
+    if (level === "error") {
+      this.logger.error(message);
+    } else if (level === "warn") {
+      this.logger.warn(message);
+    }
     const buffer = this.logs.get(job.id);
     if (!buffer) {
       return;
@@ -178,6 +184,8 @@ export class ImportJobService {
         if (job.skipped.length < MAX_SKIPPED) {
           job.skipped.push({ file, reason });
           this.log(job, "warn", `${file} を読み飛ばしました: ${reason}`);
+        } else if (job.skippedCount === MAX_SKIPPED + 1) {
+          this.logger.warn(`読み飛ばしが ${MAX_SKIPPED} 件を超えたため、以降は記録しません`);
         }
       },
       entryStarted: (basename) => {
@@ -205,9 +213,9 @@ export class ImportJobService {
         );
       }
     } catch (e) {
-      this.logger.error(e.stack || e);
       job.status = "failed";
       job.error = e?.message ?? String(e);
+      this.logger.error(e?.stack || e);
       this.log(job, "error", `取り込みに失敗しました: ${job.error}`);
     } finally {
       this.progress.detach();
