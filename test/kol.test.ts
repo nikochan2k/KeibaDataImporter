@@ -621,7 +621,7 @@ describe("取り込み結果が見本ファイルと一致する", () => {
           Kikan: ChakudosuuKikan.Ruikei,
           Bunrui: ChakudosuuBunrui.KonkaiCourse,
         });
-        expect(row).toEqual(read(record, 842, 3));
+        expect(row).toEqual(read(record, 843, 3));
         if (row.some((n) => n > 0)) {
           checked++;
         }

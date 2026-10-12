@@ -69,7 +69,7 @@ export class KolDen2 extends KolDataToImport {
     const kyousouba = shussouba.KyousoubaId
       ? findOneBy(Kyousouba, { Id: shussouba.KyousoubaId })
       : null;
-    if (!this.has(842) || !nengappi || !kyousouba) {
+    if (!this.has(843) || !nengappi || !kyousouba) {
       return;
     }
     const writer = new ChakudosuuWriter();
@@ -79,7 +79,7 @@ export class KolDen2 extends KolDataToImport {
       Nengappi: nengappi,
       Kikan: ChakudosuuKikan.Ruikei,
     };
-    writer.add(key, ChakudosuuBunrui.KonkaiCourse, buffer, this.at(842), 3);
+    writer.add(key, ChakudosuuBunrui.KonkaiCourse, buffer, this.at(843), 3);
     writer.save();
   }
 

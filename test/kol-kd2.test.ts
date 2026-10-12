@@ -234,6 +234,7 @@ function differences(a: Dump, b: Dump) {
 /** KD3 にだけある項目 (KD2 では取り込まれない) の列 */
 const kd3OnlyColumns: { [kind: string]: string[] } = {
   den2: [
+    "Chakudosuu(0/160)", // 場所別成績(KD2 にはないので行ができない)
     "Shussouba.KyuuyouRiyuu", // 休養理由
     "Shussouba.KyuuyouRiyuuCode",
     "Shussouba.TorikeshiShubetsu", // 予想２
