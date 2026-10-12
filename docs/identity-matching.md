@@ -74,3 +74,26 @@
 
 - 生年月日が空のデータでは、姓が変わった人物は別行になりうる。
 - 一度別行になった同一人物を、後から統合する仕組みはない（参照元の付け替えと旧行の削除が必要）。
+
+## MatchingKey を TypeScript 側にキャッシュしない理由
+
+`Jinmei` / `Shoyuu` / `Houbokusaki` は行数が少ない (サンプル DB で Jinmei 約 4,300 行、Shoyuu 約 2,100 行) ので、
+MatchingKey で引く表を `Map` に読み込んでおけば速くなるか、を計測した。結論は **不要**。
+
+- 検索の SELECT 自体が速い。騎手の名前検索 (`KishuDao.findByMeishou` の `Kishu ⨝ KishuMei ⨝ Jinmei`、`WHERE j.Meishou = ? OR j.MatchingKey = ?`) は
+  1 回 約 11 µs。`Meishou` と `MatchingKey` の index が両方使われる (SQLite の MULTI-INDEX OR)。
+  `Map` 引きにしても、取り込み全体では 1 秒に満たない差にしかならない。
+- DB はプロセス内の SQLite (`bun:sqlite`) なので、往復の遅さがない。prepared statement も使い回している。
+- `OR` を `UNION` に書き換えると、かえって遅い (約 46 µs)。
+- キャッシュを持つと、保存のたびに `Map` を更新する必要がある。更新漏れは別人行の重複につながる。
+  複数プロセスで取り込むと、他方の書き込みも見えない。
+- 注意: 古い DB (`Jinmei.Meishou` の index がない) では、同じ検索が約 1.1 ms になり 100 倍遅い。
+  最新のマイグレーションが当たっているか確認すること。
+
+実際の取り込みのプロファイル (サンプル 18 MB、約 16 秒) で時間を食っていたのは、MatchingKey の検索ではなく、
+`upsertAll` での SQL の組み立てと `prepare` だった。これを生 SQL の複数行 INSERT にして、約 9 秒になった。
+
+試して効果がなかったもの (戻した):
+
+- `query()` が全表の溜め書きを書き出すのを、読む表だけに絞る。flush の細切れは、見積もりほど効かなかった。
+- `Codes.toCodeFrom` の結果のメモ化。プロファイル上の見かけで、実測では差がなかった。
