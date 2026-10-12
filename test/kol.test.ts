@@ -3,9 +3,12 @@ import * as fs from "node:fs";
 import { Baken, Kakutei } from "../src/app/converters/Common";
 import * as $U from "../src/app/converters/Uma";
 import { findOneBy } from "../src/app/db/helpers";
+import { BanushiMei } from "../src/app/entities/BanushiMei";
 import { Choukyou } from "../src/app/entities/Choukyou";
 import { ChoukyouTime } from "../src/app/entities/ChoukyouTime";
 import { Kaisai } from "../src/app/entities/Kaisai";
+import { Kyousouba } from "../src/app/entities/Kyousouba";
+import { MeishouKubun } from "../src/app/entities/MeishouKubun";
 import { OddsHaitou } from "../src/app/entities/OddsHaitou";
 import { Race } from "../src/app/entities/Race";
 import { RaceHassouJoukyou } from "../src/app/entities/RaceHassouJoukyou";
@@ -17,6 +20,7 @@ import { ShussoubaHassouJoukyou } from "../src/app/entities/ShussoubaHassouJouky
 import { ShussoubaHyouka } from "../src/app/entities/ShussoubaHyouka";
 import { ShussoubaSeiseki } from "../src/app/entities/ShussoubaSeiseki";
 import { Uma } from "../src/app/entities/Uma";
+import { UmaBanushi } from "../src/app/entities/UmaBanushi";
 import { KolKet5Kd3 } from "../src/app/reader/KOL/KD3/KolKet5Kd3";
 import { KolKod2Kd3 } from "../src/app/reader/KOL/KD3/KolKod2Kd3";
 import { KolKod3Kd3 } from "../src/app/reader/KOL/KD3/KolKod3Kd3";
@@ -36,6 +40,7 @@ import { KolSei1 } from "../src/app/reader/KOL/KolSei1";
 import { KolSei2 } from "../src/app/reader/KOL/KolSei2";
 import { KolShu } from "../src/app/reader/KOL/KolShu";
 import { KolUma } from "../src/app/reader/KOL/KolUma";
+import { getNengappiOfShussoubaId } from "../src/app/reader/ShussoubaTool";
 import { repo } from "./helpers";
 import {
   closeKolDb,
@@ -383,6 +388,30 @@ describe("取り込み結果が見本ファイルと一致する", () => {
         expect(seiseki?.KakuteiChakujun ?? null).toBe(
           Number.parseInt(field(record, 274, 2), 10) || null,
         );
+        checked++;
+      }
+      expect(checked).toBeGreaterThan(0);
+    });
+
+    test("馬主 (正式名と略称) が、レースの日の馬の馬主になる", async () => {
+      const result = await importKolKind("sei2");
+      expect(result.errors).toEqual([]);
+      let checked = 0;
+      for (const shussouba of await repo(Shussouba).find()) {
+        const kyousouba = findOneBy(Kyousouba, { Id: shussouba.KyousoubaId ?? 0 });
+        if (!kyousouba) {
+          continue;
+        }
+        const umaBanushi = findOneBy(UmaBanushi, {
+          UmaId: kyousouba.UmaId,
+          Nengappi: getNengappiOfShussoubaId(shussouba.Id),
+        });
+        expect(umaBanushi).not.toBeNull();
+        const kubun = (await repo(BanushiMei).findBy({ BanushiId: umaBanushi?.BanushiId })).map(
+          (m) => m.Kubun,
+        );
+        expect(kubun).toContain(MeishouKubun.Meishou);
+        expect(kubun).toContain(MeishouKubun.Tanshuku);
         checked++;
       }
       expect(checked).toBeGreaterThan(0);

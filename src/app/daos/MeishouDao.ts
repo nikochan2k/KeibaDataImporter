@@ -14,7 +14,7 @@ export function normalizeMeishou(kubun: MeishouKubun, namae: string) {
 
 export class MeishouDao {
   /** 同じ表記があればそれを、なければ新しく作って返します。異体字が違えば別の行 */
-  public async save(kubun: MeishouKubun, namae: string, banushiKaiCode?: number) {
+  public async save(kubun: MeishouKubun, namae: string) {
     namae = normalizeMeishou(kubun, namae);
     const asIs = await findOneBy(Shoyuu, { Meishou: namae });
     const toBe = {} as Shoyuu;
@@ -22,7 +22,6 @@ export class MeishouDao {
     if (!asIs) {
       toBe.Meishou = namae;
     }
-    toBe.BanushiKaiCode = banushiKaiCode;
     return tool.saveOrUpdate(Shoyuu, asIs, toBe);
   }
 }

@@ -9,7 +9,7 @@ import { umaDao } from "../../daos/UmaDao";
 import { Choukyoushi } from "../../entities/Choukyoushi";
 import { Kishu } from "../../entities/Kishu";
 import { Kyousouba } from "../../entities/Kyousouba";
-import { MeishouKubun } from "../../entities/MeishouKubun";
+import { Shussouba } from "../../entities/Shussouba";
 import { Uma } from "../../entities/Uma";
 import { readInt, readPositiveInt, readStr, readStrWithNoSpace } from "../Reader";
 import { tool } from "../Tool";
@@ -23,15 +23,16 @@ export class KolTool {
     return kishuDao.saveKishu(kishu, kishuMei, tanshukuKishuMei);
   }
 
-  public async saveBanushi(buffer: Buffer, offset: number, shussoubaId: number) {
-    const banushiMei = tool.normalizeHoujinMei(buffer, offset, 40);
-    if (banushiMei) {
-      await banushiDao.save(shussoubaId, MeishouKubun.Meishou, banushiMei);
-    }
-    const tanshukuBanushiMei = tool.normalizeHoujinMei(buffer, offset + 40, 20);
-    if (tanshukuBanushiMei) {
-      await banushiDao.save(shussoubaId, MeishouKubun.Tanshuku, tanshukuBanushiMei);
-    }
+  /** 馬主 (正式名と略称) を保存し、レースの日の馬の馬主にします */
+  public async saveBanushi(
+    buffer: Buffer,
+    offset: number,
+    shussouba: Pick<Shussouba, "Id" | "KyousoubaId">,
+  ) {
+    await banushiDao.saveShussoubaBanushi(shussouba, {
+      meishou: tool.normalizeHoujinMei(buffer, offset, 40),
+      tanshuku: tool.normalizeHoujinMei(buffer, offset + 40, 20),
+    });
   }
 
   public async saveKyousouba(buffer: Buffer, offset: number, choukyoushi: Choukyoushi) {

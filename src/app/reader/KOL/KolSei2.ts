@@ -87,7 +87,7 @@ export class KolSei2 extends DataToImport {
     toBe.Nenrei = tool.normalizeNenrei(nenrei, nen);
 
     toBe = upsertMerged(Shussouba, toBe);
-    await kolTool.saveBanushi(buffer, 69, toBe.Id);
+    await kolTool.saveBanushi(buffer, 69, toBe);
     return toBe;
   }
 

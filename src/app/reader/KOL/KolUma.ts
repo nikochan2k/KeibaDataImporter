@@ -277,7 +277,7 @@ export class KolUma extends DataToImport {
 
     // asIs は無い (あれば上で戻っている) ので追加だけ。呼び出し元は Id しか使わない
     upsertLater(Shussouba, toBe);
-    await kolTool.saveBanushi(buffer, 10, toBe.Id);
+    await kolTool.saveBanushi(buffer, 10, toBe);
     return toBe;
   }
 

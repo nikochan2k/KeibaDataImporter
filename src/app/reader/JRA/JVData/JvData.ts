@@ -1,5 +1,6 @@
 import { DataToImport } from "../../DataToImport";
 import { readRaw } from "../../Reader";
+import { JvdataBn } from "./JvdataBn";
 import { JvdataBr } from "./JvdataBr";
 import { JvdataBt } from "./JvdataBt";
 import { JvdataCh } from "./JvdataCh";
@@ -53,6 +54,7 @@ export class JvData extends DataToImport {
       JvdataHs,
       JvdataHy,
       JvdataCs,
+      JvdataBn,
     ]) {
       const record: JvdataRecord = new type();
       this.records.set(record.id, record);

@@ -66,15 +66,16 @@
 - 新規 `ShijouTorihiki`: 主キーは (UmaId, ShijouCode, KaishiNengappi)。ShuuryouNengappi・Nenrei・Kakaku (円) を持つ。
 - 父・母の繁殖登録番号と生年は UM・HN・SK で取り込み済みなので読まない。
 
-## 4. 段階 2: 馬主マスタ BN (構造の変更あり)
+## 4. 段階 2: 馬主マスタ BN (構造の変更あり) — 済
 
-今の `Banushi` は出走馬と名前 (`Shoyuu`) をつなぐ表で、馬主そのものを表す表がない。生産者 (`Seisansha` / `SeisanshaMei`) と同じ形に組み替える。
+出走馬と名前 (`Shoyuu`) をつないでいた `Banushi` をやめ、馬主を生産者 (`Seisansha` / `SeisanshaMei`) と同じ形にして、馬につなぐ。
 
-- 今の `Banushi` を `ShussoubaBanushi` に改名する (ShussoubaId, ShoyuuId, Kubun)。`BanushiDao` と閲覧 (`BrowseService`) の参照も直す。
-- 新 `Banushi`: Id, JvDataCode (6 桁), Fukushoku (服色標示)。
-- 新 `BanushiMei`: BanushiId, ShoyuuId, Kubun (`MeishouKubun`)。
+- `Banushi`: Id, JvDataCode (6 桁), BanushiKaiCode (JRDB の馬主会コード。`Shoyuu` から移す), Fukushoku (服色標示)。
+- `BanushiMei`: BanushiId, ShoyuuId, Kubun (`MeishouKubun`)。
+- `UmaBanushi`: 主キーは (UmaId, Nengappi)。BanushiId。馬主は変わるので「その日の時点の馬主」を持つ。日付は出走馬ならレースの日、UM ならデータ作成年月日。
+- 名前による突き合わせは `ShoyuushaDao` にまとめ、生産者と共用する。
 - BN から取り込むもの: コード、法人格無の名前 (`tool.normalizeHoujinMei`)、半角カナ (フリガナ)、欧字名、服色。本年・累計成績は BR と同じく取り込まない。
-- SE の馬主コードで `ShussoubaBanushi` を `Banushi` につなぐかは「9. 決めること」の 2。
+- SE・UM の馬主コードと名前、KOL の正式名・略称、JRDB の名前と馬主会コードも、同じ馬主にまとめて `UmaBanushi` に入れる。
 
 ## 5. 段階 3: 調教 HC・WC → `Choukyou`
 
@@ -146,12 +147,12 @@
   - Bunrui: 総合・中央合計・馬場別・馬場状態別・距離別・競馬場別・脚質・本年・累計 など (enum)
 - 賞金 (平地・障害の本賞金・付加賞金・収得賞金の累計、騎手などの本年・累計) は新規 `ChakudosuuShoukin` に、同じキーで入れる。
 - 騎手・調教師・馬主・生産者のコードと名前は SE と重なるので、つなぐためだけに使う。
-- 段階 2 の馬主マスタに依存する。
+- 段階 2 の馬主マスタに依存する (馬主の着度数は `Banushi` を指す)。
 
 ## 9. 決めること
 
 1. **CK を全項目取り込むか**。馬の着度数の大半は、取り込んだ成績から計算できる。最も作業量が大きい。指示が「全部」なので、全項目を推奨する。
-2. **SE の馬主コードで出走馬を馬主マスタにつなぐか**。名前の表記ゆれに強くなるので、つなぐことを推奨する (`ShussoubaBanushi.BanushiId` を足す)。
+2. ~~SE の馬主コードで出走馬を馬主マスタにつなぐか~~。馬主マスタは出走馬ではなく馬 (`UmaBanushi`) につなぐことにした。
 3. **美浦の HC・WC の Basho**。JV-Data は美浦の南・北を区別しない。KOL の 美浦南 (51) / 美浦北 (52) に施設ごとの固定の対応で割り当てるか、新しい「美浦」コードを作るか。施設の実際の位置を確かめたうえで、固定の対応を推奨する。
 
 ## 10. 順序

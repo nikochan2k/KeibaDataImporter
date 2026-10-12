@@ -27,6 +27,12 @@ export class JvdataKettouTool {
     return !str || /^0+$/.test(str) ? null : str;
   }
 
+  /** 馬主コード (6 桁)。初期値 (全部 0 か空白) のときは null */
+  public readBanushiCode(buffer: Buffer, offset: number) {
+    const str = readStr(buffer, offset, 6);
+    return !str || /^0+$/.test(str) ? null : str;
+  }
+
   /** 生産者コード (8 桁)。初期値 (全部 0 か空白) のときは null */
   public readSeisanshaCode(buffer: Buffer, offset: number) {
     const str = readStr(buffer, offset, 8);

@@ -5,6 +5,7 @@ import * as $R from "../src/app/converters/Race";
 import * as $S from "../src/app/converters/Shussouba";
 import * as $U from "../src/app/converters/Uma";
 import { Banushi } from "../src/app/entities/Banushi";
+import { BanushiMei } from "../src/app/entities/BanushiMei";
 import { Choukyoushi } from "../src/app/entities/Choukyoushi";
 import { CourseSetsumei } from "../src/app/entities/CourseSetsumei";
 import { Hanshokuba } from "../src/app/entities/Hanshokuba";
@@ -27,7 +28,9 @@ import { Shussouba } from "../src/app/entities/Shussouba";
 import { ShussoubaSeiseki } from "../src/app/entities/ShussoubaSeiseki";
 import { ShussoubaTsuukaJuni } from "../src/app/entities/ShussoubaTsuukaJuni";
 import { Uma } from "../src/app/entities/Uma";
+import { UmaBanushi } from "../src/app/entities/UmaBanushi";
 import { getJraTrack } from "../src/app/reader/JRA/JraTrack";
+import { JvdataBn } from "../src/app/reader/JRA/JVData/JvdataBn";
 import { JvdataBr } from "../src/app/reader/JRA/JVData/JvdataBr";
 import { JvdataBt } from "../src/app/reader/JRA/JVData/JvdataBt";
 import { JvdataCh } from "../src/app/reader/JRA/JVData/JvdataCh";
@@ -82,6 +85,7 @@ const handlers = [
   JvdataHs,
   JvdataHy,
   JvdataCs,
+  JvdataBn,
 ];
 
 describe("JV-Data の仕様書", () => {
@@ -152,6 +156,19 @@ describe("JV-Data の仕様書", () => {
     expect($R.joukenMaruShi.toCodeFromJvData("N23")).toBeNull();
   });
 });
+
+/** 馬主の名前 (区分 → 名前) */
+async function banushiMeishou(banushiId: number) {
+  const mei = await repo(BanushiMei).findBy({ BanushiId: banushiId });
+  return new Map(
+    await Promise.all(
+      mei.map(
+        async (m) =>
+          [m.Kubun, (await repo(Shoyuu).findOneByOrFail({ Id: m.ShoyuuId })).Meishou] as const,
+      ),
+    ),
+  );
+}
 
 /** 2007-10-06 (土) 東京 4 回 1 日 11R */
 function raceKey<T extends JvdataRecord>(record: T, race = 11) {
@@ -313,9 +330,12 @@ describe("レース", () => {
     const kishu = await repo(Kishu).findOneByOrFail({ JvDataKishuCode: "01088" });
     expect(shussouba?.KishuId).toBe(kishu.Id);
     expect((await repo(Choukyoushi).findBy({ JvDataChoukyoushiCode: "01234" })).length).toBe(1);
-    const banushi = await repo(Banushi).findOneByOrFail({ ShussoubaId: shussouba?.Id });
-    const shoyuu = await repo(Shoyuu).findOneByOrFail({ Id: banushi.ShoyuuId });
-    expect(shoyuu.Meishou).toBe("テスト");
+    // 馬主は、レースの日の馬の馬主
+    const umaBanushi = await repo(UmaBanushi).findOneByOrFail({ UmaId: uma.Id });
+    expect(umaBanushi.Nengappi).toBe(20071006);
+    const banushi = await repo(Banushi).findOneByOrFail({ Id: umaBanushi.BanushiId });
+    expect(banushi.JvDataCode).toBe("123456");
+    expect(await banushiMeishou(banushi.Id)).toEqual(new Map([[MeishouKubun.Meishou, "テスト"]]));
 
     const result = await repo(ShussoubaSeiseki).findOneByOrFail({ Id: shussouba?.Id });
     expect(result.Time).toBeCloseTo(92.1);
@@ -1052,6 +1072,65 @@ describe("マスタ", () => {
         UchiSoto: 0,
       }),
     );
+  });
+
+  test("馬主マスタ: 馬主は日付ごとに馬につながり、馬主が変わってもよい", async () => {
+    await emptyKolDb();
+    // 名前だけの馬主 (KOL・JRDB のような) を、出走馬で先に作っておく
+    const r1 = ra("7");
+    const s1 = se(1, "2004101234", "テストホース", "01088");
+    s1.set("馬主コード", "000000").set("馬主名(法人格無)", "テスト".padEnd(61));
+    // 2 走目 (翌週) は、馬主が変わっている
+    const r2 = raceKey(new JvdataRecord("RA"), 10).set("開催月日", "1013").set("データ区分", "7");
+    const s2 = raceKey(se(1, "2004101234", "テストホース", "01088"), 10)
+      .set("開催月日", "1013")
+      .set("馬主コード", "654321")
+      .set("馬主名(法人格無)", "アタラシイ".padEnd(59));
+    // 競走馬マスタは、データ作成年月日の時点の馬主 (元の馬主に戻っている)
+    const um = new JvdataRecord("UM");
+    um.set("データ区分", "2")
+      .set("データ作成年月日", "20071101")
+      .set("血統登録番号", "2004101234")
+      .set("馬名", "テストホース")
+      .set("馬主コード", "123456")
+      .set("馬主名(法人格無)", "テスト");
+    expect(
+      await importKolFiles({
+        // 取り込む順序は、日付の順でなくてよい
+        "UM.jvd": um.buffer,
+        "RACE.jvd": Buffer.concat([r2.buffer, s2.buffer, r1.buffer, s1.buffer]),
+      }),
+    ).toEqual([]);
+    const bn = new JvdataRecord("BN");
+    bn.set("データ区分", "1")
+      .set("馬主コード", "123456")
+      .set("馬主名(法人格有)", "株式会社テスト")
+      .set("馬主名(法人格無)", "テスト")
+      .set("馬主名半角ｶﾅ", "ﾃｽﾄ")
+      .set("馬主名欧字", "Test Co.")
+      .set("服色標示", "水色，赤山形一本輪，水色袖");
+    expect(await importKolFiles({ "BN.jvd": bn.buffer })).toEqual([]);
+
+    // 名前だけの馬主に、コードが付いて同じ馬主になる
+    const banushi = await repo(Banushi).find();
+    expect(banushi.map((b) => b.JvDataCode).sort()).toEqual(["123456", "654321"]);
+    const test = banushi.find((b) => b.JvDataCode === "123456");
+    expect(test?.Fukushoku).toBe("水色,赤山形一本輪,水色袖");
+    expect(await banushiMeishou(test?.Id ?? 0)).toEqual(
+      new Map([
+        [MeishouKubun.Meishou, "テスト"],
+        [MeishouKubun.Furigana, "テスト"],
+        [MeishouKubun.Eigo, "Test Co."],
+      ]),
+    );
+    const atarashii = banushi.find((b) => b.JvDataCode === "654321");
+    const uma = await repo(Uma).findOneByOrFail({ KettouTourokuBangou: "04101234" });
+    const history = await repo(UmaBanushi).findBy({ UmaId: uma.Id });
+    expect(history.map((h) => [h.Nengappi, h.BanushiId])).toEqual([
+      [20071006, test?.Id],
+      [20071013, atarashii?.Id],
+      [20071101, test?.Id],
+    ]);
   });
 
   test("開催スケジュール", async () => {

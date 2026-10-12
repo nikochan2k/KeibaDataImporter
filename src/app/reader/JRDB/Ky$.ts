@@ -12,7 +12,6 @@ import { umaDao } from "../../daos/UmaDao";
 import { upsertLater } from "../../db/helpers";
 import { Choukyoushi } from "../../entities/Choukyoushi";
 import { Kyousouba } from "../../entities/Kyousouba";
-import { MeishouKubun } from "../../entities/MeishouKubun";
 import { Shussouba } from "../../entities/Shussouba";
 import { Kubun } from "../../entities/ShussoubaJoutai";
 import { ShussoubaYosou } from "../../entities/ShussoubaYosou";
@@ -56,7 +55,7 @@ export abstract class Ky$ extends JrdbShussoubaData {
   }
 
   protected async saveShussoubaRelated(buffer: Buffer, shussouba: Shussouba) {
-    await this.saveBanushi(buffer, shussouba.Id);
+    await this.saveBanushi(buffer, shussouba);
     await this.saveShussoubaJoutai(buffer, shussouba);
     await this.saveShussoubaJoutaiSeries(buffer, shussouba);
     await this.saveShussoubaYosou(buffer, shussouba);
@@ -71,13 +70,11 @@ export abstract class Ky$ extends JrdbShussoubaData {
     return choukyoushiDao.saveChoukyoushi(choukyoushi, choukyoushiMei);
   }
 
-  protected async saveBanushi(buffer: Buffer, shussoubaId: number) {
-    const banushiMei = tool.normalizeHoujinMei(buffer, 404, 40);
-    if (!banushiMei) {
-      return null;
-    }
-    const banushiKaiCode = readInt(buffer, 444, 2);
-    await banushiDao.save(shussoubaId, MeishouKubun.Meishou, banushiMei, banushiKaiCode);
+  protected async saveBanushi(buffer: Buffer, shussouba: Shussouba) {
+    await banushiDao.saveShussoubaBanushi(shussouba, {
+      meishou: tool.normalizeHoujinMei(buffer, 404, 40),
+      BanushiKaiCode: readInt(buffer, 444, 2),
+    });
   }
 
   protected async saveKyousouba(buffer: Buffer, info: ShussoubaInfo) {

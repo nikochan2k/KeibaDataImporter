@@ -92,7 +92,7 @@ export class KolDen2 extends KolDataToImport {
     toBe.KolNengappi = dataNengappi;
 
     toBe = upsertMerged(Shussouba, toBe);
-    await kolTool.saveBanushi(buffer, 67, toBe.Id);
+    await kolTool.saveBanushi(buffer, 67, toBe);
     return toBe;
   }
 

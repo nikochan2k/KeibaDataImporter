@@ -1,5 +1,6 @@
 import * as $C from "../../../converters/Common";
 import * as $U from "../../../converters/Uma";
+import { banushiDao } from "../../../daos/BanushiDao";
 import { seisanshaDao } from "../../../daos/SeisanshaDao";
 import { umaDao } from "../../../daos/UmaDao";
 import { Kyousouba } from "../../../entities/Kyousouba";
@@ -13,8 +14,8 @@ import { JvdataRecord } from "./JvdataRecord";
 /**
  * 競走馬マスタ (UM)。
  * 3 代血統は繁殖登録番号でつなぐ (繁殖馬マスタ・産駒マスタと同じ馬になる)。
- * 馬主、賞金や着回数の累計、脚質傾向は取り込まない
- * (馬主は出走馬ごと、レースの成績は馬毎レース情報から取り込む)。
+ * 馬主は、データ作成年月日の時点の馬の馬主にする。
+ * 賞金や着回数の累計、脚質傾向は取り込まない (レースの成績は馬毎レース情報から取り込む)。
  */
 export class JvdataUm extends JvdataRecord {
   public readonly id = "UM";
@@ -63,6 +64,18 @@ export class JvdataUm extends JvdataRecord {
       JvDataCode: uma.JvDataSeisanshaCode,
       meishou: seisanshaMei,
     });
+
+    // 馬主は、データ作成年月日の時点の馬主
+    const banushi = {
+      JvDataCode: jvdataKettouTool.readBanushiCode(buffer, 982),
+      meishou: tool.normalizeHoujinMei(buffer, 988, 64),
+    };
+    const sakuseiNengappi = readPositiveInt(buffer, 3, 8);
+    if (sakuseiNengappi) {
+      await banushiDao.saveUmaBanushi(uma.Id, sakuseiNengappi, banushi);
+    } else {
+      await banushiDao.saveBanushi(banushi);
+    }
 
     const choukyoushi = await jraTool.saveChoukyoushi(buffer, 849, 854);
     let kyousouba = {} as Kyousouba;

@@ -19,6 +19,17 @@ export interface RaceShussoubaId {
   umaban: number;
 }
 
+/**
+ * 出走馬IDから、レースの日 (yyyymmdd) を返します。
+ * 出走馬IDは レースID * 2^6 + 馬番、レースIDは 開催ID * 2^6 + レース番号、
+ * 開催IDは 1970 年 1 月 1 日からの日数 * 2^7 + 場所 なので、2^19 で割った商が日数です。
+ */
+export function getNengappiOfShussoubaId(shussoubaId: number) {
+  const days = Math.floor(shussoubaId / 2 ** 19);
+  const date = new Date(days * 24 * 60 * 60 * 1000);
+  return date.getUTCFullYear() * 10000 + (date.getUTCMonth() + 1) * 100 + date.getUTCDate();
+}
+
 export abstract class ShussoubaTool {
   protected logger: Logger;
 
