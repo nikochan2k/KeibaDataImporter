@@ -637,16 +637,15 @@ describe("他の情報源との突き合わせ", () => {
     expect(await repo(Uma).count()).toBe(2);
   });
 
-  test("馬主・生産者の名前も、空白や異体字が違えば同じ行にまとめる", async () => {
+  test("馬主・生産者の名前も、空白だけが違えば同じ行にまとめ、異体字が違えば別の行にする", async () => {
     await emptyKolDb();
     const dao = meishouDao;
     const a = await dao.save(MeishouKubun.Full, "髙橋牧場");
     const b = await dao.save(MeishouKubun.Full, "高橋 牧場");
-    const c = await dao.save(MeishouKubun.Tanshuku, "高橋牧場");
-    expect(b.Id).toBe(a.Id);
-    expect(b.Meishou).toBe("髙橋牧場");
-    // 区分が違えば別の行
-    expect(c.Id).not.toBe(a.Id);
+    expect(b.Id).not.toBe(a.Id);
+    expect(b.MatchingKey).toBe(a.MatchingKey);
+    const d = await dao.save(MeishouKubun.Full, "髙 橋牧場");
+    expect(d.Id).toBe(a.Id);
   });
 
   test("空白だけが違う名前は1行にまとめ、異体字が違う名前は別の行にする", async () => {

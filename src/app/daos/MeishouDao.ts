@@ -1,17 +1,15 @@
 import { findOneBy } from "../db/helpers";
 import { MeishouKubun, Shoyuu } from "../entities/Shoyuu";
 import { tool } from "../reader/Tool";
-import { jinmeiMatchingKey } from "./JinmeiDao";
+import { jinmeiMatchingKey, stripJinmei } from "./JinmeiDao";
 
 export class MeishouDao {
   public async save(kubun: MeishouKubun, namae: string, banushiKaiCode?: number) {
-    // 表記が違っても(空白、異体字)同じ名前なら、同じ行にまとめる
-    const matchingKey = jinmeiMatchingKey(namae);
-    const asIs =
-      (await findOneBy(Shoyuu, { Meishou: namae })) ??
-      (await findOneBy(Shoyuu, { Kubun: kubun, MatchingKey: matchingKey }));
+    // 空白だけが違う名前は同じ行にまとめる。異体字が違えば別の行
+    namae = stripJinmei(namae);
+    const asIs = await findOneBy(Shoyuu, { Meishou: namae });
     const toBe = {} as Shoyuu;
-    toBe.MatchingKey = matchingKey;
+    toBe.MatchingKey = jinmeiMatchingKey(namae);
     toBe.Kubun = kubun;
     if (!asIs) {
       toBe.Meishou = namae;

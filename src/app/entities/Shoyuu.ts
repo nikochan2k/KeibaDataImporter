@@ -5,14 +5,18 @@ export enum MeishouKubun {
   Tanshuku,
 }
 
+/**
+ * 馬主・生産者の辞書。表記(Meishou)ごとに1行で、表記が違えば別の行にする。
+ * MatchingKey は表記ゆれを許して探す(UIからの検索)ための索引で、一意ではない。
+ */
 export const Shoyuu = sqliteTable(
   "Shoyuu",
   {
     Id: integer().primaryKey({ autoIncrement: true }),
     Kubun: integer().$type<MeishouKubun>().notNull(),
     Meishou: text().notNull(),
-    /** 突き合わせ用のキー (空白や異体字などを揃えたもの) */
-    MatchingKey: text(),
+    /** 表記ゆれを探すためのキー (空白や異体字などを揃えたもの) */
+    MatchingKey: text().notNull(),
     BanushiKaiCode: integer(),
   },
   (t) => [uniqueIndex("IxShoyuu1").on(t.Meishou), index("IxShoyuu2").on(t.MatchingKey)],
