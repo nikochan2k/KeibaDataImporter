@@ -43,7 +43,7 @@ export const browseRoutes = new Elysia({ prefix: "/api" })
     if (q === "") {
       throw new BadRequestError("q は必須です");
     }
-    return searchUma(q);
+    return searchUma(q, query.racehorse !== "0");
   })
   .get("/umas/:id", ({ params }) => getUma(toInt(params.id, "id")))
   .get("/kishus", ({ query }) => {

@@ -211,7 +211,7 @@ tbody tr:hover td {
   font-variant-numeric: tabular-nums;
 }
 
-input,
+input:not([type="checkbox"]),
 select,
 button {
   font: inherit;
@@ -221,6 +221,19 @@ button {
   border-radius: 6px;
   background: var(--surface);
   color: var(--fg);
+}
+
+label.check {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: 16px;
+  cursor: pointer;
+}
+
+input[type="checkbox"] {
+  margin: 0;
+  accent-color: var(--accent);
 }
 
 input.wide {

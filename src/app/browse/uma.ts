@@ -20,8 +20,11 @@ function prefixUpperBound(prefix: string) {
   return `${prefix}\u{10ffff}`;
 }
 
-/** 馬名(カナ・英字)の前方一致で探す。LIKE は大文字小文字を区別せずインデックスが効かないので範囲で比較する */
-export function searchUma(query: string, limit = 50): UmaSummary[] {
+/**
+ * 馬名(カナ・英字)の前方一致で探す。LIKE は大文字小文字を区別せずインデックスが効かないので範囲で比較する。
+ * racehorseOnly なら、競走馬(Kyousouba がある馬)だけにする
+ */
+export function searchUma(query: string, racehorseOnly = false, limit = 50): UmaSummary[] {
   const rows: {
     Id: number;
     KanaBamei: string | null;
@@ -30,7 +33,8 @@ export function searchUma(query: string, limit = 50): UmaSummary[] {
     Seibetsu: number | null;
   }[] = select(
     `SELECT Id, KanaBamei, EigoBamei, COALESCE(Seinen, Seinengappi / 10000) AS Seinen, Seibetsu FROM Uma
-      WHERE (KanaBamei >= ? AND KanaBamei < ?) OR (EigoBamei >= ? AND EigoBamei < ?)
+      WHERE ((KanaBamei >= ? AND KanaBamei < ?) OR (EigoBamei >= ? AND EigoBamei < ?))
+        ${racehorseOnly ? "AND EXISTS (SELECT 1 FROM Kyousouba KY WHERE KY.UmaId = Uma.Id)" : ""}
       ORDER BY KanaBamei LIMIT ?`,
     [query, prefixUpperBound(query), query, prefixUpperBound(query), limit],
   );

@@ -14,7 +14,19 @@ export function useIncrementalSearch() {
     if (composing) return;
     const next = input.trim();
     if (next === q) return;
-    const timer = setTimeout(() => setParams(next ? { q: next } : {}, { replace: true }), DEBOUNCE_MS);
+    const timer = setTimeout(
+      () =>
+        setParams(
+          (previous) => {
+            const params = new URLSearchParams(previous);
+            if (next) params.set("q", next);
+            else params.delete("q");
+            return params;
+          },
+          { replace: true },
+        ),
+      DEBOUNCE_MS,
+    );
     return () => clearTimeout(timer);
   }, [input, composing, q, setParams]);
 

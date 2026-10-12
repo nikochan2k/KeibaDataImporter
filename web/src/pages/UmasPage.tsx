@@ -1,11 +1,25 @@
-import { Link } from "react-router";
+import { Link, useSearchParams } from "react-router";
 import { type UmaSummary, useApi } from "../api";
 import { Async } from "../components";
 import { useIncrementalSearch } from "../useIncrementalSearch";
 
 export function UmasPage() {
   const { q, inputProps } = useIncrementalSearch();
-  const result = useApi<UmaSummary[]>(q ? `/api/umas?q=${encodeURIComponent(q)}` : null);
+  const [params, setParams] = useSearchParams();
+  const racehorseOnly = params.get("all") !== "1";
+  const result = useApi<UmaSummary[]>(
+    q ? `/api/umas?q=${encodeURIComponent(q)}&racehorse=${racehorseOnly ? 1 : 0}` : null,
+  );
+  const toggleRacehorseOnly = (checked: boolean) =>
+    setParams(
+      (previous) => {
+        const next = new URLSearchParams(previous);
+        if (checked) next.delete("all");
+        else next.set("all", "1");
+        return next;
+      },
+      { replace: true },
+    );
 
   return (
     <div className="fill">
@@ -15,7 +29,15 @@ export function UmasPage() {
           placeholder="馬名の先頭(カナ・英字)"
           {...inputProps}
         />{" "}
-        <span className="muted">前方一致(入力した文字で始まる馬名)</span>
+        <span className="muted">前方一致(入力した文字で始まる馬名)</span>{" "}
+        <label className="check">
+          <input
+            type="checkbox"
+            checked={racehorseOnly}
+            onChange={(e) => toggleRacehorseOnly(e.target.checked)}
+          />
+          競走馬のみ
+        </label>
       </form>
       {q && (
         <Async state={result}>
