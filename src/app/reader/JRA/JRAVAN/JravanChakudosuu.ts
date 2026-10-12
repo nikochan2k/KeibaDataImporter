@@ -114,7 +114,9 @@ export function addJravanUmaBaba(
     ChakudosuuBunrui.DirtMigi,
     ChakudosuuBunrui.DirtHidari,
     ChakudosuuBunrui.Shougai,
-  ].forEach((bunrui, i) => writer.add(key, bunrui, buffer, offset + i * 12, 3));
+  ].forEach((bunrui, i) => {
+    writer.add(key, bunrui, buffer, offset + i * 12, 3);
+  });
   for (let i = 0; i < 12; i++) {
     writer.add(key, babaBunrui(Math.floor(i / 4), i % 4), buffer, offset + 60 + i * 12, 3);
   }

@@ -119,7 +119,9 @@ export class JvdataUm extends JvdataRecord {
       ChakudosuuBunrui.DirtMigi,
       ChakudosuuBunrui.DirtHidari,
       ChakudosuuBunrui.Shougai,
-    ].forEach((bunrui, i) => add(bunrui, 1142 + i * 18));
+    ].forEach((bunrui, i) => {
+      add(bunrui, 1142 + i * 18);
+    });
     for (let i = 0; i < 12; i++) {
       add(babaBunrui(Math.floor(i / 4), i % 4), 1268 + i * 18);
     }

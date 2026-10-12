@@ -68,7 +68,9 @@ export function addKolSeiseki(
       ChakudosuuBunrui.DirtMigi,
       ChakudosuuBunrui.DirtHidari,
       ChakudosuuBunrui.Chokusen,
-    ].forEach((bunrui, i) => add(bunrui, (o.babaBetsu as number) + i * step));
+    ].forEach((bunrui, i) => {
+      add(bunrui, (o.babaBetsu as number) + i * step);
+    });
   }
   if (o.shougai !== undefined) {
     add(ChakudosuuBunrui.Shougai, o.shougai);

@@ -64,10 +64,14 @@ export class KolShu extends DataToImport {
         Kikan: kikan,
       };
       [ChakudosuuBunrui.Nenrei2, ChakudosuuBunrui.Nenrei3, ChakudosuuBunrui.Nenrei4Ijou].forEach(
-        (bunrui, i) => writer.add(key, bunrui, buffer, b + i * 16, 4),
+        (bunrui, i) => {
+          writer.add(key, bunrui, buffer, b + i * 16, 4);
+        },
       );
       [ChakudosuuBunrui.Shiba, ChakudosuuBunrui.Dirt, ChakudosuuBunrui.Shougai].forEach(
-        (bunrui, i) => writer.add(key, bunrui, buffer, b + 64 + i * 16, 4),
+        (bunrui, i) => {
+          writer.add(key, bunrui, buffer, b + 64 + i * 16, 4);
+        },
       );
       addKolSeiseki(writer, key, buffer, { babaJoutai: b + 112, kyori: b + 304 }, 4);
       writer.addShuukei({ ...key, Nen: year, ...readKolRentaiKyakushitsu(buffer, b + 48, 4) });
