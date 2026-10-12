@@ -28,7 +28,7 @@ export const browseRoutes = new Elysia({ prefix: "/api" })
       year,
       month,
       day,
-      query.basho === undefined ? undefined : toInt(query.basho, "basho"),
+      query.basho === undefined ? undefined : toInt(query.basho, "basho", 0),
     );
   })
   .get("/races/:id", ({ params }) => browseService.race(toInt(params.id, "id")))
