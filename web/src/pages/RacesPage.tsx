@@ -131,7 +131,7 @@ export function RacesPage() {
   }, [open]);
 
   return (
-    <>
+    <div className="fill">
       <h1>レース</h1>
       <Async state={months}>
         {(list) => {
@@ -211,6 +211,7 @@ export function RacesPage() {
       {valid && (
         <Async state={races}>
           {(list) => (
+            <div className="scroll">
             <table>
               <thead>
                 <tr>
@@ -237,9 +238,10 @@ export function RacesPage() {
                 ))}
               </tbody>
             </table>
+            </div>
           )}
         </Async>
       )}
-    </>
+    </div>
   );
 }

@@ -143,16 +143,18 @@ export function RacePage() {
         );
         const tab = tabs.some((t) => t.key === requested) ? requested : hasResult ? "result" : "shutuba";
         return (
-        <>
+        <div className="fill">
           <p>
             <Link to={`/?month=${r.date.slice(0, 7)}&date=${r.date}&basho=${r.basho}`}>
               ← {r.date.replaceAll("-", "/")} {r.bashoMei} のレース
             </Link>
           </p>
-          <h1>{raceTitle(r)}</h1>
-          <p className="muted">
-            {r.date} {raceCondition(r)} {r.grade} {r.hassouJikan && `${r.hassouJikan} 発走`}
-          </p>
+          <h1 className="title">
+            {raceTitle(r)}
+            <small className="muted">
+              {r.date} {raceCondition(r)} {r.grade} {r.hassouJikan && `${r.hassouJikan} 発走`}
+            </small>
+          </h1>
           <div className="tabs">
             {tabs.map((t) => (
               <button
@@ -165,6 +167,7 @@ export function RacePage() {
               </button>
             ))}
           </div>
+          <div className="scroll">
           {tab === "shutuba" ? (
             <table>
               <thead>
@@ -262,7 +265,8 @@ export function RacePage() {
               </tbody>
             </table>
           )}
-        </>
+          </div>
+        </div>
         );
       }}
     </Async>

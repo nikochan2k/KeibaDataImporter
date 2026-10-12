@@ -23,6 +23,7 @@ function ChoukyouTable({ items }: { items: PreviewChoukyou[] }) {
     return <p className="muted">調教記録はありません</p>;
   }
   return (
+    <div className="scroll">
     <table>
       <thead>
         <tr>
@@ -52,6 +53,7 @@ function ChoukyouTable({ items }: { items: PreviewChoukyou[] }) {
         ))}
       </tbody>
     </table>
+    </div>
   );
 }
 
@@ -94,14 +96,16 @@ export function UmaPage() {
         const requested = params.get("tab");
         const tab = TABS.find((t) => t.key === requested)?.key ?? TABS[0].key;
         return (
-        <>
+        <div className="fill">
           <p>
             <Link to="/umas">← 馬の検索</Link>
           </p>
-          <h1>{u.bamei}</h1>
-          <p className="muted">
-            {[u.eigoBamei, u.seibetsu, u.seinen && `${u.seinen}年生`].filter(Boolean).join(" / ")}
-          </p>
+          <h1 className="title">
+            {u.bamei}
+            <small className="muted">
+              {[u.eigoBamei, u.seibetsu, u.seinen && `${u.seinen}年生`].filter(Boolean).join(" / ")}
+            </small>
+          </h1>
           <p>
             父:{" "}
             {u.chichi ? <Link to={`/umas/${u.chichi.id}`}>{u.chichi.bamei}</Link> : <span>-</span>}
@@ -125,12 +129,15 @@ export function UmaPage() {
             ))}
           </div>
           {tab === "ketto" ? (
-            <Pedigree pedigree={u.pedigree} />
+            <div className="scroll">
+              <Pedigree pedigree={u.pedigree} />
+            </div>
           ) : tab === "choukyou" ? (
             <ChoukyouTable items={u.choukyou} />
           ) : u.starts.length === 0 ? (
             <p className="muted">出走記録はありません</p>
           ) : (
+            <div className="scroll">
             <table>
               <thead>
                 <tr>
@@ -164,8 +171,9 @@ export function UmaPage() {
                 ))}
               </tbody>
             </table>
+            </div>
           )}
-        </>
+        </div>
         );
       }}
     </Async>

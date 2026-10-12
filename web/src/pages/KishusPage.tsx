@@ -15,7 +15,7 @@ export function KishusPage() {
   };
 
   return (
-    <>
+    <div className="fill">
       <h1>騎手</h1>
       <form onSubmit={submit}>
         <input
@@ -33,6 +33,7 @@ export function KishusPage() {
             list.length === 0 ? (
               <p className="muted">見つかりませんでした</p>
             ) : (
+              <div className="scroll">
               <table>
                 <thead>
                   <tr>
@@ -55,10 +56,11 @@ export function KishusPage() {
                   ))}
                 </tbody>
               </table>
+              </div>
             )
           }
         </Async>
       )}
-    </>
+    </div>
   );
 }

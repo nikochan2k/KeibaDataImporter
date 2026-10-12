@@ -15,7 +15,7 @@ export function Async<T>({
   if (!state.data) {
     return <p className="muted">読み込み中…</p>;
   }
-  return <div className={state.loading ? "stale" : undefined}>{children(state.data)}</div>;
+  return <div className={state.loading ? "async stale" : "async"}>{children(state.data)}</div>;
 }
 
 export function raceTitle(race: {

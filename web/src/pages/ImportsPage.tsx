@@ -28,7 +28,7 @@ export function ImportsPage() {
   };
 
   return (
-    <>
+    <div className="fill">
       <h1>取り込み</h1>
       <form onSubmit={start}>
         <input
@@ -46,6 +46,7 @@ export function ImportsPage() {
       {jobs.error && <p className="error">{jobs.error.message}</p>}
       {jobs.data && jobs.data.length === 0 && <p className="muted">取り込みの履歴はありません</p>}
       {jobs.data && jobs.data.length > 0 && (
+        <div className="scroll">
         <table>
           <thead>
             <tr>
@@ -115,7 +116,8 @@ export function ImportsPage() {
             ))}
           </tbody>
         </table>
+        </div>
       )}
-    </>
+    </div>
   );
 }

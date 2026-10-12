@@ -15,7 +15,7 @@ export function UmasPage() {
   };
 
   return (
-    <>
+    <div className="fill">
       <h1>馬</h1>
       <form onSubmit={submit}>
         <input
@@ -33,6 +33,7 @@ export function UmasPage() {
             list.length === 0 ? (
               <p className="muted">見つかりませんでした</p>
             ) : (
+              <div className="scroll">
               <table>
                 <thead>
                   <tr>
@@ -55,10 +56,11 @@ export function UmasPage() {
                   ))}
                 </tbody>
               </table>
+              </div>
             )
           }
         </Async>
       )}
-    </>
+    </div>
   );
 }
