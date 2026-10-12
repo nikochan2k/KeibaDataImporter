@@ -32,6 +32,7 @@ import { Shoyuu } from "../src/app/entities/Shoyuu";
 import { Shussouba } from "../src/app/entities/Shussouba";
 import { ShussoubaSeiseki } from "../src/app/entities/ShussoubaSeiseki";
 import { ShussoubaTsuukaJuni } from "../src/app/entities/ShussoubaTsuukaJuni";
+import { ShussoubaYosou } from "../src/app/entities/ShussoubaYosou";
 import { Uma } from "../src/app/entities/Uma";
 import { UmaBanushi } from "../src/app/entities/UmaBanushi";
 import { getJraTrack } from "../src/app/reader/JRA/JraTrack";
@@ -47,6 +48,7 @@ import { JvdataHs } from "../src/app/reader/JRA/JVData/JvdataHs";
 import { JvdataHy } from "../src/app/reader/JRA/JVData/JvdataHy";
 import { JvdataH1, JvdataH6 } from "../src/app/reader/JRA/JVData/JvdataHyousuu";
 import { JvdataKs } from "../src/app/reader/JRA/JVData/JvdataKs";
+import { JvdataDm, JvdataTm } from "../src/app/reader/JRA/JVData/JvdataMining";
 import {
   JvdataO1,
   JvdataO2,
@@ -95,6 +97,8 @@ const handlers = [
   JvdataBn,
   JvdataHc,
   JvdataWc,
+  JvdataDm,
+  JvdataTm,
 ];
 
 describe("JV-Data の仕様書", () => {
@@ -1168,6 +1172,57 @@ describe("マスタ", () => {
     expect(kaisai[0].Basho).toBe(5);
     expect(kaisai[0].Gatsu).toBe(1);
     expect(kaisai[0].Nichi).toBe(5);
+  });
+});
+
+describe("データマイニング予想", () => {
+  function dm(kubun: string, umaban: number, time: string, plus: string, minus: string) {
+    return raceKey(new JvdataRecord("DM"))
+      .set("データ区分", kubun)
+      .set("馬番", umaban, { parent: "<マイニング予想>" })
+      .set("予想走破タイム", time, { parent: "<マイニング予想>" })
+      .set("予想誤差(信頼度)＋", plus, { parent: "<マイニング予想>" })
+      .set("予想誤差(信頼度)－", minus, { parent: "<マイニング予想>" });
+  }
+
+  test("タイム型・対戦型: あとの時点の予想を残し、出走馬がなければ作る", async () => {
+    await emptyKolDb();
+    const tm = raceKey(new JvdataRecord("TM"))
+      .set("データ区分", "1")
+      .set("馬番", 1, { parent: "<マイニング予想>" })
+      .set("予測スコア", "0725", { parent: "<マイニング予想>" })
+      .set("馬番", 2, { parent: "<マイニング予想>", index: 1 })
+      .set("予測スコア", "1000", { parent: "<マイニング予想>", index: 1 });
+    expect(
+      await importKolFiles({
+        "MING.jvd": Buffer.concat([
+          // 直前予想のあとに前日予想が来ても、直前予想が残る
+          dm("3", 1, "13456", "0050", "0120").buffer,
+          dm("1", 1, "13500", "0100", "0200").buffer,
+          tm.buffer,
+        ]),
+      }),
+    ).toEqual([]);
+    const race = await repo(Race).findOneByOrFail({});
+    const shussouba = await repo(Shussouba).findBy({ RaceId: race.Id });
+    expect(shussouba.map((s) => s.Umaban).sort()).toEqual([1, 2]);
+    const yosou = await repo(ShussoubaYosou).find();
+    const first = yosou.find((y) => y.Id === shussouba.find((s) => s.Umaban === 1)?.Id);
+    expect(first).toEqual(
+      expect.objectContaining({ DmKubun: 3, TmKubun: 1, TmScore: 72.5, DmGosaPlus: 0.5 }),
+    );
+    expect(first?.DmTime).toBeCloseTo(94.56);
+    expect(first?.DmGosaMinus).toBeCloseTo(1.2);
+    const second = yosou.find((y) => y.Id === shussouba.find((s) => s.Umaban === 2)?.Id);
+    expect(second?.TmScore).toBe(100);
+    expect(second?.DmTime).toBeNull();
+
+    // あとから馬毎レース情報が来ても、同じ出走馬になる
+    expect(
+      await importKolFiles({ "RACE.jvd": se(1, "2004101234", "テストホース", "01088").buffer }),
+    ).toEqual([]);
+    expect((await repo(Shussouba).findBy({ RaceId: race.Id })).length).toBe(2);
+    expect((await repo(ShussoubaYosou).findOneByOrFail({ Id: first?.Id ?? 0 })).DmKubun).toBe(3);
   });
 });
 

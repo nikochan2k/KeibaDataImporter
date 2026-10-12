@@ -92,15 +92,15 @@
 - 行を決める方法: `ChoukyouDao.saveChoukyou` (KOL から移して共通化)。同じ馬・日・場所・種別の中で時計を突き合わせて Renban を決め、合うものがなければ新しい行にする。
   KOL と JV-Data では時計のあるハロンが違うので、両方にあるハロンだけを比べる。
 
-## 6. 段階 4: データマイニング予想 DM・TM → `ShussoubaYosou`
+## 6. 段階 4: データマイニング予想 DM・TM → `ShussoubaYosou` — 済
 
-- `ShussoubaYosou` に足す列:
-  - `DmYosouTime`: 予想走破タイム (秒)
-  - `DmGosaPlus`: 予想誤差 + (秒)
-  - `DmGosaMinus`: 予想誤差 − (秒)
+- `ShussoubaYosou` に足した列:
+  - `DmKubun` / `TmKubun`: 予想の時点 (データ区分 1: 前日, 2: 当日, 3: 直前, 7: 成績)
+  - `DmTime`: 予想走破タイム (秒)
+  - `DmGosaPlus` / `DmGosaMinus`: 予想誤差 + / − (秒)
   - `TmScore`: 対戦型の予測スコア
-- データ区分 1 (前日)・2 (当日)・3 (直前)・7 (成績) は、後から来たもので上書きする。
-- レースは `jvdataRaceTool.ensureRace` で作り、出走馬は馬番で探す (なければ作る)。RA・SE が後から来ても同じ行に入るようにする。
+- 取り込む順序によらず、データ区分の大きい (あとの時点の) 予想を残す。そのために時点の列を持つ。
+- レースは `jvdataRaceTool.ensureRace` で作り、出走馬は馬番から ID を決めて、なければ作る。RA・SE が後から来ても同じ行に入る。
 
 ## 7. 段階 5: 特別登録馬 TK・Tok1 と競走馬除外 JG
 

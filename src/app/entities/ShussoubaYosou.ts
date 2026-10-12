@@ -129,6 +129,22 @@ export const ShussoubaYosou = sqliteTable("ShussoubaYosou", {
   Em: integer(),
   KyuushaBbShirushi: integer(),
   KishuBbShirushi: integer(),
+  /* JV-Data のデータマイニング予想 */
+  /**
+   * タイム型 (DM) の予想の時点。JV-Data のデータ区分
+   * (1: 前日 (出馬発表後), 2: 当日 (天候馬場発表後), 3: 直前 (馬体重発表後), 7: 成績 (月曜))
+   */
+  DmKubun: integer(),
+  /** タイム型の予想走破タイム (秒) */
+  DmTime: real(),
+  /** タイム型の予想誤差 (秒)。予想走破タイムより速くなる方向 */
+  DmGosaPlus: real(),
+  /** タイム型の予想誤差 (秒)。予想走破タイムより遅くなる方向 */
+  DmGosaMinus: real(),
+  /** 対戦型 (TM) の予想の時点。DmKubun と同じ */
+  TmKubun: integer(),
+  /** 対戦型の予測スコア (0〜100) */
+  TmScore: real(),
 });
 
 export type ShussoubaYosou = typeof ShussoubaYosou.$inferSelect;
