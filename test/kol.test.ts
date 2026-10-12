@@ -631,6 +631,44 @@ describe("取り込み結果が見本ファイルと一致する", () => {
   });
 
   describe("SYU (種牡馬データ)", () => {
+    test("産駒の成績 (本年・昨年) が、種牡馬の産駒の着度数になる", async () => {
+      const result = await importKolKind("syu");
+      expect(result.errors).toEqual([]);
+      const read = (record: Buffer, address: number) =>
+        [0, 1, 2, 3].map((i) => Number.parseInt(field(record, address + i * 4, 4), 10) || 0);
+      const rowOf = (key: Partial<Chakudosuu>) => {
+        const row = findOneBy(Chakudosuu, key as never) as Chakudosuu | null;
+        return row ? [row.Chaku1, row.Chaku2, row.Chaku3, row.Chaku4Ika] : [0, 0, 0, 0];
+      };
+      let checked = 0;
+      for (const record of kolRecords("syu", 2010).slice(0, 30)) {
+        const uma = findOneBy(Uma, { KolUmaCode: Number.parseInt(field(record, 0, 7), 10) });
+        const key = {
+          Taishou: ChakudosuuTaishou.Sanku,
+          TaishouId: uma?.Id ?? 0,
+          Nengappi: Number.parseInt(field(record, 480, 8), 10),
+        };
+        const kikan = { Kikan: ChakudosuuKikan.Honnen };
+        const zennen = { Kikan: ChakudosuuKikan.Zennen };
+        expect(rowOf({ ...key, ...kikan, Bunrui: ChakudosuuBunrui.Nenrei3 })).toEqual(
+          read(record, 504),
+        );
+        expect(rowOf({ ...key, ...kikan, Bunrui: ChakudosuuBunrui.Shiba })).toEqual(
+          read(record, 552),
+        );
+        expect(rowOf({ ...key, ...zennen, Bunrui: ChakudosuuBunrui.Shiba })).toEqual(
+          read(record, 1312),
+        );
+        expect(
+          rowOf({ ...key, ...zennen, Bunrui: kyoriBunrui(ChakudosuuTrack.Dirt, kolKyori, 0) }),
+        ).toEqual(read(record, 1552 + 8 * 16));
+        if (read(record, 1312).some((n) => n > 0)) {
+          checked++;
+        }
+      }
+      expect(checked).toBeGreaterThan(0);
+    });
+
     test("種牡馬コードが保存される", async () => {
       await importKolKind("syu");
       const records = kolRecords("syu", 2010).slice(0, 30);
