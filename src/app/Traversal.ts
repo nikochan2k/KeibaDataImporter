@@ -262,9 +262,6 @@ export class Traversal {
   }
 
   protected async importEntry(filepath: string, basename: string) {
-    if (this.logger.isLevelEnabled("info")) {
-      this.logger.info(`"${basename}"を解凍しています。`);
-    }
     if (/\.lzh$/i.test(basename)) {
       await this.uncompressLzhFile(filepath);
     } else if (/\.zip$/i.test(basename)) {
@@ -280,9 +277,6 @@ export class Traversal {
       }
     } else {
       importProgress.fileSkipped(basename, "取り込み対象のファイル形式ではありません");
-      if (this.logger.isLevelEnabled("info")) {
-        this.logger.info(`"${basename}"は取り込み対象ファイルではありません。`);
-      }
     }
   }
 

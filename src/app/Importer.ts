@@ -297,9 +297,6 @@ export class Importer {
       let fd: number;
       try {
         fd = fs.openSync(item.dataFile, "r");
-        if (this.logger.isLevelEnabled("info")) {
-          this.logger.info(`"${item.basename}"を取り込んでいます`);
-        }
         importProgress.fileStarted(item.basename, target);
         await dataToImport.readAll(fd);
         importProgress.fileFinished(item.basename, target);
