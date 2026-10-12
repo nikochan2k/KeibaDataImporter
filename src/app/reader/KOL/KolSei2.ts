@@ -106,7 +106,7 @@ export class KolSei2 extends DataToImport {
     toBe.Bataijuu = readPositiveInt(buffer, 153, 3);
     toBe.Zougen = readInt(buffer, 156, 3);
     const kishu = await kolTool.saveKishu(buffer, 162);
-    toBe.KishuId = kishu.Id;
+    toBe.KishuId = kishu?.Id;
     toBe.KishuTouzaiBetsu = $C.touzaiBetsu.toCodeFromKol(buffer, 207, 1);
     toBe.KishuShozokuBasho = $C.basho.toCodeFromKol(buffer, 208, 2);
     toBe.KishuShozokuChoukyoushiId = await kolTool.saveShozokuChoukyoushi(buffer, 210);

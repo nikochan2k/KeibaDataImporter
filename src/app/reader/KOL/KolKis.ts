@@ -14,7 +14,7 @@ export class KolKis extends DataToImport {
 
   public async save(buffer: Buffer) {
     let kishu = {} as Kishu;
-    kishu.KolKishuCode = readInt(buffer, 0, 5);
+    kishu.KolKishuCode = readPositiveInt(buffer, 0, 5);
     kishu.Seinengappi = readInt(buffer, 93, 8);
     kishu.MenkyoKoufuNengappi = readInt(buffer, 101, 4);
     const kishuMei = readStr(buffer, 5, 32);

@@ -17,7 +17,11 @@ import { tool } from "../Tool";
 export class KolTool {
   public async saveKishu(buffer: Buffer, offset: number) {
     const kishu = {} as Kishu;
-    kishu.KolKishuCode = readInt(buffer, offset, 5);
+    kishu.KolKishuCode = readPositiveInt(buffer, offset, 5);
+    if (!kishu.KolKishuCode) {
+      // 騎手が不明なとき。中身のない騎手を作らない
+      return null;
+    }
     const kishuMei = readStrWithNoSpace(buffer, offset + 5, 32);
     const tanshukuKishuMei = readStrWithNoSpace(buffer, offset + 37, 8);
     return kishuDao.saveKishu(kishu, kishuMei, tanshukuKishuMei);

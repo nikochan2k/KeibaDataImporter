@@ -334,7 +334,7 @@ export class KolUma extends DataToImport {
     toBe.Kinryou = readPositiveDouble(buffer, 91, 3, 0.1);
     toBe.Zougen = readInt(buffer, 97, 3);
     const kishu = await kolTool.saveKishu(buffer, 103);
-    toBe.KishuId = kishu.Id;
+    toBe.KishuId = kishu?.Id;
     toBe.KishuTouzaiBetsu = $C.touzaiBetsu.toCodeFromKol(buffer, 148, 1);
     toBe.KishuShozokuBasho = $C.basho.toCodeFromKol(buffer, 149, 2);
     toBe.KishuShozokuChoukyoushiId = await kolTool.saveShozokuChoukyoushi(buffer, 151);

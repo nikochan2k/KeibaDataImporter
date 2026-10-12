@@ -99,7 +99,7 @@ export class KolDen2 extends KolDataToImport {
     toBe.Nenrei = tool.normalizeNenrei(nenrei, nen);
     toBe.Kinryou = readPositiveDouble(buffer, 148, 3, 0.1);
     const kishu = await kolTool.saveKishu(buffer, 151);
-    toBe.KishuId = kishu.Id;
+    toBe.KishuId = kishu?.Id;
     toBe.KishuTouzaiBetsu = $C.touzaiBetsu.toCodeFromKol(buffer, 196, 1);
     toBe.KishuShozokuBasho = $C.basho.toCodeFromKol(buffer, 197, 2);
     toBe.KishuShozokuChoukyoushiId = await kolTool.saveShozokuChoukyoushi(buffer, 199);
