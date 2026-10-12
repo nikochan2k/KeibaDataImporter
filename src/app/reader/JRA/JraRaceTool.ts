@@ -117,9 +117,9 @@ export abstract class JraRaceTool extends RaceTool {
 
   /**
    * レースを追加または更新して、保存したレースを返します。
-   * @param skipNull true のとき、項目が空白のレコードで既存の値を消しません
+   * @param skipNull true (既定) のとき、項目が空白のレコードで既存の値を消しません
    */
-  public upsertRace(toBe: Race, skipNull = false) {
+  public upsertRace(toBe: Race, skipNull = true) {
     return upsert(Race, toBe, skipNull);
   }
 

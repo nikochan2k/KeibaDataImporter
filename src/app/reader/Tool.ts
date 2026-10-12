@@ -47,13 +47,13 @@ export class Tool {
 
   /**
    * 既存の行があれば差分だけを更新し、なければ保存します。
-   * @param skipNull true のとき、toBe の null で既存の値を消しません(速報版など、項目が空白で提供されるデータ用)
+   * @param skipNull true (既定) のとき、toBe の null で既存の値を消しません(別のデータ元や速報版で項目が空白のとき用)
    */
   public async saveOrUpdate<E extends SQLiteTable, T extends E["$inferSelect"]>(
     entity: E,
     asIs: T,
     toBe: T,
-    skipNull = false,
+    skipNull = true,
   ): Promise<T> {
     if (asIs) {
       const updateSet = this.createUpdateSet(asIs, toBe, skipNull);
@@ -63,7 +63,7 @@ export class Tool {
     return save(entity, toBe) as T;
   }
 
-  protected createUpdateSet<T>(asIs: T, toBe: T, skipNull = false) {
+  protected createUpdateSet<T>(asIs: T, toBe: T, skipNull = true) {
     const updateSet = <T>{};
     const keys = Object.keys(toBe);
     for (let i = 0; i < keys.length; i++) {

@@ -42,12 +42,12 @@ describe("saveOrUpdate", () => {
     expect((await findOneBy(Kishu, { JrdbKishuCode: 2 })).Shozoku).toBe(2);
   });
 
-  test("skipNull のときは null で既存の値を消さない", async () => {
+  test("既定では null で既存の値を消さない。skipNull = false なら消す", async () => {
     const asIs = await findOneBy(Kishu, { JrdbKishuCode: 2 });
-    await tool.saveOrUpdate(Kishu, asIs, Object.assign({} as Kishu, { Shozoku: null }), true);
+    await tool.saveOrUpdate(Kishu, asIs, Object.assign({} as Kishu, { Shozoku: null }));
     expect((await findOneBy(Kishu, { JrdbKishuCode: 2 })).Shozoku).toBe(2);
     const asIs2 = await findOneBy(Kishu, { JrdbKishuCode: 2 });
-    await tool.saveOrUpdate(Kishu, asIs2, Object.assign({} as Kishu, { Shozoku: null }));
+    await tool.saveOrUpdate(Kishu, asIs2, Object.assign({} as Kishu, { Shozoku: null }), false);
     expect((await findOneBy(Kishu, { JrdbKishuCode: 2 })).Shozoku).toBeNull();
   });
 });
@@ -132,6 +132,19 @@ describe("upsertAll", () => {
     upsertAll(ChoukyouTime, rows);
     expect(countBy(ChoukyouTime, { ChoukyouId: 4 })).toBe(20000);
     expect(findOneBy(ChoukyouTime, { ChoukyouId: 4, F: 19999 })?.Comment).toBe("c19999");
+  });
+
+  test("既定では null で既存の値を消さない。skipNull = false なら消す", () => {
+    upsertAll(ChoukyouTime, [time(5, 1, { Time: 1, Comment: "keep" })]);
+    upsertAll(ChoukyouTime, [time(5, 1, { Time: 2, Comment: null })]);
+    expect(findOneBy(ChoukyouTime, { ChoukyouId: 5, F: 1 })).toEqual({
+      ChoukyouId: 5,
+      F: 1,
+      Time: 2,
+      Comment: "keep",
+    });
+    upsertAll(ChoukyouTime, [time(5, 1, { Comment: null })], false);
+    expect(findOneBy(ChoukyouTime, { ChoukyouId: 5, F: 1 })?.Comment).toBeNull();
   });
 
   test("空の配列は何もしない", () => {

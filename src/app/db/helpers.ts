@@ -131,6 +131,11 @@ function definedOf(row: object) {
   return Object.fromEntries(Object.entries(row).filter(([, value]) => value !== undefined));
 }
 
+/** undefined と null の項目を除く (既存の値を消さないため) */
+function definedNonNullOf(row: object) {
+  return Object.fromEntries(Object.entries(row).filter(([, value]) => value != null));
+}
+
 const primaryKeys = new WeakMap<SQLiteTable, SQLiteColumn[]>();
 
 /** 主キーの列 */
@@ -196,14 +201,15 @@ export function save<T extends SQLiteTable>(table: T, row: Partial<Row<T>>): Row
 
 /**
  * 主キーが決まっている行を、読み戻さずに 1 文で追加または更新する (INSERT ... ON CONFLICT DO UPDATE)。
- * undefined の項目は書かない。skipNull のときは null の項目も書かず、既存の値を消さない。
+ * undefined の項目は書かない。skipNull (既定 true) のときは null の項目も書かず、既存の値を消さない。
+ * null で消したいときだけ skipNull = false にする。
  * 保存後の行 (既存の値と合わせたもの) を返す。
  * 追加の時点で NOT NULL 列が空だと、既存の行があっても失敗するので、NOT NULL 列のある表では、row にそれらを必ず入れる。
  */
 export function upsert<T extends SQLiteTable>(
   table: T,
   row: Partial<Row<T>>,
-  skipNull = false,
+  skipNull = true,
 ): Row<T> {
   flushWrites(table);
   const keys = keysOf(table);
@@ -265,15 +271,19 @@ const MAX_CACHED_ROWS = 64;
 
 /**
  * 主キーが決まっている複数の行を、まとめて追加または更新する (複数行の INSERT ... ON CONFLICT DO UPDATE)。
- * save と同じく、undefined の項目は書かず、渡した項目だけ更新する。保存後の行は読み戻さない。
+ * undefined の項目は書かず、渡した項目だけ更新する。skipNull (既定 true) のときは null の項目も書かない。保存後の行は読み戻さない。
  * 項目の組が同じ行ごとに 1 文にまとめるので、同じ項目を持つ行が多いほど速い。
  * 同じ主キーの行が複数あるときは、項目の組が同じ行の中ではあとの行の値が残る (組が違う行どうしの順序は保証しない)。
  */
-export function upsertAll<T extends SQLiteTable>(table: T, rows: readonly Partial<Row<T>>[]): void {
+export function upsertAll<T extends SQLiteTable>(
+  table: T,
+  rows: readonly Partial<Row<T>>[],
+  skipNull = true,
+): void {
   const keys = keysOf(table);
   const groups = new Map<string, Record<string, unknown>[]>();
   for (const row of rows) {
-    const values = definedOf(row);
+    const values = skipNull ? definedNonNullOf(row) : definedOf(row);
     const signature = Object.keys(values).join(",");
     const group = groups.get(signature);
     if (group) {
@@ -337,13 +347,13 @@ let pendingRows = 0;
 export function upsertLater<T extends SQLiteTable>(
   table: T,
   row: Partial<Row<T>>,
-  skipNull = false,
+  skipNull = true,
 ): void {
   const values = Object.fromEntries(
     Object.entries(definedOf(row)).filter(([, value]) => !(skipNull && value === null)),
   );
   if (!isInTransaction()) {
-    upsertAll(table, [values as Partial<Row<T>>]);
+    upsertAll(table, [values as Partial<Row<T>>], false);
     return;
   }
   const id = keysOf(table).map((k) => {
@@ -382,7 +392,7 @@ export function flushWrites(table?: SQLiteTable): void {
     if (rows) {
       pending.delete(t);
       pendingRows -= rows.size;
-      upsertAll(t, [...rows.values()]);
+      upsertAll(t, [...rows.values()] as Partial<Row<typeof t>>[], false);
     }
   }
 }
