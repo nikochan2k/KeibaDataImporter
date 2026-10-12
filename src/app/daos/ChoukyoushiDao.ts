@@ -40,26 +40,64 @@ export class ChoukyoushiDao {
    * なければ姓名(と生年月日)が一致する調教師、姓名がなければ略称が一致する調教師が 1 人だけのときその調教師です。
    */
   protected async getChoukyoushi(choukyoushi: Choukyoushi, seimei?: string, tanshuku?: string) {
+    return (await this.lookup(choukyoushi, seimei, tanshuku)).found;
+  }
+
+  /**
+   * 名前が当たらないとき、生年月日が一致しコードが矛盾しない調教師が 1 人だけなら、
+   * 姓が変わった同一人物とみなす。生年月日は同じ別人がありうるので、候補が 1 人のときに限る。
+   */
+  private async findBySeinengappi(toBe: Choukyoushi) {
+    if (!toBe.Seinengappi) {
+      return [];
+    }
+    return query<Choukyoushi>(
+      "SELECT * FROM Choukyoushi WHERE Seinengappi = ?",
+      toBe.Seinengappi,
+    ).filter((c) => !this.conflicts(c, toBe));
+  }
+
+  /** その行に、この姓名(照合キーが同じもの)が登録済みか */
+  private hasSeimei(row: Choukyoushi, seimei: string) {
+    return (
+      query<{ Id: number }>(
+        `SELECT m.Id FROM ChoukyoushiMei m
+          INNER JOIN Jinmei j ON j.Id = m.JinmeiId
+          WHERE m.ChoukyoushiId = ? AND m.Kubun = ? AND j.MatchingKey = ? LIMIT 1`,
+        row.Id,
+        JinmeiKubun.Seimei,
+        jinmeiMatchingKey(seimei),
+      ).length > 0
+    );
+  }
+
+  private async lookup(choukyoushi: Choukyoushi, seimei?: string, tanshuku?: string) {
     for (const key of ChoukyoushiDao.codeKeys) {
       if (choukyoushi[key]) {
         const found = await findOneBy(Choukyoushi, { [key]: choukyoushi[key] });
         if (found) {
-          return found;
+          return { found, renamed: false };
         }
       }
     }
     if (seimei) {
       const candidates = await this.findByMeishou(choukyoushi, seimei);
       if (candidates.length === 1 || (candidates.length > 1 && choukyoushi.Seinengappi)) {
-        return candidates[0];
+        return { found: candidates[0], renamed: false };
+      }
+      if (candidates.length === 0) {
+        const bySeinengappi = await this.findBySeinengappi(choukyoushi);
+        if (bySeinengappi.length === 1) {
+          return { found: bySeinengappi[0], renamed: true };
+        }
       }
     } else if (tanshuku) {
       const candidates = await this.findByMeishou(choukyoushi, tanshuku);
       if (candidates.length === 1) {
-        return candidates[0];
+        return { found: candidates[0], renamed: false };
       }
     }
-    return null;
+    return { found: null, renamed: false };
   }
 
   public async saveChoukyoushi(
@@ -68,10 +106,12 @@ export class ChoukyoushiDao {
     tanshuku?: string,
     furigana?: string,
   ) {
-    const asIs = await this.getChoukyoushi(toBe, seimei, tanshuku);
+    const { found: asIs, renamed: foundByBirthday } = await this.lookup(toBe, seimei, tanshuku);
+    // コードで見つかっても姓名が未登録(姓が変わった)なら、新しい名前を登録する
+    const renamed = foundByBirthday || (!!asIs && !!seimei && !this.hasSeimei(asIs, seimei));
     const newCode =
       !!asIs && ChoukyoushiDao.codeKeys.some((k) => toBe[k] != null && asIs[k] == null);
-    if (!asIs || newCode || (seimei && tanshuku && furigana)) {
+    if (!asIs || newCode || renamed || (seimei && tanshuku && furigana)) {
       toBe = await tool.saveOrUpdate(Choukyoushi, asIs, toBe);
     } else {
       return asIs;

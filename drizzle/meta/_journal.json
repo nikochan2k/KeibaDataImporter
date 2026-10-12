@@ -8,6 +8,13 @@
       "when": 1791731493291,
       "tag": "0000_init",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "6",
+      "when": 1791771815422,
+      "tag": "0001_seinengappi_index",
+      "breakpoints": true
     }
   ]
 }

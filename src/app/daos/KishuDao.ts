@@ -37,26 +37,63 @@ export class KishuDao {
    * 別の情報源で取り込んだ騎手を同じ行にまとめるために、コードが違っても名前で探します。
    */
   protected async getKishu(kishu: Kishu, seimei?: string, tanshuku?: string) {
+    return (await this.lookup(kishu, seimei, tanshuku)).found;
+  }
+
+  /**
+   * 名前が当たらないとき、生年月日が一致しコードが矛盾しない騎手が 1 人だけなら、
+   * 姓が変わった同一人物とみなす。生年月日は同じ別人がありうるので、候補が 1 人のときに限る。
+   */
+  private async findBySeinengappi(toBe: Kishu) {
+    if (!toBe.Seinengappi) {
+      return [];
+    }
+    return query<Kishu>("SELECT * FROM Kishu WHERE Seinengappi = ?", toBe.Seinengappi).filter(
+      (c) => !this.conflicts(c, toBe),
+    );
+  }
+
+  /** その行に、この姓名(照合キーが同じもの)が登録済みか */
+  private hasSeimei(row: Kishu, seimei: string) {
+    return (
+      query<{ Id: number }>(
+        `SELECT m.Id FROM KishuMei m
+          INNER JOIN Jinmei j ON j.Id = m.JinmeiId
+          WHERE m.KishuId = ? AND m.Kubun = ? AND j.MatchingKey = ? LIMIT 1`,
+        row.Id,
+        JinmeiKubun.Seimei,
+        jinmeiMatchingKey(seimei),
+      ).length > 0
+    );
+  }
+
+  private async lookup(kishu: Kishu, seimei?: string, tanshuku?: string) {
     for (const key of KishuDao.codeKeys) {
       if (kishu[key]) {
         const found = await findOneBy(Kishu, { [key]: kishu[key] });
         if (found) {
-          return found;
+          return { found, renamed: false };
         }
       }
     }
     if (seimei) {
       const candidates = await this.findByMeishou(kishu, seimei);
       if (candidates.length === 1 || (candidates.length > 1 && kishu.Seinengappi)) {
-        return candidates[0];
+        return { found: candidates[0], renamed: false };
+      }
+      if (candidates.length === 0) {
+        const bySeinengappi = await this.findBySeinengappi(kishu);
+        if (bySeinengappi.length === 1) {
+          return { found: bySeinengappi[0], renamed: true };
+        }
       }
     } else if (tanshuku) {
       const candidates = await this.findByMeishou(kishu, tanshuku);
       if (candidates.length === 1) {
-        return candidates[0];
+        return { found: candidates[0], renamed: false };
       }
     }
-    return null;
+    return { found: null, renamed: false };
   }
 
   public async getKishuWith(jinmeiId: number, umaId: number) {
@@ -94,9 +131,11 @@ LIMIT
   }
 
   public async saveKishu(toBe: Kishu, seimei?: string, tanshuku?: string, furigana?: string) {
-    const asIs = await this.getKishu(toBe, seimei, tanshuku);
+    const { found: asIs, renamed: foundByBirthday } = await this.lookup(toBe, seimei, tanshuku);
+    // コードで見つかっても姓名が未登録(姓が変わった)なら、新しい名前を登録する
+    const renamed = foundByBirthday || (!!asIs && !!seimei && !this.hasSeimei(asIs, seimei));
     const newCode = !!asIs && KishuDao.codeKeys.some((k) => toBe[k] != null && asIs[k] == null);
-    if (!asIs || newCode || (seimei && tanshuku && furigana)) {
+    if (!asIs || newCode || renamed || (seimei && tanshuku && furigana)) {
       toBe = await tool.saveOrUpdate(Kishu, asIs, toBe);
     } else {
       return asIs;

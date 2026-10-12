@@ -1,4 +1,4 @@
-import { integer, sqliteTable, text, uniqueIndex } from "drizzle-orm/sqlite-core";
+import { index, integer, sqliteTable, text, uniqueIndex } from "drizzle-orm/sqlite-core";
 
 export const Choukyoushi = sqliteTable(
   "Choukyoushi",
@@ -23,6 +23,7 @@ export const Choukyoushi = sqliteTable(
     uniqueIndex("IxChoukyoushi1").on(t.KolKyuushaCode),
     uniqueIndex("IxChoukyoushi2").on(t.JrdbChoukyoushiCode),
     uniqueIndex("IxChoukyoushi3").on(t.JvDataChoukyoushiCode),
+    index("IxChoukyoushi4").on(t.Seinengappi),
   ],
 );
 

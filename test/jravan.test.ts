@@ -530,6 +530,57 @@ describe("他の情報源との突き合わせ", () => {
     expect((await repo(Kishu).find()).length).toBe(2);
   });
 
+  test("姓が変わっても、生年月日が同じでコードが矛盾しなければ同じ騎手", async () => {
+    await emptyKolDb();
+    const kishu = {} as Kishu;
+    kishu.KolKishuCode = 1088;
+    kishu.Seinengappi = 19690315;
+    await kishuDao.saveKishu(kishu, "旧姓豊", "旧姓豊", "キュウセイユタカ");
+
+    expect(await importKolFiles({ "JracKisi.dat": kisi().buffer })).toEqual([]);
+
+    const list = await repo(Kishu).find();
+    expect(list.length).toBe(1);
+    expect(list[0].JvDataKishuCode).toBe("01088");
+    // 新姓でも旧姓でも引ける
+    const again = {} as Kishu;
+    again.Seinengappi = 19690315;
+    expect((await kishuDao.saveKishu(again, "旧姓豊", "旧姓豊")).Id).toBe(list[0].Id);
+    const renamed = {} as Kishu;
+    renamed.Seinengappi = 19690315;
+    expect((await kishuDao.saveKishu(renamed, "武豊", "武豊")).Id).toBe(list[0].Id);
+  });
+
+  test("コードが同じで姓名だけ変わった騎手は、新しい姓名も登録する", async () => {
+    await emptyKolDb();
+    const kishu = {} as Kishu;
+    kishu.KolKishuCode = 1088;
+    await kishuDao.saveKishu(kishu, "旧姓豊", "旧姓豊", "キュウセイユタカ");
+    const renamed = {} as Kishu;
+    renamed.KolKishuCode = 1088;
+    await kishuDao.saveKishu(renamed, "武豊");
+
+    const list = await repo(Kishu).find();
+    expect(list.length).toBe(1);
+    // コード無しで新姓だけ来ても、登録済みの名前で同じ行に当たる
+    expect((await kishuDao.saveKishu({} as Kishu, "武豊", "武豊")).Id).toBe(list[0].Id);
+  });
+
+  test("生年月日が同じ候補が複数いるときは姓が変わった扱いにしない", async () => {
+    await emptyKolDb();
+    for (const [code, name] of [
+      [1, "甲野一"],
+      [2, "乙野二"],
+    ] as const) {
+      const k = {} as Kishu;
+      k.KolKishuCode = code;
+      k.Seinengappi = 19690315;
+      await kishuDao.saveKishu(k, name, name, "フリガナ");
+    }
+    expect(await importKolFiles({ "JracKisi.dat": kisi().buffer })).toEqual([]);
+    expect((await repo(Kishu).find()).length).toBe(3);
+  });
+
   test("調教師も、名前が同じなら同じ行にまとめる", async () => {
     await emptyKolDb();
     const choukyoushi = {} as Choukyoushi;
