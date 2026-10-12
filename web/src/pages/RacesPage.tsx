@@ -70,7 +70,9 @@ export function RacesPage() {
   const days = useApi<RaceDay[]>(ym ? `/api/race-days?year=${year}&month=${month}` : null);
 
   const date = params.get("date") ?? undefined;
-  const basho = Number(params.get("basho"));
+  // 京都は場コード 0 なので、指定がないときを Number(null) の 0 にしない
+  const bashoParam = params.get("basho");
+  const basho = bashoParam === null ? Number.NaN : Number(bashoParam);
   const valid = days.data?.find((d) => d.date === date)?.bashos.some((b) => b.basho === basho);
   const races = useApi<RaceSummary[]>(valid ? `/api/races?date=${date}&basho=${basho}` : null);
   const selectedMei = days.data?.find((d) => d.date === date)?.bashos.find((b) => b.basho === basho)?.bashoMei;
